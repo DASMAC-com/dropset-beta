@@ -84,8 +84,13 @@ Once Audit approves, the branch is merged to `main` via pull request.
 - **Branch naming**: `agent/<agent-name>-<uuid>` (e.g., `agent/ci-worker-626eb4cb`)
 - **Commit style**: semantic — `type(scope): description`
   - Types: `feat`, `fix`, `chore`, `docs`, `test`, `refactor`, `ci`
+  - Messages should tell the repo what to do (e.g., "Add endpoint", not "Added endpoint")
   - Example: `feat(api): Add user authentication endpoint`
-- **PR style**: semantic title matching commit style
+- **PR title**: semantic, matching commit style
+- **PR description**:
+  - `## Summary` with a numbered list describing what the PR does
+  - `## Testing` explaining how the changes were tested or can be tested
+  - No bullet lists — use numbered lists
 - **Specs directory**: `specs/` at repo root
 
 ## CI Requirements
