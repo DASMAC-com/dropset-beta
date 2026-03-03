@@ -10,7 +10,7 @@ jobs:
       uses: 'amannn/action-semantic-pull-request@v6'
       with:
         requireScope: true
-        scopes: '^(ENG-[0-9]+|[a-z][a-z0-9-]*)$'
+        scopes: '^(ENG-[0-9]+|agent)$'
         subjectPattern: '^[A-Z].*$'
         validateSingleCommit: true
         validateSingleCommitMatchesPrTitle: true
