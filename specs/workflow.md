@@ -81,7 +81,7 @@ Once Audit approves, the branch is merged to `main` via pull request.
 
 ## Git Conventions
 
-- **Branch naming**: `<username>/<agent-name>-<uuid>` (e.g., `alex-kahn/ci-worker-626eb4cb`)
+- **Branch naming**: `<username>/<agent-name>-<uuid>` (e.g., `jane-doe/ci-worker-626eb4cb`)
 - **Commit style**: semantic — `type(scope): description`
   - Types: `feat`, `fix`, `chore`, `docs`, `test`, `refactor`, `ci`
   - Messages should tell the repo what to do (e.g., "Add endpoint", not "Added endpoint")
