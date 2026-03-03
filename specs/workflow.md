@@ -57,7 +57,7 @@ Workers implement from the approved spec. Each worker operates in an isolated
 git worktree branched from `main`:
 
 ```
-agent/<agent-name>-<uuid>
+<username>/<agent-name>-<uuid>
 ```
 
 Workers must:
@@ -81,7 +81,7 @@ Once Audit approves, the branch is merged to `main` via pull request.
 
 ## Git Conventions
 
-- **Branch naming**: `agent/<agent-name>-<uuid>` (e.g., `agent/ci-worker-626eb4cb`)
+- **Branch naming**: `<username>/<agent-name>-<uuid>` (e.g., `jane-doe/ci-worker-626eb4cb`)
 - **Commit style**: semantic — `type(scope): description`
   - Types: `feat`, `fix`, `chore`, `docs`, `test`, `refactor`, `ci`
   - Messages should tell the repo what to do (e.g., "Add endpoint", not "Added endpoint")
