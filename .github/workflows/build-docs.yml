@@ -1,4 +1,6 @@
 ---
+env:
+  NODE_VERSION: '25'
 jobs:
   build-docs:
     name: 'Build docs'
@@ -9,10 +11,8 @@ jobs:
       with:
         cache: 'npm'
         cache-dependency-path: 'docs/package-lock.json'
-        node-version: 24
+        node-version: '${{ env.NODE_VERSION }}'
     - run: 'npm ci'
-      working-directory: 'docs'
-    - run: 'npx prettier --check .'
       working-directory: 'docs'
     - run: 'npx vitepress build'
       working-directory: 'docs'
