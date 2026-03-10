@@ -2,7 +2,7 @@
 .PHONY: clean
 .PHONY: test
 
-all: docs-prettier quick-lint
+all: docs-prettier pre-commit-lint
 clean:
 test:
 
@@ -11,5 +11,5 @@ docs-dev:
 	$(RUN_DOCS) vitepress dev
 docs-prettier:
 	$(RUN_DOCS) prettier --write .
-quick-lint:
-	pre-commit run --config cfg/pre-commit/quick-lint.yml --all-files
+pre-commit-lint:
+	pre-commit run --config cfg/pre-commit/lint.yml --all-files

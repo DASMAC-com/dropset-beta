@@ -29,6 +29,8 @@ jobs:
     - run: >-
         pre-commit run --all-files --color=always --show-diff-on-failure
         --config ${{ env.CONFIG_PATH }}
+    - run: 'npx prettier --check .'
+      working-directory: 'docs'
 name: 'Quick lint'
 'on':
   pull_request: null
