@@ -3,10 +3,10 @@ env:
   PRE_COMMIT_VERSION: '4.5.1'
   PYTHON_VERSION: '3.14.3'
 jobs:
-  quick-lint:
+  lint:
     env:
       CONFIG_PATH: 'cfg/pre-commit/quick-lint.yml'
-    name: 'Quick lint'
+    name: 'Lint'
     runs-on: 'ubuntu-latest'
     steps:
     - uses: 'actions/checkout@v6'
@@ -31,7 +31,7 @@ jobs:
         --config ${{ env.CONFIG_PATH }}
     - run: 'npx prettier --check .'
       working-directory: 'docs'
-name: 'Quick lint'
+name: 'Lint'
 'on':
   pull_request: null
 ...
