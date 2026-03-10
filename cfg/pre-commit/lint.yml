@@ -58,6 +58,7 @@ repos:
     - '--config'
     - 'cfg/cspell.yml'
     - '--color'
+    - '--no-must-find-files'
     id: 'cspell'
   repo: 'https://github.com/streetsidesoftware/cspell-cli'
   rev: 'v9.7.0'
