@@ -1,3 +1,4 @@
 dasmac
 dropset
+katex
 vitepress
