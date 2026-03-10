@@ -1,29 +1,31 @@
 ---
 env:
+  NODE_VERSION: '25'
   PRE_COMMIT_VERSION: '4.5.1'
   PYTHON_VERSION: '3.14.3'
 jobs:
   lint:
     env:
-      CONFIG_PATH: 'cfg/pre-commit/quick-lint.yml'
+      CONFIG_PATH: 'cfg/pre-commit/lint.yml'
     name: 'Lint'
     runs-on: 'ubuntu-latest'
     steps:
     - uses: 'actions/checkout@v6'
-    - uses: 'actions/setup-node@v4'
+    - uses: 'actions/setup-node@v6'
       with:
-        node-version: '25'
+        node-version: '${{ env.NODE_VERSION }}'
     - uses: 'actions/setup-python@v6'
       with:
         cache: 'pip'
-        cache-dependency-path: '.github/workflows/quick-lint/requirements.txt'
+        cache-dependency-path: '.github/workflows/lint/requirements.txt'
         python-version: '${{ env.PYTHON_VERSION }}'
-    - run: 'pip install -r .github/workflows/quick-lint/requirements.txt'
+    - run: 'pip install -r .github/workflows/lint/requirements.txt'
     - uses: 'actions/cache@v3'
       with:
-        key: 'pre-commit-quick-lint-${{ runner.os }}-${{
-              runner.arch }}-python-${{ env.PYTHON_VERSION }}-pre-commit-${{
-              env.PRE_COMMIT_VERSION }}-${{ hashFiles(env.CONFIG_PATH) }}'
+        key: 'pre-commit-lint-${{ runner.os }}-${{ runner.arch }}-node-${{
+              env.NODE_VERSION }}-python-${{ env.PYTHON_VERSION
+              }}-pre-commit-${{ env.PRE_COMMIT_VERSION }}-${{
+              hashFiles(env.CONFIG_PATH) }}'
         path: '~/.cache/pre-commit'
     - run: 'pre-commit install-hooks -c ${{ env.CONFIG_PATH }}'
     - run: >-
