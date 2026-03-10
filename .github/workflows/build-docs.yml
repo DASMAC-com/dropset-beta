@@ -9,7 +9,7 @@ jobs:
       with:
         cache: 'npm'
         cache-dependency-path: 'docs/package-lock.json'
-        node-version: 24
+        node-version: 25
     - run: 'npm ci'
       working-directory: 'docs'
     - run: 'npx prettier --check .'
