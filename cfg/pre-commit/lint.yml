@@ -35,18 +35,6 @@ repos:
   repo: 'https://github.com/hukkin/mdformat'
   rev: '1.0.0'
 - hooks:
-  - additional_dependencies:
-    - 'mdformat==1.0.0'
-    - 'mdformat-gfm'
-    - 'mdformat-frontmatter'
-    - 'mdformat-myst'
-    entry: 'cfg/pre-commit/local-hooks/format-vitepress-markdown.sh'
-    files: 'docs/src/.*\.md$'
-    id: 'format-vitepress-markdown'
-    language: 'python'
-    name: 'Format VitePress markdown'
-  repo: 'local'
-- hooks:
   - args:
     - '--autofix'
     exclude: 'Cargo.lock'
