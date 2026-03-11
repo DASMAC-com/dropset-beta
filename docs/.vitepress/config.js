@@ -1,3 +1,8 @@
+import { buildAlgorithmIndex } from "./buildAlgorithmIndex.js";
+
+// Rebuild algorithm index on startup.
+buildAlgorithmIndex();
+
 export default {
   title: "Dropset",
   description:
@@ -17,6 +22,26 @@ export default {
     ],
   ],
   srcDir: "src",
+  vite: {
+    plugins: [
+      {
+        // Rebuild algorithm index when .tex or .md files change in dev mode.
+        name: "watch-algorithm-index",
+        configureServer(server) {
+          server.watcher.add("**/algorithms/*.tex");
+          server.watcher.on("change", (path) => {
+            if (path.endsWith(".tex") || path.endsWith(".md")) {
+              buildAlgorithmIndex();
+            }
+            // Trigger a full page reload when a .tex file changes.
+            if (path.endsWith(".tex")) {
+              server.ws.send({ type: "full-reload" });
+            }
+          });
+        },
+      },
+    ],
+  },
   themeConfig: {
     outline: "deep",
     editLink: {
@@ -24,6 +49,21 @@ export default {
         "https://github.com/DASMAC-com/dropset-beta/blob/main/docs/src/:path",
       text: "Contribute to this page",
     },
-    sidebar: [{ text: "Welcome", link: "/" }],
+    sidebar: [
+      { text: "Welcome", link: "/" },
+      {
+        collapsed: false,
+        text: "Program",
+        items: [
+          { text: "Entrypoint", link: "/program/entrypoint" },
+          { text: "RegisterMarket", link: "/program/register-market" },
+        ],
+      },
+      {
+        collapsed: false,
+        text: "Indices",
+        items: [{ text: "Algorithms", link: "/indices/algorithms" }],
+      },
+    ],
   },
 };

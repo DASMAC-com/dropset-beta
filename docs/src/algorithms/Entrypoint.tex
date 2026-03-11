@@ -1,0 +1,15 @@
+\begin{algorithm}
+\caption{Entrypoint}
+\begin{algorithmic}
+\INPUT $input$ ($r_1$): Input buffer
+\INPUT $instruction$ ($r_2$): Instruction data
+\PROCEDURE{Entrypoint}{$input$, $instruction$}
+\STATE $instruction\_length$ = $instruction.length$
+\STATE $d$ = $instruction.discriminator$
+\IF{$d$ == DISCRIMINATOR.REGISTER\_MARKET}
+\STATE \CALL{RegisterMarket}{$input$, $instruction$, $instruction\_length$}
+\ENDIF
+\STATE abort E\_INVALID\_INSTRUCTION
+\ENDPROCEDURE
+\end{algorithmic}
+\end{algorithm}
