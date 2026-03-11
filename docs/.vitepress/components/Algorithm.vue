@@ -87,8 +87,36 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+/* Code-block-style background matching VitePress fenced blocks. */
+.pseudocode-container {
+  background-color: var(--vp-code-block-bg);
+  border-radius: 8px;
+  padding: 1em 1.5em;
+  overflow-x: auto;
+}
+
+/* Syntax highlighting for pseudocode.js output. */
+.pseudocode-container :deep(.ps-keyword) {
+  color: var(--vp-c-brand-1);
+  font-weight: 600;
+}
+.pseudocode-container :deep(.ps-funcname) {
+  color: var(--vp-c-brand-2);
+}
+.pseudocode-container :deep(.ps-comment) {
+  color: var(--vp-c-text-3);
+  font-style: italic;
+}
+.pseudocode-container :deep(.ps-linenum) {
+  color: var(--vp-c-text-3);
+  user-select: none;
+}
+
+/* Dependency links below the algorithm. */
 .pseudocode-links {
   margin-top: 0.5em;
+  padding-top: 0.5em;
+  border-top: 1px solid var(--vp-c-divider);
   font-size: 0.9em;
   color: var(--vp-c-text-2);
 }
