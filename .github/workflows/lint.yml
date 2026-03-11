@@ -11,14 +11,22 @@ jobs:
     name: 'Lint'
     runs-on: 'ubuntu-latest'
     steps:
+    # Cache chktex binary to skip apt-get update/install on subsequent runs.
+    # Cache to ~/.local/bin because actions/cache can't write to /usr/bin.
     - id: 'apt-cache'
       uses: 'actions/cache@v5'
       with:
         key: 'apt-${{ runner.os }}-chktex'
-        path: '/usr/bin/chktex'
+        path: '~/.local/bin/chktex'
     - if: |
         steps.apt-cache.outputs.cache-hit != 'true'
-      run: 'sudo apt-get update && sudo apt-get install -y chktex'
+      run: >-
+        sudo apt-get update && sudo apt-get install -y chktex
+        && mkdir -p ~/.local/bin && cp /usr/bin/chktex ~/.local/bin/
+    # On cache hit, chktex is restored to ~/.local/bin but not on PATH.
+    - if: |
+        steps.apt-cache.outputs.cache-hit == 'true'
+      run: 'echo "$HOME/.local/bin" >> "$GITHUB_PATH"'
     - uses: 'actions/checkout@v6'
     - uses: 'actions/setup-node@v6'
       with:
