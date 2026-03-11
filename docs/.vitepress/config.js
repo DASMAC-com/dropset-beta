@@ -56,7 +56,7 @@ export default {
         text: "Program",
         items: [
           { text: "Entrypoint", link: "/program/entrypoint" },
-          { text: "Register Market", link: "/program/register-market" },
+          { text: "RegisterMarket", link: "/program/register-market" },
         ],
       },
       {
