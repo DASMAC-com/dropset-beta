@@ -23,6 +23,7 @@ export default {
   ],
   srcDir: "src",
   vite: {
+    publicDir: "../public",
     plugins: [
       {
         // Rebuild algorithm index when .tex or .md files change in dev mode.
