@@ -1,3 +1,5 @@
+# cspell:word chktex
+# cspell:word lacheck
 ---
 env:
   NODE_VERSION: '25'
