@@ -1,12 +1,13 @@
-// Scans .tex files for \CALL and \caption, and .md files for <Algorithm> usage.
-// Outputs src/tex/algorithmIndex.json with deps, reverse deps, and page locations.
+// Scans .tex files for \CALL deps and .md files for <Algorithm> usage.
+// Outputs src/algorithms/index.json with deps, reverse deps, and page locations.
+// Algorithm name is the UpperCamelCase filename (used as key and display name).
 
 import { readFileSync, writeFileSync, readdirSync } from "fs";
 import { join, basename, relative } from "path";
 
 const SRC_DIR = join(import.meta.dirname, "..", "src");
-const TEX_DIR = join(SRC_DIR, "tex");
-const OUTPUT = join(TEX_DIR, "algorithmIndex.json");
+const ALGO_DIR = join(SRC_DIR, "algorithms");
+const OUTPUT = join(ALGO_DIR, "index.json");
 
 // Recursively find all .md files under a directory.
 function findMdFiles(dir) {
@@ -25,22 +26,17 @@ function findMdFiles(dir) {
 export function buildAlgorithmIndex() {
   const index = {};
 
-  // Parse each .tex file for caption and \CALL references.
-  for (const file of readdirSync(TEX_DIR).filter((f) => f.endsWith(".tex"))) {
+  // Parse each .tex file for \CALL references.
+  for (const file of readdirSync(ALGO_DIR).filter((f) => f.endsWith(".tex"))) {
     const name = basename(file, ".tex");
-    const code = readFileSync(join(TEX_DIR, file), "utf-8");
-
-    const captionMatch = code.match(/\\caption\{([^}]+)\}/);
-    const caption = captionMatch ? captionMatch[1] : name;
+    const code = readFileSync(join(ALGO_DIR, file), "utf-8");
 
     const calls = new Set();
     for (const match of code.matchAll(/\\CALL\{(\w+)\}/g)) {
-      const dep = match[1].toLowerCase();
-      if (dep !== name) calls.add(dep);
+      if (match[1] !== name) calls.add(match[1]);
     }
 
     index[name] = {
-      caption,
       page: null,
       calls: [...calls],
       calledBy: [],
@@ -52,7 +48,7 @@ export function buildAlgorithmIndex() {
     const md = readFileSync(fullPath, "utf-8");
     const relPath = relative(SRC_DIR, fullPath);
     for (const match of md.matchAll(/<Algorithm\s+src="(\w+)"/g)) {
-      const name = match[1].toLowerCase();
+      const name = match[1];
       if (index[name]) {
         // Convert file path to VitePress page path.
         const page =
@@ -74,6 +70,6 @@ export function buildAlgorithmIndex() {
 
   writeFileSync(OUTPUT, JSON.stringify(index, null, 2) + "\n");
   console.log(
-    `[buildAlgorithmIndex] Wrote ${Object.keys(index).length} algorithms to algorithmIndex.json`,
+    `[buildAlgorithmIndex] Wrote ${Object.keys(index).length} algorithms to index.json`,
   );
 }

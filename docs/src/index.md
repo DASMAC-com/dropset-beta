@@ -12,6 +12,6 @@
 
 ## Algorithms
 
-<Algorithm src="quicksort"/>
+<Algorithm src="Quicksort"/>
 
-<Algorithm src="partition"/>
+<Algorithm src="Partition"/>

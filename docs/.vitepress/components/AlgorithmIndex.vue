@@ -2,7 +2,7 @@
 <template>
   <ul v-if="algorithms.length" class="algorithm-index">
     <li v-for="algo in algorithms" :key="algo.name">
-      <a :href="algo.href">{{ algo.caption }}</a>
+      <a :href="algo.href">{{ algo.name }}</a>
     </li>
   </ul>
 </template>
@@ -14,15 +14,14 @@ const algorithms = ref([]);
 
 onMounted(async () => {
   try {
-    const resp = await fetch("/tex/algorithmIndex.json");
-    const registry = await resp.json();
-    algorithms.value = Object.entries(registry)
-      .map(([name, entry]) => ({
+    const resp = await fetch("/algorithms/index.json");
+    const index = await resp.json();
+    algorithms.value = Object.keys(index)
+      .map((name) => ({
         name,
-        caption: entry.caption,
-        href: `${entry.page || "/"}#algo-${name}`,
+        href: `${index[name].page || "/"}#algo-${name}`,
       }))
-      .sort((a, b) => a.caption.localeCompare(b.caption));
+      .sort((a, b) => a.name.localeCompare(b.name));
   } catch (e) {
     console.error("AlgorithmIndex error:", e);
   }

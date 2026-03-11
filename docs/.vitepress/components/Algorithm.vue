@@ -5,13 +5,13 @@
       <div v-if="calls.length" class="pseudocode-link-row">
         Calls:
         <a v-for="dep in calls" :key="dep.name" :href="dep.href">
-          {{ dep.caption }}
+          {{ dep.name }}
         </a>
       </div>
       <div v-if="calledBy.length" class="pseudocode-link-row">
         Called by:
         <a v-for="dep in calledBy" :key="dep.name" :href="dep.href">
-          {{ dep.caption }}
+          {{ dep.name }}
         </a>
       </div>
     </div>
@@ -36,11 +36,9 @@ const calledBy = ref([]);
 // Resolve a list of algorithm names to links using the algorithm index.
 function resolveLinks(names, index) {
   return names.map((name) => {
-    const entry = index[name];
-    const page = entry?.page || "";
-    const caption = entry?.caption || name;
+    const page = index[name]?.page || "";
     const href = `${page}#algo-${name}`;
-    return { name, caption, href };
+    return { name, href };
   });
 }
 
@@ -53,8 +51,8 @@ onMounted(async () => {
 
     // Fetch .tex source and algorithm index in parallel.
     const [texResp, indexResp] = await Promise.all([
-      fetch(`/tex/${props.src}.tex`),
-      fetch("/tex/algorithmIndex.json"),
+      fetch(`/algorithms/${props.src}.tex`),
+      fetch("/algorithms/index.json"),
     ]);
     const code = await texResp.text();
     const index = await indexResp.json();
