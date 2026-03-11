@@ -79,6 +79,18 @@ onMounted(async () => {
       "$1Algorithm ",
     );
     container.value.insertBefore(rendered, linksEl);
+
+    // Turn \CALL{Name} references into clickable links to the called algorithm.
+    rendered.querySelectorAll(".ps-funcname").forEach((span) => {
+      const name = span.textContent.trim();
+      if (index[name]) {
+        const a = document.createElement("a");
+        a.href = `${index[name].page || "/"}#algo-${name}`;
+        a.className = "ps-funcname";
+        a.textContent = span.textContent;
+        span.replaceWith(a);
+      }
+    });
   } catch (e) {
     console.error("Pseudocode render error:", e);
     container.value.textContent = "Error: " + e.message;
@@ -102,6 +114,12 @@ onMounted(async () => {
 }
 .pseudocode-container :deep(.ps-funcname) {
   color: var(--vp-c-brand-2);
+}
+.pseudocode-container :deep(a.ps-funcname) {
+  text-decoration: none;
+}
+.pseudocode-container :deep(a.ps-funcname:hover) {
+  text-decoration: underline;
 }
 .pseudocode-container :deep(.ps-comment) {
   color: var(--vp-c-text-3);
