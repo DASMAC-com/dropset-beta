@@ -1,7 +1,6 @@
 # cspell:word checkmake
 # cspell:word chktex
 # cspell:word frontmatter
-# cspell:word lacheck
 # cspell:word mdformat
 # cspell:word shfmt
 ---
@@ -78,7 +77,6 @@ repos:
   rev: 'v0.3.2'
 - hooks:
   - id: 'chktex'
-  - id: 'lacheck'
   repo: 'https://github.com/randolf-scholz/latex-hooks'
   rev: 'v0.1.24'
 ...

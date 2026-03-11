@@ -1,5 +1,4 @@
 # cspell:word chktex
-# cspell:word lacheck
 ---
 env:
   NODE_VERSION: '25'
@@ -12,7 +11,7 @@ jobs:
     name: 'Lint'
     runs-on: 'ubuntu-latest'
     steps:
-    - run: 'sudo apt-get update && sudo apt-get install -y chktex lacheck'
+    - run: 'sudo apt-get update && sudo apt-get install -y chktex'
     - uses: 'actions/checkout@v6'
     - uses: 'actions/setup-node@v6'
       with:
