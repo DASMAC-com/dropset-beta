@@ -67,14 +67,6 @@ repos:
   repo: 'https://github.com/pre-commit/pre-commit-hooks'
   rev: 'v6.0.0'
 - hooks:
-  - entry: 'cfg/pre-commit/local-hooks/ensure-shebang.sh'
-    id: 'ensure-shebang'
-    language: 'script'
-    name: 'Ensure shebang in shell scripts'
-    types:
-    - 'shell'
-  repo: 'local'
-- hooks:
   - id: 'shfmt'
   repo: 'https://github.com/scop/pre-commit-shfmt'
   rev: 'v3.12.0-2'
