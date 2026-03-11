@@ -1,12 +1,12 @@
 // Scans .tex files for \CALL deps and .md files for <Algorithm> usage.
-// Outputs public/algorithms/index.json with deps, reverse deps, and page locations.
+// Outputs algorithms/index.json with deps, reverse deps, and page locations.
 // Algorithm name is the UpperCamelCase filename (used as key and display name).
 
 import { readFileSync, writeFileSync, readdirSync } from "fs";
 import { join, basename, relative } from "path";
 
 const SRC_DIR = join(import.meta.dirname, "..", "src");
-const ALGO_DIR = join(import.meta.dirname, "..", "public", "algorithms");
+const ALGO_DIR = join(import.meta.dirname, "..", "algorithms");
 const OUTPUT = join(ALGO_DIR, "index.json");
 
 // Recursively find all .md files under a directory.

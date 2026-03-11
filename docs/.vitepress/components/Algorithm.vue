@@ -24,6 +24,13 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import "pseudocode/build/pseudocode.min.css";
+import algorithmIndex from "../../algorithms/index.json";
+
+// Import all .tex files at build time via Vite's glob import with ?raw.
+const texModules = import.meta.glob("../../algorithms/*.tex", {
+  query: "?raw",
+  import: "default",
+});
 
 // src is the .tex filename, rest are pseudocode.js options.
 const props = defineProps({
@@ -52,19 +59,16 @@ onMounted(async () => {
     window.katex = katex.default || katex;
     const pseudocode = await import("pseudocode");
 
-    // Fetch .tex source and algorithm index in parallel.
-    const [texResp, indexResp] = await Promise.all([
-      fetch(`/algorithms/${props.src}.tex`),
-      fetch("/algorithms/index.json"),
-    ]);
-    const code = await texResp.text();
-    const index = await indexResp.json();
+    // Load .tex source at build time via glob import.
+    const texLoader = texModules[`../../algorithms/${props.src}.tex`];
+    if (!texLoader) throw new Error(`Unknown algorithm: ${props.src}`);
+    const code = await texLoader();
 
     // Resolve forward and reverse deps from the algorithm index.
-    const entry = index[props.src];
+    const entry = algorithmIndex[props.src];
     if (entry) {
-      calls.value = resolveLinks(entry.calls, index);
-      calledBy.value = resolveLinks(entry.calledBy, index);
+      calls.value = resolveLinks(entry.calls, algorithmIndex);
+      calledBy.value = resolveLinks(entry.calledBy, algorithmIndex);
     }
 
     // Render pseudocode.
@@ -86,9 +90,9 @@ onMounted(async () => {
     // Turn \CALL{Name} references into clickable links to the called algorithm.
     rendered.querySelectorAll(".ps-funcname").forEach((span) => {
       const name = span.textContent.trim();
-      if (index[name]) {
+      if (algorithmIndex[name]) {
         const a = document.createElement("a");
-        a.href = `${index[name].page || "/"}#algo-${name}`;
+        a.href = `${algorithmIndex[name].page || "/"}#algo-${name}`;
         a.className = "ps-funcname";
         a.textContent = span.textContent;
         span.replaceWith(a);

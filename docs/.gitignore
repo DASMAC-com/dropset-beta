@@ -1,4 +1,4 @@
 cache
 dist
 node_modules
-public/algorithms/index.json
+algorithms/index.json
