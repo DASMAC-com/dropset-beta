@@ -11,9 +11,17 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
+import algorithmIndex from "../../algorithms/index.json";
 
-const algorithms = ref([]);
 const chart = ref(null);
+
+// Build algorithm list from the build-time index.
+const algorithms = Object.keys(algorithmIndex)
+  .map((name) => ({
+    name,
+    href: `${algorithmIndex[name].page || "/"}#algo-${name}`,
+  }))
+  .sort((a, b) => a.name.localeCompare(b.name));
 
 // Build a Mermaid graph definition from the algorithm index.
 function buildGraph(index) {
@@ -31,21 +39,10 @@ function buildGraph(index) {
 
 onMounted(async () => {
   try {
-    const resp = await fetch("/algorithms/index.json");
-    const index = await resp.json();
-
-    // Build algorithm list.
-    algorithms.value = Object.keys(index)
-      .map((name) => ({
-        name,
-        href: `${index[name].page || "/"}#algo-${name}`,
-      }))
-      .sort((a, b) => a.name.localeCompare(b.name));
-
     // Render Mermaid dep chart.
     const mermaid = (await import("mermaid")).default;
     mermaid.initialize({ startOnLoad: false, theme: "neutral" });
-    const graphDef = buildGraph(index);
+    const graphDef = buildGraph(algorithmIndex);
     const { svg } = await mermaid.render("algo-dep-chart", graphDef);
     chart.value.innerHTML = svg;
   } catch (e) {

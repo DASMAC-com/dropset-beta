@@ -23,7 +23,6 @@ export default {
   ],
   srcDir: "src",
   vite: {
-    publicDir: "../public",
     plugins: [
       {
         // Rollup's CJS-to-ESM conversion drops `var` declarations from
