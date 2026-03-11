@@ -44,6 +44,23 @@ export default {
         "https://github.com/DASMAC-com/dropset-beta/blob/main/docs/src/:path",
       text: "Contribute to this page",
     },
-    sidebar: [{ text: "Welcome", link: "/" }],
+    sidebar: [
+      { text: "Welcome", link: "/" },
+      {
+        collapsed: false,
+        text: "Program",
+        items: [
+          { text: "Quicksort", link: "/program/quicksort" },
+          { text: "Partition", link: "/program/partition" },
+        ],
+      },
+      {
+        collapsed: false,
+        text: "Indices",
+        items: [
+          { text: "Algorithms", link: "/indices/algorithms" },
+        ],
+      },
+    ],
   },
 };

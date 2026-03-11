@@ -1,13 +1,13 @@
 {
   "Partition": {
-    "page": "/",
+    "page": "/program/partition",
     "calls": [],
     "calledBy": [
       "Quicksort"
     ]
   },
   "Quicksort": {
-    "page": "/",
+    "page": "/program/quicksort",
     "calls": [
       "Partition"
     ],
