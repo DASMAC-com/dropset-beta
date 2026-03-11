@@ -1,0 +1,18 @@
+{
+  "partition": {
+    "caption": "Partition",
+    "page": "/",
+    "calls": [],
+    "calledBy": [
+      "quicksort"
+    ]
+  },
+  "quicksort": {
+    "caption": "Quicksort",
+    "page": "/",
+    "calls": [
+      "partition"
+    ],
+    "calledBy": []
+  }
+}

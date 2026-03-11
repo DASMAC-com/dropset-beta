@@ -6,8 +6,12 @@
 
 <!-- markdownlint-enable MD013 -->
 
+## Algorithm Index
+
+<AlgorithmIndex />
+
 ## Algorithms
 
-<Pseudocode src="quicksort"/>
+<Algorithm src="quicksort"/>
 
-<Pseudocode src="partition"/>
+<Algorithm src="partition"/>

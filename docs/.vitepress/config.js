@@ -1,3 +1,8 @@
+import { buildAlgorithmIndex } from "./buildAlgorithmIndex.js";
+
+// Rebuild algorithm index on startup.
+buildAlgorithmIndex();
+
 export default {
   title: "Dropset",
   description:
@@ -17,6 +22,21 @@ export default {
     ],
   ],
   srcDir: "src",
+  vite: {
+    plugins: [
+      {
+        // Rebuild algorithm index when .tex or .md files change in dev mode.
+        name: "watch-algorithm-index",
+        configureServer(server) {
+          server.watcher.on("change", (path) => {
+            if (path.endsWith(".tex") || path.endsWith(".md")) {
+              buildAlgorithmIndex();
+            }
+          });
+        },
+      },
+    ],
+  },
   themeConfig: {
     outline: "deep",
     editLink: {
