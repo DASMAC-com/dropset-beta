@@ -28,9 +28,14 @@ export default {
         // Rebuild algorithm index when .tex or .md files change in dev mode.
         name: "watch-algorithm-index",
         configureServer(server) {
+          server.watcher.add("**/algorithms/*.tex");
           server.watcher.on("change", (path) => {
             if (path.endsWith(".tex") || path.endsWith(".md")) {
               buildAlgorithmIndex();
+            }
+            // Trigger a full page reload when a .tex file changes.
+            if (path.endsWith(".tex")) {
+              server.ws.send({ type: "full-reload" });
             }
           });
         },
@@ -50,8 +55,8 @@ export default {
         collapsed: false,
         text: "Program",
         items: [
-          { text: "Quicksort", link: "/program/quicksort" },
-          { text: "Partition", link: "/program/partition" },
+          { text: "Entrypoint", link: "/program/entrypoint" },
+          { text: "Register Market", link: "/program/register-market" },
         ],
       },
       {
