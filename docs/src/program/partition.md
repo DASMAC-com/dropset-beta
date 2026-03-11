@@ -1,3 +1,0 @@
-# Partition
-
-<Algorithm src="Partition"/>

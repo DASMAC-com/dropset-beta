@@ -1,3 +1,0 @@
-# Quicksort
-
-<Algorithm src="Quicksort"/>

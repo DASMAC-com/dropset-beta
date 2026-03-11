@@ -1,16 +1,16 @@
 {
-  "Partition": {
-    "page": "/program/partition",
-    "calls": [],
-    "calledBy": [
-      "Quicksort"
-    ]
-  },
-  "Quicksort": {
-    "page": "/program/quicksort",
+  "Entrypoint": {
+    "page": "/program/entrypoint",
     "calls": [
-      "Partition"
+      "RegisterMarket"
     ],
     "calledBy": []
+  },
+  "RegisterMarket": {
+    "page": "/program/register-market",
+    "calls": [],
+    "calledBy": [
+      "Entrypoint"
+    ]
   }
 }
