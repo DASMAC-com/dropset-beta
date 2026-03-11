@@ -1,7 +1,7 @@
 # cspell:word checkmake
+# cspell:word chktex
 # cspell:word frontmatter
 # cspell:word mdformat
-# cspell:word shfmt
 ---
 repos:
 - hooks:
@@ -35,18 +35,6 @@ repos:
   repo: 'https://github.com/hukkin/mdformat'
   rev: '1.0.0'
 - hooks:
-  - additional_dependencies:
-    - 'mdformat==1.0.0'
-    - 'mdformat-gfm'
-    - 'mdformat-frontmatter'
-    - 'mdformat-myst'
-    entry: 'cfg/pre-commit/local-hooks/format-vitepress-markdown.sh'
-    files: 'docs/src/.*\.md$'
-    id: 'format-vitepress-markdown'
-    language: 'python'
-    name: 'Format VitePress markdown'
-  repo: 'local'
-- hooks:
   - args:
     - '--autofix'
     exclude: 'Cargo.lock'
@@ -79,19 +67,11 @@ repos:
   repo: 'https://github.com/pre-commit/pre-commit-hooks'
   rev: 'v6.0.0'
 - hooks:
-  - entry: 'cfg/pre-commit/local-hooks/ensure-shebang.sh'
-    id: 'ensure-shebang'
-    language: 'script'
-    name: 'Ensure shebang in shell scripts'
-    types:
-    - 'shell'
-  repo: 'local'
-- hooks:
-  - id: 'shfmt'
-  repo: 'https://github.com/scop/pre-commit-shfmt'
-  rev: 'v3.12.0-2'
-- hooks:
   - id: 'checkmake'
   repo: 'https://github.com/checkmake/checkmake.git'
   rev: 'v0.3.2'
+- hooks:
+  - id: 'chktex'
+  repo: 'https://github.com/randolf-scholz/latex-hooks'
+  rev: 'v0.1.24'
 ...
