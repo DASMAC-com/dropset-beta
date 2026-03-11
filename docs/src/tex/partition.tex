@@ -1,0 +1,17 @@
+\begin{algorithm}
+\caption{Partition}
+\begin{algorithmic}
+\PROCEDURE{Partition}{$A, p, r$}
+  \STATE $x \gets A[r]$
+  \STATE $i \gets p - 1$
+  \FOR{$j = p$ \TO $r - 1$}
+    \IF{$A[j] < x$}
+      \STATE $i \gets i + 1$
+      \STATE exchange $A[i]$ with $A[j]$
+    \ENDIF
+  \ENDFOR
+  \STATE exchange $A[i + 1]$ with $A[r]$
+  \RETURN $i + 1$
+\ENDPROCEDURE
+\end{algorithmic}
+\end{algorithm}

@@ -6,6 +6,8 @@
 
 <!-- markdownlint-enable MD013 -->
 
-## Pseudocode Test
+## Algorithms
 
 <Pseudocode src="quicksort"/>
+
+<Pseudocode src="partition"/>
