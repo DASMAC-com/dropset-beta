@@ -25,15 +25,12 @@ export default {
   vite: {
     plugins: [
       {
-        // Rollup's CJS-to-ESM conversion drops `var` declarations from
-        // pseudocode.js source files, creating bare assignments that throw
-        // ReferenceErrors in strict-mode ESM.  Fix them in the final chunks.
+        // pseudocode.js has bare assignments (attrVal, ifCond) that throw
+        // ReferenceErrors in strict-mode ESM. Fix in both dev (transform)
+        // and prod (renderChunk) since Vite serves source directly in dev.
         name: "fix-pseudocode-vars",
-        renderChunk(code, chunk) {
-          if (!chunk.fileName.includes("pseudocode")) return;
-          // Match bare assignments like `ifCond=...` or `attrVal=f[d]` that
-          // should be `var ifCond=...`.  These are always inside functions so
-          // `var` is correct scope.
+        transform(code, id) {
+          if (!id.includes("pseudocode")) return;
           return code.replace(
             /(?<![.\w$])(?:attrVal|ifCond)(?=\s*=[^=])/g,
             "var $&",
