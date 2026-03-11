@@ -6,7 +6,7 @@
 \INPUT $instruction\_length$ ($r_3$): Instruction length
 \REQUIRE Instruction discriminator is DISCRIMINATOR.REGISTER\_MARKET
 \PROCEDURE{RegisterMarket}{$input$, $instruction$, $instruction\_length$}
-  \IF{$instruction\_length \neq$ REGISTER\_MARKET.LENGTH}
+  \IF{$instruction\_length \neq$ INSTRUCTION\_LENGTH.REGISTER\_MARKET}
     \STATE abort E\_INVALID\_INSTRUCTION\_LENGTH
   \ENDIF
 \ENDPROCEDURE
