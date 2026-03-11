@@ -16,7 +16,8 @@ jobs:
       with:
         key: 'apt-${{ runner.os }}-chktex'
         path: '/usr/bin/chktex'
-    - if: steps.apt-cache.outputs.cache-hit != 'true'
+    - if: |
+        steps.apt-cache.outputs.cache-hit != 'true'
       run: 'sudo apt-get update && sudo apt-get install -y chktex'
     - uses: 'actions/checkout@v6'
     - uses: 'actions/setup-node@v6'
