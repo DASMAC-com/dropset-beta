@@ -1,13 +1,14 @@
 // Scans .tex files for \CALL deps and .md files for <Algorithm> usage.
-// Outputs src/algorithms/index.json with deps, reverse deps, and page locations.
+// Outputs public/algorithms/index.json with deps, reverse deps, and page locations.
 // Algorithm name is the UpperCamelCase filename (used as key and display name).
 
-import { readFileSync, writeFileSync, readdirSync } from "fs";
+import { readFileSync, writeFileSync, readdirSync, mkdirSync } from "fs";
 import { join, basename, relative } from "path";
 
 const SRC_DIR = join(import.meta.dirname, "..", "src");
 const ALGO_DIR = join(SRC_DIR, "algorithms");
-const OUTPUT = join(ALGO_DIR, "index.json");
+const OUTPUT_DIR = join(import.meta.dirname, "..", "public", "algorithms");
+const OUTPUT = join(OUTPUT_DIR, "index.json");
 
 // Recursively find all .md files under a directory.
 function findMdFiles(dir) {
@@ -67,6 +68,7 @@ export function buildAlgorithmIndex() {
     }
   }
 
+  mkdirSync(OUTPUT_DIR, { recursive: true });
   writeFileSync(OUTPUT, JSON.stringify(index, null, 2) + "\n");
   console.log(
     `[buildAlgorithmIndex] Wrote ${Object.keys(index).length} algorithms to index.json`,
