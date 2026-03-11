@@ -1,16 +1,16 @@
 {
   "Entrypoint": {
-    "page": "/program/entrypoint",
+    "calledBy": [],
     "calls": [
       "RegisterMarket"
     ],
-    "calledBy": []
+    "page": "/program/entrypoint"
   },
   "RegisterMarket": {
-    "page": "/program/register-market",
-    "calls": [],
     "calledBy": [
       "Entrypoint"
-    ]
+    ],
+    "calls": [],
+    "page": "/program/register-market"
   }
 }

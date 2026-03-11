@@ -52,8 +52,7 @@ export function buildAlgorithmIndex() {
       if (index[name]) {
         // Convert file path to VitePress page path.
         const page =
-          "/" +
-          relPath.replace(/(^|\/)index\.md$/, "$1").replace(/\.md$/, "");
+          "/" + relPath.replace(/(^|\/)index\.md$/, "$1").replace(/\.md$/, "");
         index[name].page = page;
       }
     }

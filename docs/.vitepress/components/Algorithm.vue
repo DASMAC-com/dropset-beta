@@ -1,3 +1,6 @@
+<!-- cspell:word funcname -->
+<!-- cspell:word linenum -->
+<!-- cspell:word punc -->
 <template>
   <!-- Anchor: #algo-<src> for cross-page and in-page linking. -->
   <div :id="`algo-${src}`" ref="container" class="pseudocode-container">

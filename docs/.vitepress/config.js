@@ -62,9 +62,7 @@ export default {
       {
         collapsed: false,
         text: "Indices",
-        items: [
-          { text: "Algorithms", link: "/indices/algorithms" },
-        ],
+        items: [{ text: "Algorithms", link: "/indices/algorithms" }],
       },
     ],
   },
