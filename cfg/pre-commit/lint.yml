@@ -2,7 +2,6 @@
 # cspell:word chktex
 # cspell:word frontmatter
 # cspell:word mdformat
-# cspell:word shfmt
 ---
 repos:
 - hooks:
@@ -67,10 +66,6 @@ repos:
     id: 'pretty-format-json'
   repo: 'https://github.com/pre-commit/pre-commit-hooks'
   rev: 'v6.0.0'
-- hooks:
-  - id: 'shfmt'
-  repo: 'https://github.com/scop/pre-commit-shfmt'
-  rev: 'v3.12.0-2'
 - hooks:
   - id: 'checkmake'
   repo: 'https://github.com/checkmake/checkmake.git'
