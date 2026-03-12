@@ -3,9 +3,7 @@
 # Dropset
 
 <!-- markdownlint-disable MD013 -->
-
 > [!important] Courtesy of Distributed Atomic State Machine Algorithms Corporation (DASMAC)
-
 <!-- markdownlint-enable MD013 -->
 
 ## Background
@@ -18,7 +16,7 @@ optimizations with [formal verification] techniques.
 If you want to more background information about programming in SBPF assembly,
 check out the [Solana Opcode Guide].
 
-## How this site works
+## About this site
 
 This site is built in [Vitepress], and leverages custom [Vue components] to
 provide formal [CLRS]-style algorithmic specifications via [pseudocode.js].
@@ -32,7 +30,7 @@ If you want to develop locally, see the root [Makefile] for some common
 operations. Note that you can access the repo and make a contribution yourself
 via the `Contribute to this page` link on each page.
 
-## Assembly and rigor
+## About assembly
 
 Programming in assembly, in particular on a blockchain, requires extensive
 working knowledge and extremely precise development techniques. For all but the
@@ -53,18 +51,21 @@ design assurance.
 
 :::details From [The Mythical Man-Month] Anniversary Edition p75:
 
-> ### The Project Workbook
+> The Project Workbook
+> ====================
 >
-> #### What
+>
+> **What**
 >
 > The project workbook is not so much a separate document as it is a structure
 > imposed on the documents that the project will be producing anyway.
+>
 >
 > _All_ the documents of the project need to be part of this structure. This
 > includes objectives, external specifications, interface specifications,
 > technical standards, internal specifications, and administrative memoranda.
 >
-> #### Why
+> **Why**
 >
 > Technical prose is almost immortal. If one examines the genealogy of
 > a customer manual for a piece of hardware or software, once can trace not only
