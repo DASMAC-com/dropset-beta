@@ -1,6 +1,7 @@
 <!-- cspell:word funcname -->
 <!-- cspell:word linenum -->
 <!-- cspell:word punc -->
+<!-- cspell:word texttt -->
 <template>
   <!-- Anchor: #algo-<src> for cross-page and in-page linking. -->
   <div :id="`algo-${src}`" ref="container" class="pseudocode-container">
@@ -87,6 +88,11 @@ onMounted(async () => {
     );
     container.value.insertBefore(rendered, linksEl);
 
+    // Add a class to \texttt{} spans for styling.
+    rendered.querySelectorAll('span[style*="KaTeX_Typewriter"]').forEach((span) => {
+      span.classList.add("ps-typewriter");
+    });
+
     // Turn \CALL{Name} references into clickable links to the called algorithm.
     rendered.querySelectorAll(".ps-funcname").forEach((span) => {
       const name = span.textContent.trim();
@@ -128,8 +134,11 @@ onMounted(async () => {
 .pseudocode-container :deep(a.ps-funcname:hover) {
   text-decoration: underline;
 }
+.pseudocode-container :deep(.ps-typewriter) {
+  color: var(--vp-c-text-2);
+}
 .pseudocode-container :deep(.ps-comment) {
-  color: var(--vp-c-text-3);
+  color: var(--vp-c-green-2);
   font-style: italic;
 }
 .pseudocode-container :deep(.ps-linenum) {

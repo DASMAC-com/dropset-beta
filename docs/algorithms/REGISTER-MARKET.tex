@@ -10,7 +10,7 @@
   \REQUIRE $data.discriminator == \texttt{Discriminator::RegisterMarket}$
 \PROCEDURE{REGISTER-MARKET}{$input$, $data$, $data\_l$}
   \IF{$data_l \neq$ \texttt{InstructionDataLength::RegisterMarket}}
-    \STATE abort \texttt{Error::InvalidInstructionDataLength}
+    \RETURN \texttt{Error::InvalidInstructionDataLength}
   \ENDIF
 \ENDPROCEDURE
 \end{algorithmic}
