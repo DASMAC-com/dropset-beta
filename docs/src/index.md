@@ -3,7 +3,9 @@
 # Dropset
 
 <!-- markdownlint-disable MD013 -->
+
 > [!important] Courtesy of Distributed Atomic State Machine Algorithms Corporation (DASMAC)
+
 <!-- markdownlint-enable MD013 -->
 
 ## Background
@@ -51,15 +53,16 @@ design assurance.
 
 :::details From [The Mythical Man-Month] Anniversary Edition p75:
 
-> The Project Workbook
-> ====================
+<!-- markdownlint-disable MD025 -->
+
+> # The Project Workbook
 >
+> <!-- markdownlint-enable MD025 -->
 >
 > **What**
 >
 > The project workbook is not so much a separate document as it is a structure
 > imposed on the documents that the project will be producing anyway.
->
 >
 > _All_ the documents of the project need to be part of this structure. This
 > includes objectives, external specifications, interface specifications,
