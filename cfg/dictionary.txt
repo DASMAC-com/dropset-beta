@@ -1,4 +1,6 @@
 dasmac
 dropset
 katex
+sbpf
+solana
 vitepress
