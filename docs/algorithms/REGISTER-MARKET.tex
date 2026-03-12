@@ -1,13 +1,16 @@
 \begin{algorithm}
 \caption{REGISTER-MARKET}
 \begin{algorithmic}
-\INPUT $input$ ($r_1$): Input buffer
-\INPUT $instruction$ ($r_2$): Instruction data
-\INPUT $instruction\_length$ ($r_3$): Instruction length
-\REQUIRE Instruction discriminator is DISCRIMINATOR.REGISTER\_MARKET
-\PROCEDURE{REGISTER-MARKET}{$input$, $instruction$, $instruction\_length$}
-  \IF{$instruction\_length \neq$ INSTRUCTION\_LENGTH.REGISTER\_MARKET}
-    \STATE abort E\_INVALID\_INSTRUCTION\_LENGTH
+  \COMMENT{Input buffer.}
+  \INPUT $r_1 = input$
+  \COMMENT{Instruction data.}
+  \INPUT $r_2 = data$
+  \COMMENT{Instruction data length.}
+  \INPUT $r_3 = data_l$
+  \REQUIRE $data.discriminator == \texttt{Discriminator::RegisterMarket}$
+\PROCEDURE{REGISTER-MARKET}{$input$, $data$, $data\_l$}
+  \IF{$data_l \neq$ \texttt{InstructionDataLength::RegisterMarket}}
+    \STATE abort \texttt{Error::InvalidInstructionDataLength}
   \ENDIF
 \ENDPROCEDURE
 \end{algorithmic}

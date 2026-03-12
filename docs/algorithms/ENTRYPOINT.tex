@@ -1,8 +1,12 @@
 \begin{algorithm}
 \caption{ENTRYPOINT}
 \begin{algorithmic}
-\INPUT $r_1 = input$ (Input buffer)
-\INPUT $r_2 = data$ (Instruction data)
+  \COMMENT{Input buffer.}
+  \INPUT $r_1 = input$
+  \COMMENT{Instruction data.}
+  \INPUT $r_2 = data$
+  \COMMENT{Instruction data length.}
+  \REQUIRE $r_3 \gets data_l$
 \PROCEDURE{ENTRYPOINT}{$input, data$}
   \STATE $data_l = data.length$
   \STATE $d_d = data.discriminator$
