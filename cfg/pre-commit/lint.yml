@@ -71,7 +71,10 @@ repos:
   repo: 'https://github.com/checkmake/checkmake.git'
   rev: 'v0.3.2'
 - hooks:
-  - id: 'chktex'
+  - args:
+    - '-n1' # Allow command terminated with space, e.g. `\STATE foo`.
+    - '-n8' # Allow standard dash in ALGORITHM-NAME.
+    id: 'chktex'
   repo: 'https://github.com/randolf-scholz/latex-hooks'
   rev: 'v0.1.24'
 ...
