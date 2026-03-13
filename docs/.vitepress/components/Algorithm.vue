@@ -178,7 +178,7 @@ onMounted(async () => {
 
       asmBlock.value.innerHTML =
         `<details class="details custom-block">` +
-        `<summary>Implementation</summary>` +
+        `<summary>Implementation: ${props.asm}.s</summary>` +
         `<div class="language-asm vp-adaptive-theme line-numbers-mode">` +
         `<button title="Copy Code" class="copy"></button>` +
         `<span class="lang">asm</span>` +
