@@ -27,7 +27,8 @@ collapsible SBPF assembly implementations sourced directly from the codebase.
 The auto-generated [algorithm index](indices/algorithms) contains a
 [mermaid]-style dependency chart of all algorithms, which are additionally
 cross-linked with one another at their definition sites. The top-level algorithm
-is the Dropset program [entrypoint](program/entrypoint).
+is the Dropset program [entrypoint](program/layout#entrypoint). See the
+[program layout](program/layout) for more details about program architecture.
 
 If you want to develop locally, see the root [Makefile] for some common
 operations. Note that you can access the repo and make a contribution yourself
