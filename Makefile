@@ -9,12 +9,12 @@ test:
 
 # Build and serve docs locally for development.
 docs-dev:
-	cd docs \
+	cd docs && npm install \
 		&& rm -rf .vitepress/cache .vitepress/dist node_modules/.vite \
 		&& npx vitepress dev
 # Format docs with Prettier.
 docs-prettier:
-	cd docs && npx prettier --write .
+	cd docs && npm install && npx prettier --write .
 # Build and serve docs locally in production mode.
 docs-prod:
 	cd docs \
