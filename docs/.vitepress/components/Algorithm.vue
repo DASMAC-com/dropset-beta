@@ -16,7 +16,10 @@
           </a>
         </div>
       </div>
-      <div v-if="calledBy.length" class="pseudocode-links pseudocode-links-below">
+      <div
+        v-if="calledBy.length"
+        class="pseudocode-links pseudocode-links-below"
+      >
         <div class="pseudocode-link-row">
           Called by:
           <a v-for="dep in calledBy" :key="dep.name" :href="dep.href">
@@ -142,11 +145,13 @@ onMounted(async () => {
           for (let i = 0; i < lines.length; i++) {
             if (src[i]?.trimStart().startsWith("#")) {
               const text = lines[i].map((t) => t.content).join("");
-              lines[i] = [{
-                content: text,
-                color: commentColor.dark,
-                htmlStyle: `--shiki-dark:${commentColor.dark};--shiki-light:${commentColor.light}`,
-              }];
+              lines[i] = [
+                {
+                  content: text,
+                  color: commentColor.dark,
+                  htmlStyle: `--shiki-dark:${commentColor.dark};--shiki-light:${commentColor.light}`,
+                },
+              ];
             }
           }
         },
@@ -161,8 +166,9 @@ onMounted(async () => {
 
       // Build line numbers.
       const lineCount = asmCode.value.split("\n").length;
-      const lineNumsHtml = Array.from({ length: lineCount }, (_, i) =>
-        `<span class="line-number">${i + 1}</span><br>`
+      const lineNumsHtml = Array.from(
+        { length: lineCount },
+        (_, i) => `<span class="line-number">${i + 1}</span><br>`,
       ).join("");
 
       // Produce the exact HTML VitePress would for :::details + ```asm```.
@@ -172,13 +178,13 @@ onMounted(async () => {
 
       asmBlock.value.innerHTML =
         `<details class="details custom-block">` +
-          `<summary>Implementation</summary>` +
-          `<div class="language-asm vp-adaptive-theme line-numbers-mode">` +
-            `<button title="Copy Code" class="copy"></button>` +
-            `<span class="lang">asm</span>` +
-            pre +
-            `<div class="line-numbers-wrapper" aria-hidden="true">${lineNumsHtml}</div>` +
-          `</div>` +
+        `<summary>Implementation</summary>` +
+        `<div class="language-asm vp-adaptive-theme line-numbers-mode">` +
+        `<button title="Copy Code" class="copy"></button>` +
+        `<span class="lang">asm</span>` +
+        pre +
+        `<div class="line-numbers-wrapper" aria-hidden="true">${lineNumsHtml}</div>` +
+        `</div>` +
         `</details>`;
 
       // Wire up copy button.

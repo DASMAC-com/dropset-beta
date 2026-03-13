@@ -1,3 +1,5 @@
+# cspell:word globl
+
 .globl entrypoint
 
 .include "error.s"

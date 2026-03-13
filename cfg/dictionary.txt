@@ -1,6 +1,9 @@
 dasmac
 dropset
+insn
 katex
+ldxb
+ldxdw
 sbpf
 solana
 vitepress
