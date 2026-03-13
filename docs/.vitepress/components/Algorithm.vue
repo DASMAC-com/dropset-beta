@@ -4,21 +4,24 @@
 <!-- cspell:word texttt -->
 <template>
   <!-- Anchor: #algo-<src> for cross-page and in-page linking. -->
-  <div :id="`algo-${src}`" ref="container" class="pseudocode-container">
-    <div v-if="calls.length" class="pseudocode-links pseudocode-links-below">
-      <div class="pseudocode-link-row">
-        Calls:
-        <a v-for="dep in calls" :key="dep.name" :href="dep.href">
-          {{ dep.name }}
-        </a>
+  <div :id="`algo-${tex}`">
+    <div ref="container" class="pseudocode-container">
+      <div v-if="asm" ref="asmBlock" class="asm-block"></div>
+      <div v-if="calls.length" class="pseudocode-links pseudocode-links-below">
+        <div class="pseudocode-link-row">
+          Calls:
+          <a v-for="dep in calls" :key="dep.name" :href="dep.href">
+            {{ dep.name }}
+          </a>
+        </div>
       </div>
-    </div>
-    <div v-if="calledBy.length" class="pseudocode-links pseudocode-links-below">
-      <div class="pseudocode-link-row">
-        Called by:
-        <a v-for="dep in calledBy" :key="dep.name" :href="dep.href">
-          {{ dep.name }}
-        </a>
+      <div v-if="calledBy.length" class="pseudocode-links pseudocode-links-below">
+        <div class="pseudocode-link-row">
+          Called by:
+          <a v-for="dep in calledBy" :key="dep.name" :href="dep.href">
+            {{ dep.name }}
+          </a>
+        </div>
       </div>
     </div>
   </div>
@@ -35,16 +38,25 @@ const texModules = import.meta.glob("../../algorithms/*.tex", {
   import: "default",
 });
 
+// Import all .s files at build time via Vite's glob import with ?raw.
+const asmModules = import.meta.glob("../../../src/dropset/**/*.s", {
+  query: "?raw",
+  import: "default",
+});
+
 // src is the .tex filename, rest are pseudocode.js options.
 const props = defineProps({
-  src: { type: String, required: true },
+  tex: { type: String, required: true },
+  asm: { type: String, default: "" },
   lineNumber: { type: Boolean, default: true },
   lineNumberPunc: { type: String, default: "" },
 });
 
 const container = ref(null);
+const asmBlock = ref(null);
 const calls = ref([]);
 const calledBy = ref([]);
+const asmCode = ref("");
 
 // Resolve a list of algorithm names to links using the algorithm index.
 function resolveLinks(names, index) {
@@ -63,12 +75,12 @@ onMounted(async () => {
     const pseudocode = await import("pseudocode");
 
     // Load .tex source at build time via glob import.
-    const texLoader = texModules[`../../algorithms/${props.src}.tex`];
-    if (!texLoader) throw new Error(`Unknown algorithm: ${props.src}`);
+    const texLoader = texModules[`../../algorithms/${props.tex}.tex`];
+    if (!texLoader) throw new Error(`Unknown algorithm: ${props.tex}`);
     const code = await texLoader();
 
     // Resolve forward and reverse deps from the algorithm index.
-    const entry = algorithmIndex[props.src];
+    const entry = algorithmIndex[props.tex];
     if (entry) {
       calls.value = resolveLinks(entry.calls, algorithmIndex);
       calledBy.value = resolveLinks(entry.calledBy, algorithmIndex);
@@ -107,6 +119,53 @@ onMounted(async () => {
         span.replaceWith(a);
       }
     });
+
+    // Load and highlight assembly source if specified.
+    if (props.asm) {
+      const asmLoader = asmModules[`../../../src/dropset/${props.asm}.s`];
+      if (!asmLoader) throw new Error(`Unknown assembly file: ${props.asm}`);
+      asmCode.value = (await asmLoader()).trimEnd();
+
+      const shiki = await import("shiki");
+      const highlighter = await shiki.createHighlighter({
+        themes: ["github-dark", "github-light"],
+        langs: ["asm"],
+      });
+      const highlighted = highlighter.codeToHtml(asmCode.value, {
+        lang: "asm",
+        themes: { dark: "github-dark", light: "github-light" },
+        defaultColor: false,
+      });
+
+      // Build line numbers.
+      const lineCount = asmCode.value.split("\n").length;
+      const lineNumsHtml = Array.from({ length: lineCount }, (_, i) =>
+        `<span class="line-number">${i + 1}</span><br>`
+      ).join("");
+
+      // Produce the exact HTML VitePress would for :::details + ```asm```.
+      const pre = highlighted
+        .replace("<pre ", '<pre tabindex="0" ')
+        .replace(/class="shiki/, 'class="shiki vp-code');
+
+      asmBlock.value.innerHTML =
+        `<details class="details custom-block">` +
+          `<summary>Implementation</summary>` +
+          `<div class="language-asm vp-adaptive-theme line-numbers-mode">` +
+            `<button title="Copy Code" class="copy"></button>` +
+            `<span class="lang">asm</span>` +
+            pre +
+            `<div class="line-numbers-wrapper" aria-hidden="true">${lineNumsHtml}</div>` +
+          `</div>` +
+        `</details>`;
+
+      // Wire up copy button.
+      asmBlock.value.querySelector(".copy").addEventListener("click", () => {
+        navigator.clipboard.writeText(asmCode.value);
+      });
+
+      highlighter.dispose();
+    }
   } catch (e) {
     console.error("Pseudocode render error:", e);
     container.value.textContent = "Error: " + e.message;
@@ -182,5 +241,12 @@ onMounted(async () => {
   margin-left: -0.3em;
   margin-right: 0.2em;
   color: var(--vp-c-text-2);
+}
+
+/* Implementation details block inside the algorithm container. */
+.asm-block {
+  margin-top: 0.75em;
+  border-top: 1px solid var(--vp-c-divider);
+  padding-top: 0.5em;
 }
 </style>

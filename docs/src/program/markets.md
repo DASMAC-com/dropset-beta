@@ -2,5 +2,5 @@
 
 <!-- markdownlint-disable MD033 -->
 
-<Algorithm src="REGISTER-MARKET"/>
+<Algorithm tex="REGISTER-MARKET" asm="market/register"/>
 <!-- markdownlint-enable MD033 -->

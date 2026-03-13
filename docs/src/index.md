@@ -21,7 +21,8 @@ check out the [Solana Opcode Guide].
 ## About this site
 
 This site is built in [Vitepress], and leverages custom [Vue components] to
-provide formal [CLRS]-style algorithmic specifications via [pseudocode.js].
+provide formal [CLRS]-style algorithmic specifications via [pseudocode.js], with
+collapsible SBPF assembly implementations sourced directly from the codebase.
 
 The auto-generated [algorithm index](indices/algorithms) contains a
 [mermaid]-style dependency chart of all algorithms, which are additionally
