@@ -143,6 +143,15 @@ onMounted(async () => {
   color: var(--vp-c-green-2);
   font-style: italic;
 }
+.pseudocode-container :deep(.ps-algorithm) {
+  border-top: none;
+  border-bottom: none;
+}
+.pseudocode-container :deep(.ps-algorithm.with-caption > .ps-line:first-child) {
+  border-bottom: 1px solid var(--vp-c-divider);
+  padding-bottom: 0.3em;
+  font-size: 1.4em;
+}
 .pseudocode-container :deep(.ps-linenum) {
   color: var(--vp-c-text-3);
   user-select: none;
