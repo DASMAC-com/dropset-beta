@@ -145,6 +145,7 @@ onMounted(async () => {
 .pseudocode-container :deep(.ps-algorithm) {
   border-top: none;
   border-bottom: none;
+  margin-top: 0;
 }
 .pseudocode-container :deep(.ps-algorithm.with-caption > .ps-line:first-child) {
   border-bottom: 1px solid var(--vp-c-divider);
