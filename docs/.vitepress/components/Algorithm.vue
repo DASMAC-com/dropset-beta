@@ -1,17 +1,20 @@
 <!-- cspell:word funcname -->
 <!-- cspell:word linenum -->
 <!-- cspell:word punc -->
+<!-- cspell:word texttt -->
 <template>
   <!-- Anchor: #algo-<src> for cross-page and in-page linking. -->
   <div :id="`algo-${src}`" ref="container" class="pseudocode-container">
-    <div v-if="calls.length || calledBy.length" class="pseudocode-links">
-      <div v-if="calls.length" class="pseudocode-link-row">
+    <div v-if="calls.length" class="pseudocode-links pseudocode-links-below">
+      <div class="pseudocode-link-row">
         Calls:
         <a v-for="dep in calls" :key="dep.name" :href="dep.href">
           {{ dep.name }}
         </a>
       </div>
-      <div v-if="calledBy.length" class="pseudocode-link-row">
+    </div>
+    <div v-if="calledBy.length" class="pseudocode-links pseudocode-links-below">
+      <div class="pseudocode-link-row">
         Called by:
         <a v-for="dep in calledBy" :key="dep.name" :href="dep.href">
           {{ dep.name }}
@@ -78,14 +81,20 @@ onMounted(async () => {
     });
 
     // Strip the auto-incrementing caption number.
-    // Insert rendered HTML before the links div.
-    const linksEl = container.value.querySelector(".pseudocode-links");
+    // Insert rendered HTML as the first child so link divs stay below.
     const rendered = document.createElement("div");
     rendered.innerHTML = html.replace(
       /(<span class="ps-keyword">)\s*Algorithm\s+\d+\s*/g,
       "$1Algorithm ",
     );
-    container.value.insertBefore(rendered, linksEl);
+    container.value.insertBefore(rendered, container.value.firstChild);
+
+    // Add a class to \texttt{} spans for styling.
+    rendered
+      .querySelectorAll('span[style*="KaTeX_Typewriter"]')
+      .forEach((span) => {
+        span.classList.add("ps-typewriter");
+      });
 
     // Turn \CALL{Name} references into clickable links to the called algorithm.
     rendered.querySelectorAll(".ps-funcname").forEach((span) => {
@@ -128,22 +137,37 @@ onMounted(async () => {
 .pseudocode-container :deep(a.ps-funcname:hover) {
   text-decoration: underline;
 }
+.pseudocode-container :deep(.ps-typewriter) {
+  color: var(--vp-c-text-2);
+}
 .pseudocode-container :deep(.ps-comment) {
-  color: var(--vp-c-text-3);
+  color: var(--vp-c-green-2);
   font-style: italic;
+}
+.pseudocode-container :deep(.ps-algorithm) {
+  border-top: none;
+  border-bottom: none;
+  margin-top: 0;
+}
+.pseudocode-container :deep(.ps-algorithm.with-caption > .ps-line:first-child) {
+  border-bottom: 1px solid var(--vp-c-divider);
+  padding-bottom: 0.3em;
+  font-size: 1.4em;
 }
 .pseudocode-container :deep(.ps-linenum) {
   color: var(--vp-c-text-3);
   user-select: none;
 }
 
-/* Dependency links below the algorithm. */
+/* Dependency links above/below the algorithm. */
 .pseudocode-links {
+  font-size: 0.9em;
+  color: var(--vp-c-text-2);
+}
+.pseudocode-links-below {
   margin-top: 0.5em;
   padding-top: 0.5em;
   border-top: 1px solid var(--vp-c-divider);
-  font-size: 0.9em;
-  color: var(--vp-c-text-2);
 }
 .pseudocode-link-row a {
   margin-left: 0.4em;

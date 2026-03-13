@@ -1,0 +1,17 @@
+\begin{algorithm}
+\caption{REGISTER-MARKET}
+\begin{algorithmic}
+  \COMMENT{Input buffer.}
+  \INPUT $r_1 = input$
+  \COMMENT{Instruction data.}
+  \INPUT $r_2 = data$
+  \COMMENT{Instruction data length.}
+  \INPUT $r_3 = data_l$
+  \REQUIRE $data.discriminator == \texttt{Discriminator::RegisterMarket}$
+\PROCEDURE{REGISTER-MARKET}{$input$, $data$, $data\_l$}
+  \IF{$data_l \neq$ \texttt{InstructionDataLength::RegisterMarket}}
+    \RETURN \texttt{Error::InvalidInstructionDataLength}
+  \ENDIF
+\ENDPROCEDURE
+\end{algorithmic}
+\end{algorithm}

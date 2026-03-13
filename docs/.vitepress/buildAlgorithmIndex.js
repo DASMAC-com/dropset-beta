@@ -1,6 +1,6 @@
 // Scans .tex files for \CALL deps and .md files for <Algorithm> usage.
 // Outputs algorithms/index.json with deps, reverse deps, and page locations.
-// Algorithm name is the UpperCamelCase filename (used as key and display name).
+// Algorithm name is the filename stem (used as key and display name).
 
 import { readFileSync, writeFileSync, readdirSync } from "fs";
 import { join, basename, relative } from "path";
@@ -32,7 +32,7 @@ export function buildAlgorithmIndex() {
     const code = readFileSync(join(ALGO_DIR, file), "utf-8");
 
     const calls = new Set();
-    for (const match of code.matchAll(/\\CALL\{(\w+)\}/g)) {
+    for (const match of code.matchAll(/\\CALL\{([\w-]+)\}/g)) {
       if (match[1] !== name) calls.add(match[1]);
     }
 
@@ -47,7 +47,7 @@ export function buildAlgorithmIndex() {
   for (const fullPath of findMdFiles(SRC_DIR)) {
     const md = readFileSync(fullPath, "utf-8");
     const relPath = relative(SRC_DIR, fullPath);
-    for (const match of md.matchAll(/<Algorithm\s+src="(\w+)"/g)) {
+    for (const match of md.matchAll(/<Algorithm\s+src="([\w-]+)"/g)) {
       const name = match[1];
       if (index[name]) {
         // Convert file path to VitePress page path.

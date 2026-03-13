@@ -2,5 +2,5 @@
 
 <!-- markdownlint-disable MD033 -->
 
-<Algorithm src="Entrypoint"/>
+<Algorithm src="ENTRYPOINT"/>
 <!-- markdownlint-enable MD033 -->
