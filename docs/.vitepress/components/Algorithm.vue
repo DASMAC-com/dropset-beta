@@ -3,8 +3,8 @@
 <!-- cspell:word punc -->
 <!-- cspell:word texttt -->
 <template>
-  <!-- Anchor: #algo-<src> for cross-page and in-page linking. -->
-  <div :id="`algo-${tex}`">
+  <!-- Anchor: #algorithm-<tex> for cross-page and in-page linking. -->
+  <div :id="`algorithm-${tex}`">
     <div ref="container" class="pseudocode-container">
       <div v-if="asm" ref="asmBlock" class="asm-block"></div>
       <div v-if="calls.length" class="pseudocode-links pseudocode-links-below">
@@ -62,7 +62,7 @@ const asmCode = ref("");
 function resolveLinks(names, index) {
   return names.map((name) => {
     const page = index[name]?.page || "";
-    const href = `${page}#algo-${name}`;
+    const href = `${page}#algorithm-${name}`;
     return { name, href };
   });
 }
@@ -113,7 +113,7 @@ onMounted(async () => {
       const name = span.textContent.trim();
       if (algorithmIndex[name]) {
         const a = document.createElement("a");
-        a.href = `${algorithmIndex[name].page || "/"}#algo-${name}`;
+        a.href = `${algorithmIndex[name].page || "/"}#algorithm-${name}`;
         a.className = "ps-funcname";
         a.textContent = span.textContent;
         span.replaceWith(a);
