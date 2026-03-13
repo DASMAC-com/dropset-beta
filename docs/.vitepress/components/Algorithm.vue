@@ -1,6 +1,7 @@
 <!-- cspell:word funcname -->
 <!-- cspell:word linenum -->
 <!-- cspell:word punc -->
+<!-- cspell:word shiki -->
 <!-- cspell:word texttt -->
 <template>
   <!-- Anchor: #algorithm-<tex> for cross-page and in-page linking. -->
@@ -131,10 +132,31 @@ onMounted(async () => {
         themes: ["github-dark", "github-light"],
         langs: ["asm"],
       });
+
+      // Shiki's asm grammar misclassifies indented "# if" as a preprocessor
+      // directive. Fix comment lines in the token stream after highlighting.
+      const commentColor = { dark: "#6A737D", light: "#6A737D" };
+      const fixComments = {
+        tokens(lines) {
+          const src = asmCode.value.split("\n");
+          for (let i = 0; i < lines.length; i++) {
+            if (src[i]?.trimStart().startsWith("#")) {
+              const text = lines[i].map((t) => t.content).join("");
+              lines[i] = [{
+                content: text,
+                color: commentColor.dark,
+                htmlStyle: `--shiki-dark:${commentColor.dark};--shiki-light:${commentColor.light}`,
+              }];
+            }
+          }
+        },
+      };
+
       const highlighted = highlighter.codeToHtml(asmCode.value, {
         lang: "asm",
         themes: { dark: "github-dark", light: "github-light" },
         defaultColor: false,
+        transformers: [fixComments],
       });
 
       // Build line numbers.
