@@ -1,11 +1,16 @@
 # cspell:word vite
 .PHONY: all
+.PHONY: asm
 .PHONY: clean
 .PHONY: test
 
 all: docs-prettier pre-commit-lint
 clean:
 test:
+
+# Assemble the program.
+asm:
+	sbpf build --arch v3 --deploy-dir deploy
 
 # Build and serve docs locally for development.
 docs-dev:
