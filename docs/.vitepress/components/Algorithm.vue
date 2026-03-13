@@ -5,18 +5,18 @@
 <template>
   <!-- Anchor: #algo-<src> for cross-page and in-page linking. -->
   <div :id="`algo-${src}`" ref="container" class="pseudocode-container">
-    <div v-if="calledBy.length" class="pseudocode-links pseudocode-links-above">
-      <div class="pseudocode-link-row">
-        Called by:
-        <a v-for="dep in calledBy" :key="dep.name" :href="dep.href">
-          {{ dep.name }}
-        </a>
-      </div>
-    </div>
     <div v-if="calls.length" class="pseudocode-links pseudocode-links-below">
       <div class="pseudocode-link-row">
         Calls:
         <a v-for="dep in calls" :key="dep.name" :href="dep.href">
+          {{ dep.name }}
+        </a>
+      </div>
+    </div>
+    <div v-if="calledBy.length" class="pseudocode-links pseudocode-links-below">
+      <div class="pseudocode-link-row">
+        Called by:
+        <a v-for="dep in calledBy" :key="dep.name" :href="dep.href">
           {{ dep.name }}
         </a>
       </div>
@@ -81,14 +81,13 @@ onMounted(async () => {
     });
 
     // Strip the auto-incrementing caption number.
-    // Insert rendered HTML between the "Called by" and "Calls" link divs.
-    const callsEl = container.value.querySelector(".pseudocode-links-below");
+    // Insert rendered HTML as the first child so link divs stay below.
     const rendered = document.createElement("div");
     rendered.innerHTML = html.replace(
       /(<span class="ps-keyword">)\s*Algorithm\s+\d+\s*/g,
       "$1Algorithm ",
     );
-    container.value.insertBefore(rendered, callsEl);
+    container.value.insertBefore(rendered, container.value.firstChild);
 
     // Add a class to \texttt{} spans for styling.
     rendered.querySelectorAll('span[style*="KaTeX_Typewriter"]').forEach((span) => {
@@ -161,11 +160,6 @@ onMounted(async () => {
 .pseudocode-links {
   font-size: 0.9em;
   color: var(--vp-c-text-2);
-}
-.pseudocode-links-above {
-  margin-bottom: 0.5em;
-  padding-bottom: 0.5em;
-  border-bottom: 1px solid var(--vp-c-divider);
 }
 .pseudocode-links-below {
   margin-top: 0.5em;
