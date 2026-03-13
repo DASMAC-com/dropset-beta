@@ -10,7 +10,7 @@ test:
 
 # Assemble the program.
 asm:
-	sbpf build --arch v3 --deploy-dir target/deploy
+	sbpf build --arch v3 --deploy-dir deploy
 
 # Build and serve docs locally for development.
 docs-dev:

@@ -1,5 +1,5 @@
 register_market:
-    jeq r3, 0, 2
-    mov32 r0, 2
-    exit
+    # if insn_len != InstructionLength::RegisterMarket \
+    # return Error::InvalidInstructionLength
+    jne r3, 0, e_invalid_instruction_length
     exit
