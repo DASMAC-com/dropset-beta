@@ -16,7 +16,7 @@ asm:
 docs-dev:
 	cd docs && npm install \
 		&& rm -rf .vitepress/cache .vitepress/dist node_modules/.vite \
-		&& npx vitepress dev
+		&& npx vitepress dev --open
 # Format docs with Prettier.
 docs-prettier:
 	cd docs && npm install && npx prettier --write .
@@ -26,7 +26,7 @@ docs-prod:
 		&& rm -rf .vitepress/cache .vitepress/dist node_modules/.vite \
 		&& npm ci \
 		&& npx vitepress build \
-		&& npx vitepress preview
+		&& npx vitepress preview --open
 # Run pre-commit lint checks on all files.
 pre-commit-lint:
 	pre-commit run --config cfg/pre-commit/lint.yml --all-files
