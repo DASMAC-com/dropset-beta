@@ -90,9 +90,11 @@ onMounted(async () => {
     container.value.insertBefore(rendered, container.value.firstChild);
 
     // Add a class to \texttt{} spans for styling.
-    rendered.querySelectorAll('span[style*="KaTeX_Typewriter"]').forEach((span) => {
-      span.classList.add("ps-typewriter");
-    });
+    rendered
+      .querySelectorAll('span[style*="KaTeX_Typewriter"]')
+      .forEach((span) => {
+        span.classList.add("ps-typewriter");
+      });
 
     // Turn \CALL{Name} references into clickable links to the called algorithm.
     rendered.querySelectorAll(".ps-funcname").forEach((span) => {
