@@ -4,14 +4,14 @@
   \COMMENT{Input buffer.}
   \INPUT $r_1 = input$
   \COMMENT{Instruction data.}
-  \INPUT $r_2 = data$
-\PROCEDURE{ENTRYPOINT}{$input, data$}
-  \STATE $data_l = data.length$
-  \STATE $d_d = data.discriminator$
-    \IF{$d_d$ == \texttt{Discriminator::RegisterMarket}}
-      \RETURN \CALL{REGISTER-MARKET}{$input$, $data$, $data_l$}
+  \INPUT $r_2 = insn$
+\PROCEDURE{ENTRYPOINT}{$input, insn$}
+  \STATE $insn\_len = insn.length$
+  \STATE $insn\_d = insn.discriminant$
+    \IF{$insn\_d$ == \texttt{Discriminant::RegisterMarket}}
+      \RETURN \CALL{REGISTER-MARKET}{$input$, $insn$, $insn\_len$}
     \ENDIF
-  \RETURN \texttt{Error::InvalidInstructionDiscriminator}
+  \RETURN \texttt{Error::InvalidDiscriminant}
 \ENDPROCEDURE
 \end{algorithmic}
 \end{algorithm}

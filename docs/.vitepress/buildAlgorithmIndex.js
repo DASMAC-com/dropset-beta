@@ -47,7 +47,7 @@ export function buildAlgorithmIndex() {
   for (const fullPath of findMdFiles(SRC_DIR)) {
     const md = readFileSync(fullPath, "utf-8");
     const relPath = relative(SRC_DIR, fullPath);
-    for (const match of md.matchAll(/<Algorithm\s+src="([\w-]+)"/g)) {
+    for (const match of md.matchAll(/<Algorithm\s+tex="([\w-]+)"/g)) {
       const name = match[1];
       if (index[name]) {
         // Convert file path to VitePress page path.

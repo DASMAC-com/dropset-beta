@@ -1,0 +1,10 @@
+[workspace]
+members = []
+
+[workspace.dependencies]
+mollusk-svm = "0.10.3"
+pinocchio = "0.10.2"
+
+[workspace.package]
+edition = "2024"
+version = "0.1.0"
