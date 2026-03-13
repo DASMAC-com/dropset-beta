@@ -1,6 +1,5 @@
 [workspace]
 members = []
-resolver = "2"
 
 [workspace.dependencies]
 mollusk-svm = "0.10.3"
