@@ -27,11 +27,13 @@ collapsible SBPF assembly implementations sourced directly from the codebase.
 The auto-generated [algorithm index](indices/algorithms) contains a
 [mermaid]-style dependency chart of all algorithms, which are additionally
 cross-linked with one another at their definition sites. The top-level algorithm
-is the Dropset program [entrypoint](program/entrypoint).
+is the Dropset program [entrypoint](program/layout#entrypoint). See the
+[program layout](program/layout) for more details about program architecture.
 
-If you want to develop locally, see the root [Makefile] for some common
-operations. Note that you can access the repo and make a contribution yourself
-via the `Contribute to this page` link on each page.
+## Contributing
+
+To develop locally, see the root [Makefile] for some common operations. You can
+also contribute directly via the `Contribute to this page` link on each page.
 
 ## About assembly
 
@@ -76,6 +78,8 @@ design assurance.
 > the ideas, but also many of the very sentences and paragraphs back to the
 > first memoranda proposing the product or explaining the first design. For the
 > technical writer, the paste-pot is as mighty as the pen.
+
+:::
 
 [makefile]: https://en.wikipedia.org/wiki/Make_(software)
 [mermaid]: https://mermaid.js.org/

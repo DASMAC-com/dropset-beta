@@ -68,7 +68,7 @@ export default {
         collapsed: false,
         text: "Program",
         items: [
-          { text: "Entrypoint", link: "/program/entrypoint" },
+          { text: "Layout", link: "/program/layout" },
           { text: "Markets", link: "/program/markets" },
         ],
       },

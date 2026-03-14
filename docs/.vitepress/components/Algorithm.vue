@@ -1,7 +1,6 @@
 <!-- cspell:word funcname -->
 <!-- cspell:word linenum -->
 <!-- cspell:word punc -->
-<!-- cspell:word shiki -->
 <!-- cspell:word texttt -->
 <template>
   <!-- Anchor: #algorithm-<tex> for cross-page and in-page linking. -->
@@ -178,7 +177,7 @@ onMounted(async () => {
 
       asmBlock.value.innerHTML =
         `<details class="details custom-block">` +
-        `<summary>Implementation</summary>` +
+        `<summary>Implementation: ${props.asm}.s</summary>` +
         `<div class="language-asm vp-adaptive-theme line-numbers-mode">` +
         `<button title="Copy Code" class="copy"></button>` +
         `<span class="lang">asm</span>` +
