@@ -1,7 +1,6 @@
 <!-- cspell:word funcname -->
 <!-- cspell:word linenum -->
 <!-- cspell:word punc -->
-<!-- cspell:word shiki -->
 <!-- cspell:word texttt -->
 <template>
   <!-- Anchor: #algorithm-<tex> for cross-page and in-page linking. -->

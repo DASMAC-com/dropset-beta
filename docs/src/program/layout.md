@@ -1,5 +1,3 @@
-<!-- cspell:word dropset -->
-
 # Layout
 
 Dropset assembly source files are in `src/dropset/`. The program is built using

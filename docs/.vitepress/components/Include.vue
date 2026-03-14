@@ -38,7 +38,10 @@ onMounted(async () => {
       const end = lines.findIndex((l) => l.trim() === endTag);
       if (start === -1) throw new Error(`Region start not found: ${startTag}`);
       if (end === -1) throw new Error(`Region end not found: ${endTag}`);
-      code = lines.slice(start + 1, end).join("\n").trimEnd();
+      code = lines
+        .slice(start + 1, end)
+        .join("\n")
+        .trimEnd();
     }
 
     const shiki = await import("shiki");
@@ -95,9 +98,7 @@ onMounted(async () => {
       `</div>`;
 
     if (props.collapsed !== false) {
-      const label = region
-        ? `${asmFile}.s#${region}`
-        : `${asmFile}.s`;
+      const label = region ? `${asmFile}.s#${region}` : `${asmFile}.s`;
       const summary =
         typeof props.collapsed === "string" ? props.collapsed : label;
       codeBlock.value.innerHTML =
