@@ -42,7 +42,7 @@ const texModules = import.meta.glob("../../algorithms/*.tex", {
 });
 
 // Import all .s files at build time via Vite's glob import with ?raw.
-const asmModules = import.meta.glob("../../../src/dropset/**/*.s", {
+const asmModules = import.meta.glob("../../../program/src/dropset/**/*.s", {
   query: "?raw",
   import: "default",
 });
@@ -125,7 +125,7 @@ onMounted(async () => {
 
     // Load and highlight assembly source if specified.
     if (props.asm) {
-      const asmLoader = asmModules[`../../../src/dropset/${props.asm}.s`];
+      const asmLoader = asmModules[`../../../program/src/dropset/${props.asm}.s`];
       if (!asmLoader) throw new Error(`Unknown assembly file: ${props.asm}`);
       asmCode.value = (await asmLoader()).trimEnd();
 

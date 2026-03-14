@@ -6,7 +6,7 @@
 import { ref, onMounted } from "vue";
 
 // Import all .s files at build time via Vite's glob import with ?raw.
-const asmModules = import.meta.glob("../../../src/dropset/**/*.s", {
+const asmModules = import.meta.glob("../../../program/src/dropset/**/*.s", {
   query: "?raw",
   import: "default",
 });
@@ -25,7 +25,7 @@ const codeBlock = ref(null);
 
 onMounted(async () => {
   try {
-    const asmLoader = asmModules[`../../../src/dropset/${asmFile}.s`];
+    const asmLoader = asmModules[`../../../program/src/dropset/${asmFile}.s`];
     if (!asmLoader) throw new Error(`Unknown assembly file: ${asmFile}`);
     let code = (await asmLoader()).trimEnd();
 
