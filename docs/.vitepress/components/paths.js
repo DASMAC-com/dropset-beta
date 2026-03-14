@@ -9,7 +9,10 @@ export const GH_BASE =
 // All .s files imported at build time via Vite's glob import with ?raw.
 // Relative path from this directory: ../../../program/src/dropset/
 // import.meta.glob requires a static string literal.
-export const asmModules = import.meta.glob("../../../program/src/dropset/**/*.s", {
-  query: "?raw",
-  import: "default",
-});
+export const asmModules = import.meta.glob(
+  "../../../program/src/dropset/**/*.s",
+  {
+    query: "?raw",
+    import: "default",
+  },
+);
