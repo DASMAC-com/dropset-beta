@@ -34,15 +34,10 @@
 import { ref, onMounted } from "vue";
 import "pseudocode/build/pseudocode.min.css";
 import algorithmIndex from "../../algorithms/index.json";
+import { ASM_BASE, GH_BASE, asmModules } from "./paths.js";
 
 // Import all .tex files at build time via Vite's glob import with ?raw.
 const texModules = import.meta.glob("../../algorithms/*.tex", {
-  query: "?raw",
-  import: "default",
-});
-
-// Import all .s files at build time via Vite's glob import with ?raw.
-const asmModules = import.meta.glob("../../../src/dropset/**/*.s", {
   query: "?raw",
   import: "default",
 });
@@ -125,7 +120,7 @@ onMounted(async () => {
 
     // Load and highlight assembly source if specified.
     if (props.asm) {
-      const asmLoader = asmModules[`../../../src/dropset/${props.asm}.s`];
+      const asmLoader = asmModules[`${ASM_BASE}${props.asm}.s`];
       if (!asmLoader) throw new Error(`Unknown assembly file: ${props.asm}`);
       asmCode.value = (await asmLoader()).trimEnd();
 
@@ -177,7 +172,7 @@ onMounted(async () => {
 
       asmBlock.value.innerHTML =
         `<details class="details custom-block">` +
-        `<summary>Implementation: ${props.asm}.s</summary>` +
+        `<summary>Implementation: <a href="${GH_BASE}${props.asm}.s" target="_blank">${props.asm}.s</a></summary>` +
         `<div class="language-asm vp-adaptive-theme line-numbers-mode">` +
         `<button title="Copy Code" class="copy"></button>` +
         `<span class="lang">asm</span>` +

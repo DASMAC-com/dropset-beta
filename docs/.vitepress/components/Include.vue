@@ -4,12 +4,7 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-
-// Import all .s files at build time via Vite's glob import with ?raw.
-const asmModules = import.meta.glob("../../../src/dropset/**/*.s", {
-  query: "?raw",
-  import: "default",
-});
+import { ASM_BASE, GH_BASE, asmModules } from "./paths.js";
 
 const props = defineProps({
   asm: { type: String, required: true },
@@ -25,7 +20,7 @@ const codeBlock = ref(null);
 
 onMounted(async () => {
   try {
-    const asmLoader = asmModules[`../../../src/dropset/${asmFile}.s`];
+    const asmLoader = asmModules[`${ASM_BASE}${asmFile}.s`];
     if (!asmLoader) throw new Error(`Unknown assembly file: ${asmFile}`);
     let code = (await asmLoader()).trimEnd();
 
@@ -101,9 +96,10 @@ onMounted(async () => {
       const label = region ? `${asmFile}.s#${region}` : `${asmFile}.s`;
       const summary =
         typeof props.collapsed === "string" ? props.collapsed : label;
+      const ghLink = `${GH_BASE}${asmFile}.s`;
       codeBlock.value.innerHTML =
         `<details class="details custom-block" open>` +
-        `<summary>${summary}</summary>` +
+        `<summary><a href="${ghLink}" target="_blank">${summary}</a></summary>` +
         codeHtml +
         `</details>`;
     } else {

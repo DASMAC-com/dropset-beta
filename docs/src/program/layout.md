@@ -1,15 +1,16 @@
 # Layout
 
-Dropset assembly source files are in `src/dropset/`. The program is built using
-[multi-file assembly], which allows splitting a single program across multiple
-`.s` files that are joined at build time via `.include` directives.
+Dropset assembly source files are in `program/src/dropset/`. The program is
+built using [multi-file assembly], which allows splitting a single program
+across multiple `.s` files that are joined at build time via `.include`
+directives.
 
 ## Top-level file
 
 The top-level `dropset.s` file orchestrates the program by declaring the global
 entrypoint and including each component file:
 
-<Include asm="dropset#general" collapsed/>
+<Include asm="dropset" collapsed/>
 
 ## Errors
 
