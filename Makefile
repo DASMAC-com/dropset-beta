@@ -28,8 +28,7 @@ docs-prod:
 		&& rm -rf .vitepress/cache .vitepress/dist node_modules/.vite \
 		&& npm ci \
 		&& npx vitepress build \
-		&& (sleep 1 && open http://localhost:4173 &) \
-		&& npx vitepress preview
+		&& (sleep 1 && open http://localhost:4173 &) && npx vitepress preview
 
 # Run pre-commit lint checks on all files.
 pre-commit-lint:
