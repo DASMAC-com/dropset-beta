@@ -125,7 +125,8 @@ onMounted(async () => {
 
     // Load and highlight assembly source if specified.
     if (props.asm) {
-      const asmLoader = asmModules[`../../../program/src/dropset/${props.asm}.s`];
+      const asmLoader =
+        asmModules[`../../../program/src/dropset/${props.asm}.s`];
       if (!asmLoader) throw new Error(`Unknown assembly file: ${props.asm}`);
       asmCode.value = (await asmLoader()).trimEnd();
 
