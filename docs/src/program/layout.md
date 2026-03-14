@@ -9,7 +9,7 @@ Dropset assembly source files are in `src/dropset/`. The program is built using
 The top-level `dropset.s` file orchestrates the program by declaring the global
 entrypoint and including each component file:
 
-<Include asm="dropset#general" collapsed/>
+<Include asm="dropset" collapsed/>
 
 ## Errors
 

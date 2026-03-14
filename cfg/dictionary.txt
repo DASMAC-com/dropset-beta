@@ -1,5 +1,6 @@
 dasmac
 dropset
+globl
 insn
 katex
 ldxb
