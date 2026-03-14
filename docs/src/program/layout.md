@@ -2,8 +2,6 @@
 
 # Layout
 
-<!-- markdownlint-disable MD033 -->
-
 Dropset assembly source files are in `src/dropset/`. The program is built using
 [multi-file assembly], which allows splitting a single program across multiple
 `.s` files that are joined at build time via `.include` directives.
@@ -39,5 +37,3 @@ the instruction discriminant to the appropriate handler.
 
 [multi-file assembly]: https://github.com/blueshift-gg/sbpf/pull/109
 [SIMD-0321]: https://github.com/solana-foundation/solana-improvement-documents/blob/main/proposals/0321-vm-r2-instruction-data-pointer.md
-
-<!-- markdownlint-enable MD033 -->
