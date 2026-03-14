@@ -32,9 +32,9 @@ the instruction discriminant to the appropriate handler.
 
 ## Conventions
 
-- **Procedure**: a label that does not return (no stack push); control flow
+- `procedure`: a label that does not return (no stack push); control flow
   exits via `exit` or jumps to another procedure.
-- **Function**: a label that pushes onto the call stack and returns to the
+- `function`: a label that pushes onto the call stack and returns to the
   caller.
 
 [multi-file assembly]: https://github.com/blueshift-gg/sbpf/pull/109
