@@ -1,0 +1,7 @@
+[package]
+name = "dropset-interface"
+edition.workspace = true
+version.workspace = true
+
+[dependencies]
+dropset-macros = { path = "../macros" }
