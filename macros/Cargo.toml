@@ -1,0 +1,13 @@
+[dependencies]
+dropset-build = {path = "../build"}
+proc-macro2.workspace = true
+quote.workspace = true
+syn.workspace = true
+
+[lib]
+proc-macro = true
+
+[package]
+name = "dropset-macros"
+edition.workspace = true
+version.workspace = true

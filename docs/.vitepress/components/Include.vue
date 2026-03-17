@@ -4,31 +4,68 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { ASM_BASE, GH_BASE, asmModules } from "./paths.js";
+import {
+  ASM_BASE,
+  GH_BASE,
+  GH_ROOT,
+  asmModules,
+  rustCrates,
+  rustModules,
+} from "./paths.js";
 
 const props = defineProps({
-  asm: { type: String, required: true },
+  asm: { type: String, default: "" },
+  rust: { type: String, default: "" },
+  collapsible: { type: [Boolean, String], default: false },
   collapsed: { type: [Boolean, String], default: false },
 });
 
-// Parse "file#region" syntax from the asm prop.
-const hashIdx = props.asm.indexOf("#");
-const asmFile = hashIdx === -1 ? props.asm : props.asm.slice(0, hashIdx);
-const region = hashIdx === -1 ? "" : props.asm.slice(hashIdx + 1);
+const isRust = !!props.rust;
+const raw = isRust ? props.rust : props.asm;
+
+// Parse "file#region" syntax.
+const hashIdx = raw.indexOf("#");
+const fileSpec = hashIdx === -1 ? raw : raw.slice(0, hashIdx);
+const region = hashIdx === -1 ? "" : raw.slice(hashIdx + 1);
+
+// Resolve the source to a loader function, display label, and GitHub link.
+let loader, label, ghLink;
+if (isRust) {
+  // Syntax: "crate::module" → crate/src/module.rs
+  const sepIdx = fileSpec.indexOf("::");
+  if (sepIdx === -1)
+    throw new Error(
+      `Invalid rust prop (expected "crate::module"): ${fileSpec}`,
+    );
+  const crateName = fileSpec.slice(0, sepIdx);
+  const modulePath = fileSpec.slice(sepIdx + 2);
+  const crate = rustCrates[crateName];
+  if (!crate) throw new Error(`Unknown crate: ${crateName}`);
+  const key = `../../../${crate.gh}${modulePath}.rs`;
+  loader = rustModules[key];
+  if (!loader) throw new Error(`Unknown Rust file: ${key}`);
+  label = `${crateName}::${modulePath}.rs`;
+  ghLink = `${GH_ROOT}${crate.gh}${modulePath}.rs`;
+} else {
+  const asmFile = fileSpec;
+  loader = asmModules[`${ASM_BASE}${asmFile}.s`];
+  if (!loader) throw new Error(`Unknown assembly file: ${asmFile}`);
+  label = region ? `${asmFile}.s#${region}` : `${asmFile}.s`;
+  ghLink = `${GH_BASE}${asmFile}.s`;
+}
 
 const codeBlock = ref(null);
 
 onMounted(async () => {
   try {
-    const asmLoader = asmModules[`${ASM_BASE}${asmFile}.s`];
-    if (!asmLoader) throw new Error(`Unknown assembly file: ${asmFile}`);
-    let code = (await asmLoader()).trimEnd();
+    let code = (await loader()).trimEnd();
 
     // Extract a named region if specified.
     if (region) {
       const lines = code.split("\n");
-      const startTag = `# region: ${region}`;
-      const endTag = `# endregion: ${region}`;
+      const comment = isRust ? "//" : "#";
+      const startTag = `${comment} region: ${region}`;
+      const endTag = `${comment} endregion: ${region}`;
       const start = lines.findIndex((l) => l.trim() === startTag);
       const end = lines.findIndex((l) => l.trim() === endTag);
       if (start === -1) throw new Error(`Region start not found: ${startTag}`);
@@ -42,34 +79,39 @@ onMounted(async () => {
     const shiki = await import("shiki");
     const highlighter = await shiki.createHighlighter({
       themes: ["github-dark", "github-light"],
-      langs: ["asm"],
+      langs: ["asm", "rust"],
     });
 
-    // Fix comment lines misclassified as preprocessor directives.
-    const commentColor = { dark: "#6A737D", light: "#6A737D" };
-    const fixComments = {
-      tokens(lines) {
-        const src = code.split("\n");
-        for (let i = 0; i < lines.length; i++) {
-          if (src[i]?.trimStart().startsWith("#")) {
-            const text = lines[i].map((t) => t.content).join("");
-            lines[i] = [
-              {
-                content: text,
-                color: commentColor.dark,
-                htmlStyle: `--shiki-dark:${commentColor.dark};--shiki-light:${commentColor.light}`,
-              },
-            ];
+    const lang = isRust ? "rust" : "asm";
+
+    // Fix comment lines misclassified as preprocessor directives (asm only).
+    const transformers = [];
+    if (!isRust) {
+      const commentColor = { dark: "#6A737D", light: "#6A737D" };
+      transformers.push({
+        tokens(lines) {
+          const src = code.split("\n");
+          for (let i = 0; i < lines.length; i++) {
+            if (src[i]?.trimStart().startsWith("#")) {
+              const text = lines[i].map((t) => t.content).join("");
+              lines[i] = [
+                {
+                  content: text,
+                  color: commentColor.dark,
+                  htmlStyle: `--shiki-dark:${commentColor.dark};--shiki-light:${commentColor.light}`,
+                },
+              ];
+            }
           }
-        }
-      },
-    };
+        },
+      });
+    }
 
     const highlighted = highlighter.codeToHtml(code, {
-      lang: "asm",
+      lang,
       themes: { dark: "github-dark", light: "github-light" },
       defaultColor: false,
-      transformers: [fixComments],
+      transformers,
     });
 
     // Build line numbers.
@@ -85,20 +127,26 @@ onMounted(async () => {
       .replace(/class="shiki/, 'class="shiki vp-code');
 
     const codeHtml =
-      `<div class="language-asm vp-adaptive-theme line-numbers-mode">` +
+      `<div class="language-${lang} vp-adaptive-theme line-numbers-mode">` +
       `<button title="Copy Code" class="copy"></button>` +
-      `<span class="lang">asm</span>` +
+      `<span class="lang">${lang}</span>` +
       pre +
       `<div class="line-numbers-wrapper" aria-hidden="true">${lineNumsHtml}</div>` +
       `</div>`;
 
-    if (props.collapsed !== false) {
-      const label = region ? `${asmFile}.s#${region}` : `${asmFile}.s`;
-      const summary =
-        typeof props.collapsed === "string" ? props.collapsed : label;
-      const ghLink = `${GH_BASE}${asmFile}.s`;
+    const isCollapsible =
+      props.collapsible !== false || props.collapsed !== false;
+    if (isCollapsible) {
+      const customLabel =
+        typeof props.collapsible === "string"
+          ? props.collapsible
+          : typeof props.collapsed === "string"
+            ? props.collapsed
+            : null;
+      const summary = customLabel || label;
+      const startsOpen = props.collapsible !== false;
       codeBlock.value.innerHTML =
-        `<details class="details custom-block" open>` +
+        `<details class="details custom-block"${startsOpen ? " open" : ""}>` +
         `<summary><a href="${ghLink}" target="_blank">${summary}</a></summary>` +
         codeHtml +
         `</details>`;

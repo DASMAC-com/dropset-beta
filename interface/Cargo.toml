@@ -1,0 +1,8 @@
+[dependencies]
+dropset-build = {path = "../build"}
+dropset-macros = {path = "../macros"}
+
+[package]
+name = "dropset-interface"
+edition.workspace = true
+version.workspace = true

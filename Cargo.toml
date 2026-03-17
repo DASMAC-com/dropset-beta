@@ -1,9 +1,22 @@
+[build-dependencies]
+dropset-build = {path = "build"}
+dropset-interface = {path = "interface"}
+
+[package]
+name = "dropset"
+edition.workspace = true
+version.workspace = true
+
 [workspace]
-members = []
+members = ["build", "macros", "interface"]
+resolver = "3"
 
 [workspace.dependencies]
 mollusk-svm = "0.10.3"
 pinocchio = "0.10.2"
+proc-macro2 = "1.0.106"
+quote = "1.0.45"
+syn = {version = "2.0.117", features = ["full"]}
 
 [workspace.package]
 edition = "2024"

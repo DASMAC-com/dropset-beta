@@ -32,8 +32,9 @@ is the Dropset program [entrypoint](program/layout#entrypoint). See the
 
 ## Contributing
 
-To develop locally, see the root [Makefile] for some common operations. You can
-also contribute directly via the `Contribute to this page` link on each page.
+To work with the [Dropset repo] locally, see the root [Makefile] for some common
+operations. If you want to contribute to docs, you can use the
+`Contribute to this page` link on each page.
 
 ## About assembly
 
@@ -81,6 +82,7 @@ design assurance.
 
 :::
 
+[Dropset repo]: https://github.com/DASMAC-com/dropset-beta
 [makefile]: https://en.wikipedia.org/wiki/Make_(software)
 [mermaid]: https://mermaid.js.org/
 [CLRS]: https://www.cs.mcgill.ca/~akroit/math/compsci/Cormen%20Introduction%20to%20Algorithms.pdf

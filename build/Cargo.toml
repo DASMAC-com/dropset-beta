@@ -1,0 +1,4 @@
+[package]
+name = "dropset-build"
+edition.workspace = true
+version.workspace = true
