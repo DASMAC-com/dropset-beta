@@ -1,71 +1,137 @@
-/// Maximum line length for generated assembly files (for Vitepress code block).
-const MAX_LINE_LENGTH: usize = 75;
+use std::path::Path;
+
+/// Maximum line width for ASM output.
+const MAX_LINE_WIDTH: usize = 75;
 
 /// An assembly comment for a generated directive.
-///
-/// Wraps a string that is guaranteed to fit within [`MAX_LINE_LENGTH`]
-/// when rendered as `# {comment}`.
-pub struct Comment(&'static str);
+pub struct Comment(pub &'static str);
 
-impl Comment {
-    /// The prefix prepended to comment text in generated assembly.
-    const PREFIX: &str = "# ";
-
-    /// Creates a new `Comment`, panicking if the rendered line would
-    /// exceed [`MAX_LINE_LENGTH`] characters.
-    pub fn new(value: &'static str) -> Self {
-        assert!(
-            Self::PREFIX.len() + value.len() <= MAX_LINE_LENGTH,
-            "comment exceeds maximum line length of {MAX_LINE_LENGTH}.",
-        );
-        Self(value)
-    }
-}
-
-/// A constant name in CONSTANT_CASE (e.g., `INSN_TO_INSN_LEN_OFF`).
-///
-/// Only uppercase ASCII letters, digits, and underscores are allowed.
-/// Must start with a letter and must not be empty.
-pub struct Name(&'static str);
-
-impl Name {
-    /// Creates a new `Name`, panicking if the value is not valid
-    /// CONSTANT_CASE.
-    pub fn new(value: &'static str) -> Self {
-        assert!(!value.is_empty(), "name must not be empty.");
-        let first = value.as_bytes()[0];
-        assert!(
-            first.is_ascii_uppercase(),
-            "name must start with an uppercase letter.",
-        );
-        assert!(
-            value
-                .bytes()
-                .all(|b| b.is_ascii_uppercase() || b.is_ascii_digit() || b == b'_'),
-            "name must be CONSTANT_CASE (uppercase ASCII, digits, underscores).",
-        );
-        Self(value)
-    }
-}
+/// A constant name for a generated directive.
+pub struct Name(pub &'static str);
 
 /// Common metadata shared by all assembly constant variants.
 pub struct Header {
-    name: Name,
-    comment: Comment,
+    pub name: Name,
+    pub comment: Comment,
 }
 
-impl Header {
-    /// Creates a new `Header` with a validated name and comment.
-    pub fn new(name: &'static str, comment: &'static str) -> Self {
-        Self {
-            name: Name::new(name),
-            comment: Comment::new(comment),
+/// An assembly directive to be emitted via `.equ`.
+pub enum Constant {
+    /// An instruction offset that must fit in an i16.
+    Offset { header: Header, value: i16 },
+    /// An immediate value that must fit in an i32.
+    Immediate { header: Header, value: i32 },
+}
+
+/// A named group of constants to be injected into an assembly file.
+pub struct ConstantGroup {
+    /// Injection target (e.g., "entrypoint" maps to program/src/dropset/entrypoint.s).
+    pub target: &'static str,
+    /// The constants in this group.
+    pub constants: &'static [Constant],
+}
+
+impl Constant {
+    /// The constant's name.
+    fn name(&self) -> &'static str {
+        match self {
+            Constant::Offset { header, .. } | Constant::Immediate { header, .. } => header.name.0,
+        }
+    }
+
+    /// Render this constant as an `.equ` directive.
+    ///
+    /// If the `.equ` and `# comment` fit on one line within `max_width`,
+    /// they are placed on the same line. Otherwise the comment goes above.
+    fn to_asm(&self, max_width: usize) -> String {
+        let (name, comment, value_str) = match self {
+            Constant::Offset { header, value } => {
+                (header.name.0, header.comment.0, format!("{}", value))
+            }
+            Constant::Immediate { header, value } => {
+                (header.name.0, header.comment.0, format!("{}", value))
+            }
+        };
+
+        let inline = format!(".equ {}, {} # {}", name, value_str, comment);
+        if inline.len() <= max_width {
+            inline
+        } else {
+            format!("# {}\n.equ {}, {}", comment, name, value_str)
         }
     }
 }
 
-/// An assembly directive to be emitted as a `.equ` in a constants file.
-pub enum Constant {
-    /// A memory offset that must fit in an i16.
-    Offset { header: Header, value: i16 },
+/// Inject constant groups into assembly files.
+///
+/// Checks for duplicate constant names across all groups, merges groups
+/// that share a target file, then for each target finds the first label
+/// (line ending with `:`) and replaces everything above it with the
+/// generated `.equ` directives.
+pub fn inject(asm_dir: &Path, groups: &[&ConstantGroup]) {
+    use std::collections::HashMap;
+
+    // Check for duplicate names across all groups.
+    let mut seen = HashMap::new();
+    for group in groups {
+        for constant in group.constants {
+            let name = constant.name();
+            if let Some(prev_target) = seen.insert(name, group.target) {
+                panic!(
+                    "duplicate constant name `{}` (in targets `{}` and `{}`)",
+                    name, prev_target, group.target,
+                );
+            }
+        }
+    }
+
+    // Merge constants by target file, preserving order.
+    let mut targets: Vec<&str> = Vec::new();
+    let mut by_target: HashMap<&str, Vec<&Constant>> = HashMap::new();
+    for group in groups {
+        if !by_target.contains_key(group.target) {
+            targets.push(group.target);
+        }
+        by_target
+            .entry(group.target)
+            .or_default()
+            .extend(group.constants);
+    }
+
+    for target in targets {
+        inject_target(asm_dir, target, &by_target[target]);
+    }
+}
+
+fn inject_target(asm_dir: &Path, target: &str, constants: &[&Constant]) {
+    let file = asm_dir.join(format!("{}.s", target));
+    let contents = std::fs::read_to_string(&file)
+        .unwrap_or_else(|e| panic!("failed to read {}: {}", file.display(), e));
+
+    // Build the directives.
+    let directives: Vec<String> = constants.iter().map(|c| c.to_asm(MAX_LINE_WIDTH)).collect();
+    let header = directives.join("\n");
+
+    // Find the first label line. If none, the file is constants-only.
+    let mut label_idx = None;
+    for (i, line) in contents.lines().enumerate() {
+        let trimmed = line.trim();
+        if !trimmed.is_empty() && trimmed.ends_with(':') {
+            label_idx = Some(i);
+            break;
+        }
+    }
+
+    let output = if let Some(label_idx) = label_idx {
+        // Reassemble: directives + blank line + label onwards.
+        let lines: Vec<&str> = contents.lines().collect();
+        let tail = lines[label_idx..].join("\n");
+        format!("{}\n\n{}\n", header, tail)
+    } else {
+        // Constants-only file: replace entire contents.
+        format!("{}\n", header)
+    };
+
+    std::fs::write(&file, output)
+        .unwrap_or_else(|e| panic!("failed to write {}: {}", file.display(), e));
 }

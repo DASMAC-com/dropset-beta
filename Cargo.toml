@@ -9,3 +9,12 @@ pinocchio = "0.10.2"
 [workspace.package]
 edition = "2024"
 version = "0.1.0"
+
+[package]
+name = "dropset"
+edition.workspace = true
+version.workspace = true
+
+[build-dependencies]
+dropset-build = { path = "build" }
+dropset-interface = { path = "interface" }

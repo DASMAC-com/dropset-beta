@@ -4,4 +4,6 @@ edition.workspace = true
 version.workspace = true
 
 [dependencies]
+dropset-build = { path = "../build" }
 dropset-macros = { path = "../macros" }
+

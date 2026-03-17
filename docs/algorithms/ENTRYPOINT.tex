@@ -7,8 +7,8 @@
   \INPUT $r_2 = insn$
 \PROCEDURE{ENTRYPOINT}{$input, insn$}
   \STATE $insn\_len = insn.length$
-  \STATE $insn\_d = insn.discriminant$
-    \IF{$insn\_d$ == \texttt{Discriminant::RegisterMarket}}
+  \STATE $insn\_disc = insn.discriminant$
+    \IF{$insn\_disc$ == \texttt{Discriminant::RegisterMarket}}
       \RETURN \CALL{REGISTER-MARKET}{$input$, $insn$, $insn\_len$}
     \ENDIF
   \RETURN \texttt{Error::InvalidDiscriminant}
