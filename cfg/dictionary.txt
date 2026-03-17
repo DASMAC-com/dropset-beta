@@ -1,6 +1,8 @@
+codegen
 dasmac
 dropset
 globl
+idents
 insn
 katex
 ldxb

@@ -26,8 +26,7 @@ export const rustCrates = {
   program: { base: `${RUST_BASE}program/src/`, gh: "program/src/" },
 };
 
-export const GH_ROOT =
-  "https://github.com/DASMAC-com/dropset-beta/blob/main/";
+export const GH_ROOT = "https://github.com/DASMAC-com/dropset-beta/blob/main/";
 
 // All .rs files across known crate source directories.
 export const rustModules = Object.assign(

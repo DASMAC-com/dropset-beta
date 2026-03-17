@@ -82,7 +82,6 @@ design assurance.
 
 :::
 
-
 [Dropset repo]: https://github.com/DASMAC-com/dropset-beta
 [makefile]: https://en.wikipedia.org/wiki/Make_(software)
 [mermaid]: https://mermaid.js.org/

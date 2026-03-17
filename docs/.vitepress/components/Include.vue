@@ -33,7 +33,10 @@ let loader, label, ghLink;
 if (isRust) {
   // Syntax: "crate::module" → crate/src/module.rs
   const sepIdx = fileSpec.indexOf("::");
-  if (sepIdx === -1) throw new Error(`Invalid rust prop (expected "crate::module"): ${fileSpec}`);
+  if (sepIdx === -1)
+    throw new Error(
+      `Invalid rust prop (expected "crate::module"): ${fileSpec}`,
+    );
   const crateName = fileSpec.slice(0, sepIdx);
   const modulePath = fileSpec.slice(sepIdx + 2);
   const crate = rustCrates[crateName];
@@ -131,13 +134,15 @@ onMounted(async () => {
       `<div class="line-numbers-wrapper" aria-hidden="true">${lineNumsHtml}</div>` +
       `</div>`;
 
-    const isCollapsible = props.collapsible !== false || props.collapsed !== false;
+    const isCollapsible =
+      props.collapsible !== false || props.collapsed !== false;
     if (isCollapsible) {
-      const customLabel = typeof props.collapsible === "string"
-        ? props.collapsible
-        : typeof props.collapsed === "string"
-          ? props.collapsed
-          : null;
+      const customLabel =
+        typeof props.collapsible === "string"
+          ? props.collapsible
+          : typeof props.collapsed === "string"
+            ? props.collapsed
+            : null;
       const summary = customLabel || label;
       const startsOpen = props.collapsible !== false;
       codeBlock.value.innerHTML =

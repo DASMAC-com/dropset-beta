@@ -48,8 +48,6 @@ crate and injected into assembly files at build time using the [`build`] crate.
 [`macros`]: https://github.com/DASMAC-com/dropset-beta/tree/main/macros
 [`build`]: https://github.com/DASMAC-com/dropset-beta/tree/main/build
 [proc macros]: https://doc.rust-lang.org/reference/procedural-macros.html
-
-
 [`program/src/dropset/`]: https://github.com/DASMAC-com/dropset-beta/tree/main/program/src/dropset
 [multi-file assembly]: https://github.com/blueshift-gg/sbpf/pull/109
 [SIMD-0321]: https://github.com/solana-foundation/solana-improvement-documents/blob/main/proposals/0321-vm-r2-instruction-data-pointer.md
