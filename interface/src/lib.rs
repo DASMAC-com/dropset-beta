@@ -17,6 +17,7 @@ pub enum ErrorCode {
 
 pub struct RegisterMarket {}
 
+// region: constant_group_example
 constant_group! {
     #[inject("entrypoint")]
     entrypoint {
@@ -35,6 +36,7 @@ constant_group! {
         REGISTER_MARKET = immediate!(size_of::<RegisterMarket>()),
     }
 }
+// endregion: constant_group_example
 
 pub const INJECTION_GROUPS: &[&dropset_build::ConstantGroup] = &[
     &entrypoint::GROUP,

@@ -3,6 +3,7 @@ use std::path::Path;
 /// Maximum line width for ASM output.
 const MAX_LINE_WIDTH: usize = 75;
 
+// region: types
 /// An assembly comment for a generated directive.
 pub struct Comment(pub &'static str);
 
@@ -30,6 +31,7 @@ pub struct ConstantGroup {
     /// The constants in this group.
     pub constants: &'static [Constant],
 }
+// endregion: types
 
 impl Constant {
     /// The constant's name.
