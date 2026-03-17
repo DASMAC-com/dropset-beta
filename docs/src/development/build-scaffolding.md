@@ -102,7 +102,6 @@ For example:
 
 <Include asm="entrypoint" collapsible/>
 
-
 [`interface`]: https://github.com/DASMAC-com/dropset-beta/tree/main/interface
 [`macros`]: https://github.com/DASMAC-com/dropset-beta/tree/main/macros
 [`build`]: https://github.com/DASMAC-com/dropset-beta/tree/main/build

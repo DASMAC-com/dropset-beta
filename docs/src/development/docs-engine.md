@@ -20,12 +20,12 @@ Renders a CLRS-style pseudocode specification from a `.tex` file in the
 
 <Include vitepress="components/Algorithm" collapsed/>
 
-| Prop | Type | Required | Description |
-| --- | --- | --- | --- |
-| `tex` | `String` | yes | Name of the `.tex` file (without extension) in `algorithms/` |
-| `asm` | `String` | no | Name of the `.s` file (without extension) to show as collapsible implementation |
-| `lineNumber` | `Boolean` | no | Show line numbers in pseudocode (default: `true`) |
-| `lineNumberPunc` | `String` | no | Punctuation after line numbers (default: `""`) |
+| Prop             | Type      | Required | Description                                                                     |
+| ---------------- | --------- | -------- | ------------------------------------------------------------------------------- |
+| `tex`            | `String`  | yes      | Name of the `.tex` file (without extension) in `algorithms/`                    |
+| `asm`            | `String`  | no       | Name of the `.s` file (without extension) to show as collapsible implementation |
+| `lineNumber`     | `Boolean` | no       | Show line numbers in pseudocode (default: `true`)                               |
+| `lineNumberPunc` | `String`  | no       | Punctuation after line numbers (default: `""`)                                  |
 
 Usage:
 
@@ -46,13 +46,13 @@ on GitHub.
 
 <Include vitepress="components/Include" collapsed/>
 
-| Prop | Type | Required | Description |
-| --- | --- | --- | --- |
-| `asm` | `String` | no | Assembly file name (without `.s` extension) |
-| `rust` | `String` | no | Rust file in `crate::module` syntax (e.g. `interface::lib`) |
-| `vitepress` | `String` | no | VitePress file path (e.g. `components/Algorithm`, `theme/index`) |
-| `collapsible` | `Boolean\|String` | no | Wrap in a `<details>` block, open by default. String value overrides the summary label |
-| `collapsed` | `Boolean\|String` | no | Same as `collapsible` but closed by default |
+| Prop          | Type              | Required | Description                                                                            |
+| ------------- | ----------------- | -------- | -------------------------------------------------------------------------------------- |
+| `asm`         | `String`          | no       | Assembly file name (without `.s` extension)                                            |
+| `rust`        | `String`          | no       | Rust file in `crate::module` syntax (e.g. `interface::lib`)                            |
+| `vitepress`   | `String`          | no       | VitePress file path (e.g. `components/Algorithm`, `theme/index`)                       |
+| `collapsible` | `Boolean\|String` | no       | Wrap in a `<details>` block, open by default. String value overrides the summary label |
+| `collapsed`   | `Boolean\|String` | no       | Same as `collapsible` but closed by default                                            |
 
 Usage:
 
@@ -108,6 +108,5 @@ and page locations.
 [SBPF assembly]: https://opcodes.dasmac.com
 [Mermaid]: https://mermaid.js.org/
 [`paths.js`]: https://github.com/DASMAC-com/dropset-beta/blob/main/docs/.vitepress/components/paths.js
-[`buildAlgorithmIndex.js`]: https://github.com/DASMAC-com/dropset-beta/blob/main/docs/.vitepress/buildAlgorithmIndex.js
 [`algorithms/`]: https://github.com/DASMAC-com/dropset-beta/tree/main/docs/algorithms
 [`algorithms/index.json`]: https://github.com/DASMAC-com/dropset-beta/blob/main/docs/algorithms/index.json

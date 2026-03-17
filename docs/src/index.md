@@ -1,5 +1,3 @@
-<!-- cspell:word clrs -->
-
 # Dropset
 
 <!-- markdownlint-disable MD013 -->
