@@ -28,6 +28,21 @@ export const rustCrates = {
 
 export const GH_ROOT = "https://github.com/DASMAC-com/dropset-beta/blob/main/";
 
+// Vue component and JS files in the docs engine (.vitepress/).
+export const VITEPRESS_BASE = "./";
+export const GH_VITEPRESS =
+  "https://github.com/DASMAC-com/dropset-beta/blob/main/docs/.vitepress/";
+
+export const vitepressModules = Object.assign(
+  {},
+  import.meta.glob("./*.vue", { query: "?raw", import: "default" }),
+  import.meta.glob("../theme/*.js", { query: "?raw", import: "default" }),
+  import.meta.glob("../buildAlgorithmIndex.js", {
+    query: "?raw",
+    import: "default",
+  }),
+);
+
 // All .rs files across known crate source directories.
 export const rustModules = Object.assign(
   {},

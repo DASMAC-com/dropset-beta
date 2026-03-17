@@ -1,3 +1,3 @@
-# Algorithms
+# Algorithm Index
 
 <AlgorithmIndex />

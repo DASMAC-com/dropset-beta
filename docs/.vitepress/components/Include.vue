@@ -1,3 +1,4 @@
+<!-- cspell:word vitepress -->
 <template>
   <div ref="codeBlock" class="include-block"></div>
 </template>
@@ -8,20 +9,24 @@ import {
   ASM_BASE,
   GH_BASE,
   GH_ROOT,
+  GH_VITEPRESS,
   asmModules,
   rustCrates,
   rustModules,
+  vitepressModules,
 } from "./paths.js";
 
 const props = defineProps({
   asm: { type: String, default: "" },
   rust: { type: String, default: "" },
+  vitepress: { type: String, default: "" },
   collapsible: { type: [Boolean, String], default: false },
   collapsed: { type: [Boolean, String], default: false },
 });
 
 const isRust = !!props.rust;
-const raw = isRust ? props.rust : props.asm;
+const isVitepress = !!props.vitepress;
+const raw = isVitepress ? props.vitepress : isRust ? props.rust : props.asm;
 
 // Parse "file#region" syntax.
 const hashIdx = raw.indexOf("#");
@@ -30,7 +35,35 @@ const region = hashIdx === -1 ? "" : raw.slice(hashIdx + 1);
 
 // Resolve the source to a loader function, display label, and GitHub link.
 let loader, label, ghLink;
-if (isRust) {
+if (isVitepress) {
+  // Syntax: "components/Algorithm" or "theme/index" or "buildAlgorithmIndex".
+  // Resolves relative to docs/.vitepress/.
+  const file = fileSpec;
+  // Try known extensions in order.
+  const exts = [".vue", ".js"];
+  const dirs = {
+    components: { prefix: "./", gh: "components/" },
+    theme: { prefix: "../theme/", gh: "theme/" },
+  };
+  const slashIdx = file.indexOf("/");
+  const dir = slashIdx !== -1 ? file.slice(0, slashIdx) : null;
+  const base = slashIdx !== -1 ? file.slice(slashIdx + 1) : file;
+  const mapping = dir && dirs[dir];
+  const prefix = mapping ? mapping.prefix : "../";
+  const ghPrefix = mapping ? mapping.gh : "";
+  let resolved = null;
+  for (const ext of exts) {
+    const key = `${prefix}${base}${ext}`;
+    if (vitepressModules[key]) {
+      resolved = { key, ext };
+      break;
+    }
+  }
+  if (!resolved) throw new Error(`Unknown VitePress file: ${file}`);
+  loader = vitepressModules[resolved.key];
+  label = `${ghPrefix}${base}${resolved.ext}`;
+  ghLink = `${GH_VITEPRESS}${ghPrefix}${base}${resolved.ext}`;
+} else if (isRust) {
   // Syntax: "crate::module" → crate/src/module.rs
   const sepIdx = fileSpec.indexOf("::");
   if (sepIdx === -1)
@@ -63,7 +96,7 @@ onMounted(async () => {
     // Extract a named region if specified.
     if (region) {
       const lines = code.split("\n");
-      const comment = isRust ? "//" : "#";
+      const comment = isRust || isVitepress ? "//" : "#";
       const startTag = `${comment} region: ${region}`;
       const endTag = `${comment} endregion: ${region}`;
       const start = lines.findIndex((l) => l.trim() === startTag);
@@ -79,10 +112,16 @@ onMounted(async () => {
     const shiki = await import("shiki");
     const highlighter = await shiki.createHighlighter({
       themes: ["github-dark", "github-light"],
-      langs: ["asm", "rust"],
+      langs: ["asm", "rust", "vue", "javascript"],
     });
 
-    const lang = isRust ? "rust" : "asm";
+    const lang = isVitepress
+      ? label.endsWith(".vue")
+        ? "vue"
+        : "javascript"
+      : isRust
+        ? "rust"
+        : "asm";
 
     // Fix comment lines misclassified as preprocessor directives (asm only).
     const transformers = [];

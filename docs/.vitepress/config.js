@@ -70,12 +70,16 @@ export default {
         items: [
           { text: "Layout", link: "/program/layout" },
           { text: "Markets", link: "/program/markets" },
+          { text: "Algorithm Index", link: "/program/algorithm-index" },
         ],
       },
       {
         collapsed: false,
-        text: "Indices",
-        items: [{ text: "Algorithms", link: "/indices/algorithms" }],
+        text: "Development",
+        items: [
+          { text: "Build Scaffolding", link: "/development/build-scaffolding" },
+          { text: "Docs Engine", link: "/development/docs-engine" },
+        ],
       },
     ],
   },
