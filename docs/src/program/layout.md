@@ -3,8 +3,8 @@
 Dropset assembly source files are in [`program/src/dropset/`]. The program is
 built using [multi-file assembly], which allows splitting a single program
 across multiple `.s` files that are joined at build time via `.include`
-directives. See [build scaffolding](../development/build-scaffolding) for details on
-how assembly constants are generated from Rust crates.
+directives. See [build scaffolding](../development/build-scaffolding) for
+details on how assembly constants are generated from Rust crates.
 
 ## Top-level file
 

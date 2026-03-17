@@ -52,14 +52,16 @@ Each group generates:
 
 - A Rust module with public constants (with compile-time range checks)
 - [`dropset_build::Constant`](#core-types) metadata entries for build-time
-  injection, with names derived from the constant name (plus prefix if specified)
+  injection, with names derived from the constant name (plus prefix if
+  specified)
 - `.equ` directives injected into the target assembly file, with doc comments
   carried over as assembly comments
 
 ### `#[discriminant_enum("target")]`
 
-Converts an enum into numbered assembly constants prefixed with `DISC_`, starting
-at 0. The enum is re-emitted with `#[repr(u8)]` and explicit discriminant values.
+Converts an enum into numbered assembly constants prefixed with `DISC_`,
+starting at 0. The enum is re-emitted with `#[repr(u8)]` and explicit
+discriminant values.
 
 ```rust
 #[discriminant_enum("instruction")]

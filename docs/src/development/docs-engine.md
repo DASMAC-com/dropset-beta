@@ -20,12 +20,16 @@ Renders a CLRS-style pseudocode specification from a `.tex` file in the
 
 <Include vitepress="components/Algorithm" collapsed/>
 
+<!-- markdownlint-disable MD013 -->
+
 | Prop             | Type      | Required | Description                                                                     |
 | ---------------- | --------- | -------- | ------------------------------------------------------------------------------- |
 | `tex`            | `String`  | yes      | Name of the `.tex` file (without extension) in `algorithms/`                    |
 | `asm`            | `String`  | no       | Name of the `.s` file (without extension) to show as collapsible implementation |
 | `lineNumber`     | `Boolean` | no       | Show line numbers in pseudocode (default: `true`)                               |
 | `lineNumberPunc` | `String`  | no       | Punctuation after line numbers (default: `""`)                                  |
+
+<!-- markdownlint-enable MD013 -->
 
 Usage:
 
@@ -46,6 +50,8 @@ on GitHub.
 
 <Include vitepress="components/Include" collapsed/>
 
+<!-- markdownlint-disable MD013 -->
+
 | Prop          | Type              | Required | Description                                                                            |
 | ------------- | ----------------- | -------- | -------------------------------------------------------------------------------------- |
 | `asm`         | `String`          | no       | Assembly file name (without `.s` extension)                                            |
@@ -53,6 +59,8 @@ on GitHub.
 | `vitepress`   | `String`          | no       | VitePress file path (e.g. `components/Algorithm`, `theme/index`)                       |
 | `collapsible` | `Boolean\|String` | no       | Wrap in a `<details>` block, open by default. String value overrides the summary label |
 | `collapsed`   | `Boolean\|String` | no       | Same as `collapsible` but closed by default                                            |
+
+<!-- markdownlint-enable MD013 -->
 
 Usage:
 
