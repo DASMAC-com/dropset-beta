@@ -2,6 +2,7 @@ use proc_macro::TokenStream;
 use syn::{LitStr, parse_macro_input};
 
 mod attrs;
+mod codegen;
 mod constant_group;
 mod enum_to_asm;
 

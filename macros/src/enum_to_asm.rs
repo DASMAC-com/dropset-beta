@@ -2,6 +2,7 @@ use quote::quote;
 use syn::Ident;
 
 use crate::attrs::{extract_doc_comment, validate_comment};
+use crate::codegen;
 
 /// Convert PascalCase to SCREAMING_SNAKE_CASE.
 fn to_screaming_snake(s: &str) -> String {
@@ -32,7 +33,7 @@ pub fn expand(
     );
 
     let mut const_defs = Vec::new();
-    let mut const_idents = Vec::new();
+    let mut meta_idents = Vec::new();
 
     for (i, variant) in input.variants.iter().enumerate() {
         let variant_name = &variant.ident;
@@ -41,7 +42,6 @@ pub fn expand(
             prefix,
             to_screaming_snake(&variant_name.to_string())
         );
-        let asm_name_ident = Ident::new(&format!("_C_{}", asm_name), variant_name.span());
 
         let doc = extract_doc_comment(&variant.attrs)
             .unwrap_or_else(|| panic!("variant `{}` must have a doc comment", variant_name));
@@ -50,19 +50,16 @@ pub fn expand(
         }
 
         let value = start + i as u8;
+        let meta_ident = codegen::meta_ident(&asm_name, variant_name.span());
 
-        const_defs.push(quote! {
-            const #asm_name_ident: dropset_build::Constant =
-                dropset_build::Constant::Immediate {
-                    header: dropset_build::Header {
-                        name: dropset_build::Name(#asm_name),
-                        comment: dropset_build::Comment(#doc),
-                    },
-                    value: #value as i32,
-                };
-        });
+        const_defs.push(codegen::immediate_meta(
+            &meta_ident,
+            &asm_name,
+            &doc,
+            quote! { #value as i32 },
+        ));
 
-        const_idents.push(asm_name_ident);
+        meta_idents.push(meta_ident);
     }
 
     // Re-emit the enum with #[repr(u8)] and explicit discriminant values.
@@ -84,6 +81,8 @@ pub fn expand(
         })
         .collect();
 
+    let group = codegen::group_module(&mod_name, target_str, &const_defs, &meta_idents);
+
     quote! {
         #(#attrs)*
         #[repr(u8)]
@@ -92,13 +91,6 @@ pub fn expand(
         }
 
         #[doc(hidden)]
-        pub mod #mod_name {
-            #(#const_defs)*
-
-            pub const GROUP: dropset_build::ConstantGroup = dropset_build::ConstantGroup {
-                target: #target_str,
-                constants: &[#(#const_idents),*],
-            };
-        }
+        #group
     }
 }
