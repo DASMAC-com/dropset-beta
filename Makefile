@@ -8,8 +8,9 @@ all: docs-prettier pre-commit-lint
 clean:
 test:
 
-# Assemble the program.
+# Assemble the program (runs build.rs injection first).
 asm:
+	cargo check
 	cd program && sbpf build --arch v3 --deploy-dir ../target/asm
 
 # Build and serve docs locally for development.
