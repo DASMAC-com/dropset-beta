@@ -1,15 +1,15 @@
 pub mod cases;
 
 use mollusk_svm::Mollusk;
-use solana_keypair::read_keypair_file;
-use solana_pubkey::Pubkey;
-use solana_signer::Signer;
+use solana_sdk::pubkey::Pubkey;
+use solana_sdk::signature::read_keypair_file;
+use solana_sdk::signer::Signer;
 use std::path::Path;
 
 const DEFAULT_PROGRAM: &str = "dropset";
 
-fn asm_dir() -> String {
-    std::env::var("DROPSET_ASM_DIR").unwrap_or_else(|_| "../target/asm".to_string())
+fn deploy_dir() -> String {
+    std::env::var("DROPSET_DEPLOY_DIR").unwrap_or_else(|_| "../target/asm".to_string())
 }
 
 pub struct TestSetup {
@@ -26,7 +26,7 @@ pub fn setup() -> TestSetup {
 ///
 /// Use this for standalone subroutine harnesses assembled as separate binaries.
 pub fn setup_program(name: &str) -> TestSetup {
-    let dir = asm_dir();
+    let dir = deploy_dir();
     let keypair_path = format!("{dir}/{name}-keypair.json");
     let default_keypair_path = format!("{dir}/program-keypair.json");
     let binary_path = format!("{dir}/{name}");
@@ -36,16 +36,14 @@ pub fn setup_program(name: &str) -> TestSetup {
         "Program binary not found: {binary_path}.so. Run `make asm` first.",
     );
 
-    let program_id = if Path::new(&keypair_path).exists() {
-        let keypair =
-            read_keypair_file(&keypair_path).expect("Failed to read program keypair file");
-        keypair.pubkey()
+    let kp_path = if Path::new(&keypair_path).exists() {
+        &keypair_path
     } else {
-        // Fall back to the default keypair for sub-programs that share the main program ID.
-        let keypair =
-            read_keypair_file(&default_keypair_path).expect("Failed to read default keypair");
-        keypair.pubkey()
+        &default_keypair_path
     };
+    let program_id = read_keypair_file(kp_path)
+        .expect("Failed to read program keypair file")
+        .pubkey();
 
     let mollusk = Mollusk::new(&program_id, &binary_path);
 

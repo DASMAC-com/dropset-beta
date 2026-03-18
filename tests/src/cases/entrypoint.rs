@@ -1,7 +1,7 @@
 use crate::{CaseResult, TestCase, TestSetup};
 use mollusk_svm::result::ProgramResult as MolluskResult;
-use solana_instruction::Instruction;
-use solana_program_error::ProgramError;
+use solana_sdk::instruction::Instruction;
+use solana_sdk::program_error::ProgramError;
 
 /// Discriminant byte for RegisterMarket (from interface).
 const DISC_REGISTER_MARKET: u8 = 0;
