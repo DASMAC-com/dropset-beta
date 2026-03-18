@@ -1,5 +1,3 @@
-pub mod cases;
-
 use mollusk_svm::Mollusk;
 use solana_sdk::pubkey::Pubkey;
 use solana_sdk::signature::read_keypair_file;
@@ -59,6 +57,38 @@ pub struct CaseResult {
     pub cu: u64,
     /// `None` if the case passed, `Some(message)` if it failed.
     pub error: Option<String>,
+}
+
+/// Sends an instruction with the given data (no accounts) and compares against
+/// an expected `ProgramError` result.
+pub fn check(
+    setup: &TestSetup,
+    data: &[u8],
+    expected: Result<(), solana_sdk::program_error::ProgramError>,
+) -> CaseResult {
+    use mollusk_svm::result::ProgramResult as MolluskResult;
+    use solana_sdk::instruction::Instruction;
+
+    let instruction = Instruction::new_with_bytes(setup.program_id, data, vec![]);
+    let result = setup.mollusk.process_instruction(&instruction, &[]);
+
+    let pass = match (&expected, &result.program_result) {
+        (Ok(()), MolluskResult::Success) => true,
+        (Err(e), MolluskResult::Failure(actual)) => actual == e,
+        _ => false,
+    };
+
+    CaseResult {
+        cu: result.compute_units_consumed,
+        error: if pass {
+            None
+        } else {
+            Some(format!(
+                "expected {:?}, got {:?}",
+                expected, result.program_result
+            ))
+        },
+    }
 }
 
 /// A named, runnable test case that can be executed for correctness or CU measurement.

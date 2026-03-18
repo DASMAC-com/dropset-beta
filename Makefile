@@ -1,6 +1,5 @@
 .PHONY: all
 .PHONY: asm
-.PHONY: bench
 .PHONY: clean
 .PHONY: test
 
@@ -9,14 +8,11 @@ DEPLOY_DIR ?= target/asm
 
 all: docs-prettier pre-commit-lint
 clean:
+	cargo clean
 
 # Run test cases.
 test: asm
 	cd tests && DROPSET_DEPLOY_DIR=../$(DEPLOY_DIR) RUST_LOG=none cargo test -- --nocapture
-
-# Run CU benchmark report.
-bench: asm
-	cd tests && DROPSET_DEPLOY_DIR=../$(DEPLOY_DIR) RUST_LOG=none cargo run --bin bench
 
 # Assemble the program (runs build.rs injection first).
 asm:
