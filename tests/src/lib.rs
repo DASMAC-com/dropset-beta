@@ -7,7 +7,7 @@ use std::path::Path;
 const DEFAULT_PROGRAM: &str = "dropset";
 
 fn deploy_dir() -> String {
-    std::env::var("DROPSET_DEPLOY_DIR").unwrap_or_else(|_| "../target/asm".to_string())
+    std::env::var("DROPSET_DEPLOY_DIR").expect("DROPSET_DEPLOY_DIR must be set")
 }
 
 pub struct TestSetup {
@@ -31,7 +31,7 @@ pub fn setup_program(name: &str) -> TestSetup {
 
     assert!(
         Path::new(&format!("{binary_path}.so")).exists(),
-        "Program binary not found: {binary_path}.so. Run `make asm` first.",
+        "Program binary not found: {binary_path}.so",
     );
 
     let kp_path = if Path::new(&keypair_path).exists() {
