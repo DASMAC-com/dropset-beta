@@ -1,6 +1,5 @@
 use dropset_interface::{Discriminant, ErrorCode};
 use dropset_tests::{CaseResult, TestCase, TestSetup, check};
-use solana_sdk::program_error::ProgramError;
 
 #[derive(Clone, Copy)]
 pub enum Case {
@@ -24,9 +23,7 @@ impl TestCase for Case {
             Self::InvalidLength => check(
                 setup,
                 &[Discriminant::RegisterMarket.into(), 0x00],
-                Err(ProgramError::Custom(
-                    ErrorCode::InvalidInstructionLength.into(),
-                )),
+                Some(ErrorCode::InvalidInstructionLength),
             ),
         }
     }

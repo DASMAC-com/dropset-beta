@@ -1,6 +1,5 @@
 use dropset_interface::ErrorCode;
 use dropset_tests::{CaseResult, TestCase, TestSetup, check};
-use solana_sdk::program_error::ProgramError;
 
 #[derive(Clone, Copy)]
 pub enum Case {
@@ -24,16 +23,10 @@ impl TestCase for Case {
 
     fn run(&self, setup: &TestSetup) -> CaseResult {
         match self {
-            Self::InvalidDiscriminant => check(
-                setup,
-                &[0xFF],
-                Err(ProgramError::Custom(ErrorCode::InvalidDiscriminant.into())),
-            ),
-            Self::EmptyInstructionData => check(
-                setup,
-                &[],
-                Err(ProgramError::Custom(ErrorCode::InvalidDiscriminant.into())),
-            ),
+            Self::InvalidDiscriminant => {
+                check(setup, &[0xFF], Some(ErrorCode::InvalidDiscriminant))
+            }
+            Self::EmptyInstructionData => check(setup, &[], Some(ErrorCode::InvalidDiscriminant)),
         }
     }
 }

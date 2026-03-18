@@ -60,19 +60,26 @@ pub struct CaseResult {
 }
 
 /// Sends an instruction with the given data (no accounts) and compares against
-/// an expected `ProgramError` result.
+/// an expected error code. Pass `None` for success, or `Some(ErrorCode::Variant)`
+/// for a `ProgramError::Custom` failure.
 pub fn check(
     setup: &TestSetup,
     data: &[u8],
-    expected: Result<(), solana_sdk::program_error::ProgramError>,
+    expected: Option<dropset_interface::ErrorCode>,
 ) -> CaseResult {
     use mollusk_svm::result::ProgramResult as MolluskResult;
     use solana_sdk::instruction::Instruction;
+    use solana_sdk::program_error::ProgramError;
 
     let instruction = Instruction::new_with_bytes(setup.program_id, data, vec![]);
     let result = setup.mollusk.process_instruction(&instruction, &[]);
 
-    let pass = match (&expected, &result.program_result) {
+    let expected_result: Result<(), ProgramError> = match expected {
+        None => Ok(()),
+        Some(e) => Err(ProgramError::Custom(e.into())),
+    };
+
+    let pass = match (&expected_result, &result.program_result) {
         (Ok(()), MolluskResult::Success) => true,
         (Err(e), MolluskResult::Failure(actual)) => actual == e,
         _ => false,
@@ -85,7 +92,7 @@ pub fn check(
         } else {
             Some(format!(
                 "expected {:?}, got {:?}",
-                expected, result.program_result
+                expected_result, result.program_result
             ))
         },
     }
