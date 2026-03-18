@@ -1,5 +1,3 @@
-<!-- cspell:word clrs -->
-
 # Dropset
 
 <!-- markdownlint-disable MD013 -->
@@ -20,15 +18,14 @@ check out the [Solana Opcode Guide].
 
 ## About this site
 
-This site is built in [Vitepress], and leverages custom [Vue components] to
-provide formal [CLRS]-style algorithmic specifications via [pseudocode.js], with
-collapsible SBPF assembly implementations sourced directly from the codebase.
-
-The auto-generated [algorithm index](indices/algorithms) contains a
-[mermaid]-style dependency chart of all algorithms, which are additionally
-cross-linked with one another at their definition sites. The top-level algorithm
-is the Dropset program [entrypoint](program/layout#entrypoint). See the
-[program layout](program/layout) for more details about program architecture.
+This site uses a custom [docs engine](development/docs-engine) that provides
+formal [CLRS]-style algorithmic specifications with corresponding assembly
+implementations sourced directly from the codebase. An auto-generated
+[algorithm index](program/algorithm-index) tracks dependencies between all
+algorithms and cross-links them at their definition sites. The top-level
+algorithm is the Dropset program [entrypoint](program/layout#entrypoint). See
+the [program layout](program/layout) for more details about program
+architecture.
 
 ## Contributing
 
@@ -82,13 +79,9 @@ design assurance.
 
 :::
 
+[CLRS]: https://www.cs.mcgill.ca/~akroit/math/compsci/Cormen%20Introduction%20to%20Algorithms.pdf
 [Dropset repo]: https://github.com/DASMAC-com/dropset-beta
 [makefile]: https://en.wikipedia.org/wiki/Make_(software)
-[mermaid]: https://mermaid.js.org/
-[CLRS]: https://www.cs.mcgill.ca/~akroit/math/compsci/Cormen%20Introduction%20to%20Algorithms.pdf
-[pseudocode.js]: https://github.com/SaswatPadhi/pseudocode.js
-[Vue components]: https://vuejs.org/guide/essentials/component-basics
-[vitepress]: https://vitepress.dev/
 [formal verification]: https://en.wikipedia.org/wiki/Formal_verification
 [cu]: https://solana.com/docs/core/fees/compute-budget
 [solana opcode guide]: https://opcodes.dasmac.com

@@ -1,3 +1,4 @@
+clrs
 codegen
 dasmac
 dropset
@@ -7,6 +8,8 @@ insn
 katex
 ldxb
 ldxdw
+punc
+repr
 sbpf
 shiki
 solana
