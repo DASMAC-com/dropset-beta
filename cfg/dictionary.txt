@@ -6,8 +6,11 @@ globl
 idents
 insn
 katex
+keypair
 ldxb
 ldxdw
+mollusk
+nocapture
 punc
 repr
 sbpf
