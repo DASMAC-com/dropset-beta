@@ -1,7 +1,6 @@
-use core::mem::size_of;
-use dropset_macros::{constant_group, discriminant_enum, error_enum};
+use dropset_macros::{constant_group, discriminant_enum, error_enum, instruction};
 
-#[discriminant_enum("instruction")]
+#[discriminant_enum("discriminant")]
 pub enum Discriminant {
     /// Register a new market.
     RegisterMarket,
@@ -15,7 +14,10 @@ pub enum ErrorCode {
     InvalidInstructionLength,
 }
 
+// region: instruction_example
+#[instruction("market/register")]
 pub struct RegisterMarket {}
+// endregion: instruction_example
 
 // region: constant_group_example
 constant_group! {
@@ -27,20 +29,11 @@ constant_group! {
         INSN_DISC = offset!(0),
     }
 }
-
-constant_group! {
-    #[inject("instruction")]
-    #[prefix("INSN_LEN")]
-    instruction_length {
-        /// RegisterMarket instruction data length.
-        REGISTER_MARKET = immediate!(size_of::<RegisterMarket>()),
-    }
-}
 // endregion: constant_group_example
 
 pub const INJECTION_GROUPS: &[&dropset_build::ConstantGroup] = &[
     &entrypoint::GROUP,
     &discriminant::GROUP,
     &error_code::GROUP,
-    &instruction_length::GROUP,
+    &register_market::GROUP,
 ];

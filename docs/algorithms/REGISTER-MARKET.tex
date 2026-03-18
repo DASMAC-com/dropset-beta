@@ -9,8 +9,8 @@
   \INPUT $r_3 = insn\_len$
   \REQUIRE $insn.discriminant == \texttt{Discriminant::RegisterMarket}$
 \PROCEDURE{REGISTER-MARKET}{$input, insn, insn\_len$}
-  \IF{$insn\_len \neq$ \texttt{InstructionLength::RegisterMarket}}
-    \RETURN \texttt{Error::InvalidInstructionLength}
+  \IF{$insn\_len \neq$ \texttt{RegisterMarket::INSN\_LEN}}
+    \RETURN \texttt{ErrorCode::InvalidInstructionLength}
   \ENDIF
 \ENDPROCEDURE
 \end{algorithmic}

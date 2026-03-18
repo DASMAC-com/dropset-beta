@@ -1,7 +1,6 @@
+use dropset_interface::ErrorCode;
 use dropset_tests::{CaseResult, TestCase, TestSetup, check};
 use solana_sdk::program_error::ProgramError;
-
-const E_INVALID_DISCRIMINANT: u32 = 1;
 
 #[derive(Clone, Copy)]
 pub enum Case {
@@ -28,12 +27,12 @@ impl TestCase for Case {
             Self::InvalidDiscriminant => check(
                 setup,
                 &[0xFF],
-                Err(ProgramError::Custom(E_INVALID_DISCRIMINANT)),
+                Err(ProgramError::Custom(ErrorCode::InvalidDiscriminant.into())),
             ),
             Self::EmptyInstructionData => check(
                 setup,
                 &[],
-                Err(ProgramError::Custom(E_INVALID_DISCRIMINANT)),
+                Err(ProgramError::Custom(ErrorCode::InvalidDiscriminant.into())),
             ),
         }
     }
