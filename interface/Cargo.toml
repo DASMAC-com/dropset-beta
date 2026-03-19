@@ -1,6 +1,7 @@
 [dependencies]
 dropset-build = {path = "../build"}
 dropset-macros = {path = "../macros"}
+pinocchio = {workspace = true}
 
 [package]
 name = "dropset-interface"

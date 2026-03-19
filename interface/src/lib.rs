@@ -36,4 +36,5 @@ pub const INJECTION_GROUPS: &[&dropset_build::ConstantGroup] = &[
     &discriminant::GROUP,
     &error_code::GROUP,
     &market::register_market::GROUP,
+    &memory::data::GROUP,
 ];
