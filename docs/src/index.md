@@ -32,9 +32,10 @@ for more details about program architecture.
 
 ## Contributing
 
-To work with the [Dropset repo] locally, see the root [Makefile] for some common
-operations. If you want to contribute to docs, you can use the
-`Contribute to this page` link on each page.
+To work with the [Dropset repo] locally, see the root [Makefile] for common
+operations and the [Development](/development/build-scaffolding) section for
+details on the build system, test framework, and docs engine. Each page has a
+`Contribute to this page` link for quick edits.
 
 ## About assembly
 
