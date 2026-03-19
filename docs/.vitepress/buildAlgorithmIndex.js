@@ -8,7 +8,14 @@ import { join, basename, relative } from "path";
 
 const SRC_DIR = join(import.meta.dirname, "..", "src");
 const ALGO_DIR = join(import.meta.dirname, "..", "algorithms");
-const CASES_DIR = join(import.meta.dirname, "..", "..", "tests", "tests", "cases");
+const CASES_DIR = join(
+  import.meta.dirname,
+  "..",
+  "..",
+  "tests",
+  "tests",
+  "cases",
+);
 const OUTPUT = join(ALGO_DIR, "index.json");
 
 // Recursively find all .md files under a directory.

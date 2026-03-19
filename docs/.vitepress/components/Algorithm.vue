@@ -43,10 +43,10 @@ const texModules = import.meta.glob("../../algorithms/*.tex", {
 });
 
 // Import test case .rs files for inline code display.
-const testCaseModules = import.meta.glob(
-  "../../../tests/tests/cases/*.rs",
-  { query: "?raw", import: "default" },
-);
+const testCaseModules = import.meta.glob("../../../tests/tests/cases/*.rs", {
+  query: "?raw",
+  import: "default",
+});
 
 // Props: tex is the .tex filename, asm is the optional assembly source file.
 const props = defineProps({
@@ -243,14 +243,20 @@ onMounted(async () => {
               }
               end = k;
               const trimmed = lines[k].trimEnd();
-              if (braces <= 0 && parens <= 0 && (trimmed.endsWith(",") || trimmed.endsWith("}"))) {
+              if (
+                braces <= 0 &&
+                parens <= 0 &&
+                (trimmed.endsWith(",") || trimmed.endsWith("}"))
+              ) {
                 break;
               }
             }
             // Dedent the extracted block.
             const block = lines.slice(start, end + 1);
             const minIndent = Math.min(
-              ...block.filter((l) => l.trim()).map((l) => l.match(/^(\s*)/)[1].length),
+              ...block
+                .filter((l) => l.trim())
+                .map((l) => l.match(/^(\s*)/)[1].length),
             );
             return block.map((l) => l.slice(minIndent)).join("\n");
           }
