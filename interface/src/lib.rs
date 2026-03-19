@@ -1,4 +1,9 @@
-use dropset_macros::{constant_group, discriminant_enum, error_enum, instruction};
+use dropset_macros::{constant_group, discriminant_enum, error_enum};
+
+pub mod market;
+pub mod memory;
+pub mod order;
+pub mod seat;
 
 #[discriminant_enum("discriminant")]
 pub enum Discriminant {
@@ -13,11 +18,6 @@ pub enum ErrorCode {
     /// The instruction data length is invalid.
     InvalidInstructionLength,
 }
-
-// region: instruction_example
-#[instruction("market/register")]
-pub struct RegisterMarket {}
-// endregion: instruction_example
 
 // region: constant_group_example
 constant_group! {
@@ -35,5 +35,5 @@ pub const INJECTION_GROUPS: &[&dropset_build::ConstantGroup] = &[
     &entrypoint::GROUP,
     &discriminant::GROUP,
     &error_code::GROUP,
-    &register_market::GROUP,
+    &market::register_market::GROUP,
 ];
