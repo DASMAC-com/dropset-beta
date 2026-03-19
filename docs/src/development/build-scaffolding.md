@@ -89,11 +89,11 @@ pub enum ErrorCode {
 
 ### `#[instruction("target")]`
 
-Attribute macro for instruction data structs. Automatically generates an `INSN_LEN`
-associated constant (`u64`) from `size_of::<Self>()`, and a hidden module with a
-`_INSN_LEN` suffixed assembly constant and `GROUP` for build-time injection. The
-target string names the assembly file (e.g. `"market/register"` targets
-`program/src/dropset/market/register.s`).
+Attribute macro for instruction data structs. Automatically generates an
+`INSN_LEN` associated constant (`u64`) from `size_of::<Self>()`, and a hidden
+module with a `_INSN_LEN` suffixed assembly constant and `GROUP` for build-time
+injection. The target string names the assembly file (e.g. `"market/register"`
+targets `program/src/dropset/market/register.s`).
 
 <Include rust="interface::lib#instruction_example" collapsible/>
 

@@ -16,4 +16,5 @@ repr
 sbpf
 shiki
 solana
+vite
 vitepress

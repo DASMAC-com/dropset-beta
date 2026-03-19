@@ -1,4 +1,3 @@
-<!-- cspell:word vitepress -->
 <template>
   <div ref="codeBlock" class="include-block"></div>
 </template>

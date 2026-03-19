@@ -18,7 +18,7 @@ automatically.
 
 ## Layout
 
-```
+```txt
 tests/
 ├── Cargo.toml
 ├── src/
@@ -28,7 +28,7 @@ tests/
     └── cases/
         ├── mod.rs
         ├── entrypoint.rs
-        ├── register_marekt.rs
+        ├── register_market.rs
         └── ...
 ```
 
