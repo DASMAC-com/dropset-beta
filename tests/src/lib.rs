@@ -98,11 +98,13 @@ pub fn check(
     }
 }
 
+// region: test_case
 /// A named, runnable test case that can be executed for correctness or CU measurement.
 pub trait TestCase: Copy {
     fn name(&self) -> &'static str;
     fn run(&self, setup: &TestSetup) -> CaseResult;
 }
+// endregion: test_case
 
 /// Runs all cases, prints a CU table, and panics if any case failed.
 pub fn run_and_report<T: TestCase>(heading: &str, cases: &[T], setup: &TestSetup) {
