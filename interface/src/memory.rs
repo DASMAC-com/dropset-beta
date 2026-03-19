@@ -28,8 +28,9 @@ pub struct FullRuntimeAccount<const DATA_SIZE: usize> {
 #[repr(C, packed)]
 /// Empty user data is required to ensure absolute addressing.
 pub struct InputBufferHeader {
-    user: FullRuntimeAccount<{ runtime_data_size(data::DATA_LEN_ZERO) }>,
-    market: RuntimeAccount,
+    pub n_accounts: u64,
+    pub user: FullRuntimeAccount<{ runtime_data_size(data::DATA_LEN_ZERO) }>,
+    pub market: RuntimeAccount,
 }
 
 /// Compute the data buffer size for a runtime account with the given data length.

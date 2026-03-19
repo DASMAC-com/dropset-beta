@@ -17,6 +17,8 @@ pub enum ErrorCode {
     InvalidDiscriminant,
     /// The instruction data length is invalid.
     InvalidInstructionLength,
+    /// The number of accounts provided is invalid for the given instruction.
+    InvalidNumberOfAccounts,
 }
 
 // region: constant_group_example
@@ -35,6 +37,7 @@ pub const INJECTION_GROUPS: &[&dropset_build::ConstantGroup] = &[
     &entrypoint::GROUP,
     &discriminant::GROUP,
     &error_code::GROUP,
-    &market::register_market::GROUP,
+    &market::register_market_data::GROUP,
+    &market::register_market_accounts::GROUP,
     &memory::data::GROUP,
 ];

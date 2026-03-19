@@ -1,7 +1,7 @@
 use crate::memory::{FullRuntimeAccount, StackNode, data, runtime_data_size};
 use crate::order::Order;
 use crate::seat::Seat;
-use dropset_macros::instruction;
+use dropset_macros::{instruction_accounts, instruction_data};
 use pinocchio::account::RuntimeAccount;
 
 #[repr(C, packed)]
@@ -18,20 +18,16 @@ pub struct MarketHeader {
     pub next: *mut StackNode,
 }
 
-// region: instruction_example
-#[instruction("market/register")]
-pub struct RegisterMarket {}
-// endregion: instruction_example
-
-#[repr(C, packed)]
-/// Static portion of input buffer during market registration.
-pub struct RegisterMarketInputBufferHeader {
-    pub user: FullRuntimeAccount<{ runtime_data_size(data::DATA_LEN_ZERO) }>,
-    pub market: FullRuntimeAccount<{ runtime_data_size(data::DATA_LEN_ZERO) }>,
-    pub system_program: FullRuntimeAccount<{ runtime_data_size("system_program".len()) }>,
-    pub rent: RuntimeAccount,
+// region: instruction_data_example
+#[instruction_data("market/register")]
+pub struct RegisterMarketData {
+    #[allow(dead_code)]
+    discriminant: u8,
 }
+// endregion: instruction_data_example
 
+// region: instruction_accounts_example
+#[instruction_accounts("market/register")]
 pub enum RegisterMarketAccounts {
     User,
     Market,
@@ -39,4 +35,15 @@ pub enum RegisterMarketAccounts {
     Rent,
     BaseMint,
     QuoteMint,
+}
+// endregion: instruction_accounts_example
+
+#[repr(C, packed)]
+/// Static portion of input buffer during market registration.
+pub struct RegisterMarketInputBufferHeader {
+    pub n_accounts: u64,
+    pub user: FullRuntimeAccount<{ runtime_data_size(data::DATA_LEN_ZERO) }>,
+    pub market: FullRuntimeAccount<{ runtime_data_size(data::DATA_LEN_ZERO) }>,
+    pub system_program: FullRuntimeAccount<{ runtime_data_size("system_program".len()) }>,
+    pub rent: RuntimeAccount,
 }

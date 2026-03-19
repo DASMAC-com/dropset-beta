@@ -87,17 +87,28 @@ pub enum ErrorCode {
 }
 ```
 
-### `#[instruction("target")]`
+### `#[instruction_data("target")]`
 
 Attribute macro for instruction data structs. Automatically generates an
-`INSN_LEN` associated constant (`u64`) from `size_of::<Self>()`, and a hidden
-module with a `_INSN_LEN` suffixed assembly constant and `GROUP` for build-time
+`LEN` associated constant (`u64`) from `size_of::<Self>()`, and a hidden
+module with a `_LEN` suffixed assembly constant and `GROUP` for build-time
 injection. The target string names the assembly file (e.g. `"market/register"`
 targets `program/src/dropset/market/register.s`).
 
-<Include rust="interface::lib#instruction_example" collapsible/>
+The length is accessible in Rust as `RegisterMarketData::LEN`.
 
-The length is accessible in Rust as `RegisterMarket::INSN_LEN`.
+<Include rust="interface::market#instruction_data_example" collapsible/>
+
+### `#[instruction_accounts("target")]`
+
+Attribute macro for instruction accounts enums. Automatically generates a
+`LEN` associated constant (`u64`) from the number of enum variants, and a hidden
+module with a `_N_ACCOUNTS` suffixed assembly constant and `GROUP` for build-time
+injection.
+
+The count is accessible in Rust as `RegisterMarketAccounts::LEN`.
+
+<Include rust="interface::market#instruction_accounts_example" collapsible/>
 
 ## Interface
 
