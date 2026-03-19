@@ -22,7 +22,7 @@ impl TestCase for Case {
             // Verifies: REGISTER-MARKET
             Self::InvalidLength => check(
                 setup,
-                &[Discriminant::RegisterMarket.into(), 0x01],
+                &[Discriminant::RegisterMarket.into(), 0x00],
                 Some(ErrorCode::InvalidInstructionLength),
             ),
         }
