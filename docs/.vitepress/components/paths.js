@@ -25,6 +25,8 @@ export const rustCrates = {
   interface: { base: `${RUST_BASE}interface/src/`, gh: "interface/src/" },
   macros: { base: `${RUST_BASE}macros/src/`, gh: "macros/src/" },
   program: { base: `${RUST_BASE}program/src/`, gh: "program/src/" },
+  tests: { base: `${RUST_BASE}tests/src/`, gh: "tests/src/" },
+  "test-cases": { base: `${RUST_BASE}tests/tests/`, gh: "tests/tests/" },
 };
 
 export const GH_ROOT = "https://github.com/DASMAC-com/dropset-beta/blob/main/";
@@ -64,6 +66,14 @@ export const rustModules = Object.assign(
     import: "default",
   }),
   import.meta.glob("../../../program/src/**/*.rs", {
+    query: "?raw",
+    import: "default",
+  }),
+  import.meta.glob("../../../tests/src/**/*.rs", {
+    query: "?raw",
+    import: "default",
+  }),
+  import.meta.glob("../../../tests/tests/**/*.rs", {
     query: "?raw",
     import: "default",
   }),

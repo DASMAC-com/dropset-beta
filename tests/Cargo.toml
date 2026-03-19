@@ -1,0 +1,10 @@
+[dependencies]
+dropset-interface = {path = "../interface"}
+mollusk-svm = {workspace = true}
+solana-sdk = {workspace = true}
+
+[package]
+name = "dropset-tests"
+publish = false
+edition.workspace = true
+version.workspace = true

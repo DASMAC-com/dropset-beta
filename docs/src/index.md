@@ -20,18 +20,22 @@ check out the [Solana Opcode Guide].
 
 This site uses a custom [docs engine](development/docs-engine) that provides
 formal [CLRS]-style algorithmic specifications with corresponding assembly
-implementations sourced directly from the codebase. An auto-generated
-[algorithm index](program/algorithm-index) tracks dependencies between all
-algorithms and cross-links them at their definition sites. The top-level
-algorithm is the Dropset program [entrypoint](program/layout#entrypoint). See
-the [program layout](program/layout) for more details about program
-architecture.
+implementations sourced directly from the codebase.
+[Test cases](development/tests) are linked to the algorithms they verify via
+`// Verifies:` tags and embedded on each algorithm's page.
+
+An auto-generated [algorithm index](program/algorithm-index) tracks
+dependencies between all algorithms and cross-links them at their definition
+sites. The top-level algorithm is the Dropset program
+[entrypoint](program/layout#entrypoint). See [program layout](program/layout)
+for more details about program architecture.
 
 ## Contributing
 
-To work with the [Dropset repo] locally, see the root [Makefile] for some common
-operations. If you want to contribute to docs, you can use the
-`Contribute to this page` link on each page.
+To work with the [Dropset repo] locally, see the root [Makefile] for common
+operations and the [Development](/development/build-scaffolding) section for
+details on the build system, test framework, and docs engine. Each page has a
+`Contribute to this page` link for quick edits.
 
 ## About assembly
 

@@ -1,17 +1,23 @@
-# cspell:word vite
 .PHONY: all
 .PHONY: asm
 .PHONY: clean
 .PHONY: test
 
+SBPF_ARCH ?= v0
+DEPLOY_DIR ?= target/asm
+
 all: docs-prettier pre-commit-lint
 clean:
-test:
+	cargo clean
+
+# Run test cases.
+test: asm
+	cd tests && DROPSET_DEPLOY_DIR=../$(DEPLOY_DIR) RUST_LOG=none cargo test -- --nocapture
 
 # Assemble the program (runs build.rs injection first).
 asm:
 	cargo check
-	cd program && sbpf build --arch v3 --deploy-dir ../target/asm
+	cd program && sbpf build --arch $(SBPF_ARCH) --deploy-dir ../$(DEPLOY_DIR)
 
 # Build and serve docs locally for development.
 docs-dev:

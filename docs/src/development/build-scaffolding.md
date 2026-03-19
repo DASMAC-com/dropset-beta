@@ -59,12 +59,14 @@ Each group generates:
 
 ### `#[discriminant_enum("target")]`
 
-Converts an enum into numbered assembly constants prefixed with `DISC_`,
-starting at 0. The enum is re-emitted with `#[repr(u8)]` and explicit
-discriminant values.
+Re-emits the enum with `#[repr(u8)]` and explicit discriminant values, numbered
+from 0. A `From<Enum> for u8` impl is generated so variants can be used without
+explicit casts (e.g. `Discriminant::RegisterMarket.into()`). A hidden module
+with `DISC_`-prefixed assembly constants and a `GROUP` is generated for
+build-time injection.
 
 ```rust
-#[discriminant_enum("instruction")]
+#[discriminant_enum("discriminant")]
 pub enum Discriminant {
     /// Register a new market.
     RegisterMarket,  // -> DISC_REGISTER_MARKET = 0
@@ -73,8 +75,9 @@ pub enum Discriminant {
 
 ### `#[error_enum("target")]`
 
-Same as `discriminant_enum` but prefixed with `E_` and starting at 1 (0 is
-reserved for success).
+Same as `discriminant_enum` but with `#[repr(u32)]`, prefixed with `E_`,
+starting at 1 (0 is reserved for success). A `From<Enum> for u32` impl is
+generated.
 
 ```rust
 #[error_enum("error")]
@@ -83,6 +86,18 @@ pub enum ErrorCode {
     InvalidDiscriminant,  // -> E_INVALID_DISCRIMINANT = 1
 }
 ```
+
+### `#[instruction("target")]`
+
+Attribute macro for instruction data structs. Automatically generates an
+`INSN_LEN` associated constant (`u64`) from `size_of::<Self>()`, and a hidden
+module with a `_INSN_LEN` suffixed assembly constant and `GROUP` for build-time
+injection. The target string names the assembly file (e.g. `"market/register"`
+targets `program/src/dropset/market/register.s`).
+
+<Include rust="interface::lib#instruction_example" collapsible/>
+
+The length is accessible in Rust as `RegisterMarket::INSN_LEN`.
 
 ## Interface
 

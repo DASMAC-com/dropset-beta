@@ -40,7 +40,10 @@ Usage:
 The component automatically resolves `\CALL{Name}` references in the `.tex`
 source into clickable cross-links using the build-time algorithm index. Forward
 dependencies ("Calls") and reverse dependencies ("Called by") are displayed
-below the pseudocode.
+below the pseudocode. If the algorithm has associated
+[test cases](tests#verifies-convention), a collapsed **Tests** section is
+rendered after the implementation block, with a nested details element for each
+case showing its syntax-highlighted Rust match arm.
 
 ### `<Include>`
 
@@ -101,10 +104,12 @@ URL bases.
 
 ### Algorithm index builder
 
-Runs at dev server startup and rebuilds whenever `.tex` or `.md` files change.
-Scans `.tex` files for `\CALL` dependencies and `.md` files for `<Algorithm>`
-usage, then outputs [`algorithms/index.json`] with forward deps, reverse deps,
-and page locations.
+Runs at dev server startup and rebuilds whenever `.tex`, `.md`, or test case
+`.rs` files change. Scans `.tex` files for `\CALL` dependencies, `.md` files
+for `<Algorithm>` usage, and test case files under `tests/tests/cases/` for
+[`// Verifies: ALGORITHM-NAME`](tests#verifies-convention) comments. Outputs
+[`algorithms/index.json`] with forward deps, reverse deps, page locations, and
+associated test cases.
 
 <Include vitepress="buildAlgorithmIndex" collapsed/>
 
