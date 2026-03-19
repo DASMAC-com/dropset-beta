@@ -3,7 +3,6 @@ use dropset_tests::{CaseResult, TestCase, TestSetup, check};
 
 #[derive(Clone, Copy)]
 pub enum Case {
-    /// Verifies: REGISTER-MARKET
     InvalidLength,
 }
 
@@ -20,6 +19,7 @@ impl TestCase for Case {
 
     fn run(&self, setup: &TestSetup) -> CaseResult {
         match self {
+            // Verifies: REGISTER-MARKET
             Self::InvalidLength => check(
                 setup,
                 &[Discriminant::RegisterMarket.into(), 0x00],

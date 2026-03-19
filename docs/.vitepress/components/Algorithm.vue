@@ -1,11 +1,10 @@
-<!-- cspell:word funcname -->
-<!-- cspell:word linenum -->
-<!-- cspell:word texttt -->
+<!-- cspell:word funcname linenum texttt -->
 <template>
   <!-- Anchor: #algorithm-<tex> for cross-page and in-page linking. -->
   <div :id="`algorithm-${tex}`">
     <div ref="container" class="pseudocode-container">
       <div v-if="asm" ref="asmBlock" class="asm-block"></div>
+      <div ref="testsBlock" class="tests-block"></div>
       <div v-if="calls.length" class="pseudocode-links pseudocode-links-below">
         <div class="pseudocode-link-row">
           Calls:
@@ -33,7 +32,9 @@
 import { ref, onMounted } from "vue";
 import "pseudocode/build/pseudocode.min.css";
 import algorithmIndex from "../../algorithms/index.json";
-import { ASM_BASE, GH_BASE, asmModules } from "./paths.js";
+import { ASM_BASE, GH_BASE, GH_ROOT, asmModules } from "./paths.js";
+
+const GH_TESTS = `${GH_ROOT}tests/tests/cases/`;
 
 // Import all .tex files at build time via Vite's glob import with ?raw.
 const texModules = import.meta.glob("../../algorithms/*.tex", {
@@ -41,7 +42,13 @@ const texModules = import.meta.glob("../../algorithms/*.tex", {
   import: "default",
 });
 
-// src is the .tex filename, rest are pseudocode.js options.
+// Import test case .rs files for inline code display.
+const testCaseModules = import.meta.glob(
+  "../../../tests/tests/cases/*.rs",
+  { query: "?raw", import: "default" },
+);
+
+// Props: tex is the .tex filename, asm is the optional assembly source file.
 const props = defineProps({
   tex: { type: String, required: true },
   asm: { type: String, default: "" },
@@ -51,8 +58,10 @@ const props = defineProps({
 
 const container = ref(null);
 const asmBlock = ref(null);
+const testsBlock = ref(null);
 const calls = ref([]);
 const calledBy = ref([]);
+const tests = ref([]);
 const asmCode = ref("");
 
 // Resolve a list of algorithm names to links using the algorithm index.
@@ -64,7 +73,7 @@ function resolveLinks(names, index) {
   });
 }
 
-// Dynamic import: client-side only (SSR-safe).
+// Client-side only: render pseudocode, assembly, and test cases.
 onMounted(async () => {
   try {
     const katex = await import("katex");
@@ -81,6 +90,7 @@ onMounted(async () => {
     if (entry) {
       calls.value = resolveLinks(entry.calls, algorithmIndex);
       calledBy.value = resolveLinks(entry.calledBy, algorithmIndex);
+      tests.value = entry.tests || [];
     }
 
     // Render pseudocode.
@@ -187,6 +197,102 @@ onMounted(async () => {
 
       highlighter.dispose();
     }
+
+    // Render test cases with syntax-highlighted Rust source.
+    if (tests.value.length) {
+      const shiki = await import("shiki");
+      const hl = await shiki.createHighlighter({
+        themes: ["github-dark", "github-light"],
+        langs: ["rust"],
+      });
+
+      // Load and cache source files.
+      const sourceCache = {};
+      for (const t of tests.value) {
+        if (!sourceCache[t.group]) {
+          const key = `../../../tests/tests/cases/${t.group}.rs`;
+          const loader = testCaseModules[key];
+          if (loader) sourceCache[t.group] = await loader();
+        }
+      }
+
+      // Extract the match arm for a variant from the run() method.
+      function extractArm(src, variant) {
+        const lines = src.split("\n");
+        // Find fn run() first, then search for Self::Variant within it.
+        let runStart = lines.findIndex((l) => l.includes("fn run("));
+        if (runStart === -1) return null;
+        for (let i = runStart; i < lines.length; i++) {
+          if (lines[i].trim().startsWith(`Self::${variant}`)) {
+            // Walk back to pick up preceding // Verifies: comments.
+            let j = i - 1;
+            while (j >= 0 && lines[j].trim().startsWith("//")) j--;
+            const start = j + 1;
+            // Walk forward to find the end of the arm.
+            // Track both braces and parens so we don't stop at a ","
+            // inside a function call like check(setup, ...).
+            let braces = 0;
+            let parens = 0;
+            let end = i;
+            for (let k = i; k < lines.length; k++) {
+              for (const ch of lines[k]) {
+                if (ch === "{") braces++;
+                else if (ch === "}") braces--;
+                else if (ch === "(") parens++;
+                else if (ch === ")") parens--;
+              }
+              end = k;
+              const trimmed = lines[k].trimEnd();
+              if (braces <= 0 && parens <= 0 && (trimmed.endsWith(",") || trimmed.endsWith("}"))) {
+                break;
+              }
+            }
+            // Dedent the extracted block.
+            const block = lines.slice(start, end + 1);
+            const minIndent = Math.min(
+              ...block.filter((l) => l.trim()).map((l) => l.match(/^(\s*)/)[1].length),
+            );
+            return block.map((l) => l.slice(minIndent)).join("\n");
+          }
+        }
+        return null;
+      }
+
+      let casesHtml = "";
+      for (const t of tests.value) {
+        const src = sourceCache[t.group];
+        const arm = src ? extractArm(src, t.variant) : null;
+        let codeHtml = "";
+        if (arm) {
+          const highlighted = hl.codeToHtml(arm, {
+            lang: "rust",
+            themes: { dark: "github-dark", light: "github-light" },
+            defaultColor: false,
+          });
+          const pre = highlighted
+            .replace("<pre ", '<pre tabindex="0" ')
+            .replace(/class="shiki/, 'class="shiki vp-code');
+          codeHtml =
+            `<div class="language-rust vp-adaptive-theme">` +
+            `<span class="lang">rust</span>` +
+            pre +
+            `</div>`;
+        }
+        casesHtml +=
+          `<details class="details custom-block test-case-detail">` +
+          `<summary><a href="${GH_TESTS}${t.group}.rs" target="_blank"><code>${t.group}::${t.variant}</code></a></summary>` +
+          codeHtml +
+          `</details>`;
+      }
+
+      testsBlock.value.innerHTML =
+        `<details class="details custom-block">` +
+        `<summary>Tests (${tests.value.length})</summary>` +
+        casesHtml +
+        `</details>`;
+
+      hl.dispose();
+    }
   } catch (e) {
     console.error("Pseudocode render error:", e);
     container.value.textContent = "Error: " + e.message;
@@ -269,5 +375,13 @@ onMounted(async () => {
   margin-top: 0.75em;
   border-top: 1px solid var(--vp-c-divider);
   padding-top: 0.5em;
+}
+
+/* Tests block below implementation. */
+.tests-block {
+  margin-top: 0.5em;
+}
+.test-case-detail {
+  margin: 0.25em 0;
 }
 </style>

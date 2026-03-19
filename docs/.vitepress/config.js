@@ -42,8 +42,9 @@ export default {
         name: "watch-algorithm-index",
         configureServer(server) {
           server.watcher.add("**/algorithms/*.tex");
+          server.watcher.add("**/tests/tests/cases/*.rs");
           server.watcher.on("change", (path) => {
-            if (path.endsWith(".tex") || path.endsWith(".md")) {
+            if (path.endsWith(".tex") || path.endsWith(".md") || path.includes("tests/cases/")) {
               buildAlgorithmIndex();
             }
             // Trigger a full page reload when a .tex file changes.

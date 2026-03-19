@@ -52,18 +52,25 @@ lists them for the runner.
 
 <Include rust="test-cases::cases/entrypoint" collapsible/>
 
-### `/// Verifies:` convention
+### `// Verifies:` convention
 
-Each variant carries one or more `/// Verifies: ALGORITHM-NAME` doc comments
-that link the case to an [algorithm specification](../program/algorithm-index).
-A single case may verify multiple algorithms if it exercises a code path that
-spans them.
+Each match arm in `run()` carries one or more `// Verifies: ALGORITHM-NAME`
+comments that link the case to an
+[algorithm specification](../program/algorithm-index). Placing the tag next to
+the test logic makes it easy to see what each case exercises. A single case may
+verify multiple algorithms:
 
 ```rust
-/// Verifies: ENTRYPOINT
-/// Verifies: REGISTER-MARKET
-SomeCase,
+// Verifies: ENTRYPOINT
+// Verifies: REGISTER-MARKET
+Self::SomeCase => check(setup, &[...], ...),
 ```
+
+The [build-time algorithm index](docs-engine#build-time-file-generation) scans
+these tags and associates each test case with its algorithm. The
+[`<Algorithm>`](docs-engine#algorithm) component then renders a collapsed
+**Tests** section on each algorithm's page, with nested details for every
+linked case showing syntax-highlighted Rust source.
 
 ## Harness API
 

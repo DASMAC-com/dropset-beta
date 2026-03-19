@@ -3,9 +3,7 @@ use dropset_tests::{CaseResult, TestCase, TestSetup, check};
 
 #[derive(Clone, Copy)]
 pub enum Case {
-    /// Verifies: ENTRYPOINT
     InvalidDiscriminant,
-    /// Verifies: ENTRYPOINT
     EmptyInstructionData,
 }
 
@@ -23,9 +21,11 @@ impl TestCase for Case {
 
     fn run(&self, setup: &TestSetup) -> CaseResult {
         match self {
+            // Verifies: ENTRYPOINT
             Self::InvalidDiscriminant => {
                 check(setup, &[0xFF], Some(ErrorCode::InvalidDiscriminant))
             }
+            // Verifies: ENTRYPOINT
             Self::EmptyInstructionData => check(setup, &[], Some(ErrorCode::InvalidDiscriminant)),
         }
     }
