@@ -67,6 +67,21 @@ repos:
   repo: 'https://github.com/pre-commit/pre-commit-hooks'
   rev: 'v6.0.0'
 - hooks:
+  - entry: 'cargo fmt --'
+    id: 'rustfmt'
+    language: 'system'
+    name: 'rustfmt'
+    types:
+    - 'rust'
+  - entry: 'cargo clippy --all-targets -- -D warnings'
+    id: 'clippy'
+    language: 'system'
+    name: 'clippy'
+    pass_filenames: false
+    types:
+    - 'rust'
+  repo: 'local'
+- hooks:
   - id: 'checkmake'
   repo: 'https://github.com/checkmake/checkmake.git'
   rev: 'v0.3.2'

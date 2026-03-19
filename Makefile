@@ -1,14 +1,17 @@
 .PHONY: all
 .PHONY: asm
 .PHONY: clean
+.PHONY: lint
 .PHONY: test
 
 SBPF_ARCH ?= v0
 DEPLOY_DIR ?= target/asm
 
-all: docs-prettier pre-commit-lint
+all: lint test
 clean:
 	cargo clean
+	rm -rf docs/node_modules docs/.vitepress/cache docs/.vitepress/dist
+	rm -rf $(DEPLOY_DIR)
 
 # Run test cases.
 test: asm
@@ -36,6 +39,9 @@ docs-prod:
 		&& npm ci \
 		&& npx vitepress build \
 		&& (sleep 1 && open http://localhost:4173 &) && npx vitepress preview
+
+# Run all lint checks.
+lint: pre-commit-lint docs-prettier
 
 # Run pre-commit lint checks on all files.
 pre-commit-lint:
