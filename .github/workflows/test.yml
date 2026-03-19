@@ -1,0 +1,26 @@
+# cspell:word sbpf
+---
+env:
+  # https://github.com/blueshift-gg/sbpf/pull/109
+  SBPF_CLI_REV: '5583e2b167e540b0143311aceb62afd98bfaa67b'
+jobs:
+  test:
+    name: 'Test'
+    runs-on: 'ubuntu-latest'
+    steps:
+    - uses: 'actions/checkout@v6'
+    - uses: 'dtolnay/rust-toolchain@stable'
+    - uses: 'Swatinem/rust-cache@v2'
+      with:
+        shared-key: 'rust-${{ runner.os }}'
+    - uses: './.github/actions/install-sbpf'
+      with:
+        sbpf-cli-revision: '${{ env.SBPF_CLI_REV }}'
+    - name: 'Build assembly'
+      run: 'make asm'
+    - name: 'Run tests'
+      run: 'make test'
+name: 'Test'
+'on':
+  pull_request: null
+...
