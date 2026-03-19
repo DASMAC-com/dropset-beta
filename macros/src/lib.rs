@@ -43,7 +43,13 @@ pub fn constant_group(input: TokenStream) -> TokenStream {
 pub fn discriminant_enum(attr: TokenStream, item: TokenStream) -> TokenStream {
     let target = parse_macro_input!(attr as LitStr);
     let input = parse_macro_input!(item as syn::ItemEnum);
-    TokenStream::from(enum_to_asm::expand(&target.value(), "DISC", 0, "u8", &input))
+    TokenStream::from(enum_to_asm::expand(
+        &target.value(),
+        "DISC",
+        0,
+        "u8",
+        &input,
+    ))
 }
 
 /// Attribute macro for error code enums.
