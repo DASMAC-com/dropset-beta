@@ -20,15 +20,15 @@ pub struct MarketHeader {
 }
 // endregion: market_header
 
-// region: instruction_data_example
+// region: register_market_data
 #[instruction_data("market/register")]
 pub struct RegisterMarketData {
     #[allow(dead_code)]
     discriminant: u8,
 }
-// endregion: instruction_data_example
+// endregion: register_market_data
 
-// region: instruction_accounts_example
+// region: register_market_accounts
 #[instruction_accounts("market/register")]
 pub enum RegisterMarketAccounts {
     User,
@@ -38,7 +38,7 @@ pub enum RegisterMarketAccounts {
     BaseMint,
     QuoteMint,
 }
-// endregion: instruction_accounts_example
+// endregion: register_market_accounts
 
 #[repr(C, packed)]
 /// Static portion of input buffer during market registration.

@@ -97,7 +97,7 @@ targets `program/src/dropset/market/register.s`).
 
 The length is accessible in Rust as `RegisterMarketData::LEN`.
 
-<Include rust="interface::market#instruction_data_example" collapsible/>
+<Include rust="interface::market#register_market_data" collapsible/>
 
 ### `#[instruction_accounts("target")]`
 
@@ -108,7 +108,7 @@ injection.
 
 The count is accessible in Rust as `RegisterMarketAccounts::LEN`.
 
-<Include rust="interface::market#instruction_accounts_example" collapsible/>
+<Include rust="interface::market#register_market_accounts" collapsible/>
 
 ## Interface
 
