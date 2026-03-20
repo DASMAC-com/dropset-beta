@@ -2,8 +2,8 @@
 <!-- cspell:word linenum -->
 <!-- cspell:word texttt -->
 <template>
-  <!-- Anchor: #algorithm-<tex> for cross-page and in-page linking. -->
-  <div :id="`algorithm-${tex}`">
+  <!-- Anchor: #algo-ref-<tex> for cross-page and in-page linking. -->
+  <div :id="`algo-ref-${tex}`">
     <div ref="container" class="pseudocode-container">
       <div v-if="asm" ref="asmBlock" class="asm-block"></div>
       <div ref="testsBlock" class="tests-block"></div>
@@ -70,7 +70,7 @@ const asmCode = ref("");
 function resolveLinks(names, index) {
   return names.map((name) => {
     const page = index[name]?.page || "";
-    const href = `${page}#algorithm-${name}`;
+    const href = `${page}#algo-ref-${name}`;
     return { name, href };
   });
 }
@@ -122,7 +122,7 @@ onMounted(async () => {
       const name = span.textContent.trim();
       if (algorithmIndex[name]) {
         const a = document.createElement("a");
-        a.href = `${algorithmIndex[name].page || "/"}#algorithm-${name}`;
+        a.href = `${algorithmIndex[name].page || "/"}#algo-ref-${name}`;
         a.className = "ps-funcname";
         a.textContent = span.textContent;
         span.replaceWith(a);

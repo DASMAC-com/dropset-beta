@@ -22,6 +22,18 @@ asm:
 	cargo check
 	cd program && sbpf build --arch $(SBPF_ARCH) --deploy-dir ../$(DEPLOY_DIR)
 
+# Build docs (clean install + VitePress production build).
+docs-build:
+	cd docs \
+		&& rm -rf .vitepress/cache .vitepress/dist node_modules/.vite \
+		&& npm ci \
+		&& npx vitepress build
+
+# Check docs for broken links and anchors.
+docs-links: docs-build
+	lychee --config cfg/lychee.toml --include-fragments \
+		--root-dir docs/.vitepress/dist 'docs/.vitepress/dist/**/*.html'
+
 # Build and serve docs locally for development.
 docs-dev:
 	cd docs && npm install \
@@ -33,12 +45,8 @@ docs-prettier:
 	cd docs && npm install && npx prettier --write .
 
 # Build and serve docs locally in production mode.
-docs-prod:
-	cd docs \
-		&& rm -rf .vitepress/cache .vitepress/dist node_modules/.vite \
-		&& npm ci \
-		&& npx vitepress build \
-		&& (sleep 1 && open http://localhost:4173 &) && npx vitepress preview
+docs-prod: docs-build
+	cd docs && (sleep 1 && open http://localhost:4173 &) && npx vitepress preview
 
 # Run all lint checks.
 lint: pre-commit-lint docs-prettier

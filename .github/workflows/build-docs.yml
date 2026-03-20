@@ -16,6 +16,13 @@ jobs:
       working-directory: 'docs'
     - run: 'npx vitepress build'
       working-directory: 'docs'
+    - uses: 'lycheeverse/lychee-action@v2'
+      with:
+        args: >-
+          --config cfg/lychee.toml
+          --include-fragments
+          --root-dir docs/.vitepress/dist
+          docs/.vitepress/dist/**/*.html
 name: 'Build docs'
 'on':
   pull_request: null

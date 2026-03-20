@@ -84,7 +84,7 @@ Usage:
 ### `<AlgorithmIndex>`
 
 Renders a listing of all algorithms with a Mermaid dependency graph. Takes no
-props. It reads directly from the build-time [`algorithms/index.json`].
+props. It reads directly from the build-time `algorithms/index.json` file.
 
 Usage:
 
@@ -122,6 +122,5 @@ associated test cases.
 [Mermaid]: https://mermaid.js.org/
 [`paths.js`]: https://github.com/DASMAC-com/dropset-beta/blob/main/docs/.vitepress/components/paths.js
 [`algorithms/`]: https://github.com/DASMAC-com/dropset-beta/tree/main/docs/algorithms
-[`algorithms/index.json`]: https://github.com/DASMAC-com/dropset-beta/blob/main/docs/algorithms/index.json
 [algorithm index]: ../program/algorithm-index
 [test cases]: tests#verifies-convention
