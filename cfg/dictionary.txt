@@ -13,6 +13,7 @@ ldxb
 ldxdw
 mollusk
 nocapture
+oneline
 punc
 repr
 sbpf
