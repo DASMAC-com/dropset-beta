@@ -66,9 +66,7 @@ if (isVitepress) {
   // Syntax: "crate::module" → crate/src/module.rs
   const sepIdx = fileSpec.indexOf("::");
   if (sepIdx === -1)
-    throw new Error(
-      `Invalid rs prop (expected "crate::module"): ${fileSpec}`,
-    );
+    throw new Error(`Invalid rs prop (expected "crate::module"): ${fileSpec}`);
   const crateName = fileSpec.slice(0, sepIdx);
   const modulePath = fileSpec.slice(sepIdx + 2);
   const crate = rustCrates[crateName];
