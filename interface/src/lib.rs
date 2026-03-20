@@ -29,6 +29,8 @@ pub enum ErrorCode {
 constant_group! {
     #[inject("entrypoint")]
     entrypoint {
+        /// Offset from input buffer to number of accounts, in input buffer.
+        IB_N_ACCTS = offset!(0),
         /// Offset from instruction data to instruction data length, in input buffer.
         INSN_LEN = offset!(-size_of::<u64>()),
         /// Offset from instruction data to discriminant, in input buffer.
