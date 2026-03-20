@@ -13,7 +13,7 @@ pub fn expand(target: &str, input: &syn::ItemEnum) -> proc_macro2::TokenStream {
     let n_variants = input.variants.len();
     let screaming = to_screaming_snake(&enum_name.to_string());
     let mod_name = Ident::new(&screaming.to_lowercase(), enum_name.span());
-    let asm_name = format!("{}_N_ACCOUNTS", screaming);
+    let asm_name = format!("{}_LEN", screaming);
     let doc = format!("{} number of accounts.", enum_name);
 
     let meta_ident = codegen::meta_ident(&asm_name, enum_name.span());

@@ -103,7 +103,7 @@ The length is accessible in Rust as `RegisterMarketData::LEN`.
 
 Attribute macro for instruction accounts enums. Automatically generates a
 `LEN` associated constant (`u64`) from the number of enum variants, and a hidden
-module with a `_N_ACCOUNTS` suffixed assembly constant and `GROUP` for build-time
+module with a `_LEN` suffixed assembly constant and `GROUP` for build-time
 injection.
 
 The count is accessible in Rust as `RegisterMarketAccounts::LEN`.

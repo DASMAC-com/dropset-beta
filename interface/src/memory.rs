@@ -17,6 +17,7 @@ constant_group! {
     }
 }
 
+// region: full_runtime_account
 #[repr(C, packed)]
 /// A runtime account with a data buffer of a specified size.
 pub struct FullRuntimeAccount<const DATA_SIZE: usize> {
@@ -24,6 +25,7 @@ pub struct FullRuntimeAccount<const DATA_SIZE: usize> {
     pub data: [u8; DATA_SIZE],
     pub rent_epoch: u64,
 }
+// endregion: full_runtime_account
 
 #[repr(C, packed)]
 /// Empty user data is required to ensure absolute addressing.

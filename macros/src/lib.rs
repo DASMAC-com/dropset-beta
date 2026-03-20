@@ -92,7 +92,7 @@ pub fn instruction_data(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// Attribute macro for instruction accounts enums.
 ///
 /// Generates a `LEN` associated constant (`u64`) from the number of variants,
-/// and injects a `_N_ACCOUNTS` suffixed immediate into the target assembly file.
+/// and injects a `_LEN` suffixed immediate into the target assembly file.
 ///
 /// ```ignore
 /// #[instruction_accounts("market/register")]
