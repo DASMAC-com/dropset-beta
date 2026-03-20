@@ -20,19 +20,19 @@ Dropset build scaffolding has multiple layers:
 
 The workspace-root `build.rs` invokes the injection:
 
-<Include rust="root::build" collapsible/>
+<Include rs="root::build" collapsible/>
 
 <span id="core-types"></span>
 
 Core types are as follows:
 
-<Include rust="build::lib#types" collapsible/>
+<Include rs="build::lib#types" collapsible/>
 
 ## Macros
 
 The [`macros`] crate provides several [proc macros]:
 
-<Include rust="macros::lib" collapsed/>
+<Include rs="macros::lib" collapsed/>
 
 ### `constant_group!`
 
@@ -46,7 +46,7 @@ custom syntax forms (parsed within the proc macro, not standalone macros):
   `_OFF`
 - `immediate!(expr)`: an `i32` immediate value
 
-<Include rust="interface::lib#constant_group_example" collapsible/>
+<Include rs="interface::lib#constant_group_example" collapsible/>
 
 Each group generates:
 
@@ -65,13 +65,7 @@ explicit casts (e.g. `Discriminant::RegisterMarket.into()`). A hidden module
 with `DISC_`-prefixed assembly constants and a `GROUP` is generated for
 build-time injection.
 
-```rust
-#[discriminant_enum("discriminant")]
-pub enum Discriminant {
-    /// Register a new market.
-    RegisterMarket,  // -> DISC_REGISTER_MARKET = 0
-}
-```
+<Include rs="interface::lib#discriminant_enum" collapsed/>
 
 ### `#[error_enum("target")]`
 
@@ -79,32 +73,37 @@ Same as `discriminant_enum` but with `#[repr(u32)]`, prefixed with `E_`,
 starting at 1 (0 is reserved for success). A `From<Enum> for u32` impl is
 generated.
 
-```rust
-#[error_enum("error")]
-pub enum ErrorCode {
-    /// The instruction's discriminant does not match any known variant.
-    InvalidDiscriminant,  // -> E_INVALID_DISCRIMINANT = 1
-}
-```
+<Include rs="interface::lib#error_enum" collapsed/>
 
-### `#[instruction("target")]`
+### `#[instruction_data("target")]`
 
 Attribute macro for instruction data structs. Automatically generates an
-`INSN_LEN` associated constant (`u64`) from `size_of::<Self>()`, and a hidden
-module with a `_INSN_LEN` suffixed assembly constant and `GROUP` for build-time
+`LEN` associated constant (`u64`) from `size_of::<Self>()`, and a hidden
+module with a `_LEN` suffixed assembly constant and `GROUP` for build-time
 injection. The target string names the assembly file (e.g. `"market/register"`
 targets `program/src/dropset/market/register.s`).
 
-<Include rust="interface::lib#instruction_example" collapsible/>
+The length is accessible in Rust as `RegisterMarketData::LEN`.
 
-The length is accessible in Rust as `RegisterMarket::INSN_LEN`.
+<Include rs="interface::market#register_market_data" collapsible/>
+
+### `#[instruction_accounts("target")]`
+
+Attribute macro for instruction accounts enums. Automatically generates a
+`LEN` associated constant (`u64`) from the number of enum variants, and a hidden
+module with a `_LEN` suffixed assembly constant and `GROUP` for build-time
+injection.
+
+The count is accessible in Rust as `RegisterMarketAccounts::LEN`.
+
+<Include rs="interface::market#register_market_accounts" collapsible/>
 
 ## Interface
 
 The [`interface`] crate uses the macros to declare all program constants. The
 `INJECTION_GROUPS` slice collects every constant group for the build script.
 
-<Include rust="interface::lib" collapsed/>
+<Include rs="interface::lib" collapsed/>
 
 ## Build crate
 
@@ -113,7 +112,7 @@ directives into assembly files. For each target file, it finds the first label
 (a line ending with `:`) and replaces everything above it with the generated
 directives. Doc comments from the Rust source become assembly comments.
 
-<Include rust="build::lib" collapsed/>
+<Include rs="build::lib" collapsed/>
 
 For example:
 

@@ -7,10 +7,13 @@
   \INPUT $r_2 = insn$
   \COMMENT{Instruction data length.}
   \INPUT $r_3 = insn\_len$
-  \REQUIRE $insn.discriminant == \texttt{Discriminant::RegisterMarket}$
+  \REQUIRE $insn.discriminant ==$ \texttt{Discriminant::RegisterMarket}
 \PROCEDURE{REGISTER-MARKET}{$input, insn, insn\_len$}
-  \IF{$insn\_len \neq$ \texttt{RegisterMarket::INSN\_LEN}}
+  \IF{$insn\_len !=$ \texttt{RegisterMarketData.LEN}}
     \RETURN \texttt{ErrorCode::InvalidInstructionLength}
+  \ENDIF
+  \IF{$input.n\_accounts ==$ \texttt{RegisterMarketAccounts.LEN}}
+    \RETURN \texttt{ErrorCode::InvalidNumberOfAccounts}
   \ENDIF
 \ENDPROCEDURE
 \end{algorithmic}

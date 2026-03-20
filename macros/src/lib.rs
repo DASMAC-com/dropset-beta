@@ -5,6 +5,7 @@ mod attrs;
 mod codegen;
 mod constant_group;
 mod enum_to_asm;
+mod instruction_accounts;
 mod instruction_length;
 
 /// Defines a group of assembly constants with an injection target.
@@ -72,18 +73,38 @@ pub fn error_enum(attr: TokenStream, item: TokenStream) -> TokenStream {
     TokenStream::from(enum_to_asm::expand(&target.value(), "E", 1, "u32", &input))
 }
 
-/// Attribute macro for instruction structs.
+/// Attribute macro for instruction data structs.
 ///
-/// Generates an `INSN_LEN` associated constant (`u64`) from `size_of::<Self>()`,
-/// and injects a `_INSN_LEN` suffixed immediate into the target assembly file.
+/// Generates a `LEN` associated constant (`u64`) from `size_of::<Self>()`,
+/// and injects a `_LEN` suffixed immediate into the target assembly file.
 ///
 /// ```ignore
-/// #[instruction("market/register")]
-/// pub struct RegisterMarket {}
+/// #[instruction_data("market/register")]
+/// pub struct RegisterMarketData {}
 /// ```
 #[proc_macro_attribute]
-pub fn instruction(attr: TokenStream, item: TokenStream) -> TokenStream {
+pub fn instruction_data(attr: TokenStream, item: TokenStream) -> TokenStream {
     let target = parse_macro_input!(attr as LitStr);
     let input = parse_macro_input!(item as syn::ItemStruct);
     TokenStream::from(instruction_length::expand(&target.value(), &input))
+}
+
+/// Attribute macro for instruction accounts enums.
+///
+/// Generates a `LEN` associated constant (`u64`) from the number of variants,
+/// and injects a `_LEN` suffixed immediate into the target assembly file.
+///
+/// ```ignore
+/// #[instruction_accounts("market/register")]
+/// pub enum RegisterMarketAccounts {
+///     User,
+///     Market,
+///     SystemProgram,
+/// }
+/// ```
+#[proc_macro_attribute]
+pub fn instruction_accounts(attr: TokenStream, item: TokenStream) -> TokenStream {
+    let target = parse_macro_input!(attr as LitStr);
+    let input = parse_macro_input!(item as syn::ItemEnum);
+    TokenStream::from(instruction_accounts::expand(&target.value(), &input))
 }

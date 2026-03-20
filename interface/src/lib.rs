@@ -1,23 +1,29 @@
-use dropset_macros::{constant_group, discriminant_enum, error_enum, instruction};
+use dropset_macros::{constant_group, discriminant_enum, error_enum};
 
-#[discriminant_enum("discriminant")]
+pub mod market;
+pub mod memory;
+pub mod order;
+pub mod seat;
+
+// region: discriminant_enum
+#[discriminant_enum("common/discriminant")]
 pub enum Discriminant {
     /// Register a new market.
     RegisterMarket,
 }
+// endregion: discriminant_enum
 
-#[error_enum("error")]
+// region: error_enum
+#[error_enum("common/error")]
 pub enum ErrorCode {
     /// The instruction's discriminant does not match any known variant.
     InvalidDiscriminant,
     /// The instruction data length is invalid.
     InvalidInstructionLength,
+    /// The number of accounts provided is invalid for the given instruction.
+    InvalidNumberOfAccounts,
 }
-
-// region: instruction_example
-#[instruction("market/register")]
-pub struct RegisterMarket {}
-// endregion: instruction_example
+// endregion: error_enum
 
 // region: constant_group_example
 constant_group! {
@@ -35,5 +41,7 @@ pub const INJECTION_GROUPS: &[&dropset_build::ConstantGroup] = &[
     &entrypoint::GROUP,
     &discriminant::GROUP,
     &error_code::GROUP,
-    &register_market::GROUP,
+    &market::register_market_data::GROUP,
+    &market::register_market_accounts::GROUP,
+    &memory::data::GROUP,
 ];

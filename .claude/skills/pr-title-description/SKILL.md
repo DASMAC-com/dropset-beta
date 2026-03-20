@@ -5,18 +5,12 @@ disable-model-invocation: true
 user-invocable: true
 ---
 
-<!-- cspell:word oneline -->
-
 # `pr-title-description`
 
 Write (or update) the title and description
 for the pull request on the current branch.
 
-<!-- markdownlint-disable MD041 -->
-
 ## Steps
-
-<!-- markdownlint-enable MD041 -->
 
 1. Identify the current branch and its PR
    (if one exists) using

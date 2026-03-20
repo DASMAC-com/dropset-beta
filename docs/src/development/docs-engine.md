@@ -3,7 +3,7 @@
 This site is built in [VitePress] and leverages custom [Vue] components to
 provide formal [CLRS]-style algorithmic specifications via [pseudocode.js], with
 collapsible [SBPF assembly] implementations sourced directly from the codebase.
-The auto-generated [algorithm index](../program/algorithm-index) contains a
+The auto-generated [algorithm index] contains a
 [Mermaid]-style dependency chart of all algorithms, which are additionally
 cross-linked with one another at their definition sites.
 
@@ -41,7 +41,7 @@ The component automatically resolves `\CALL{Name}` references in the `.tex`
 source into clickable cross-links using the build-time algorithm index. Forward
 dependencies ("Calls") and reverse dependencies ("Called by") are displayed
 below the pseudocode. If the algorithm has associated
-[test cases](tests#verifies-convention), a collapsed **Tests** section is
+[test cases], a collapsed **Tests** section is
 rendered after the implementation block, with a nested details element for each
 case showing its syntax-highlighted Rust match arm.
 
@@ -58,7 +58,7 @@ on GitHub.
 | Prop          | Type              | Required | Description                                                                            |
 | ------------- | ----------------- | -------- | -------------------------------------------------------------------------------------- |
 | `asm`         | `String`          | no       | Assembly file name (without `.s` extension)                                            |
-| `rust`        | `String`          | no       | Rust file in `crate::module` syntax (e.g. `interface::lib`)                            |
+| `rs`          | `String`          | no       | Rust file in `crate::module` syntax (e.g. `interface::lib`)                            |
 | `vitepress`   | `String`          | no       | VitePress file path (e.g. `components/Algorithm`, `theme/index`)                       |
 | `collapsible` | `Boolean\|String` | no       | Wrap in a `<details>` block, open by default. String value overrides the summary label |
 | `collapsed`   | `Boolean\|String` | no       | Same as `collapsible` but closed by default                                            |
@@ -72,7 +72,7 @@ Usage:
 <Include asm="dropset" collapsible/>
 
 <!-- Rust file, collapsed by default -->
-<Include rust="interface::lib" collapsed/>
+<Include rs="interface::lib" collapsed/>
 
 <!-- VitePress component, collapsed -->
 <Include vitepress="components/Algorithm" collapsed/>
@@ -107,7 +107,7 @@ URL bases.
 Runs at dev server startup and rebuilds whenever `.tex`, `.md`, or test case
 `.rs` files change. Scans `.tex` files for `\CALL` dependencies, `.md` files
 for `<Algorithm>` usage, and test case files under `tests/tests/cases/` for
-[`// Verifies: ALGORITHM-NAME`](tests#verifies-convention) comments. Outputs
+[`// Verifies: ALGORITHM-NAME`][test cases] comments. Outputs
 [`algorithms/index.json`] with forward deps, reverse deps, page locations, and
 associated test cases.
 
@@ -123,3 +123,5 @@ associated test cases.
 [`paths.js`]: https://github.com/DASMAC-com/dropset-beta/blob/main/docs/.vitepress/components/paths.js
 [`algorithms/`]: https://github.com/DASMAC-com/dropset-beta/tree/main/docs/algorithms
 [`algorithms/index.json`]: https://github.com/DASMAC-com/dropset-beta/blob/main/docs/algorithms/index.json
+[algorithm index]: ../program/algorithm-index
+[test cases]: tests#verifies-convention

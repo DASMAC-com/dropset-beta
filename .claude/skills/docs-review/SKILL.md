@@ -1,0 +1,65 @@
+---
+name: docs-review
+description: Review PR changes for missing or outdated documentation, comments, and doc site content.
+disable-model-invocation: true
+user-invocable: true
+---
+
+# `docs-review`
+
+Review all changes in the current PR for documentation
+gaps, outdated content, and stale comments.
+
+## Steps
+
+1. Get the full diff and changed files against `main`:
+
+   ```sh
+   git diff main..HEAD --name-only
+   git diff main..HEAD
+   ```
+
+1. For each changed source file, check:
+
+   - Do new or modified structs, enums, functions,
+     or constants have accurate doc comments?
+   - Do existing comments still describe what the
+     code actually does after the change?
+   - Are assembly comments in `.s` files consistent
+     with the current instruction behavior?
+
+1. For each changed source file, check whether the
+   `docs/` site needs updates:
+
+   - New macros, data structures, or instructions
+     should be documented on the relevant docs page.
+   - Renamed or removed items should not leave stale
+     references in docs.
+   - `<Include>` region tags in docs should match
+     region names in source files.
+
+1. For each changed docs file, check whether the
+   content is consistent with the current source:
+
+   - Code snippets and descriptions should match
+     what the source actually defines.
+   - Links to other docs pages or external resources
+     should be valid.
+   - Cross-page markdown links must use reference-style
+     definitions (`[text][ref]` or `[text]` with a
+     `[text]: url` at the bottom of the file). Inline
+     links (`[text](url)`) are only acceptable for
+     same-page anchors (e.g. `[label](#anchor)`).
+   - `<Include>` and `<Algorithm>` component
+     attributes should resolve correctly.
+
+1. Do NOT make any changes. Instead, compile all
+   findings into a checklist using the TodoWrite
+   tool. Each item should include:
+
+   - The file path and line number.
+   - A brief description of what needs attention.
+
+1. If nothing needed fixing, confirm the docs are
+   in sync. Otherwise, present the checklist and
+   wait for the user to decide what to work on.

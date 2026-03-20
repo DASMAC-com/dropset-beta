@@ -17,15 +17,15 @@ import {
 
 const props = defineProps({
   asm: { type: String, default: "" },
-  rust: { type: String, default: "" },
+  rs: { type: String, default: "" },
   vitepress: { type: String, default: "" },
   collapsible: { type: [Boolean, String], default: false },
   collapsed: { type: [Boolean, String], default: false },
 });
 
-const isRust = !!props.rust;
+const isRust = !!props.rs;
 const isVitepress = !!props.vitepress;
-const raw = isVitepress ? props.vitepress : isRust ? props.rust : props.asm;
+const raw = isVitepress ? props.vitepress : isRust ? props.rs : props.asm;
 
 // Parse "file#region" syntax.
 const hashIdx = raw.indexOf("#");
@@ -66,9 +66,7 @@ if (isVitepress) {
   // Syntax: "crate::module" → crate/src/module.rs
   const sepIdx = fileSpec.indexOf("::");
   if (sepIdx === -1)
-    throw new Error(
-      `Invalid rust prop (expected "crate::module"): ${fileSpec}`,
-    );
+    throw new Error(`Invalid rs prop (expected "crate::module"): ${fileSpec}`);
   const crateName = fileSpec.slice(0, sepIdx);
   const modulePath = fileSpec.slice(sepIdx + 2);
   const crate = rustCrates[crateName];
