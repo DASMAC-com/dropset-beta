@@ -1,5 +1,5 @@
 use dropset_interface::{Discriminant, ErrorCode};
-use dropset_tests::{CaseResult, TestCase, TestSetup, check};
+use dropset_tests::{CaseResult, TestCase, TestSetup, check, check_with_accounts};
 
 #[derive(Clone, Copy)]
 pub enum Case {
@@ -22,9 +22,10 @@ impl TestCase for Case {
     fn run(&self, setup: &TestSetup) -> CaseResult {
         match self {
             // Verifies: REGISTER-MARKET
-            Self::InvalidLength => check(
+            Self::InvalidLength => check_with_accounts(
                 setup,
                 &[Discriminant::RegisterMarket.into(), 0x00],
+                6,
                 Some(ErrorCode::InvalidInstructionLength),
             ),
             // Verifies: REGISTER-MARKET

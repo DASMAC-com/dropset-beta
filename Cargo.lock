@@ -788,6 +788,7 @@ version = "0.1.0"
 dependencies = [
  "dropset-interface",
  "mollusk-svm",
+ "solana-account 3.4.0",
  "solana-sdk",
 ]
 

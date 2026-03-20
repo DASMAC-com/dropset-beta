@@ -67,12 +67,34 @@ pub fn check(
     data: &[u8],
     expected: Option<dropset_interface::ErrorCode>,
 ) -> CaseResult {
+    check_with_accounts(setup, data, 0, expected)
+}
+
+/// Like [`check`], but populates the input buffer with `n_accounts` dummy
+/// accounts so the program sees the requested account count.
+pub fn check_with_accounts(
+    setup: &TestSetup,
+    data: &[u8],
+    n_accounts: usize,
+    expected: Option<dropset_interface::ErrorCode>,
+) -> CaseResult {
     use mollusk_svm::result::ProgramResult as MolluskResult;
-    use solana_sdk::instruction::Instruction;
+    use solana_account::Account;
+    use solana_sdk::instruction::{AccountMeta, Instruction};
     use solana_sdk::program_error::ProgramError;
 
-    let instruction = Instruction::new_with_bytes(setup.program_id, data, vec![]);
-    let result = setup.mollusk.process_instruction(&instruction, &[]);
+    let keys: Vec<Pubkey> = (0..n_accounts).map(|_| Pubkey::new_unique()).collect();
+    let account_metas: Vec<AccountMeta> = keys
+        .iter()
+        .map(|k| AccountMeta::new_readonly(*k, false))
+        .collect();
+    let accounts: Vec<(Pubkey, Account)> = keys
+        .iter()
+        .map(|k| (*k, Account::default()))
+        .collect();
+
+    let instruction = Instruction::new_with_bytes(setup.program_id, data, account_metas);
+    let result = setup.mollusk.process_instruction(&instruction, &accounts);
 
     let expected_result: Result<(), ProgramError> = match expected {
         None => Ok(()),
