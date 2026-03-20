@@ -7,9 +7,11 @@ import { ref, onMounted } from "vue";
 import {
   ASM_BASE,
   GH_BASE,
+  GH_CFG,
   GH_ROOT,
   GH_VITEPRESS,
   asmModules,
+  cfgModules,
   rustCrates,
   rustModules,
   vitepressModules,
@@ -17,15 +19,23 @@ import {
 
 const props = defineProps({
   asm: { type: String, default: "" },
+  cfg: { type: String, default: "" },
   rs: { type: String, default: "" },
   vitepress: { type: String, default: "" },
   collapsible: { type: [Boolean, String], default: false },
   collapsed: { type: [Boolean, String], default: false },
 });
 
+const isCfg = !!props.cfg;
 const isRust = !!props.rs;
 const isVitepress = !!props.vitepress;
-const raw = isVitepress ? props.vitepress : isRust ? props.rs : props.asm;
+const raw = isVitepress
+  ? props.vitepress
+  : isRust
+    ? props.rs
+    : isCfg
+      ? props.cfg
+      : props.asm;
 
 // Parse "file#region" syntax.
 const hashIdx = raw.indexOf("#");
@@ -62,6 +72,14 @@ if (isVitepress) {
   loader = vitepressModules[resolved.key];
   label = `${ghPrefix}${base}${resolved.ext}`;
   ghLink = `${GH_VITEPRESS}${ghPrefix}${base}${resolved.ext}`;
+} else if (isCfg) {
+  // Syntax: "Makefile", "cfg/lychee.toml", ".github/workflows/build-docs.yml".
+  // Resolves relative to the repo root.
+  const key = `../../../${fileSpec}`;
+  loader = cfgModules[key];
+  if (!loader) throw new Error(`Unknown cfg file: ${fileSpec}`);
+  label = fileSpec;
+  ghLink = `${GH_CFG}${fileSpec}`;
 } else if (isRust) {
   // Syntax: "crate::module" → crate/src/module.rs
   const sepIdx = fileSpec.indexOf("::");
@@ -109,7 +127,7 @@ onMounted(async () => {
     const shiki = await import("shiki");
     const highlighter = await shiki.createHighlighter({
       themes: ["github-dark", "github-light"],
-      langs: ["asm", "rust", "vue", "javascript"],
+      langs: ["asm", "makefile", "rust", "toml", "vue", "javascript", "yaml"],
     });
 
     const lang = isVitepress
@@ -118,11 +136,17 @@ onMounted(async () => {
         : "javascript"
       : isRust
         ? "rust"
-        : "asm";
+        : isCfg
+          ? label.endsWith(".toml")
+            ? "toml"
+            : label.endsWith(".yml")
+              ? "yaml"
+              : "makefile"
+          : "asm";
 
     // Fix comment lines misclassified as preprocessor directives (asm only).
     const transformers = [];
-    if (!isRust) {
+    if (!isRust && !isCfg && !isVitepress) {
       const commentColor = { dark: "#6A737D", light: "#6A737D" };
       transformers.push({
         tokens(lines) {

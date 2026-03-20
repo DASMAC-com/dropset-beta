@@ -8,7 +8,7 @@ env:
 jobs:
   lint:
     env:
-      CONFIG_PATH: 'cfg/pre-commit/lint.yml'
+      CONFIG_PATH: 'cfg/pre-commit-lint.yml'
     name: 'Lint'
     runs-on: 'ubuntu-latest'
     steps:

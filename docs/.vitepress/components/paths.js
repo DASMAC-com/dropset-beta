@@ -46,6 +46,22 @@ export const vitepressModules = Object.assign(
   }),
 );
 
+// Config and root files (Makefile, YAML workflows, TOML configs, etc.).
+export const GH_CFG = GH_ROOT;
+export const cfgModules = Object.assign(
+  {},
+  import.meta.glob("../../../Makefile", {
+    query: "?raw",
+    import: "default",
+    exhaustive: true,
+  }),
+  import.meta.glob("../../../cfg/**/*", { query: "?raw", import: "default" }),
+  import.meta.glob("../../../.github/workflows/*.yml", {
+    query: "?raw",
+    import: "default",
+  }),
+);
+
 // All .rs files across known crate source directories (and workspace root).
 export const rustModules = Object.assign(
   {},

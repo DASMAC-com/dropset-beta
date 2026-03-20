@@ -53,4 +53,4 @@ lint: pre-commit-lint docs-prettier
 
 # Run pre-commit lint checks on all files.
 pre-commit-lint:
-	pre-commit run --config cfg/pre-commit/lint.yml --all-files
+	pre-commit run --config cfg/pre-commit-lint.yml --all-files

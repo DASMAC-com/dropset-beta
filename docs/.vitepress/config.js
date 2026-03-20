@@ -84,6 +84,7 @@ export default {
         text: "Development",
         items: [
           { text: "Build Scaffolding", link: "/development/build-scaffolding" },
+          { text: "CI", link: "/development/ci" },
           { text: "Tests", link: "/development/tests" },
           { text: "Docs Engine", link: "/development/docs-engine" },
         ],

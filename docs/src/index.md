@@ -85,7 +85,7 @@ design assurance.
 
 [CLRS]: https://www.cs.mcgill.ca/~akroit/math/compsci/Cormen%20Introduction%20to%20Algorithms.pdf
 [Dropset repo]: https://github.com/DASMAC-com/dropset-beta
-[makefile]: https://en.wikipedia.org/wiki/Make_(software)
+[makefile]: development/ci#makefile
 [formal verification]: https://en.wikipedia.org/wiki/Formal_verification
 [cu]: https://solana.com/docs/core/fees/compute-budget
 [solana opcode guide]: https://opcodes.dasmac.com

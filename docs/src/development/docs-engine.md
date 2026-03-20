@@ -47,9 +47,9 @@ case showing its syntax-highlighted Rust match arm.
 
 ### `<Include>`
 
-Includes and syntax-highlights an assembly (`.s`), Rust (`.rs`), or VitePress
-(`.vue`/`.js`) source file directly from the codebase, with a link to the file
-on GitHub.
+Includes and syntax-highlights a source file directly from the codebase, with a
+link to the file on GitHub. Supports assembly (`.s`), config/root files
+(`Makefile`, `.yml`, `.toml`), Rust (`.rs`), and VitePress (`.vue`/`.js`).
 
 <Include vitepress="components/Include" collapsed/>
 
@@ -58,6 +58,7 @@ on GitHub.
 | Prop          | Type              | Required | Description                                                                            |
 | ------------- | ----------------- | -------- | -------------------------------------------------------------------------------------- |
 | `asm`         | `String`          | no       | Assembly file name (without `.s` extension)                                            |
+| `cfg`         | `String`          | no       | Config/root file path from repo root (e.g. `Makefile`, `.github/workflows/test.yml`)   |
 | `rs`          | `String`          | no       | Rust file in `crate::module` syntax (e.g. `interface::lib`)                            |
 | `vitepress`   | `String`          | no       | VitePress file path (e.g. `components/Algorithm`, `theme/index`)                       |
 | `collapsible` | `Boolean\|String` | no       | Wrap in a `<details>` block, open by default. String value overrides the summary label |
@@ -76,6 +77,11 @@ Usage:
 
 <!-- VitePress component, collapsed -->
 <Include vitepress="components/Algorithm" collapsed/>
+
+<!-- Config/root file (Makefile, workflow, TOML) -->
+<Include cfg="Makefile" collapsed/>
+<Include cfg=".github/workflows/test.yml" collapsed/>
+<Include cfg="cfg/lychee.toml" collapsed/>
 
 <!-- Named region within a file -->
 <Include asm="entrypoint#some-region" collapsible/>
