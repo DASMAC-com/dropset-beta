@@ -19,7 +19,7 @@ gaps, outdated content, and stale comments.
    git diff main..HEAD
    ```
 
-2. For each changed source file, check:
+1. For each changed source file, check:
 
    - Do new or modified structs, enums, functions,
      or constants have accurate doc comments?
@@ -28,7 +28,7 @@ gaps, outdated content, and stale comments.
    - Are assembly comments in `.s` files consistent
      with the current instruction behavior?
 
-3. For each changed source file, check whether the
+1. For each changed source file, check whether the
    `docs/` site needs updates:
 
    - New macros, data structures, or instructions
@@ -38,7 +38,7 @@ gaps, outdated content, and stale comments.
    - `<Include>` region tags in docs should match
      region names in source files.
 
-4. For each changed docs file, check whether the
+1. For each changed docs file, check whether the
    content is consistent with the current source:
 
    - Code snippets and descriptions should match
@@ -48,13 +48,13 @@ gaps, outdated content, and stale comments.
    - `<Include>` and `<Algorithm>` component
      attributes should resolve correctly.
 
-5. Do NOT make any changes. Instead, compile all
+1. Do NOT make any changes. Instead, compile all
    findings into a checklist using the TodoWrite
    tool. Each item should include:
 
    - The file path and line number.
    - A brief description of what needs attention.
 
-6. If nothing needed fixing, confirm the docs are
+1. If nothing needed fixing, confirm the docs are
    in sync. Otherwise, present the checklist and
    wait for the user to decide what to work on.

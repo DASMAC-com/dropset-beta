@@ -67,7 +67,7 @@ if (isVitepress) {
   const sepIdx = fileSpec.indexOf("::");
   if (sepIdx === -1)
     throw new Error(
-      `Invalid rust prop (expected "crate::module"): ${fileSpec}`,
+      `Invalid rs prop (expected "crate::module"): ${fileSpec}`,
     );
   const crateName = fileSpec.slice(0, sepIdx);
   const modulePath = fileSpec.slice(sepIdx + 2);

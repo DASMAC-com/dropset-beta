@@ -6,7 +6,7 @@ across multiple `.s` files that are joined at build time via `.include`
 directives. See [build scaffolding](../development/build-scaffolding) for
 details on how assembly constants are generated from Rust crates.
 
-```
+```txt
 program/src/dropset/
 ├── dropset.s              # Top-level file
 ├── entrypoint.s           # Entrypoint dispatcher
