@@ -74,7 +74,7 @@ export default {
         text: "Program",
         items: [
           { text: "Layout", link: "/program/layout" },
-          { text: "Entrypoint", link: "/program/entrypoint" },
+          { text: "Inputs", link: "/program/inputs" },
           { text: "Markets", link: "/program/markets" },
           { text: "Algorithm Index", link: "/program/algorithm-index" },
         ],

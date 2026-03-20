@@ -22,4 +22,4 @@ The instruction requires the following accounts:
 
 <Algorithm tex="REGISTER-MARKET" asm="market/register"/>
 
-[input buffer]: entrypoint#input-buffer
+[input buffer]: inputs#input-buffer

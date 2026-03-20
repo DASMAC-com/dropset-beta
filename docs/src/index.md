@@ -27,7 +27,8 @@ implementations sourced directly from the codebase.
 An auto-generated [algorithm index] tracks
 dependencies between all algorithms and cross-links them at their definition
 sites. The top-level algorithm is the Dropset program
-[entrypoint]. See [program layout] for more details about program architecture.
+[entrypoint]. See [program layout] for more details about program
+architecture.
 
 ## Contributing
 
@@ -92,6 +93,7 @@ design assurance.
 [docs engine]: development/docs-engine
 [test cases]: development/tests
 [algorithm index]: program/algorithm-index
-[entrypoint]: program/layout#entrypoint
+[entrypoint]: program/inputs#entrypoint
+[inputs]: program/inputs
 [program layout]: program/layout
 [Development]: /development/build-scaffolding

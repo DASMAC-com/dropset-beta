@@ -1,8 +1,10 @@
-# Entrypoint
+# Inputs
 
 The entrypoint reads instruction data via the [SIMD-0321] `r2` pointer, which
 provides the instruction data address directly in a register. It dispatches on
 the instruction discriminant to the appropriate handler.
+
+## Entrypoint
 
 <Algorithm tex="ENTRYPOINT" asm="entrypoint"/>
 
