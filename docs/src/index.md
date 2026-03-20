@@ -32,10 +32,7 @@ architecture.
 
 ## Contributing
 
-To work with the [Dropset repo] locally, see the root [Makefile] for common
-operations and the [Development] section for
-details on the build system, test framework, and docs engine. Each page has a
-`Contribute to this page` link for quick edits.
+To work with the [Dropset repo] locally, see the [Development] section.
 
 ## About assembly
 
@@ -95,4 +92,4 @@ design assurance.
 [algorithm index]: program/algorithm-index
 [entrypoint]: program/inputs#entrypoint
 [program layout]: program/layout
-[Development]: /development/build-scaffolding
+[Development]: /development/

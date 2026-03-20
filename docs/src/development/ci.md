@@ -77,8 +77,7 @@ every pull request.
 
 ### Test
 
-Assembles the program and runs the [Mollusk test suite](tests) on every pull
-request.
+Assembles the program and runs the [Mollusk test suite] on every pull request.
 
 <Include cfg=".github/workflows/test.yml" collapsed/>
 
@@ -89,4 +88,5 @@ request.
 [lychee]: https://lychee.cli.rs/
 [Prettier]: https://prettier.io/
 [pre-commit]: https://pre-commit.com/
+[Mollusk test suite]: tests
 [Conventional Commits]: https://www.conventionalcommits.org/

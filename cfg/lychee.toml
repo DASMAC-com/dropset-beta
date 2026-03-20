@@ -1,5 +1,5 @@
 # Algorithm cross-links have no file extension and are resolved at
-# runtime by # the VitePress router, so they cannot be validated against
+# runtime by the VitePress router, so they cannot be validated against
 # the static build output. Exclude them from the check.
 
 exclude = ['#algo-ref-']

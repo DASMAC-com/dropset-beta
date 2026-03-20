@@ -105,8 +105,8 @@ Usage:
 ### [`paths.js`]
 
 Configures file resolution for the `<Algorithm>` and `<Include>` components:
-assembly source root, Rust crate mappings, VitePress file mappings, and GitHub
-URL bases.
+assembly source root, config/root file mappings, Rust crate mappings, VitePress
+file mappings, and GitHub URL bases.
 
 ### Algorithm index builder
 
@@ -114,7 +114,7 @@ Runs at dev server startup and rebuilds whenever `.tex`, `.md`, or test case
 `.rs` files change. Scans `.tex` files for `\CALL` dependencies, `.md` files
 for `<Algorithm>` usage, and test case files under `tests/tests/cases/` for
 [`// Verifies: ALGORITHM-NAME`][test cases] comments. Outputs
-[`algorithms/index.json`] with forward deps, reverse deps, page locations, and
+`algorithms/index.json` with forward deps, reverse deps, page locations, and
 associated test cases.
 
 <Include vitepress="buildAlgorithmIndex" collapsed/>
