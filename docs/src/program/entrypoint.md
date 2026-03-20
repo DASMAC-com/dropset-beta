@@ -25,14 +25,14 @@ at compile-time-known offsets from `r1`, and more importantly, market account
 data offsets are persisted across transactions. The `InputBufferHeader` layout
 captures this design:
 
-<Include rust="interface::memory#input_buffer_header" collapsible/>
+<Include rs="interface::memory#input_buffer_header" collapsible/>
 
 Account data regions in the Solana input buffer are variable-length and would
 normally prevent static offset computation. `FullRuntimeAccount` solves this by
 extending [`RuntimeAccount`] with a compile-time-sized data buffer and trailing
 rent epoch:
 
-<Include rust="interface::memory#full_runtime_account" collapsible/>
+<Include rs="interface::memory#full_runtime_account" collapsible/>
 
 Because the user data length is zero, `FullRuntimeAccount` has a fixed size and
 the market account begins at a deterministic offset. This makes every account

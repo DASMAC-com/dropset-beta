@@ -58,7 +58,7 @@ on GitHub.
 | Prop          | Type              | Required | Description                                                                            |
 | ------------- | ----------------- | -------- | -------------------------------------------------------------------------------------- |
 | `asm`         | `String`          | no       | Assembly file name (without `.s` extension)                                            |
-| `rust`        | `String`          | no       | Rust file in `crate::module` syntax (e.g. `interface::lib`)                            |
+| `rs`          | `String`          | no       | Rust file in `crate::module` syntax (e.g. `interface::lib`)                            |
 | `vitepress`   | `String`          | no       | VitePress file path (e.g. `components/Algorithm`, `theme/index`)                       |
 | `collapsible` | `Boolean\|String` | no       | Wrap in a `<details>` block, open by default. String value overrides the summary label |
 | `collapsed`   | `Boolean\|String` | no       | Same as `collapsible` but closed by default                                            |
@@ -72,7 +72,7 @@ Usage:
 <Include asm="dropset" collapsible/>
 
 <!-- Rust file, collapsed by default -->
-<Include rust="interface::lib" collapsed/>
+<Include rs="interface::lib" collapsed/>
 
 <!-- VitePress component, collapsed -->
 <Include vitepress="components/Algorithm" collapsed/>

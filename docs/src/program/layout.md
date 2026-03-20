@@ -35,7 +35,7 @@ Instruction discriminant constants are injected from the
 [`#[discriminant_enum]`](../development/build-scaffolding#discriminant-enum-target)
 macro:
 
-<Include rust="interface::lib#discriminant_enum" collapsible/>
+<Include rs="interface::lib#discriminant_enum" collapsible/>
 <Include asm="common/discriminant" collapsible/>
 
 ### Errors
@@ -44,7 +44,7 @@ Error codes and subroutines injected via
 [`#[error_enum]`](../development/build-scaffolding#error-enum-target).
 Each error label sets `r0` to the corresponding error code and exits:
 
-<Include rust="interface::lib#error_enum" collapsible/>
+<Include rs="interface::lib#error_enum" collapsible/>
 <Include asm="common/error" collapsible/>
 
 ### Memory
