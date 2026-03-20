@@ -32,10 +32,7 @@ architecture.
 
 ## Contributing
 
-To work with the [Dropset repo] locally, see the root [Makefile] for common
-operations and the [Development] section for
-details on the build system, test framework, and docs engine. Each page has a
-`Contribute to this page` link for quick edits.
+To work with the [Dropset repo] locally, see the [Development] section.
 
 ## About assembly
 
@@ -85,7 +82,6 @@ design assurance.
 
 [CLRS]: https://www.cs.mcgill.ca/~akroit/math/compsci/Cormen%20Introduction%20to%20Algorithms.pdf
 [Dropset repo]: https://github.com/DASMAC-com/dropset-beta
-[makefile]: https://en.wikipedia.org/wiki/Make_(software)
 [formal verification]: https://en.wikipedia.org/wiki/Formal_verification
 [cu]: https://solana.com/docs/core/fees/compute-budget
 [solana opcode guide]: https://opcodes.dasmac.com
@@ -95,4 +91,4 @@ design assurance.
 [algorithm index]: program/algorithm-index
 [entrypoint]: program/inputs#entrypoint
 [program layout]: program/layout
-[Development]: /development/build-scaffolding
+[Development]: /development/

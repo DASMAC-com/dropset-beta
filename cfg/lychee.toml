@@ -1,0 +1,8 @@
+# Algorithm cross-links have no file extension and are resolved at
+# runtime by the VitePress router, so they cannot be validated against
+# the static build output. Exclude them from the check.
+#
+# GitHub blob links to this repo will 404 for new or renamed files
+# until the PR merges to main. Exclude them.
+
+exclude = ['#algo-ref-', 'https://github.com/DASMAC-com/dropset-beta/blob/']

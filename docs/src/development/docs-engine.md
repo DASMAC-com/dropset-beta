@@ -47,9 +47,9 @@ case showing its syntax-highlighted Rust match arm.
 
 ### `<Include>`
 
-Includes and syntax-highlights an assembly (`.s`), Rust (`.rs`), or VitePress
-(`.vue`/`.js`) source file directly from the codebase, with a link to the file
-on GitHub.
+Includes and syntax-highlights a source file directly from the codebase, with a
+link to the file on GitHub. Supports assembly (`.s`), config/root files
+(`Makefile`, `.yml`, `.toml`), Rust (`.rs`), and VitePress (`.vue`/`.js`).
 
 <Include vitepress="components/Include" collapsed/>
 
@@ -58,6 +58,7 @@ on GitHub.
 | Prop          | Type              | Required | Description                                                                            |
 | ------------- | ----------------- | -------- | -------------------------------------------------------------------------------------- |
 | `asm`         | `String`          | no       | Assembly file name (without `.s` extension)                                            |
+| `cfg`         | `String`          | no       | Config/root file path from repo root (e.g. `Makefile`, `.github/workflows/test.yml`)   |
 | `rs`          | `String`          | no       | Rust file in `crate::module` syntax (e.g. `interface::lib`)                            |
 | `vitepress`   | `String`          | no       | VitePress file path (e.g. `components/Algorithm`, `theme/index`)                       |
 | `collapsible` | `Boolean\|String` | no       | Wrap in a `<details>` block, open by default. String value overrides the summary label |
@@ -77,6 +78,11 @@ Usage:
 <!-- VitePress component, collapsed -->
 <Include vitepress="components/Algorithm" collapsed/>
 
+<!-- Config/root file (Makefile, workflow, TOML) -->
+<Include cfg="Makefile" collapsed/>
+<Include cfg=".github/workflows/test.yml" collapsed/>
+<Include cfg="cfg/lychee.toml" collapsed/>
+
 <!-- Named region within a file -->
 <Include asm="entrypoint#some-region" collapsible/>
 ```
@@ -84,7 +90,7 @@ Usage:
 ### `<AlgorithmIndex>`
 
 Renders a listing of all algorithms with a Mermaid dependency graph. Takes no
-props. It reads directly from the build-time [`algorithms/index.json`].
+props. It reads directly from the build-time `algorithms/index.json` file.
 
 Usage:
 
@@ -99,8 +105,8 @@ Usage:
 ### [`paths.js`]
 
 Configures file resolution for the `<Algorithm>` and `<Include>` components:
-assembly source root, Rust crate mappings, VitePress file mappings, and GitHub
-URL bases.
+assembly source root, config/root file mappings, Rust crate mappings, VitePress
+file mappings, and GitHub URL bases.
 
 ### Algorithm index builder
 
@@ -108,7 +114,7 @@ Runs at dev server startup and rebuilds whenever `.tex`, `.md`, or test case
 `.rs` files change. Scans `.tex` files for `\CALL` dependencies, `.md` files
 for `<Algorithm>` usage, and test case files under `tests/tests/cases/` for
 [`// Verifies: ALGORITHM-NAME`][test cases] comments. Outputs
-[`algorithms/index.json`] with forward deps, reverse deps, page locations, and
+`algorithms/index.json` with forward deps, reverse deps, page locations, and
 associated test cases.
 
 <Include vitepress="buildAlgorithmIndex" collapsed/>
@@ -122,6 +128,5 @@ associated test cases.
 [Mermaid]: https://mermaid.js.org/
 [`paths.js`]: https://github.com/DASMAC-com/dropset-beta/blob/main/docs/.vitepress/components/paths.js
 [`algorithms/`]: https://github.com/DASMAC-com/dropset-beta/tree/main/docs/algorithms
-[`algorithms/index.json`]: https://github.com/DASMAC-com/dropset-beta/blob/main/docs/algorithms/index.json
 [algorithm index]: ../program/algorithm-index
 [test cases]: tests#verifies-convention

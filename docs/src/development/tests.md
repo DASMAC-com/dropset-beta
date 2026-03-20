@@ -113,5 +113,5 @@ and panics at the end if any case failed.
 [Mollusk]: https://github.com/anza-xyz/mollusk
 [`tests/`]: https://github.com/DASMAC-com/dropset-beta/tree/main/tests
 [algorithm specification]: ../program/algorithm-index
-[build-time algorithm index]: docs-engine#build-time-file-generation
+[build-time algorithm index]: docs-engine#build-time-files
 [de-algorithm]: docs-engine#algorithm

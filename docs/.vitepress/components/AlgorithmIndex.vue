@@ -19,7 +19,7 @@ const chart = ref(null);
 const algorithms = Object.keys(algorithmIndex)
   .map((name) => ({
     name,
-    href: `${algorithmIndex[name].page || "/"}#algorithm-${name}`,
+    href: `${algorithmIndex[name].page || "/"}#algo-ref-${name}`,
   }))
   .sort((a, b) => a.name.localeCompare(b.name));
 
@@ -27,7 +27,7 @@ const algorithms = Object.keys(algorithmIndex)
 function buildGraph(index) {
   const lines = ["graph TD"];
   for (const [name, entry] of Object.entries(index)) {
-    const href = `${entry.page || "/"}#algorithm-${name}`;
+    const href = `${entry.page || "/"}#algo-ref-${name}`;
     lines.push(`  ${name}["${name}"]`);
     lines.push(`  click ${name} "${href}"`);
     for (const dep of entry.calls) {
