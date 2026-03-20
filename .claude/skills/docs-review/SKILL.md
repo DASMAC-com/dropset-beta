@@ -45,6 +45,11 @@ gaps, outdated content, and stale comments.
      what the source actually defines.
    - Links to other docs pages or external resources
      should be valid.
+   - Cross-page markdown links must use reference-style
+     definitions (`[text][ref]` or `[text]` with a
+     `[text]: url` at the bottom of the file). Inline
+     links (`[text](url)`) are only acceptable for
+     same-page anchors (e.g. `[label](#anchor)`).
    - `<Include>` and `<Algorithm>` component
      attributes should resolve correctly.
 
