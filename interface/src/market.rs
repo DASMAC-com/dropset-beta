@@ -4,6 +4,7 @@ use crate::seat::Seat;
 use dropset_macros::{instruction_accounts, instruction_data};
 use pinocchio::account::RuntimeAccount;
 
+// region: market_header
 #[repr(C, packed)]
 pub struct MarketHeader {
     /// Absolute pointer to seats tree root in memory map.
@@ -17,6 +18,7 @@ pub struct MarketHeader {
     /// Absolute pointer to where the next node should be allocated in memory map.
     pub next: *mut StackNode,
 }
+// endregion: market_header
 
 // region: instruction_data_example
 #[instruction_data("market/register")]

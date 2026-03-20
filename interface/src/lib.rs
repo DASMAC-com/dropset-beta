@@ -5,13 +5,16 @@ pub mod memory;
 pub mod order;
 pub mod seat;
 
-#[discriminant_enum("discriminant")]
+// region: discriminant_enum
+#[discriminant_enum("common/discriminant")]
 pub enum Discriminant {
     /// Register a new market.
     RegisterMarket,
 }
+// endregion: discriminant_enum
 
-#[error_enum("error")]
+// region: error_enum
+#[error_enum("common/error")]
 pub enum ErrorCode {
     /// The instruction's discriminant does not match any known variant.
     InvalidDiscriminant,
@@ -20,6 +23,7 @@ pub enum ErrorCode {
     /// The number of accounts provided is invalid for the given instruction.
     InvalidNumberOfAccounts,
 }
+// endregion: error_enum
 
 // region: constant_group_example
 constant_group! {

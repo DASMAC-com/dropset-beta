@@ -8,7 +8,7 @@ pub struct StackNode {
 
 constant_group! {
     #[prefix("DATA")]
-    #[inject("memory")]
+    #[inject("common/memory")]
     data {
         /// Data length of zero.
         DATA_LEN_ZERO = immediate!(0),
@@ -27,6 +27,7 @@ pub struct FullRuntimeAccount<const DATA_SIZE: usize> {
 }
 // endregion: full_runtime_account
 
+// region: input_buffer_header
 #[repr(C, packed)]
 /// Empty user data is required to ensure absolute addressing.
 pub struct InputBufferHeader {
@@ -34,6 +35,7 @@ pub struct InputBufferHeader {
     pub user: FullRuntimeAccount<{ runtime_data_size(data::DATA_LEN_ZERO) }>,
     pub market: RuntimeAccount,
 }
+// endregion: input_buffer_header
 
 /// Compute the data buffer size for a runtime account with the given data length.
 pub const fn runtime_data_size(data_len: usize) -> usize {
