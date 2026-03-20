@@ -15,8 +15,6 @@ jobs:
     - uses: './.github/actions/install-sbpf'
       with:
         sbpf-cli-revision: '${{ env.SBPF_CLI_REV }}'
-    - name: 'Build assembly'
-      run: 'make asm'
     - name: 'Run tests'
       run: 'make test'
 name: 'Test'
