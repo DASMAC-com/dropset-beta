@@ -94,6 +94,5 @@ design assurance.
 [test cases]: development/tests
 [algorithm index]: program/algorithm-index
 [entrypoint]: program/inputs#entrypoint
-[inputs]: program/inputs
 [program layout]: program/layout
 [Development]: /development/build-scaffolding
