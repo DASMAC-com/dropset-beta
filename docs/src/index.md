@@ -18,22 +18,21 @@ check out the [Solana Opcode Guide].
 
 ## About this site
 
-This site uses a custom [docs engine](development/docs-engine) that provides
+This site uses a custom [docs engine] that provides
 formal [CLRS]-style algorithmic specifications with corresponding assembly
 implementations sourced directly from the codebase.
-[Test cases](development/tests) are linked to the algorithms they verify via
+[Test cases] are linked to the algorithms they verify via
 `// Verifies:` tags and embedded on each algorithm's page.
 
-An auto-generated [algorithm index](program/algorithm-index) tracks
+An auto-generated [algorithm index] tracks
 dependencies between all algorithms and cross-links them at their definition
 sites. The top-level algorithm is the Dropset program
-[entrypoint](program/layout#entrypoint). See [program layout](program/layout)
-for more details about program architecture.
+[entrypoint]. See [program layout] for more details about program architecture.
 
 ## Contributing
 
 To work with the [Dropset repo] locally, see the root [Makefile] for common
-operations and the [Development](/development/build-scaffolding) section for
+operations and the [Development] section for
 details on the build system, test framework, and docs engine. Each page has a
 `Contribute to this page` link for quick edits.
 
@@ -90,3 +89,9 @@ design assurance.
 [cu]: https://solana.com/docs/core/fees/compute-budget
 [solana opcode guide]: https://opcodes.dasmac.com
 [the mythical man-month]: https://en.wikipedia.org/wiki/The_Mythical_Man-Month
+[docs engine]: development/docs-engine
+[test cases]: development/tests
+[algorithm index]: program/algorithm-index
+[entrypoint]: program/layout#entrypoint
+[program layout]: program/layout
+[Development]: /development/build-scaffolding

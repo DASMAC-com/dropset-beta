@@ -39,4 +39,4 @@ the market account begins at a deterministic offset. This makes every account
 metadata field in the header addressable as an immediate offset from `r1`.
 
 [SIMD-0321]: https://github.com/solana-foundation/solana-improvement-documents/blob/main/proposals/0321-vm-r2-instruction-data-pointer.md
-[`RuntimeAccount`]: https://docs.rs/pinocchio/latest/pinocchio/account/struct.RuntimeAccount.html
+[`RuntimeAccount`]: https://docs.rs/solana-account-view/solana_account_view/struct.RuntimeAccount.html

@@ -56,7 +56,7 @@ lists them for the runner.
 
 Each match arm in `run()` carries one or more `// Verifies: ALGORITHM-NAME`
 comments that link the case to an
-[algorithm specification](../program/algorithm-index). Placing the tag next to
+[algorithm specification]. Placing the tag next to
 the test logic makes it easy to see what each case exercises. A single case may
 verify multiple algorithms:
 
@@ -66,9 +66,9 @@ verify multiple algorithms:
 Self::SomeCase => check(setup, &[...], ...),
 ```
 
-The [build-time algorithm index](docs-engine#build-time-file-generation) scans
+The [build-time algorithm index] scans
 these tags and associates each test case with its algorithm. The
-[`<Algorithm>`](docs-engine#algorithm) component then renders a collapsed
+[`<Algorithm>`][de-algorithm] component then renders a collapsed
 **Tests** section on each algorithm's page, with nested details for every
 linked case showing syntax-highlighted Rust source.
 
@@ -112,3 +112,6 @@ and panics at the end if any case failed.
 
 [Mollusk]: https://github.com/anza-xyz/mollusk
 [`tests/`]: https://github.com/DASMAC-com/dropset-beta/tree/main/tests
+[algorithm specification]: ../program/algorithm-index
+[build-time algorithm index]: docs-engine#build-time-file-generation
+[de-algorithm]: docs-engine#algorithm

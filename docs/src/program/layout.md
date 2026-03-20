@@ -3,7 +3,7 @@
 Dropset assembly source files are in [`program/src/dropset/`]. The program is
 built using [multi-file assembly], which allows splitting a single program
 across multiple `.s` files that are joined at build time via `.include`
-directives. See [build scaffolding](../development/build-scaffolding) for
+directives. See [build scaffolding] for
 details on how assembly constants are generated from Rust crates.
 
 ```txt
@@ -31,9 +31,8 @@ program/src/dropset/
 ### Discriminants
 
 Instruction discriminant constants are injected from the
-[interface](../development/build-scaffolding#interface) crate's
-[`#[discriminant_enum]`](../development/build-scaffolding#discriminant-enum-target)
-macro:
+[interface][bs-interface] crate's
+[`#[discriminant_enum]`][bs-discriminant] macro:
 
 <Include rs="interface::lib#discriminant_enum" collapsible/>
 <Include asm="common/discriminant" collapsible/>
@@ -41,7 +40,7 @@ macro:
 ### Errors
 
 Error codes and subroutines injected via
-[`#[error_enum]`](../development/build-scaffolding#error-enum-target).
+[`#[error_enum]`][bs-error].
 Each error label sets `r0` to the corresponding error code and exits:
 
 <Include rs="interface::lib#error_enum" collapsible/>
@@ -55,3 +54,7 @@ General memory layout constants are in `memory.s`:
 
 [`program/src/dropset/`]: https://github.com/DASMAC-com/dropset-beta/tree/main/program/src/dropset
 [multi-file assembly]: https://github.com/blueshift-gg/sbpf/pull/109
+[bs-interface]: ../development/build-scaffolding#interface
+[bs-discriminant]: ../development/build-scaffolding#discriminant-enum-target
+[bs-error]: ../development/build-scaffolding#error-enum-target
+[build scaffolding]: ../development/build-scaffolding
