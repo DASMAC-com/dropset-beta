@@ -65,13 +65,7 @@ explicit casts (e.g. `Discriminant::RegisterMarket.into()`). A hidden module
 with `DISC_`-prefixed assembly constants and a `GROUP` is generated for
 build-time injection.
 
-```rust
-#[discriminant_enum("discriminant")]
-pub enum Discriminant {
-    /// Register a new market.
-    RegisterMarket,  // -> DISC_REGISTER_MARKET = 0
-}
-```
+<Include rust="interface::lib#discriminant_enum" collapsed/>
 
 ### `#[error_enum("target")]`
 
@@ -79,13 +73,7 @@ Same as `discriminant_enum` but with `#[repr(u32)]`, prefixed with `E_`,
 starting at 1 (0 is reserved for success). A `From<Enum> for u32` impl is
 generated.
 
-```rust
-#[error_enum("error")]
-pub enum ErrorCode {
-    /// The instruction's discriminant does not match any known variant.
-    InvalidDiscriminant,  // -> E_INVALID_DISCRIMINANT = 1
-}
-```
+<Include rust="interface::lib#error_enum" collapsed/>
 
 ### `#[instruction_data("target")]`
 
