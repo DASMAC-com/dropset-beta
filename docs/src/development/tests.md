@@ -89,6 +89,17 @@ Sends an instruction with the given `data` bytes (no accounts) and compares the
 result against an optional `ErrorCode`. Pass `None` for expected success, or
 `Some(ErrorCode::Variant)` for a `ProgramError::Custom` failure.
 
+### `check_with_accounts(setup, data, n_accounts, expected)`
+
+Like `check`, but populates the input buffer with `n_accounts` dummy accounts
+so the program sees the requested account count.
+
+### `check_custom(setup, data, account_metas, accounts, expected)`
+
+Like `check_with_accounts`, but accepts pre-built account and meta lists for
+full control over account contents and keys. Use this when a test needs specific
+account data or duplicate keys.
+
 ### `TestCase` trait
 
 <Include rs="tests::lib#test_case" collapsible/>

@@ -31,7 +31,6 @@ pub enum ErrorCode {
 }
 // endregion: error_enum
 
-// region: constant_group_example
 constant_group! {
     #[inject("entrypoint")]
     entrypoint {
@@ -43,7 +42,6 @@ constant_group! {
         INSN_DISC = offset!(0),
     }
 }
-// endregion: constant_group_example
 
 pub const INJECTION_GROUPS: &[&dropset_build::ConstantGroup] = &[
     &entrypoint::GROUP,

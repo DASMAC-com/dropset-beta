@@ -40,6 +40,7 @@ pub struct InputBufferHeader {
 }
 // endregion: input_buffer_header
 
+// region: constant_group_example
 constant_group! {
     #[prefix("IB")]
     #[inject("common/memory")]
@@ -55,6 +56,7 @@ constant_group! {
         MARKET_DATA_LEN = offset!(InputBufferHeader.market.data_len),
     }
 }
+// endregion: constant_group_example
 
 /// Compute the data buffer size for a runtime account with the given data length.
 pub const fn runtime_data_size(data_len: usize) -> usize {

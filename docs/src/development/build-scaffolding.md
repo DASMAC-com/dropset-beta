@@ -39,14 +39,16 @@ The [`macros`] crate provides several [proc macros]:
 Defines a group of named assembly constants with an injection target. The
 `#[inject("file")]` attribute specifies which assembly file receives the
 constants. An optional `#[prefix("...")]` attribute prepends a prefix to all
-generated constant names. Each constant is assigned a value using one of two
-custom syntax forms (parsed within the proc macro, not standalone macros):
+generated constant names. An optional `///` doc comment on the group itself
+adds a header comment and separator lines around the group in the output
+assembly file. Each constant is assigned a value using one of two custom
+syntax forms (parsed within the proc macro, not standalone macros):
 
 - `offset!(expr)`: an `i16` memory offset, the generated name is suffixed with
   `_OFF`
 - `immediate!(expr)`: an `i32` immediate value
 
-<Include rs="interface::lib#constant_group_example" collapsible/>
+<Include rs="interface::memory#constant_group_example" collapsible/>
 
 Each group generates:
 
@@ -55,7 +57,8 @@ Each group generates:
   injection, with names derived from the constant name (plus prefix if
   specified)
 - `.equ` directives injected into the target assembly file, with doc comments
-  carried over as assembly comments
+  carried over as assembly comments. Groups with a doc comment are wrapped in
+  a header and separator lines
 
 ### `#[discriminant_enum("target")]`
 
@@ -110,7 +113,9 @@ The [`interface`] crate uses the macros to declare all program constants. The
 The [`build`] crate provides the `inject()` function that writes `.equ`
 directives into assembly files. For each target file, it finds the first label
 (a line ending with `:`) and replaces everything above it with the generated
-directives. Doc comments from the Rust source become assembly comments.
+directives. Doc comments from the Rust source become assembly comments. Groups
+that carry a doc comment are rendered with a header comment and separator
+lines; groups without a doc comment are separated by a blank line.
 
 <Include rs="build::lib" collapsed/>
 
