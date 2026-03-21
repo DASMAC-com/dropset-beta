@@ -22,6 +22,7 @@ shiki
 solana
 swatinem
 syscall
+syscalls
 sysvar
 vite
 vitepress
