@@ -21,6 +21,7 @@ sbpf
 shiki
 solana
 swatinem
+syscall
 sysvar
 vite
 vitepress
