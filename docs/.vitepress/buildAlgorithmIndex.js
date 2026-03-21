@@ -41,13 +41,20 @@ export function buildAlgorithmIndex() {
     const code = readFileSync(join(ALGO_DIR, file), "utf-8");
 
     const calls = new Set();
+    const syscalls = new Set();
     for (const match of code.matchAll(/\\CALL\{([\w-]+)\}/g)) {
-      if (match[1] !== name) calls.add(match[1]);
+      if (match[1] === name) continue;
+      if (match[1].startsWith("sol-")) {
+        syscalls.add(match[1].replace(/-/g, "_"));
+      } else {
+        calls.add(match[1]);
+      }
     }
 
     index[name] = {
       page: null,
       calls: [...calls],
+      syscalls: [...syscalls],
       calledBy: [],
     };
   }

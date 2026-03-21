@@ -12,6 +12,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import algorithmIndex from "../../algorithms/index.json";
+import { syscallRegistry } from "./paths.js";
 
 const chart = ref(null);
 
@@ -26,6 +27,7 @@ const algorithms = Object.keys(algorithmIndex)
 // Build a Mermaid graph definition from the algorithm index.
 function buildGraph(index) {
   const lines = ["graph TD"];
+  const syscallNodes = new Set();
   for (const [name, entry] of Object.entries(index)) {
     const href = `${entry.page || "/"}#algo-ref-${name}`;
     lines.push(`  ${name}["${name}"]`);
@@ -33,7 +35,20 @@ function buildGraph(index) {
     for (const dep of entry.calls) {
       lines.push(`  ${name} --> ${dep}`);
     }
+    for (const sc of entry.syscalls || []) {
+      if (!syscallNodes.has(sc)) {
+        syscallNodes.add(sc);
+        lines.push(`  ${sc}(["\`**${sc}**\`"]):::syscall`);
+        if (syscallRegistry[sc]) {
+          lines.push(`  click ${sc} "${syscallRegistry[sc]}" _blank`);
+        }
+      }
+      lines.push(`  ${name} --> ${sc}`);
+    }
   }
+  lines.push(
+    "  classDef syscall fill:#e8e8e8,stroke:#999,stroke-dasharray:5 5",
+  );
   return lines.join("\n");
 }
 

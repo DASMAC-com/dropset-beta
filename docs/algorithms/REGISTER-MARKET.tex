@@ -26,6 +26,18 @@
   \IF{$market.data\_len \neq 0$}
     \RETURN \texttt{ErrorCode::MarketHasData}
   \ENDIF
+  \IF{$base\_mint.duplicate \neq$ \texttt{input\_buffer.NON\_DUP\_MARKER}}
+    \RETURN \texttt{ErrorCode::BaseMintIsDuplicate}
+  \ENDIF
+  \IF{$quote\_mint.duplicate \neq$ \texttt{input\_buffer.NON\_DUP\_MARKER}}
+    \RETURN \texttt{ErrorCode::QuoteMintIsDuplicate}
+  \ENDIF
+  \STATE $market\_pda =$ \CALL{sol-try-find-program-address}{
+    $program\_id, base\_mint, quote\_mint$
+  }
+  \IF{$market.pubkey \neq market\_pda$}
+    \RETURN \texttt{ErrorCode::InvalidMarketPubkey}
+  \ENDIF
 \ENDPROCEDURE
 \end{algorithmic}
 \end{algorithm}
