@@ -46,7 +46,9 @@ function buildGraph(index) {
       lines.push(`  ${name} --> ${sc}`);
     }
   }
-  lines.push("  classDef syscall fill:#e8e8e8,stroke:#999,stroke-dasharray:5 5");
+  lines.push(
+    "  classDef syscall fill:#e8e8e8,stroke:#999,stroke-dasharray:5 5",
+  );
   return lines.join("\n");
 }
 

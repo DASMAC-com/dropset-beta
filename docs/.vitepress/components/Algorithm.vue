@@ -39,7 +39,13 @@
 import { ref, onMounted } from "vue";
 import "pseudocode/build/pseudocode.min.css";
 import algorithmIndex from "../../algorithms/index.json";
-import { ASM_BASE, GH_BASE, GH_ROOT, asmModules, syscallRegistry } from "./paths.js";
+import {
+  ASM_BASE,
+  GH_BASE,
+  GH_ROOT,
+  asmModules,
+  syscallRegistry,
+} from "./paths.js";
 
 const GH_TESTS = `${GH_ROOT}tests/tests/cases/`;
 
@@ -100,7 +106,10 @@ onMounted(async () => {
         href: syscallRegistry[name],
         external: true,
       }));
-      calls.value = [...resolveLinks(entry.calls, algorithmIndex), ...syscallLinks];
+      calls.value = [
+        ...resolveLinks(entry.calls, algorithmIndex),
+        ...syscallLinks,
+      ];
       calledBy.value = resolveLinks(entry.calledBy, algorithmIndex);
       tests.value = entry.tests || [];
     }
