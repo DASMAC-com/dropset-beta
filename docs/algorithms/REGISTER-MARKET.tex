@@ -35,6 +35,9 @@
   \STATE $market\_pda =$ \CALL{sol-try-find-program-address}{
     $program\_id, base\_mint, quote\_mint$
   }
+  \IF{$market.pubkey \neq market\_pda$}
+    \RETURN \texttt{ErrorCode::InvalidMarketPubkey}
+  \ENDIF
 \ENDPROCEDURE
 \end{algorithmic}
 \end{algorithm}
