@@ -93,7 +93,7 @@ pub fn expand(
         })
         .collect();
 
-    let group = codegen::group_module(&mod_name, target_str, &meta_defs, &meta_idents);
+    let group = codegen::group_module(&mod_name, target_str, "", &meta_defs, &meta_idents);
 
     quote! {
         #(#attrs)*

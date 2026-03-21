@@ -24,7 +24,7 @@ pub fn expand(target: &str, input: &syn::ItemStruct) -> proc_macro2::TokenStream
         quote! { super::#struct_name::LEN as i32 },
     );
 
-    let group = codegen::group_module(&mod_name, target, &[meta_def], &[meta_ident]);
+    let group = codegen::group_module(&mod_name, target, "", &[meta_def], &[meta_ident]);
 
     quote! {
         #input

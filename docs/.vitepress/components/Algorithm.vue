@@ -99,6 +99,8 @@ onMounted(async () => {
     const html = pseudocode.renderToString(code, {
       lineNumber: props.lineNumber,
       lineNumberPunc: props.lineNumberPunc,
+      noEnd: true,
+      indentSize: "2em",
     });
 
     // Strip the auto-incrementing caption number.

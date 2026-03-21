@@ -22,20 +22,26 @@ pub enum ErrorCode {
     InvalidInstructionLength,
     /// The number of accounts provided is invalid for the given instruction.
     InvalidNumberOfAccounts,
+    /// The user account already has data.
+    UserHasData,
+    /// The market account is a duplicate.
+    MarketAccountIsDuplicate,
+    /// The market account already has data.
+    MarketHasData,
 }
 // endregion: error_enum
 
-// region: constant_group_example
 constant_group! {
     #[inject("entrypoint")]
     entrypoint {
+        /// Offset from input buffer to number of accounts, in input buffer.
+        IB_N_ACCTS = offset!(0),
         /// Offset from instruction data to instruction data length, in input buffer.
         INSN_LEN = offset!(-size_of::<u64>()),
         /// Offset from instruction data to discriminant, in input buffer.
         INSN_DISC = offset!(0),
     }
 }
-// endregion: constant_group_example
 
 pub const INJECTION_GROUPS: &[&dropset_build::ConstantGroup] = &[
     &entrypoint::GROUP,
@@ -44,4 +50,5 @@ pub const INJECTION_GROUPS: &[&dropset_build::ConstantGroup] = &[
     &market::register_market_data::GROUP,
     &market::register_market_accounts::GROUP,
     &memory::data::GROUP,
+    &memory::input_buffer::GROUP,
 ];

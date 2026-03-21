@@ -4,6 +4,9 @@
 .equ E_INVALID_INSTRUCTION_LENGTH, 2
 # The number of accounts provided is invalid for the given instruction.
 .equ E_INVALID_NUMBER_OF_ACCOUNTS, 3
+.equ E_USER_HAS_DATA, 4 # The user account already has data.
+.equ E_MARKET_ACCOUNT_IS_DUPLICATE, 5 # The market account is a duplicate.
+.equ E_MARKET_HAS_DATA, 6 # The market account already has data.
 
 e_invalid_instruction_length:
     mov32 r0, E_INVALID_INSTRUCTION_LENGTH
@@ -11,4 +14,16 @@ e_invalid_instruction_length:
 
 e_invalid_number_of_accounts:
     mov32 r0, E_INVALID_NUMBER_OF_ACCOUNTS
+    exit
+
+e_user_has_data:
+    mov32 r0, E_USER_HAS_DATA
+    exit
+
+e_market_account_is_duplicate:
+    mov32 r0, E_MARKET_ACCOUNT_IS_DUPLICATE
+    exit
+
+e_market_has_data:
+    mov32 r0, E_MARKET_HAS_DATA
     exit

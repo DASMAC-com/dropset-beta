@@ -1,3 +1,15 @@
+# Common data-related constants.
+# -------------------------------------------------------------------------
 .equ DATA_DATA_LEN_ZERO, 0 # Data length of zero.
-# Data alignment during runtime (pinocchio constant is private).
-.equ DATA_BPF_ALIGN_OF_U128, 8
+.equ DATA_BPF_ALIGN_OF_U128, 8 # Data alignment during runtime.
+# -------------------------------------------------------------------------
+
+# Input buffer constants for static header.
+# -------------------------------------------------------------------------
+.equ IB_NON_DUP_MARKER, 255 # Non-dup marker for accounts.
+.equ IB_USER_DATA_LEN_OFF, 88 # From input buffer to user data length.
+# From input buffer to market duplicate flag.
+.equ IB_MARKET_DUPLICATE_OFF, 10344
+# From input buffer to market data length.
+.equ IB_MARKET_DATA_LEN_OFF, 10424
+# -------------------------------------------------------------------------

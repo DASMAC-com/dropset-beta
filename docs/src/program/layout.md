@@ -48,10 +48,11 @@ Each error label sets `r0` to the corresponding error code and exits:
 
 ### Memory
 
-General memory layout constants are in `memory.s`:
+Data-related constants and [input buffer] offset constants are in `memory.s`:
 
 <Include asm="common/memory" collapsible/>
 
+[input buffer]: ../program/inputs#input-buffer
 [`program/src/dropset/`]: https://github.com/DASMAC-com/dropset-beta/tree/main/program/src/dropset
 [multi-file assembly]: https://github.com/blueshift-gg/sbpf/pull/109
 [bs-interface]: ../development/build-scaffolding#interface

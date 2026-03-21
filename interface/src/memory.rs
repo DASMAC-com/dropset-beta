@@ -1,5 +1,6 @@
 use dropset_macros::constant_group;
 use pinocchio::account::{MAX_PERMITTED_DATA_INCREASE, RuntimeAccount};
+use pinocchio::entrypoint::NON_DUP_MARKER;
 
 #[repr(C, packed)]
 pub struct StackNode {
@@ -9,10 +10,12 @@ pub struct StackNode {
 constant_group! {
     #[prefix("DATA")]
     #[inject("common/memory")]
+    /// Common data-related constants.
     data {
         /// Data length of zero.
         DATA_LEN_ZERO = immediate!(0),
-        /// Data alignment during runtime (pinocchio constant is private).
+        /// Data alignment during runtime.
+        // pinocchio constant is private.
         BPF_ALIGN_OF_U128 = immediate!(8),
     }
 }
@@ -36,6 +39,24 @@ pub struct InputBufferHeader {
     pub market: RuntimeAccount,
 }
 // endregion: input_buffer_header
+
+// region: constant_group_example
+constant_group! {
+    #[prefix("IB")]
+    #[inject("common/memory")]
+    /// Input buffer constants for static header.
+    input_buffer {
+        /// Non-dup marker for accounts.
+        NON_DUP_MARKER = immediate!(NON_DUP_MARKER as usize),
+        /// From input buffer to user data length.
+        USER_DATA_LEN = offset!(InputBufferHeader.user.header.data_len),
+        /// From input buffer to market duplicate flag.
+        MARKET_DUPLICATE = offset!(InputBufferHeader.market.borrow_state),
+        /// From input buffer to market data length.
+        MARKET_DATA_LEN = offset!(InputBufferHeader.market.data_len),
+    }
+}
+// endregion: constant_group_example
 
 /// Compute the data buffer size for a runtime account with the given data length.
 pub const fn runtime_data_size(data_len: usize) -> usize {

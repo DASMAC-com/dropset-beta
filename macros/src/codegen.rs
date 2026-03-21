@@ -50,6 +50,7 @@ pub fn immediate_meta(
 pub fn group_module(
     mod_name: &Ident,
     target: &str,
+    comment: &str,
     const_defs: &[proc_macro2::TokenStream],
     meta_idents: &[Ident],
 ) -> proc_macro2::TokenStream {
@@ -60,6 +61,7 @@ pub fn group_module(
             /// Constant group for build-time injection.
             pub const GROUP: dropset_build::ConstantGroup = dropset_build::ConstantGroup {
                 target: #target,
+                comment: #comment,
                 constants: &[#(#meta_idents),*],
             };
         }

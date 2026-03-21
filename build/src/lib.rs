@@ -28,6 +28,8 @@ pub enum Constant {
 pub struct ConstantGroup {
     /// Injection target (e.g., "entrypoint" maps to program/src/dropset/entrypoint.s).
     pub target: &'static str,
+    /// Optional group-level comment (from `///` doc on the constant group).
+    pub comment: &'static str,
     /// The constants in this group.
     pub constants: &'static [Constant],
 }
@@ -87,17 +89,14 @@ pub fn inject(asm_dir: &Path, groups: &[&ConstantGroup]) {
         }
     }
 
-    // Merge constants by target file, preserving order.
+    // Collect groups by target file, preserving order.
     let mut targets: Vec<&str> = Vec::new();
-    let mut by_target: HashMap<&str, Vec<&Constant>> = HashMap::new();
+    let mut by_target: HashMap<&str, Vec<&ConstantGroup>> = HashMap::new();
     for group in groups {
         if !by_target.contains_key(group.target) {
             targets.push(group.target);
         }
-        by_target
-            .entry(group.target)
-            .or_default()
-            .extend(group.constants);
+        by_target.entry(group.target).or_default().push(group);
     }
 
     for target in targets {
@@ -105,14 +104,43 @@ pub fn inject(asm_dir: &Path, groups: &[&ConstantGroup]) {
     }
 }
 
-fn inject_target(asm_dir: &Path, target: &str, constants: &[&Constant]) {
+/// `# ` prefix (2 chars) + dashes to fill the remaining width.
+const SEPARATOR_BYTES: [u8; MAX_LINE_WIDTH] = {
+    let mut buf = [b'-'; MAX_LINE_WIDTH];
+    buf[0] = b'#';
+    buf[1] = b' ';
+    buf
+};
+const SEPARATOR: &str = unsafe { std::str::from_utf8_unchecked(&SEPARATOR_BYTES) };
+
+fn render_group(group: &ConstantGroup) -> String {
+    let directives: Vec<String> = group
+        .constants
+        .iter()
+        .map(|c| c.to_asm(MAX_LINE_WIDTH))
+        .collect();
+
+    if group.comment.is_empty() {
+        directives.join("\n")
+    } else {
+        format!(
+            "# {}\n{}\n{}\n{}",
+            group.comment,
+            SEPARATOR,
+            directives.join("\n"),
+            SEPARATOR,
+        )
+    }
+}
+
+fn inject_target(asm_dir: &Path, target: &str, groups: &[&ConstantGroup]) {
     let file = asm_dir.join(format!("{}.s", target));
     let contents = std::fs::read_to_string(&file)
         .unwrap_or_else(|e| panic!("failed to read {}: {}", file.display(), e));
 
-    // Build the directives.
-    let directives: Vec<String> = constants.iter().map(|c| c.to_asm(MAX_LINE_WIDTH)).collect();
-    let header = directives.join("\n");
+    // Build the header from all groups.
+    let rendered: Vec<String> = groups.iter().map(|g| render_group(g)).collect();
+    let header = rendered.join("\n\n");
 
     // Find the first label line. If none, the file is constants-only.
     let mut label_idx = None;
