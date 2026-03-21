@@ -29,7 +29,7 @@ pub fn expand(input: &ConstantGroupInput) -> proc_macro2::TokenStream {
         meta_idents.push(meta_ident);
     }
 
-    codegen::group_module(&input.mod_name, &input.target, &const_defs, &meta_idents)
+    codegen::group_module(&input.mod_name, &input.target, &input.doc, &const_defs, &meta_idents)
 }
 
 /// Try to decompose a field-access chain like `Foo.bar.baz` into `(Foo, [bar, baz])`.

@@ -13,6 +13,7 @@ use crate::attrs::{
 pub struct ConstantGroupInput {
     pub(crate) target: String,
     pub(crate) prefix: Option<String>,
+    pub(crate) doc: String,
     pub(crate) mod_name: Ident,
     pub(crate) constants: Vec<ConstantDef>,
 }
@@ -23,6 +24,12 @@ impl Parse for ConstantGroupInput {
         let target = extract_inject_target(&attrs)
             .ok_or_else(|| input.error("constant group must have #[inject(\"target\")]"))?;
         let prefix = extract_attr_string(&attrs, "prefix");
+        let doc = extract_doc_comment(&attrs).unwrap_or_default();
+        if !doc.is_empty() {
+            if let Err(e) = validate_comment(&doc) {
+                return Err(input.error(e));
+            }
+        }
 
         let mod_name: Ident = input.parse()?;
 
@@ -85,6 +92,7 @@ impl Parse for ConstantGroupInput {
         Ok(ConstantGroupInput {
             target,
             prefix,
+            doc,
             mod_name,
             constants,
         })

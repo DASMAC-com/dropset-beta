@@ -25,7 +25,7 @@ pub fn expand(target: &str, input: &syn::ItemEnum) -> proc_macro2::TokenStream {
         quote! { super::#enum_name::LEN as i32 },
     );
 
-    let group = codegen::group_module(&mod_name, target, &[meta_def], &[meta_ident]);
+    let group = codegen::group_module(&mod_name, target, "", &[meta_def], &[meta_ident]);
 
     quote! {
         #input
