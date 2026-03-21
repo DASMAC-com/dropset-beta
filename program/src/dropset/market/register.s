@@ -1,7 +1,7 @@
 # RegisterMarketData instruction data length.
 .equ REGISTER_MARKET_DATA_LEN, 1
 # RegisterMarketAccounts number of accounts.
-.equ REGISTER_MARKET_ACCOUNTS_LEN, 6
+.equ REGISTER_MARKET_ACCOUNTS_LEN, 10
 
 register_market:
     # if input.n_accounts < RegisterMarketAccounts.LEN
