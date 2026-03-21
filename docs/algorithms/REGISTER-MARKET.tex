@@ -17,6 +17,15 @@
   \IF{$insn\_len \neq$ \texttt{RegisterMarketData.LEN}}
     \RETURN \texttt{ErrorCode::InvalidInstructionLength}
   \ENDIF
+  \IF{$user.data\_len \neq 0$}
+    \RETURN \texttt{ErrorCode::UserHasData}
+  \ENDIF
+  \IF{$market.duplicate \neq$ \texttt{input\_buffer.NON\_DUP\_MARKER}}
+    \RETURN \texttt{ErrorCode::MarketAccountIsDuplicate}
+  \ENDIF
+  \IF{$market.data\_len \neq 0$}
+    \RETURN \texttt{ErrorCode::MarketHasData}
+  \ENDIF
 \ENDPROCEDURE
 \end{algorithmic}
 \end{algorithm}

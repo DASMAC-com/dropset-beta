@@ -120,6 +120,46 @@ pub fn check_with_accounts(
     }
 }
 
+/// Like [`check_with_accounts`], but accepts pre-built account and meta lists
+/// for full control over account contents and keys.
+pub fn check_custom(
+    setup: &TestSetup,
+    data: &[u8],
+    account_metas: Vec<solana_sdk::instruction::AccountMeta>,
+    accounts: Vec<(Pubkey, solana_account::Account)>,
+    expected: Option<dropset_interface::ErrorCode>,
+) -> CaseResult {
+    use mollusk_svm::result::ProgramResult as MolluskResult;
+    use solana_sdk::instruction::Instruction;
+    use solana_sdk::program_error::ProgramError;
+
+    let instruction = Instruction::new_with_bytes(setup.program_id, data, account_metas);
+    let result = setup.mollusk.process_instruction(&instruction, &accounts);
+
+    let expected_result: Result<(), ProgramError> = match expected {
+        None => Ok(()),
+        Some(e) => Err(ProgramError::Custom(e.into())),
+    };
+
+    let pass = match (&expected_result, &result.program_result) {
+        (Ok(()), MolluskResult::Success) => true,
+        (Err(e), MolluskResult::Failure(actual)) => actual == e,
+        _ => false,
+    };
+
+    CaseResult {
+        cu: result.compute_units_consumed,
+        error: if pass {
+            None
+        } else {
+            Some(format!(
+                "expected {:?}, got {:?}",
+                expected_result, result.program_result
+            ))
+        },
+    }
+}
+
 // region: test_case
 /// A named, runnable test case that can be executed for correctness or CU measurement.
 pub trait TestCase: Copy {

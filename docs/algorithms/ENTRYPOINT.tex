@@ -9,7 +9,7 @@
   \STATE $n\_accounts = input.n\_accounts$
   \STATE $insn\_len = insn.length$
   \STATE $insn\_disc = insn.discriminant$
-    \IF{$insn\_disc$ == \texttt{Discriminant::RegisterMarket}}
+    \IF{$insn\_disc ==$ \texttt{Discriminant::RegisterMarket}}
       \RETURN \CALL{REGISTER-MARKET}{$input$, $insn$, $n\_accounts$, $insn\_len$}
     \ENDIF
   \RETURN \texttt{ErrorCode::InvalidDiscriminant}

@@ -32,6 +32,25 @@ pub fn expand(input: &ConstantGroupInput) -> proc_macro2::TokenStream {
     codegen::group_module(&input.mod_name, &input.target, &const_defs, &meta_idents)
 }
 
+/// Try to decompose a field-access chain like `Foo.bar.baz` into `(Foo, [bar, baz])`.
+fn try_decompose_field_chain(expr: &syn::Expr) -> Option<(syn::Path, Vec<&syn::Member>)> {
+    let mut fields = Vec::new();
+    let mut current = expr;
+    loop {
+        match current {
+            syn::Expr::Field(ef) => {
+                fields.push(&ef.member);
+                current = &ef.base;
+            }
+            syn::Expr::Path(ep) => {
+                fields.reverse();
+                return Some((ep.path.clone(), fields));
+            }
+            _ => return None,
+        }
+    }
+}
+
 fn expand_offset(
     base_name: &Ident,
     asm_name: &str,
@@ -43,7 +62,13 @@ fn expand_offset(
     let asm_name = format!("{}_OFF", asm_name);
     let meta_ident = codegen::meta_ident(&asm_name, base_name.span());
 
-    let value_expr = if negate {
+    let value_expr = if let Some((ty, fields)) = try_decompose_field_chain(expr) {
+        if negate {
+            quote! { -(core::mem::offset_of!(#ty, #(#fields).* ) as i64) }
+        } else {
+            quote! { core::mem::offset_of!(#ty, #(#fields).* ) as i64 }
+        }
+    } else if negate {
         quote! { -(#expr as i64) }
     } else {
         quote! { #expr as i64 }

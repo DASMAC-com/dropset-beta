@@ -22,6 +22,12 @@ pub enum ErrorCode {
     InvalidInstructionLength,
     /// The number of accounts provided is invalid for the given instruction.
     InvalidNumberOfAccounts,
+    /// The user account already has data.
+    UserHasData,
+    /// The market account is a duplicate.
+    MarketAccountIsDuplicate,
+    /// The market account already has data.
+    MarketHasData,
 }
 // endregion: error_enum
 
@@ -46,4 +52,5 @@ pub const INJECTION_GROUPS: &[&dropset_build::ConstantGroup] = &[
     &market::register_market_data::GROUP,
     &market::register_market_accounts::GROUP,
     &memory::data::GROUP,
+    &memory::input_buffer::GROUP,
 ];
