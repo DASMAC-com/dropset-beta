@@ -10,7 +10,12 @@
       <div v-if="calls.length" class="pseudocode-links pseudocode-links-below">
         <div class="pseudocode-link-row">
           Calls:
-          <a v-for="dep in calls" :key="dep.name" :href="dep.href">
+          <a
+            v-for="dep in calls"
+            :key="dep.name"
+            :href="dep.href"
+            :target="dep.external ? '_blank' : undefined"
+          >
             {{ dep.name }}
           </a>
         </div>
@@ -34,7 +39,7 @@
 import { ref, onMounted } from "vue";
 import "pseudocode/build/pseudocode.min.css";
 import algorithmIndex from "../../algorithms/index.json";
-import { ASM_BASE, GH_BASE, GH_ROOT, asmModules } from "./paths.js";
+import { ASM_BASE, GH_BASE, GH_ROOT, asmModules, syscallRegistry } from "./paths.js";
 
 const GH_TESTS = `${GH_ROOT}tests/tests/cases/`;
 
@@ -90,7 +95,12 @@ onMounted(async () => {
     // Resolve forward and reverse deps from the algorithm index.
     const entry = algorithmIndex[props.tex];
     if (entry) {
-      calls.value = resolveLinks(entry.calls, algorithmIndex);
+      const syscallLinks = (entry.syscalls || []).map((name) => ({
+        name,
+        href: syscallRegistry[name],
+        external: true,
+      }));
+      calls.value = [...resolveLinks(entry.calls, algorithmIndex), ...syscallLinks];
       calledBy.value = resolveLinks(entry.calledBy, algorithmIndex);
       tests.value = entry.tests || [];
     }
@@ -119,10 +129,20 @@ onMounted(async () => {
         span.classList.add("ps-typewriter");
       });
 
-    // Turn \CALL{Name} references into clickable links to the called algorithm.
+    // Turn \CALL{Name} references into clickable links.
+    // sol-* names are converted to underscore form and linked to the
+    // external source via syscalls.json; others link to local algorithms.
     rendered.querySelectorAll(".ps-funcname").forEach((span) => {
       const name = span.textContent.trim();
-      if (algorithmIndex[name]) {
+      const syscallKey = name.replace(/-/g, "_");
+      if (syscallRegistry[syscallKey]) {
+        const a = document.createElement("a");
+        a.href = syscallRegistry[syscallKey];
+        a.target = "_blank";
+        a.className = "ps-funcname ps-syscall";
+        a.textContent = syscallKey;
+        span.replaceWith(a);
+      } else if (algorithmIndex[name]) {
         const a = document.createElement("a");
         a.href = `${algorithmIndex[name].page || "/"}#algo-ref-${name}`;
         a.className = "ps-funcname";
@@ -332,6 +352,10 @@ onMounted(async () => {
 }
 .pseudocode-container :deep(a.ps-funcname:hover) {
   text-decoration: underline;
+}
+.pseudocode-container :deep(.ps-syscall) {
+  font-family: var(--vp-font-family-mono);
+  font-size: 0.9em;
 }
 .pseudocode-container :deep(.ps-typewriter) {
   color: var(--vp-c-text-2);

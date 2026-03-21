@@ -1,3 +1,7 @@
+// External syscall registry. Keys are underscore-separated names
+// (e.g. "sol_try_find_program_address"), values are source URLs.
+export { default as syscallRegistry } from "../../algorithms/syscalls.json";
+
 // Relative path from this directory to the assembly source root.
 // Used as the key prefix when looking up files in asmModules.
 export const ASM_BASE = "../../../program/src/dropset/";

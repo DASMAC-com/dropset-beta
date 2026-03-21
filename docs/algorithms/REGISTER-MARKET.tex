@@ -33,7 +33,7 @@
     \RETURN \texttt{ErrorCode::QuoteMintIsDuplicate}
   \ENDIF
   \STATE $market\_pda =$ \CALL{sol-try-find-program-address}{
-    program\_id, base\_mint, quote\_mint
+    $program\_id, base\_mint, quote\_mint$
   }
 \ENDPROCEDURE
 \end{algorithmic}
