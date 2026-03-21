@@ -6,8 +6,8 @@ use solana_sdk::pubkey::Pubkey;
 
 #[derive(Clone, Copy)]
 pub enum Case {
-    InvalidLength,
     InvalidNumberOfAccounts,
+    InvalidInstructionLength,
     UserHasData,
     MarketAccountIsDuplicate,
     MarketHasData,
@@ -15,8 +15,8 @@ pub enum Case {
 
 impl Case {
     pub const ALL: &[Self] = &[
-        Self::InvalidLength,
         Self::InvalidNumberOfAccounts,
+        Self::InvalidInstructionLength,
         Self::UserHasData,
         Self::MarketAccountIsDuplicate,
         Self::MarketHasData,
@@ -45,8 +45,8 @@ fn into_metas_and_accounts(
 impl TestCase for Case {
     fn name(&self) -> &'static str {
         match self {
-            Self::InvalidLength => "invalid_length",
             Self::InvalidNumberOfAccounts => "invalid_number_of_accounts",
+            Self::InvalidInstructionLength => "invalid_instruction_length",
             Self::UserHasData => "user_has_data",
             Self::MarketAccountIsDuplicate => "market_account_is_duplicate",
             Self::MarketHasData => "market_has_data",
@@ -57,16 +57,16 @@ impl TestCase for Case {
         let insn = &[Discriminant::RegisterMarket.into()];
         match self {
             // Verifies: REGISTER-MARKET
-            Self::InvalidLength => check_with_accounts(
+            Self::InvalidNumberOfAccounts => {
+                check(setup, insn, Some(ErrorCode::InvalidNumberOfAccounts))
+            }
+            // Verifies: REGISTER-MARKET
+            Self::InvalidInstructionLength => check_with_accounts(
                 setup,
                 &[Discriminant::RegisterMarket.into(), 0x00],
                 10,
                 Some(ErrorCode::InvalidInstructionLength),
             ),
-            // Verifies: REGISTER-MARKET
-            Self::InvalidNumberOfAccounts => {
-                check(setup, insn, Some(ErrorCode::InvalidNumberOfAccounts))
-            }
             // Verifies: REGISTER-MARKET
             Self::UserHasData => {
                 let (keys, mut accounts) = default_accounts();
