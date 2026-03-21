@@ -10,6 +10,7 @@ pub struct StackNode {
 constant_group! {
     #[prefix("DATA")]
     #[inject("common/memory")]
+    /// Common data-related constants.
     data {
         /// Data length of zero.
         DATA_LEN_ZERO = immediate!(0),
@@ -42,6 +43,7 @@ pub struct InputBufferHeader {
 constant_group! {
     #[prefix("IB")]
     #[inject("common/memory")]
+    /// Input buffer constants for static header.
     input_buffer {
         /// Non-dup marker for accounts.
         NON_DUP_MARKER = immediate!(NON_DUP_MARKER as usize),

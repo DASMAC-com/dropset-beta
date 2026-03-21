@@ -23,10 +23,10 @@ impl Case {
     ];
 }
 
-/// Build 6 unique accounts with default (empty) data.
+/// Build 10 unique accounts with default (empty) data.
 fn default_accounts() -> (Vec<Pubkey>, Vec<Account>) {
-    let keys: Vec<Pubkey> = (0..6).map(|_| Pubkey::new_unique()).collect();
-    let accounts: Vec<Account> = (0..6).map(|_| Account::default()).collect();
+    let keys: Vec<Pubkey> = (0..10).map(|_| Pubkey::new_unique()).collect();
+    let accounts: Vec<Account> = (0..10).map(|_| Account::default()).collect();
     (keys, accounts)
 }
 
@@ -60,7 +60,7 @@ impl TestCase for Case {
             Self::InvalidLength => check_with_accounts(
                 setup,
                 &[Discriminant::RegisterMarket.into(), 0x00],
-                6,
+                10,
                 Some(ErrorCode::InvalidInstructionLength),
             ),
             // Verifies: REGISTER-MARKET
