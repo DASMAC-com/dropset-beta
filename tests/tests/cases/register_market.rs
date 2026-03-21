@@ -64,11 +64,9 @@ impl TestCase for Case {
                 Some(ErrorCode::InvalidInstructionLength),
             ),
             // Verifies: REGISTER-MARKET
-            Self::InvalidNumberOfAccounts => check(
-                setup,
-                insn,
-                Some(ErrorCode::InvalidNumberOfAccounts),
-            ),
+            Self::InvalidNumberOfAccounts => {
+                check(setup, insn, Some(ErrorCode::InvalidNumberOfAccounts))
+            }
             // Verifies: REGISTER-MARKET
             Self::UserHasData => {
                 let (keys, mut accounts) = default_accounts();
@@ -96,13 +94,7 @@ impl TestCase for Case {
                 let (keys, mut accounts) = default_accounts();
                 accounts[1].data = vec![0u8; 32];
                 let (metas, accounts) = into_metas_and_accounts(keys, accounts);
-                check_custom(
-                    setup,
-                    insn,
-                    metas,
-                    accounts,
-                    Some(ErrorCode::MarketHasData),
-                )
+                check_custom(setup, insn, metas, accounts, Some(ErrorCode::MarketHasData))
             }
         }
     }

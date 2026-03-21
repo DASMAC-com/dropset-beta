@@ -13,10 +13,10 @@ resolver = "3"
 
 [workspace.dependencies]
 mollusk-svm = "0.11.0"
-solana-account = "3.2"
 pinocchio = "0.10.2"
 proc-macro2 = "1.0.106"
 quote = "1.0.45"
+solana-account = "3.2"
 solana-sdk = "4.0.1"
 syn = {version = "2.0.117", features = ["full"]}
 

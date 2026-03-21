@@ -25,10 +25,10 @@ impl Parse for ConstantGroupInput {
             .ok_or_else(|| input.error("constant group must have #[inject(\"target\")]"))?;
         let prefix = extract_attr_string(&attrs, "prefix");
         let doc = extract_doc_comment(&attrs).unwrap_or_default();
-        if !doc.is_empty() {
-            if let Err(e) = validate_comment(&doc) {
-                return Err(input.error(e));
-            }
+        if !doc.is_empty()
+            && let Err(e) = validate_comment(&doc)
+        {
+            return Err(input.error(e));
         }
 
         let mod_name: Ident = input.parse()?;

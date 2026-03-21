@@ -88,10 +88,7 @@ pub fn check_with_accounts(
         .iter()
         .map(|k| AccountMeta::new_readonly(*k, false))
         .collect();
-    let accounts: Vec<(Pubkey, Account)> = keys
-        .iter()
-        .map(|k| (*k, Account::default()))
-        .collect();
+    let accounts: Vec<(Pubkey, Account)> = keys.iter().map(|k| (*k, Account::default())).collect();
 
     let instruction = Instruction::new_with_bytes(setup.program_id, data, account_metas);
     let result = setup.mollusk.process_instruction(&instruction, &accounts);
