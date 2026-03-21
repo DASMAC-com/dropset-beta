@@ -104,8 +104,14 @@ pub fn inject(asm_dir: &Path, groups: &[&ConstantGroup]) {
     }
 }
 
-const SEPARATOR: &str =
-    "# -------------------------------------------------------------------------";
+/// `# ` prefix (2 chars) + dashes to fill the remaining width.
+const SEPARATOR_BYTES: [u8; MAX_LINE_WIDTH] = {
+    let mut buf = [b'-'; MAX_LINE_WIDTH];
+    buf[0] = b'#';
+    buf[1] = b' ';
+    buf
+};
+const SEPARATOR: &str = unsafe { std::str::from_utf8_unchecked(&SEPARATOR_BYTES) };
 
 fn render_group(group: &ConstantGroup) -> String {
     let directives: Vec<String> = group
