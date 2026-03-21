@@ -40,7 +40,16 @@ Usage:
 The component automatically resolves `\CALL{Name}` references in the `.tex`
 source into clickable cross-links using the build-time algorithm index. Forward
 dependencies ("Calls") and reverse dependencies ("Called by") are displayed
-below the pseudocode. If the algorithm has associated
+below the pseudocode.
+
+`\CALL` targets that begin with `sol-` are treated as external syscalls. The
+build-time index records them separately, and at render time the hyphenated name
+is converted to underscore form (e.g. `sol-try-find-program-address` becomes
+`sol_try_find_program_address`) and linked to its upstream source definition via
+the [syscall registry]. Syscalls appear in the "Calls" section alongside
+algorithm dependencies.
+
+If the algorithm has associated
 [test cases], a collapsed **Tests** section is
 rendered after the implementation block, with a nested details element for each
 case showing its syntax-highlighted Rust match arm.
@@ -91,6 +100,8 @@ Usage:
 
 Renders a listing of all algorithms with a Mermaid dependency graph. Takes no
 props. It reads directly from the build-time `algorithms/index.json` file.
+External syscalls appear as dashed stadium-shaped nodes linked to their upstream
+source via the [syscall registry].
 
 Usage:
 
@@ -106,16 +117,25 @@ Usage:
 
 Configures file resolution for the `<Algorithm>` and `<Include>` components:
 assembly source root, config/root file mappings, Rust crate mappings, VitePress
-file mappings, and GitHub URL bases.
+file mappings, GitHub URL bases, and the [syscall registry] export.
+
+### [Syscall registry][`syscalls.json`]
+
+External syscalls referenced by `\CALL{sol-*}` in `.tex` files are registered in
+`algorithms/syscalls.json`. Keys are the underscore-separated display name
+(e.g. `sol_try_find_program_address`), values are the upstream source URL. The
+registry is re-exported by [`paths.js`] and consumed by both `<Algorithm>` and
+`<AlgorithmIndex>` at render time.
 
 ### Algorithm index builder
 
 Runs at dev server startup and rebuilds whenever `.tex`, `.md`, or test case
 `.rs` files change. Scans `.tex` files for `\CALL` dependencies, `.md` files
 for `<Algorithm>` usage, and test case files under `tests/tests/cases/` for
-[`// Verifies: ALGORITHM-NAME`][test cases] comments. Outputs
-`algorithms/index.json` with forward deps, reverse deps, page locations, and
-associated test cases.
+[`// Verifies: ALGORITHM-NAME`][test cases] comments. `\CALL` targets beginning
+with `sol-` are classified as external syscalls (with hyphens converted to
+underscores). Outputs `algorithms/index.json` with forward deps, reverse deps,
+syscalls, page locations, and associated test cases.
 
 <Include vitepress="buildAlgorithmIndex" collapsed/>
 
@@ -128,5 +148,7 @@ associated test cases.
 [Mermaid]: https://mermaid.js.org/
 [`paths.js`]: https://github.com/DASMAC-com/dropset-beta/blob/main/docs/.vitepress/components/paths.js
 [`algorithms/`]: https://github.com/DASMAC-com/dropset-beta/tree/main/docs/algorithms
+[`syscalls.json`]: https://github.com/DASMAC-com/dropset-beta/blob/main/docs/algorithms/syscalls.json
+[syscall registry]: #syscall-registry
 [algorithm index]: ../program/algorithm-index
 [test cases]: tests#verifies-convention

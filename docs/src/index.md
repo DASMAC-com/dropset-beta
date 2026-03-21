@@ -26,7 +26,8 @@ implementations sourced directly from the codebase.
 
 An auto-generated [algorithm index] tracks
 dependencies between all algorithms and cross-links them at their definition
-sites. The top-level algorithm is the Dropset program
+sites. External syscalls are linked to their upstream source definitions via a
+[syscall registry]. The top-level algorithm is the Dropset program
 [entrypoint]. See [program layout] for more details about program
 architecture.
 
@@ -87,6 +88,7 @@ design assurance.
 [solana opcode guide]: https://opcodes.dasmac.com
 [the mythical man-month]: https://en.wikipedia.org/wiki/The_Mythical_Man-Month
 [docs engine]: development/docs-engine
+[syscall registry]: development/docs-engine#syscall-registry
 [test cases]: development/tests
 [algorithm index]: program/algorithm-index
 [entrypoint]: program/inputs#entrypoint
