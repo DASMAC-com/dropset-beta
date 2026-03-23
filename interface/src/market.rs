@@ -1,3 +1,4 @@
+use crate::cpi_bindings::SolInstruction;
 use crate::memory::StackNode;
 use crate::order::Order;
 use crate::seat::Seat;
@@ -42,3 +43,10 @@ pub enum RegisterMarketAccounts {
     QuoteVault,
 }
 // endregion: register_market_accounts
+
+// region: register_market_stack
+#[repr(C)]
+pub struct RegisterMarketStack {
+    pub instruction: SolInstruction,
+}
+// endregion: register_market_stack

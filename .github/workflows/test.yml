@@ -12,7 +12,7 @@ jobs:
     - uses: 'Swatinem/rust-cache@v2'
       with:
         cache-on-failure: true
-        shared-key: 'rust-${{ runner.os }}'
+        shared-key: 'rust-test-${{ runner.os }}'
     - uses: './.github/actions/install-sbpf'
       with:
         sbpf-cli-revision: '${{ env.SBPF_CLI_REV }}'

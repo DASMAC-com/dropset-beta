@@ -1,3 +1,4 @@
+bindgen
 clippy
 clrs
 codegen
@@ -9,6 +10,7 @@ idents
 insn
 katex
 keypair
+lamports
 ldxb
 ldxdw
 metas
@@ -24,5 +26,6 @@ swatinem
 syscall
 syscalls
 sysvar
+ureq
 vite
 vitepress

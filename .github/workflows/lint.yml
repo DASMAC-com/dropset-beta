@@ -41,7 +41,7 @@ jobs:
     - uses: 'Swatinem/rust-cache@v2'
       with:
         cache-on-failure: true
-        shared-key: 'rust-${{ runner.os }}'
+        shared-key: 'rust-lint-${{ runner.os }}'
     - uses: 'actions/setup-node@v6'
       with:
         node-version: '${{ env.NODE_VERSION }}'

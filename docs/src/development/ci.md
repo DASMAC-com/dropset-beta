@@ -46,7 +46,17 @@ invoke directly with `npx` than through a pre-commit hook.
 
 ## GitHub Actions
 
-Five workflows run on pull requests or pushes to `main`:
+Several workflows run on pull requests or pushes to `main`:
+
+### Bindings
+
+Regenerates [CPI FFI bindings](build-scaffolding#cpi-bindings) from [Agave] C
+headers using [bindgen] and checks that the committed
+`interface/src/cpi_bindings.rs` is up to date. The Agave repository URL and
+revision are configured as environment variables in the workflow file. Runs on
+every pull request.
+
+<Include cfg=".github/workflows/bindings.yml" collapsed/>
 
 ### Build docs
 
@@ -90,3 +100,5 @@ Assembles the program and runs the [Mollusk test suite] on every pull request.
 [pre-commit]: https://pre-commit.com/
 [Mollusk test suite]: tests
 [Conventional Commits]: https://www.conventionalcommits.org/
+[Agave]: https://github.com/anza-xyz/agave
+[bindgen]: https://rust-lang.github.io/rust-bindgen/
