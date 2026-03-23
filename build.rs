@@ -12,6 +12,7 @@ fn main() {
     }
 
     inject(Path::new(ASM_DIR), INJECTION_GROUPS);
+
     println!("cargo::rerun-if-changed=interface/src/lib.rs");
     println!("cargo::rerun-if-changed=macros/src");
     println!("cargo::rerun-if-changed=build/src");
