@@ -15,7 +15,7 @@ jobs:
     - uses: 'Swatinem/rust-cache@v2'
       with:
         cache-on-failure: true
-        shared-key: 'rust-${{ runner.os }}'
+        shared-key: 'rust-bindings-${{ runner.os }}'
     - name: 'Regenerate bindings'
       run: >-
         AGAVE_RAW_BASE=${{ env.AGAVE_RAW_BASE }}

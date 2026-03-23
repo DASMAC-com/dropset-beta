@@ -17,7 +17,7 @@ clean:
 test: asm
 	cd tests && DROPSET_DEPLOY_DIR=../$(DEPLOY_DIR) RUST_LOG=none cargo test -- --nocapture
 
-# Assemble the program (runs build.rs injection).
+# Assemble the program (runs build.rs injection first).
 asm:
 	cargo check
 	cd program && sbpf build --arch $(SBPF_ARCH) --deploy-dir ../$(DEPLOY_DIR)
