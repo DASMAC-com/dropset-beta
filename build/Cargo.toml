@@ -1,3 +1,7 @@
+[dependencies]
+bindgen.workspace = true
+ureq.workspace = true
+
 [package]
 name = "dropset-build"
 edition.workspace = true

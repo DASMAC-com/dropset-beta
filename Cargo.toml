@@ -12,6 +12,7 @@ members = ["build", "macros", "interface", "tests"]
 resolver = "3"
 
 [workspace.dependencies]
+bindgen = "0.72.1"
 mollusk-svm = "0.11.0"
 pinocchio = "0.10.2"
 proc-macro2 = "1.0.106"
@@ -19,6 +20,7 @@ quote = "1.0.45"
 solana-account = "3.2"
 solana-sdk = "4.0.1"
 syn = {version = "2.0.117", features = ["full"]}
+ureq = "3.3.0"
 
 [workspace.package]
 edition = "2024"

@@ -1,0 +1,45 @@
+#![allow(clippy::all)]
+
+use pinocchio::Address;
+
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct SolSignerSeed {
+    pub addr: *const u8,
+    pub len: u64,
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct SolSignerSeeds {
+    pub addr: *const SolSignerSeed,
+    pub len: u64,
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct SolAccountInfo {
+    pub key: *mut Address,
+    pub lamports: *mut u64,
+    pub data_len: u64,
+    pub data: *mut u8,
+    pub owner: *mut Address,
+    pub rent_epoch: u64,
+    pub is_signer: bool,
+    pub is_writable: bool,
+    pub executable: bool,
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct SolAccountMeta {
+    pub pubkey: *mut Address,
+    pub is_writable: bool,
+    pub is_signer: bool,
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct SolInstruction {
+    pub program_id: *mut Address,
+    pub accounts: *mut SolAccountMeta,
+    pub account_len: u64,
+    pub data: *mut u8,
+    pub data_len: u64,
+}
