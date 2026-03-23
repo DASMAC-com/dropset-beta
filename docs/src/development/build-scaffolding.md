@@ -110,20 +110,44 @@ The [`interface`] crate uses the macros to declare all program constants. The
 
 ## Build crate
 
-The [`build`] crate provides the `inject()` function that writes `.equ`
-directives into assembly files. For each target file, it wipes all existing
-`.equ` directives and injects the generated ones above the first label. Doc
-comments from the Rust source become assembly comments. Groups that carry a doc
-comment are rendered with a header comment and separator lines; groups without a
-doc comment are separated by a blank line.
+The [`build`] crate has two responsibilities: assembly constant injection and
+CPI bindings generation.
 
-<Include rs="build::lib" collapsed/>
+### Assembly injection
+
+The `inject()` function writes `.equ` directives into assembly files. For each
+target file, it wipes all existing `.equ` directives and injects the generated
+ones above the first label. Doc comments from the Rust source become assembly
+comments. Groups that carry a doc comment are rendered with a header comment and
+separator lines; groups without a doc comment are separated by a blank line.
+
+<Include rs="build::inject" collapsed/>
 
 For example:
 
 <Include asm="entrypoint" collapsible/>
 
+### CPI bindings
+
+The `generate_bindings()` function fetches Solana CPI C headers from the
+[Agave] repository on GitHub, runs [bindgen] to produce Rust FFI structs, and
+replaces `SolPubkey` references with `pinocchio::Address`. The output is written
+to `interface/src/cpi_bindings.rs` and formatted with `rustfmt`.
+
+Bindings generation only runs when the `AGAVE_REV` environment variable is set.
+Locally, `cargo check` and `make asm` skip it entirely. On CI, the
+[bindings workflow](ci#bindings) sets `AGAVE_REV` (along with `AGAVE_RAW_BASE`
+and `AGAVE_RAW_PATH`) and verifies the committed file is up to date.
+
+<Include rs="build::bindings" collapsed/>
+
+To update the bindings for a new Agave version, change the `AGAVE_REV` value in
+`.github/workflows/bindings.yml`, regenerate locally with the three environment
+variables set, and commit the updated `cpi_bindings.rs`.
+
 [`interface`]: https://github.com/DASMAC-com/dropset-beta/tree/main/interface
 [`macros`]: https://github.com/DASMAC-com/dropset-beta/tree/main/macros
 [`build`]: https://github.com/DASMAC-com/dropset-beta/tree/main/build
 [proc macros]: https://doc.rust-lang.org/reference/procedural-macros.html
+[Agave]: https://github.com/anza-xyz/agave
+[bindgen]: https://rust-lang.github.io/rust-bindgen/
