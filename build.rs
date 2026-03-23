@@ -15,5 +15,4 @@ fn main() {
     println!("cargo::rerun-if-changed=interface/src/lib.rs");
     println!("cargo::rerun-if-changed=macros/src");
     println!("cargo::rerun-if-changed=build/src");
-    println!("cargo::rerun-if-changed={ASM_DIR}");
 }
