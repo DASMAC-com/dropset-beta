@@ -26,7 +26,7 @@ The workspace-root `build.rs` invokes the injection:
 
 Core types are as follows:
 
-<Include rs="build::lib#types" collapsible/>
+<Include rs="build::inject#types" collapsible/>
 
 ## Macros
 
