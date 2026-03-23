@@ -21,7 +21,7 @@ pub struct SolAccountInfo {
     pub key: *mut Address,
     pub lamports: *mut u64,
     pub data_len: u64,
-    pub data: *mut u16,
+    pub data: *mut u8,
     pub owner: *mut Address,
     pub rent_epoch: u64,
     pub is_signer: bool,
