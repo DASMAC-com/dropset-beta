@@ -69,9 +69,8 @@ impl Constant {
 /// Inject constant groups into assembly files.
 ///
 /// Checks for duplicate constant names across all groups, merges groups
-/// that share a target file, then for each target finds the first label
-/// (line ending with `:`) and replaces everything above it with the
-/// generated `.equ` directives.
+/// that share a target file, then for each target wipes all existing `.equ`
+/// directives and injects the generated ones above the first label.
 pub fn inject(asm_dir: &Path, groups: &[&ConstantGroup]) {
     use std::collections::HashMap;
 
