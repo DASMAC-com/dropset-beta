@@ -112,9 +112,10 @@ The [`interface`] crate uses the macros to declare all program constants. The
 
 The [`build`] crate provides the `inject()` function that writes `.equ`
 directives into assembly files. For each target file, it wipes all existing
-`.equ` directives and injects the generated ones above the first label. Doc comments from the Rust source become assembly comments. Groups
-that carry a doc comment are rendered with a header comment and separator
-lines; groups without a doc comment are separated by a blank line.
+`.equ` directives and injects the generated ones above the first label. Doc
+comments from the Rust source become assembly comments. Groups that carry a doc
+comment are rendered with a header comment and separator lines; groups without a
+doc comment are separated by a blank line.
 
 <Include rs="build::lib" collapsed/>
 
