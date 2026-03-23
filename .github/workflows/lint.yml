@@ -28,9 +28,9 @@ jobs:
     - if: |
         steps.apt-cache.outputs.cache-hit == 'true'
       run: 'echo "$HOME/.local/bin" >> "$GITHUB_PATH"'
-    - uses: 'actions/cache/save@v5'
-      if: |
+    - if: |
         always() && steps.apt-cache.outputs.cache-hit != 'true'
+      uses: 'actions/cache/save@v5'
       with:
         key: 'apt-${{ runner.os }}-chktex'
         path: '~/.local/bin/chktex'
@@ -63,9 +63,9 @@ jobs:
     - run: >-
         pre-commit run --all-files --color=always --show-diff-on-failure
         --config ${{ env.CONFIG_PATH }}
-    - uses: 'actions/cache/save@v5'
-      if: |
+    - if: |
         always() && steps.pre-commit-cache.outputs.cache-hit != 'true'
+      uses: 'actions/cache/save@v5'
       with:
         key: 'pre-commit-lint-${{ runner.os }}-${{ runner.arch }}-node-${{
               env.NODE_VERSION }}-python-${{ env.PYTHON_VERSION
