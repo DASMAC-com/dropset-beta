@@ -1,5 +1,6 @@
 use dropset_macros::{constant_group, discriminant_enum, error_enum};
 
+pub mod cpi_bindings;
 pub mod market;
 pub mod memory;
 pub mod order;

@@ -1,5 +1,3 @@
-#![allow(clippy::all)]
-
 use pinocchio::Address;
 
 #[repr(C)]

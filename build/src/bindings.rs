@@ -1,3 +1,4 @@
+// cspell:word stdbool
 use std::path::Path;
 
 /// Base URL template for raw Agave headers on GitHub.

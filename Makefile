@@ -6,7 +6,6 @@
 
 SBPF_ARCH ?= v0
 DEPLOY_DIR ?= target/asm
-AGAVE_REV ?= v3.1.11
 
 all: lint test
 clean:
@@ -18,9 +17,9 @@ clean:
 test: asm
 	cd tests && DROPSET_DEPLOY_DIR=../$(DEPLOY_DIR) RUST_LOG=none cargo test -- --nocapture
 
-# Assemble the program (runs build.rs injection + bindings generation).
+# Assemble the program (runs build.rs injection).
 asm:
-	AGAVE_REV=$(AGAVE_REV) cargo check
+	cargo check
 	cd program && sbpf build --arch $(SBPF_ARCH) --deploy-dir ../$(DEPLOY_DIR)
 
 # Build docs (clean install + VitePress production build).
