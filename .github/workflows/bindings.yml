@@ -1,5 +1,7 @@
 ---
 env:
+  AGAVE_RAW_BASE: 'https://raw.githubusercontent.com/anza-xyz/agave'
+  AGAVE_RAW_PATH: 'platform-tools-sdk/sbf/c/inc/sol'
   AGAVE_REV: 'v3.1.11'
 jobs:
   bindings:
@@ -15,7 +17,11 @@ jobs:
         cache-on-failure: true
         shared-key: 'rust-${{ runner.os }}'
     - name: 'Regenerate bindings'
-      run: 'AGAVE_REV=${{ env.AGAVE_REV }} cargo check'
+      run: >-
+        AGAVE_RAW_BASE=${{ env.AGAVE_RAW_BASE }}
+        AGAVE_RAW_PATH=${{ env.AGAVE_RAW_PATH }}
+        AGAVE_REV=${{ env.AGAVE_REV }}
+        cargo check
     - name: 'Check for uncommitted changes'
       run: 'git diff --exit-code interface/src/cpi_bindings.rs'
 name: 'Bindings'
