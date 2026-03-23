@@ -11,6 +11,7 @@ jobs:
     - uses: 'dtolnay/rust-toolchain@stable'
     - uses: 'Swatinem/rust-cache@v2'
       with:
+        cache-on-failure: true
         shared-key: 'rust-${{ runner.os }}'
     - uses: './.github/actions/install-sbpf'
       with:
