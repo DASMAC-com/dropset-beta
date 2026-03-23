@@ -169,6 +169,15 @@ fn inject_target(asm_dir: &Path, target: &str, groups: &[&ConstantGroup]) {
         format!("{}\n", header)
     };
 
+    // Skip the write when content is unchanged. Cargo uses file modification
+    // times to decide what to recompile, so rewriting an identical file still
+    // invalidates the cache and forces a full rebuild of all downstream crates.
+    // This is especially important in CI where the target/ directory is restored
+    // from cache; without this check every run would recompile from scratch.
+    if contents == output {
+        return;
+    }
+
     std::fs::write(&file, output)
         .unwrap_or_else(|e| panic!("failed to write {}: {}", file.display(), e));
 }
