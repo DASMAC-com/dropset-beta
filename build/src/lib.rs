@@ -142,9 +142,18 @@ fn inject_target(asm_dir: &Path, target: &str, groups: &[&ConstantGroup]) {
     let rendered: Vec<String> = groups.iter().map(|g| render_group(g)).collect();
     let header = rendered.join("\n\n");
 
-    // Find the first label line. If none, the file is constants-only.
+    // Wipe all .equ directives from the file first, then reconstruct.
+    // This ensures stale constants never survive a re-injection regardless
+    // of where they appear.
+    let stripped: String = contents
+        .lines()
+        .filter(|line| !line.trim_start().starts_with(".equ "))
+        .collect::<Vec<_>>()
+        .join("\n");
+
+    // Find the first label in the stripped content.
     let mut label_idx = None;
-    for (i, line) in contents.lines().enumerate() {
+    for (i, line) in stripped.lines().enumerate() {
         let trimmed = line.trim();
         if !trimmed.is_empty() && trimmed.ends_with(':') {
             label_idx = Some(i);
@@ -153,12 +162,12 @@ fn inject_target(asm_dir: &Path, target: &str, groups: &[&ConstantGroup]) {
     }
 
     let output = if let Some(label_idx) = label_idx {
-        // Reassemble: directives + blank line + label onwards.
-        let lines: Vec<&str> = contents.lines().collect();
+        // Reassemble: header + blank line + label onwards.
+        let lines: Vec<&str> = stripped.lines().collect();
         let tail = lines[label_idx..].join("\n");
         format!("{}\n\n{}\n", header, tail)
     } else {
-        // Constants-only file: replace entire contents.
+        // Constants-only file: just the header.
         format!("{}\n", header)
     };
 
