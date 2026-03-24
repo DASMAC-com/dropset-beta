@@ -176,7 +176,7 @@ pub fn instruction_accounts(attr: TokenStream, item: TokenStream) -> TokenStream
 /// ```ignore
 /// #[svm_data]
 /// pub struct MarketHeader {
-///     pub seats_root: *mut Seat,
+///     pub seats: *mut Seat,
 /// }
 /// ```
 #[proc_macro_attribute]

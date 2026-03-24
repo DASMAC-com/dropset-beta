@@ -16,7 +16,7 @@ project works. Refer to the docs before making assumptions.
 build/       constant injection + CPI bindings
 macros/      proc macros (constant_group!,
              error_enum!, discriminant_enum!,
-             frame!, signer_seeds!)
+             frame!, signer_seeds!, svm_data!)
 interface/   constants, enums, PDAs, packed structs
 program/     SBPF assembly (program/src/dropset/)
 tests/       integration tests (Mollusk SVM)
