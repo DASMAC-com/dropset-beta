@@ -4,6 +4,19 @@
 # RegisterMarketAccounts number of accounts.
 .equ REGISTER_MARKET_ACCOUNTS_LEN, 10
 
+# Stack frame for REGISTER-MARKET.
+# -------------------------------------------------------------------------
+.equ RM_PDA_SEEDS_BASE_ADDR_OFF, -88 # Base signer seed address.
+.equ RM_PDA_SEEDS_BASE_LEN_OFF, -80 # Base signer seed length.
+.equ RM_PDA_SEEDS_QUOTE_ADDR_OFF, -72 # Quote signer seed address.
+.equ RM_PDA_SEEDS_QUOTE_LEN_OFF, -64 # Quote signer seed length.
+.equ RM_PDA_SEEDS_BUMP_ADDR_OFF, -56 # Bump signer seed address.
+.equ RM_PDA_SEEDS_BUMP_LEN_OFF, -48 # Bump signer seed length.
+.equ RM_PDA_SEEDS_N_SEEDS, 3 # Number of signer seeds.
+.equ RM_PDA_OFF, -40 # PDA address.
+.equ RM_BUMP_OFF, -8 # Bump seed.
+# -------------------------------------------------------------------------
+
 register_market:
     # if input.n_accounts < RegisterMarketAccounts.LEN
     #     return ErrorCode::InvalidNumberOfAccounts

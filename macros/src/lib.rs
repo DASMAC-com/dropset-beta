@@ -7,6 +7,9 @@ mod constant_group;
 mod enum_to_asm;
 mod instruction_accounts;
 mod instruction_length;
+mod frame;
+mod shared_state;
+mod signer_seeds;
 
 /// Defines a group of assembly constants with an injection target.
 ///
@@ -25,6 +28,29 @@ mod instruction_length;
 pub fn constant_group(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as constant_group::ConstantGroupInput);
     TokenStream::from(constant_group::expand(&input))
+}
+
+/// Defines a signer seeds struct where every field is a `SolSignerSeed`.
+///
+/// Generates a `#[repr(C)]` struct and registers the field names for
+/// automatic discovery by `signer_seeds!()` inside `constant_group!`.
+///
+/// ```ignore
+/// signer_seeds! {
+///     pub struct PdaSignerSeeds {
+///         /// Base mint seed.
+///         base,
+///         /// Quote mint seed.
+///         quote,
+///         /// Bump seed.
+///         bump,
+///     }
+/// }
+/// ```
+#[proc_macro]
+pub fn signer_seeds(input: TokenStream) -> TokenStream {
+    let input = parse_macro_input!(input as signer_seeds::SignerSeedsInput);
+    TokenStream::from(signer_seeds::expand(&input))
 }
 
 /// Attribute macro for instruction discriminant enums.
@@ -87,6 +113,26 @@ pub fn instruction_data(attr: TokenStream, item: TokenStream) -> TokenStream {
     let target = parse_macro_input!(attr as LitStr);
     let input = parse_macro_input!(item as syn::ItemStruct);
     TokenStream::from(instruction_length::expand(&target.value(), &input))
+}
+
+/// Attribute macro for stack frame structs.
+///
+/// Applies `#[repr(C, align(8))]` to the struct (aligned to
+/// `BPF_ALIGN_OF_U128`) and asserts the struct fits within one SBPf
+/// stack frame (4096 bytes).
+///
+/// ```ignore
+/// #[frame]
+/// pub struct RegisterMarketFrame {
+///     pub pda_signer_seeds: PdaSignerSeeds,
+///     pub pda: Address,
+///     pub bump: u8,
+/// }
+/// ```
+#[proc_macro_attribute]
+pub fn frame(_attr: TokenStream, item: TokenStream) -> TokenStream {
+    let input = parse_macro_input!(item as syn::ItemStruct);
+    TokenStream::from(frame::expand(&input))
 }
 
 /// Attribute macro for instruction accounts enums.

@@ -18,15 +18,33 @@ pub fn expand(input: &ConstantGroupInput) -> proc_macro2::TokenStream {
             None => base_name.to_string(),
         };
 
-        let (def, meta_ident) = match &c.kind {
+        match &c.kind {
             ConstantKind::Offset { negate, expr } => {
-                expand_offset(base_name, &asm_name, doc, *negate, expr)
+                let (def, meta) = expand_offset(base_name, &asm_name, doc, *negate, expr);
+                const_defs.push(def);
+                meta_idents.push(meta);
             }
-            ConstantKind::Immediate { expr } => expand_immediate(base_name, &asm_name, doc, expr),
+            ConstantKind::FrameOffset { fields } => {
+                let frame_ty = input.frame_type.as_ref()
+                    .expect("frame_type must be set for FrameOffset");
+                let (def, meta) = expand_frame_offset(base_name, &asm_name, doc, frame_ty, fields);
+                const_defs.push(def);
+                meta_idents.push(meta);
+            }
+            ConstantKind::SignerSeeds { parent_field, seeds } => {
+                let frame_ty = input.frame_type.as_ref()
+                    .expect("frame_type must be set for SignerSeeds");
+                expand_signer_seeds(
+                    &asm_name, frame_ty, parent_field, seeds,
+                    &mut const_defs, &mut meta_idents,
+                );
+            }
+            ConstantKind::Immediate { expr } => {
+                let (def, meta) = expand_immediate(base_name, &asm_name, doc, expr);
+                const_defs.push(def);
+                meta_idents.push(meta);
+            }
         };
-
-        const_defs.push(def);
-        meta_idents.push(meta_ident);
     }
 
     codegen::group_module(
@@ -98,6 +116,120 @@ fn expand_offset(
     };
 
     (def, meta_ident)
+}
+
+fn expand_frame_offset(
+    base_name: &Ident,
+    asm_name: &str,
+    doc: &str,
+    frame_ty: &syn::Path,
+    fields: &[syn::Member],
+) -> (proc_macro2::TokenStream, Ident) {
+    let rust_name = Ident::new(&format!("{}_OFF", base_name), base_name.span());
+    let asm_name = format!("{}_OFF", asm_name);
+    let meta_ident = codegen::meta_ident(&asm_name, base_name.span());
+
+    let meta = codegen::offset_meta(&meta_ident, &asm_name, doc, &rust_name);
+
+    let def = quote! {
+        #[doc = #doc]
+        pub const #rust_name: i16 = {
+            use super::*;
+            const VALUE: i64 =
+                core::mem::offset_of!(#frame_ty, #(#fields).* ) as i64
+                    - core::mem::size_of::<#frame_ty>() as i64;
+            const _: () = assert!(
+                VALUE >= i16::MIN as i64 && VALUE <= i16::MAX as i64,
+                "frame offset must fit in i16",
+            );
+            const _: () = assert!(
+                VALUE % 8 == 0,
+                "frame offset must be aligned to BPF_ALIGN_OF_U128",
+            );
+            VALUE as i16
+        };
+
+        #meta
+    };
+
+    (def, meta_ident)
+}
+
+/// Capitalize the first letter of a string (e.g. `"base_mint"` → `"Base_mint"`).
+fn capitalize_first(s: &str) -> String {
+    let mut chars = s.chars();
+    match chars.next() {
+        Some(c) => c.to_uppercase().collect::<String>() + chars.as_str(),
+        None => String::new(),
+    }
+}
+
+fn expand_signer_seeds(
+    asm_prefix: &str,
+    frame_ty: &syn::Path,
+    parent_field: &Ident,
+    seeds: &[Ident],
+    const_defs: &mut Vec<proc_macro2::TokenStream>,
+    meta_idents: &mut Vec<Ident>,
+) {
+    for seed_field in seeds {
+        let field_str = seed_field.to_string();
+        let seed_asm = field_str.to_uppercase();
+        let doc_name = capitalize_first(&field_str).replace('_', " ");
+
+        for (suffix, sub_field, doc_what) in [("ADDR", "addr", "address"), ("LEN", "len", "length")]
+        {
+            let asm_name = format!("{}_{}_{}_OFF", asm_prefix, seed_asm, suffix);
+            let rust_name = Ident::new(&asm_name, seed_field.span());
+            let meta_ident = codegen::meta_ident(&asm_name, seed_field.span());
+            let doc = format!("{} signer seed {}.", doc_name, doc_what);
+            let sub = Ident::new(sub_field, seed_field.span());
+            let meta = codegen::offset_meta(&meta_ident, &asm_name, &doc, &rust_name);
+
+            const_defs.push(quote! {
+                #[doc = #doc]
+                pub const #rust_name: i16 = {
+                    use super::*;
+                    const VALUE: i64 =
+                        core::mem::offset_of!(#frame_ty, #parent_field . #seed_field . #sub) as i64
+                            - core::mem::size_of::<#frame_ty>() as i64;
+                    const _: () = assert!(
+                        VALUE >= i16::MIN as i64 && VALUE <= i16::MAX as i64,
+                        "frame offset must fit in i16",
+                    );
+                    const _: () = assert!(
+                        VALUE % 8 == 0,
+                        "frame offset must be aligned to BPF_ALIGN_OF_U128",
+                    );
+                    VALUE as i16
+                };
+
+                #meta
+            });
+            meta_idents.push(meta_ident);
+        }
+    }
+
+    // Emit seed count as an immediate.
+    let n_seeds = seeds.len();
+    let asm_name = format!("{}_N_SEEDS", asm_prefix);
+    let rust_name = Ident::new(&asm_name, parent_field.span());
+    let meta_ident = codegen::meta_ident(&asm_name, parent_field.span());
+    let doc = "Number of signer seeds.";
+    let meta = codegen::immediate_meta(
+        &meta_ident,
+        &asm_name,
+        doc,
+        quote! { #rust_name as i32 },
+    );
+
+    const_defs.push(quote! {
+        #[doc = #doc]
+        pub const #rust_name: usize = #n_seeds;
+
+        #meta
+    });
+    meta_idents.push(meta_ident);
 }
 
 fn expand_immediate(
