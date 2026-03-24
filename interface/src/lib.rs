@@ -31,6 +31,8 @@ pub enum ErrorCode {
     MarketHasData,
     /// The base mint account is a duplicate.
     BaseMintIsDuplicate,
+    /// The quote mint account is a duplicate.
+    QuoteMintIsDuplicate,
 }
 // endregion: error_enum
 

@@ -8,6 +8,7 @@
 .equ E_MARKET_ACCOUNT_IS_DUPLICATE, 5 # The market account is a duplicate.
 .equ E_MARKET_HAS_DATA, 6 # The market account already has data.
 .equ E_BASE_MINT_IS_DUPLICATE, 7 # The base mint account is a duplicate.
+.equ E_QUOTE_MINT_IS_DUPLICATE, 8 # The quote mint account is a duplicate.
 
 e_invalid_instruction_length:
     mov32 r0, E_INVALID_INSTRUCTION_LENGTH
@@ -31,4 +32,8 @@ e_market_has_data:
 
 e_base_mint_is_duplicate:
     mov32 r0, E_BASE_MINT_IS_DUPLICATE
+    exit
+
+e_quote_mint_is_duplicate:
+    mov32 r0, E_QUOTE_MINT_IS_DUPLICATE
     exit

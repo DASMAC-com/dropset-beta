@@ -34,12 +34,13 @@ pub struct RegisterMarketData {
 // endregion: register_market_data
 
 #[svm_data]
-/// Empty user data is required to ensure absolute addressing.
-pub struct RegisterMarketInputBufferHeader {
+pub struct InputBufferHeader {
     pub n_accounts: u64,
     pub user: FullRuntimeAccount<{ runtime_data_size(data::DATA_LEN_ZERO) }>,
     pub market: FullRuntimeAccount<{ runtime_data_size(data::DATA_LEN_ZERO) }>,
-    pub base_mint: RuntimeAccount,
+    /// Zero account data statically assumed in order to dynamically check quote offset at runtime.
+    pub base_mint: FullRuntimeAccount<{ runtime_data_size(data::DATA_LEN_ZERO) }>,
+    pub quote_mint: FullRuntimeAccount<{ runtime_data_size(data::DATA_LEN_ZERO) }>,
 }
 
 constant_group! {
@@ -48,7 +49,11 @@ constant_group! {
     /// Assorted register market constants.
     register_market_misc {
         /// From input buffer to base mint duplicate flag.
-        BASE_MINT_DUPLICATE = offset!(RegisterMarketInputBufferHeader.base_mint.borrow_state),
+        BASE_MINT_DUPLICATE = offset!(InputBufferHeader.base_mint.header.borrow_state),
+        /// From input buffer to base mint data length.
+        BASE_DATA_LEN = offset!(InputBufferHeader.base_mint.header.data_len),
+        /// From input buffer to quote mint duplicate flag.
+        QUOTE_MINT_DUPLICATE = offset!(InputBufferHeader.quote_mint.header.borrow_state),
     }
 }
 

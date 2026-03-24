@@ -16,7 +16,7 @@ mod svm_data;
 ///
 /// Supports three constant kinds:
 /// - `offset!(expr)` — signed offset, gets `_OFF` suffix.
-/// - `immediate!(expr)` — unsigned immediate, no suffix.
+/// - `immediate!(expr)` — signed immediate (i32), no suffix.
 /// - `signer_seeds!(field)` — auto-expands seed offsets (requires `#[frame]`).
 ///
 /// With `#[frame(Type)]`, `offset!(field)` computes a negative frame-pointer-

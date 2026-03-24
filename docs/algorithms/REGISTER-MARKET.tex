@@ -29,6 +29,8 @@
   \IF{$base\_mint.duplicate \neq$ \texttt{input\_buffer.NON\_DUP\_MARKER}}
     \RETURN \texttt{ErrorCode::BaseMintIsDuplicate}
   \ENDIF
+  \COMMENT{Get the input buffer, incremented by the base mint padded data length.}
+  \STATE $input\_shifted = input + base\_mint.padded\_data\_len$
   \IF{$quote\_mint.duplicate \neq$ \texttt{input\_buffer.NON\_DUP\_MARKER}}
     \RETURN \texttt{ErrorCode::QuoteMintIsDuplicate}
   \ENDIF

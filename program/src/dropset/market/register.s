@@ -21,6 +21,10 @@
 # -------------------------------------------------------------------------
 # From input buffer to base mint duplicate flag.
 .equ RM_IB_BASE_MINT_DUPLICATE_OFF, 20680
+# From input buffer to base mint data length.
+.equ RM_IB_BASE_DATA_LEN_OFF, 20760
+# From input buffer to quote mint duplicate flag.
+.equ RM_IB_QUOTE_MINT_DUPLICATE_OFF, 31016
 # -------------------------------------------------------------------------
 
 register_market:
@@ -29,21 +33,30 @@ register_market:
     jlt r3, REGISTER_MARKET_ACCOUNTS_LEN, e_invalid_number_of_accounts
     # if insn_len != RegisterMarketData.LEN
     #     return ErrorCode::InvalidInstructionLength
-    jne r4, REGISTER_MARKET_DATA_LEN, e_invalid_instruction_length
+    jne r3, REGISTER_MARKET_DATA_LEN, e_invalid_instruction_length
     # if user.data_len != data.DATA_LEN_ZERO
     #     return ErrorCode::UserHasData
-    ldxdw r4, [r1 + IB_USER_DATA_LEN_OFF]
-    jne r4, DATA_DATA_LEN_ZERO, e_user_has_data
+    ldxdw r3, [r1 + IB_USER_DATA_LEN_OFF]
+    jne r3, DATA_DATA_LEN_ZERO, e_user_has_data
     # if market.duplicate != input_buffer.NON_DUP_MARKER
     #     return ErrorCode::MarketAccountIsDuplicate
-    ldxb r4, [r1 + IB_MARKET_DUPLICATE_OFF]
-    jne r4, IB_NON_DUP_MARKER, e_market_account_is_duplicate
+    ldxb r3, [r1 + IB_MARKET_DUPLICATE_OFF]
+    jne r3, IB_NON_DUP_MARKER, e_market_account_is_duplicate
     # if market.data_len != DATA_DATA_LEN_ZERO
     #     return ErrorCode::MarketHasData
-    ldxdw r4, [r1 + IB_MARKET_DATA_LEN_OFF]
-    jne r4, DATA_DATA_LEN_ZERO, e_market_has_data
+    ldxdw r3, [r1 + IB_MARKET_DATA_LEN_OFF]
+    jne r3, DATA_DATA_LEN_ZERO, e_market_has_data
     # if base_mint.duplicate != input_buffer.NON_DUP_MARKER
     #     return ErrorCode::BaseMintIsDuplicate
-    ldxb r4, [r1 + RM_IB_BASE_MINT_DUPLICATE_OFF]
-    jne r4, IB_NON_DUP_MARKER, e_base_mint_is_duplicate
+    ldxb r3, [r1 + RM_IB_BASE_MINT_DUPLICATE_OFF]
+    jne r3, IB_NON_DUP_MARKER, e_base_mint_is_duplicate
+    # input_shifted = input + base_mint.padded_data_len
+    ldxdw r3, [r1 + RM_IB_BASE_DATA_LEN_OFF]
+    add64 r3, DATA_MAX_DATA_PAD
+    and64 r3, DATA_DATA_LEN_AND_MASK
+    add64 r3, r1
+    # if quote_mint.duplicate != input_buffer.NON_DUP_MARKER
+    #     return ErrorCode::QuoteMintIsDuplicate
+    ldxb r4, [r3 + RM_IB_QUOTE_MINT_DUPLICATE_OFF]
+    jne r4, IB_NON_DUP_MARKER, e_quote_mint_is_duplicate
     exit

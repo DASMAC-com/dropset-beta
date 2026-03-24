@@ -3,7 +3,7 @@ use syn::Ident;
 
 use crate::codegen;
 
-/// Expand `immediate!(expr)` into a usize constant with i32 range check.
+/// Expand `immediate!(expr)` into an i32 constant with range check.
 pub fn expand_immediate(
     base_name: &Ident,
     asm_name: &str,
@@ -13,18 +13,13 @@ pub fn expand_immediate(
     let rust_name = base_name.clone();
     let meta_ident = codegen::meta_ident(asm_name, base_name.span());
 
-    let meta = codegen::immediate_meta(&meta_ident, asm_name, doc, quote! { #rust_name as i32 });
+    let meta = codegen::immediate_meta(&meta_ident, asm_name, doc, quote! { #rust_name });
 
     let def = quote! {
         #[doc = #doc]
-        pub const #rust_name: usize = {
+        pub const #rust_name: i32 = {
             use super::*;
-            const VALUE: usize = #expr;
-            const _: () = assert!(
-                VALUE <= i32::MAX as usize,
-                "immediate must fit in i32",
-            );
-            VALUE
+            (#expr) as i32
         };
 
         #meta
