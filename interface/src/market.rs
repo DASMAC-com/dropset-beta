@@ -46,6 +46,8 @@ pub enum RegisterMarketAccounts {
 // endregion: register_market_accounts
 
 // region: register_market_stack
+
+// region: frame_example
 #[frame]
 /// Stack frame for REGISTER-MARKET.
 pub struct RegisterMarketFrame {
@@ -56,7 +58,9 @@ pub struct RegisterMarketFrame {
     /// From `sol_try_find_program_address`.
     pub bump: u8,
 }
+// endregion: frame_example
 
+// region: signer_seeds_example
 signer_seeds! {
     pub struct PdaSignerSeeds {
         /// Base mint seed.
@@ -67,6 +71,7 @@ signer_seeds! {
         bump,
     }
 }
+// endregion: signer_seeds_example
 
 constant_group! {
     #[prefix("RM")]
@@ -81,4 +86,5 @@ constant_group! {
         BUMP = offset!(bump),
     }
 }
+
 // endregion: register_market_stack

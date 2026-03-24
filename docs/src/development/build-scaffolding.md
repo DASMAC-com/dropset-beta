@@ -41,14 +41,28 @@ Defines a group of named assembly constants with an injection target. The
 constants. An optional `#[prefix("...")]` attribute prepends a prefix to all
 generated constant names. An optional `///` doc comment on the group itself
 adds a header comment and separator lines around the group in the output
-assembly file. Each constant is assigned a value using one of two custom
+assembly file. Each constant is assigned a value using one of three custom
 syntax forms (parsed within the proc macro, not standalone macros):
 
 - `offset!(expr)`: an `i16` memory offset, the generated name is suffixed with
   `_OFF`
 - `immediate!(expr)`: an `i32` immediate value
+- `signer_seeds!(field)`: expands a [`signer_seeds!`](#signer_seeds) field into
+  `_ADDR_OFF` and `_LEN_OFF` constants per seed, plus an `N_SEEDS` count
+  (requires `#[frame(Type)]`, see below)
 
 <Include rs="interface::memory#constant_group_example" collapsible/>
+
+#### Frame-relative offsets
+
+When annotated with `#[frame(Type)]`, the group enters frame-relative mode.
+In this mode, `offset!(field)` computes a negative offset from the frame
+pointer (`offset_of - size_of`) and asserts 8-byte alignment
+(`BPF_ALIGN_OF_U128`). The group's doc comment defaults to the frame struct's
+doc comment if not explicitly provided. The `signer_seeds!(field)` form is
+only available in frame-relative mode.
+
+<Include rs="interface::market#register_market_stack" collapsible/>
 
 Each group generates:
 
@@ -100,6 +114,27 @@ injection.
 The count is accessible in Rust as `RegisterMarketAccounts::LEN`.
 
 <Include rs="interface::market#register_market_accounts" collapsible/>
+
+### `#[frame]`
+
+Attribute macro for stack frame structs. Applies `#[repr(C, align(8))]`
+(aligned to `BPF_ALIGN_OF_U128`) and asserts at compile time that the struct
+fits within one SBPF stack frame (4096 bytes). Also registers field-to-type
+mappings and the struct's doc comment in proc-macro shared state so that
+[`constant_group!`](#constant_group) can auto-discover frame fields and
+derive its header comment.
+
+<Include rs="interface::market#frame_example" collapsible/>
+
+### `signer_seeds!` {#signer_seeds}
+
+Function-like macro that defines a `#[repr(C)]` struct where every field is
+typed as `SolSignerSeed`. Field names are registered in proc-macro shared
+state so that `signer_seeds!(field)` inside a [`constant_group!`](#constant_group)
+can auto-discover all seed fields by looking up the parent field's type on the
+frame struct.
+
+<Include rs="interface::market#signer_seeds_example" collapsible/>
 
 ## Interface
 
