@@ -58,6 +58,46 @@ pub fn immediate_meta(
     }
 }
 
+/// Emit a single-constant `_LEN` group with an `impl Type { pub const LEN }`.
+///
+/// Shared by `#[instruction_data]` (struct, `size_of`) and
+/// `#[instruction_accounts]` (enum, variant count). The caller supplies the
+/// `len_expr` that computes the value and the original item to re-emit.
+pub fn len_group(
+    target: &str,
+    type_name: &Ident,
+    doc: &str,
+    len_expr: proc_macro2::TokenStream,
+    original_item: proc_macro2::TokenStream,
+) -> proc_macro2::TokenStream {
+    let screaming = to_screaming_snake(&type_name.to_string());
+    let mod_name = Ident::new(&screaming.to_lowercase(), type_name.span());
+    let asm_name = format!("{}_LEN", screaming);
+
+    let meta_ident = meta_ident(&asm_name, type_name.span());
+
+    let meta_def = immediate_meta(
+        &meta_ident,
+        &asm_name,
+        doc,
+        quote! { super::#type_name::LEN as i32 },
+    );
+
+    let group = group_module(&mod_name, target, "", &[meta_def], &[meta_ident]);
+
+    quote! {
+        #original_item
+
+        impl #type_name {
+            #[doc = #doc]
+            pub const LEN: u64 = #len_expr;
+        }
+
+        #[doc(hidden)]
+        #group
+    }
+}
+
 /// Emit a `pub mod name { ...defs... pub const GROUP = ... }`.
 pub fn group_module(
     mod_name: &Ident,

@@ -4,6 +4,25 @@ use solana_sdk::signature::read_keypair_file;
 use solana_sdk::signer::Signer;
 use std::path::Path;
 
+/// Define a test case enum with an auto-generated `ALL` slice containing
+/// every variant in declaration order.
+#[macro_export]
+macro_rules! test_cases {
+    (
+        $(#[$meta:meta])*
+        $vis:vis enum $name:ident {
+            $($variant:ident),* $(,)?
+        }
+    ) => {
+        $(#[$meta])*
+        $vis enum $name { $($variant),* }
+
+        impl $name {
+            pub const ALL: &[Self] = &[$(Self::$variant),*];
+        }
+    }
+}
+
 const DEFAULT_PROGRAM: &str = "dropset";
 
 fn deploy_dir() -> String {
@@ -59,6 +78,38 @@ pub struct CaseResult {
     pub error: Option<String>,
 }
 
+/// Compare a Mollusk execution result against an expected error code.
+fn evaluate(
+    result: &mollusk_svm::result::InstructionResult,
+    expected: Option<dropset_interface::ErrorCode>,
+) -> CaseResult {
+    use mollusk_svm::result::ProgramResult as MolluskResult;
+    use solana_sdk::program_error::ProgramError;
+
+    let expected_result: Result<(), ProgramError> = match expected {
+        None => Ok(()),
+        Some(e) => Err(ProgramError::Custom(e.into())),
+    };
+
+    let pass = match (&expected_result, &result.program_result) {
+        (Ok(()), MolluskResult::Success) => true,
+        (Err(e), MolluskResult::Failure(actual)) => actual == e,
+        _ => false,
+    };
+
+    CaseResult {
+        cu: result.compute_units_consumed,
+        error: if pass {
+            None
+        } else {
+            Some(format!(
+                "expected {:?}, got {:?}",
+                expected_result, result.program_result
+            ))
+        },
+    }
+}
+
 /// Sends an instruction with the given data (no accounts) and compares against
 /// an expected error code. Pass `None` for success, or `Some(ErrorCode::Variant)`
 /// for a `ProgramError::Custom` failure.
@@ -78,10 +129,8 @@ pub fn check_with_accounts(
     n_accounts: usize,
     expected: Option<dropset_interface::ErrorCode>,
 ) -> CaseResult {
-    use mollusk_svm::result::ProgramResult as MolluskResult;
     use solana_account::Account;
     use solana_sdk::instruction::{AccountMeta, Instruction};
-    use solana_sdk::program_error::ProgramError;
 
     let keys: Vec<Pubkey> = (0..n_accounts).map(|_| Pubkey::new_unique()).collect();
     let account_metas: Vec<AccountMeta> = keys
@@ -93,28 +142,7 @@ pub fn check_with_accounts(
     let instruction = Instruction::new_with_bytes(setup.program_id, data, account_metas);
     let result = setup.mollusk.process_instruction(&instruction, &accounts);
 
-    let expected_result: Result<(), ProgramError> = match expected {
-        None => Ok(()),
-        Some(e) => Err(ProgramError::Custom(e.into())),
-    };
-
-    let pass = match (&expected_result, &result.program_result) {
-        (Ok(()), MolluskResult::Success) => true,
-        (Err(e), MolluskResult::Failure(actual)) => actual == e,
-        _ => false,
-    };
-
-    CaseResult {
-        cu: result.compute_units_consumed,
-        error: if pass {
-            None
-        } else {
-            Some(format!(
-                "expected {:?}, got {:?}",
-                expected_result, result.program_result
-            ))
-        },
-    }
+    evaluate(&result, expected)
 }
 
 /// Like [`check_with_accounts`], but accepts pre-built account and meta lists
@@ -126,35 +154,12 @@ pub fn check_custom(
     accounts: Vec<(Pubkey, solana_account::Account)>,
     expected: Option<dropset_interface::ErrorCode>,
 ) -> CaseResult {
-    use mollusk_svm::result::ProgramResult as MolluskResult;
     use solana_sdk::instruction::Instruction;
-    use solana_sdk::program_error::ProgramError;
 
     let instruction = Instruction::new_with_bytes(setup.program_id, data, account_metas);
     let result = setup.mollusk.process_instruction(&instruction, &accounts);
 
-    let expected_result: Result<(), ProgramError> = match expected {
-        None => Ok(()),
-        Some(e) => Err(ProgramError::Custom(e.into())),
-    };
-
-    let pass = match (&expected_result, &result.program_result) {
-        (Ok(()), MolluskResult::Success) => true,
-        (Err(e), MolluskResult::Failure(actual)) => actual == e,
-        _ => false,
-    };
-
-    CaseResult {
-        cu: result.compute_units_consumed,
-        error: if pass {
-            None
-        } else {
-            Some(format!(
-                "expected {:?}, got {:?}",
-                expected_result, result.program_result
-            ))
-        },
-    }
+    evaluate(&result, expected)
 }
 
 // region: test_case

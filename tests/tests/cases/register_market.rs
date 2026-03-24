@@ -1,26 +1,20 @@
 use dropset_interface::{Discriminant, ErrorCode};
-use dropset_tests::{CaseResult, TestCase, TestSetup, check, check_custom, check_with_accounts};
+use dropset_tests::{
+    CaseResult, TestCase, TestSetup, check, check_custom, check_with_accounts, test_cases,
+};
 use solana_account::Account;
 use solana_sdk::instruction::AccountMeta;
 use solana_sdk::pubkey::Pubkey;
 
-#[derive(Clone, Copy)]
-pub enum Case {
-    InvalidNumberOfAccounts,
-    InvalidInstructionLength,
-    UserHasData,
-    MarketAccountIsDuplicate,
-    MarketHasData,
-}
-
-impl Case {
-    pub const ALL: &[Self] = &[
-        Self::InvalidNumberOfAccounts,
-        Self::InvalidInstructionLength,
-        Self::UserHasData,
-        Self::MarketAccountIsDuplicate,
-        Self::MarketHasData,
-    ];
+test_cases! {
+    #[derive(Clone, Copy)]
+    pub enum Case {
+        InvalidNumberOfAccounts,
+        InvalidInstructionLength,
+        UserHasData,
+        MarketAccountIsDuplicate,
+        MarketHasData,
+    }
 }
 
 /// Build 10 unique accounts with default (empty) data.
