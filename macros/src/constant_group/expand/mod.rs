@@ -1,8 +1,9 @@
+mod immediate;
+mod offset;
+mod signer_seeds;
+
 use super::ConstantKind;
-use super::immediate;
-use super::offset;
 use super::parse::ConstantGroupInput;
-use super::signer_seeds;
 use crate::codegen;
 
 /// Expand a parsed `ConstantGroupInput` into a module with constants and a GROUP.

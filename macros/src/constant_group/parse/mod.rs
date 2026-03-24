@@ -3,9 +3,12 @@ use syn::{
     parse::{Parse, ParseStream},
 };
 
+mod offset;
+mod signer_seeds;
+
 use super::{ConstantDef, ConstantKind};
-use super::parse_offset::parse_offset;
-use super::parse_signer_seeds::parse_signer_seeds;
+use offset::parse_offset;
+use signer_seeds::parse_signer_seeds;
 use crate::attrs::{
     extract_attr_path, extract_attr_string, extract_doc_comment, extract_inject_target,
     validate_comment, validate_name,

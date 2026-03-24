@@ -3,7 +3,7 @@ use syn::{
     parse::ParseStream,
 };
 
-use super::ConstantKind;
+use super::super::ConstantKind;
 
 /// Parse the inside of `offset!(...)`.
 ///

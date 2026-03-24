@@ -3,7 +3,7 @@ use syn::{
     parse::ParseStream,
 };
 
-use super::ConstantKind;
+use super::super::ConstantKind;
 use crate::shared_state;
 
 /// Parse the inside of `signer_seeds!(parent_field)`.
