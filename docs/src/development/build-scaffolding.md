@@ -145,6 +145,14 @@ looking up the parent field's type on the frame struct.
 
 <Include rs="interface::market#signer_seeds_example" collapsible/>
 
+### `size_of_group!`
+
+Injects `SIZE_OF_<TYPE>` immediates for each listed type. Names and doc
+comments are auto-derived from the type name (`Address` becomes
+`SIZE_OF_ADDRESS`). The value is `std::mem::size_of::<Type>()` cast to `i32`.
+
+<Include rs="interface::memory#size_of_group_example" collapsible/>
+
 ## Interface
 
 The [`interface`] crate uses the macros to declare all program constants. The

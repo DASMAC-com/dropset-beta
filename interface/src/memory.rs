@@ -63,10 +63,12 @@ constant_group! {
 }
 // endregion: constant_group_example
 
+// region: size_of_group_example
 size_of_group! {
     #[inject("common/memory")]
     [Address]
 }
+// endregion: size_of_group_example
 
 /// Compute the data buffer size for a runtime account with the given data length.
 pub const fn runtime_data_size(data_len: i32) -> usize {
