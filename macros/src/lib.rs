@@ -9,8 +9,8 @@ mod frame;
 mod instruction_accounts;
 mod instruction_length;
 mod shared_state;
-mod svm_data;
 mod signer_seeds;
+mod svm_data;
 
 /// Defines a group of assembly constants with an injection target.
 ///
