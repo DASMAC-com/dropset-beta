@@ -372,6 +372,7 @@ onMounted(async () => {
 .pseudocode-container :deep(.ps-comment) {
   color: var(--vp-c-green-2);
   font-style: italic;
+  display: block;
 }
 .pseudocode-container :deep(.ps-algorithm) {
   border-top: none;

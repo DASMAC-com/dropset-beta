@@ -23,6 +23,7 @@
 .equ RM_IB_BASE_MINT_DUPLICATE_OFF, 20680
 # From input buffer to base mint data length.
 .equ RM_IB_BASE_DATA_LEN_OFF, 20760
+.equ RM_IB_BASE_ADDR_OFF, 20688 # From input buffer to base mint address.
 # From input buffer to quote mint duplicate flag.
 .equ RM_IB_QUOTE_MINT_DUPLICATE_OFF, 31016
 # -------------------------------------------------------------------------
@@ -50,6 +51,10 @@ register_market:
     #     return ErrorCode::BaseMintIsDuplicate
     ldxb r3, [r1 + RM_IB_BASE_MINT_DUPLICATE_OFF]
     jne r3, IB_NON_DUP_MARKER, e_base_mint_is_duplicate
+    # pda_seeds.base.addr = base_mint.pubkey
+    mov64 r3, r1
+    add64 r3, RM_IB_BASE_ADDR_OFF
+    stxdw [r10 + RM_PDA_SEEDS_BASE_ADDR_OFF], r3
     # input_shifted = input + base_mint.padded_data_len
     ldxdw r3, [r1 + RM_IB_BASE_DATA_LEN_OFF]
     add64 r3, DATA_MAX_DATA_PAD

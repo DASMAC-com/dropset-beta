@@ -52,6 +52,8 @@ constant_group! {
         BASE_MINT_DUPLICATE = offset!(InputBufferHeader.base_mint.header.borrow_state),
         /// From input buffer to base mint data length.
         BASE_DATA_LEN = offset!(InputBufferHeader.base_mint.header.data_len),
+        /// From input buffer to base mint address.
+        BASE_ADDR = offset!(InputBufferHeader.base_mint.header.address),
         /// From input buffer to quote mint duplicate flag.
         QUOTE_MINT_DUPLICATE = offset!(InputBufferHeader.quote_mint.header.borrow_state),
     }
@@ -80,7 +82,7 @@ pub enum RegisterMarketAccounts {
 /// Stack frame for REGISTER-MARKET.
 pub struct RegisterMarketFrame {
     /// For CreateAccount CPI.
-    pub pda_seeds: PdaSignerSeeds,
+    pub pda_seeds: PDASignerSeeds,
     /// From `sol_try_find_program_address`.
     pub pda: Address,
     /// From `sol_try_find_program_address`.
@@ -90,7 +92,7 @@ pub struct RegisterMarketFrame {
 
 // region: signer_seeds_example
 signer_seeds! {
-    pub struct PdaSignerSeeds {
+    pub struct PDASignerSeeds {
         /// Base mint seed.
         base,
         /// Quote mint seed.
