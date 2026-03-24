@@ -2,11 +2,13 @@ use crate::cpi_bindings::SolSignerSeed;
 use crate::memory::StackNode;
 use crate::order::Order;
 use crate::seat::Seat;
-use dropset_macros::{constant_group, frame, instruction_accounts, instruction_data, signer_seeds};
+use dropset_macros::{
+    constant_group, frame, instruction_accounts, instruction_data, signer_seeds, svm_data,
+};
 use pinocchio::Address;
 
 // region: market_header
-#[repr(C, packed)]
+#[svm_data]
 pub struct MarketHeader {
     /// Absolute pointer to seats tree root in memory map.
     pub seats: *mut Seat,
