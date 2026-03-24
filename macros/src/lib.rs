@@ -9,6 +9,7 @@ mod frame;
 mod instruction_accounts;
 mod instruction_length;
 mod shared_state;
+mod svm_data;
 mod signer_seeds;
 
 /// Defines a group of assembly constants with an injection target.
@@ -165,4 +166,21 @@ pub fn instruction_accounts(attr: TokenStream, item: TokenStream) -> TokenStream
     let target = parse_macro_input!(attr as LitStr);
     let input = parse_macro_input!(item as syn::ItemEnum);
     TokenStream::from(instruction_accounts::expand(&target.value(), &input))
+}
+
+/// Attribute macro for packed SVM data structs.
+///
+/// Applies `#[repr(C, packed)]` to the struct. Use this for any struct
+/// that maps directly to an onchain memory layout.
+///
+/// ```ignore
+/// #[svm_data]
+/// pub struct MarketHeader {
+///     pub seats_root: *mut Seat,
+/// }
+/// ```
+#[proc_macro_attribute]
+pub fn svm_data(_attr: TokenStream, item: TokenStream) -> TokenStream {
+    let input = parse_macro_input!(item as syn::ItemStruct);
+    TokenStream::from(svm_data::expand(&input))
 }

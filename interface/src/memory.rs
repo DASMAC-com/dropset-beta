@@ -1,8 +1,8 @@
-use dropset_macros::constant_group;
+use dropset_macros::{constant_group, svm_data};
 use pinocchio::account::{MAX_PERMITTED_DATA_INCREASE, RuntimeAccount};
 use pinocchio::entrypoint::NON_DUP_MARKER;
 
-#[repr(C, packed)]
+#[svm_data]
 pub struct StackNode {
     pub next: *mut StackNode,
 }
@@ -21,7 +21,7 @@ constant_group! {
 }
 
 // region: full_runtime_account
-#[repr(C, packed)]
+#[svm_data]
 /// A runtime account with a data buffer of a specified size.
 pub struct FullRuntimeAccount<const DATA_SIZE: usize> {
     pub header: RuntimeAccount,
@@ -31,7 +31,7 @@ pub struct FullRuntimeAccount<const DATA_SIZE: usize> {
 // endregion: full_runtime_account
 
 // region: input_buffer_header
-#[repr(C, packed)]
+#[svm_data]
 /// Empty user data is required to ensure absolute addressing.
 pub struct InputBufferHeader {
     pub n_accounts: u64,
