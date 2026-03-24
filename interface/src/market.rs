@@ -1,11 +1,13 @@
-use crate::cpi_bindings::SolSignerSeed;
 use crate::memory::StackNode;
+use crate::memory::{data, runtime_data_size};
 use crate::order::Order;
 use crate::seat::Seat;
+use crate::{cpi_bindings::SolSignerSeed, memory::FullRuntimeAccount};
 use dropset_macros::{
     constant_group, frame, instruction_accounts, instruction_data, signer_seeds, svm_data,
 };
 use pinocchio::Address;
+use pinocchio::account::RuntimeAccount;
 
 // region: market_header
 #[svm_data]
@@ -30,6 +32,25 @@ pub struct RegisterMarketData {
     discriminant: u8,
 }
 // endregion: register_market_data
+
+#[svm_data]
+/// Empty user data is required to ensure absolute addressing.
+pub struct RegisterMarketInputBufferHeader {
+    pub n_accounts: u64,
+    pub user: FullRuntimeAccount<{ runtime_data_size(data::DATA_LEN_ZERO) }>,
+    pub market: FullRuntimeAccount<{ runtime_data_size(data::DATA_LEN_ZERO) }>,
+    pub base_mint: RuntimeAccount,
+}
+
+constant_group! {
+    #[prefix("RM_IB")]
+    #[inject("market/register")]
+    /// Assorted register market constants.
+    register_market_misc {
+        /// From input buffer to base mint duplicate flag.
+        BASE_MINT_DUPLICATE = offset!(RegisterMarketInputBufferHeader.base_mint.borrow_state),
+    }
+}
 
 // region: register_market_accounts
 #[instruction_accounts("market/register")]

@@ -1,3 +1,4 @@
+use dropset_interface::market::RegisterMarketAccounts;
 use dropset_interface::{Discriminant, ErrorCode};
 use dropset_tests::{
     CaseResult, TestCase, TestSetup, check, check_custom, check_with_accounts, test_cases,
@@ -14,13 +15,16 @@ test_cases! {
         UserHasData,
         MarketAccountIsDuplicate,
         MarketHasData,
+        BaseMintIsDuplicate,
     }
 }
 
-/// Build 10 unique accounts with default (empty) data.
+const N_ACCOUNTS: usize = RegisterMarketAccounts::LEN as usize;
+
+/// Build unique accounts with default (empty) data.
 fn default_accounts() -> (Vec<Pubkey>, Vec<Account>) {
-    let keys: Vec<Pubkey> = (0..10).map(|_| Pubkey::new_unique()).collect();
-    let accounts: Vec<Account> = (0..10).map(|_| Account::default()).collect();
+    let keys: Vec<Pubkey> = (0..N_ACCOUNTS).map(|_| Pubkey::new_unique()).collect();
+    let accounts: Vec<Account> = (0..N_ACCOUNTS).map(|_| Account::default()).collect();
     (keys, accounts)
 }
 
@@ -48,22 +52,23 @@ impl TestCase for Case {
             Self::InvalidInstructionLength => check_with_accounts(
                 setup,
                 &[Discriminant::RegisterMarket.into(), 0x00],
-                10,
+                N_ACCOUNTS,
                 Some(ErrorCode::InvalidInstructionLength),
             ),
             // Verifies: REGISTER-MARKET
             Self::UserHasData => {
                 let (keys, mut accounts) = default_accounts();
-                accounts[0].data = vec![0u8; 32];
+                accounts[RegisterMarketAccounts::User as usize].data = vec![0u8; 32];
                 let (metas, accounts) = into_metas_and_accounts(keys, accounts);
                 check_custom(setup, insn, metas, accounts, Some(ErrorCode::UserHasData))
             }
             // Verifies: REGISTER-MARKET
             Self::MarketAccountIsDuplicate => {
                 let (mut keys, accounts) = default_accounts();
-                // Market (index 1) shares key with user (index 0),
-                // causing the runtime to serialize it as a duplicate.
-                keys[1] = keys[0];
+                // Market shares key with User, causing the runtime
+                // to serialize it as a duplicate.
+                keys[RegisterMarketAccounts::Market as usize] =
+                    keys[RegisterMarketAccounts::User as usize];
                 let (metas, accounts) = into_metas_and_accounts(keys, accounts);
                 check_custom(
                     setup,
@@ -76,9 +81,25 @@ impl TestCase for Case {
             // Verifies: REGISTER-MARKET
             Self::MarketHasData => {
                 let (keys, mut accounts) = default_accounts();
-                accounts[1].data = vec![0u8; 32];
+                accounts[RegisterMarketAccounts::Market as usize].data = vec![0u8; 32];
                 let (metas, accounts) = into_metas_and_accounts(keys, accounts);
                 check_custom(setup, insn, metas, accounts, Some(ErrorCode::MarketHasData))
+            }
+            // Verifies: REGISTER-MARKET
+            Self::BaseMintIsDuplicate => {
+                let (mut keys, accounts) = default_accounts();
+                // BaseMint shares key with User, causing the runtime
+                // to serialize it as a duplicate.
+                keys[RegisterMarketAccounts::BaseMint as usize] =
+                    keys[RegisterMarketAccounts::User as usize];
+                let (metas, accounts) = into_metas_and_accounts(keys, accounts);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::BaseMintIsDuplicate),
+                )
             }
         }
     }
