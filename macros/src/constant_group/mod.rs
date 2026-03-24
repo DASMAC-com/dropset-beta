@@ -13,10 +13,10 @@ pub(crate) enum ConstantKind {
     /// frame pointer, must be aligned to `BPF_ALIGN_OF_U128`. Name gets `_OFF`
     /// suffix.
     FrameOffset { fields: Vec<syn::Member> },
-    /// `signer_seeds!(parent: field1, field2, ...)` inside a `#[frame(Type)]`
-    /// group: expands to `_ADDR_OFF` and `_LEN_OFF` per seed, using
-    /// frame-relative offsets through `parent.field.addr` / `.len`. ASM names
-    /// are derived by uppercasing the field name.
+    /// `signer_seeds!(parent_field)` inside a `#[frame(Type)]` group: seed
+    /// fields are auto-discovered via shared state from the `signer_seeds!`
+    /// struct definition. Expands to `_ADDR_OFF` and `_LEN_OFF` per seed plus
+    /// an `N_SEEDS` count. ASM names are derived by uppercasing the field name.
     SignerSeeds {
         parent_field: Ident,
         seeds: Vec<Ident>,

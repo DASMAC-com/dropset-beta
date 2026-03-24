@@ -7,7 +7,9 @@ static SIGNER_SEEDS: LazyLock<Mutex<HashMap<String, Vec<String>>>> =
 
 /// Metadata registered by `#[frame]`, keyed by struct name.
 struct FrameInfo {
+    /// Field name → type name mappings (e.g. `("pda_seeds", "PdaSignerSeeds")`).
     fields: Vec<(String, String)>,
+    /// Doc comment from the frame struct, used as the default group header.
     doc: String,
 }
 

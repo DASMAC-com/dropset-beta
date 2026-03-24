@@ -13,6 +13,15 @@ mod signer_seeds;
 
 /// Defines a group of assembly constants with an injection target.
 ///
+/// Supports three constant kinds:
+/// - `offset!(expr)` — signed offset, gets `_OFF` suffix.
+/// - `immediate!(expr)` — unsigned immediate, no suffix.
+/// - `signer_seeds!(field)` — auto-expands seed offsets (requires `#[frame]`).
+///
+/// With `#[frame(Type)]`, `offset!(field)` computes a negative frame-pointer-
+/// relative offset with alignment enforcement, and the group's doc comment
+/// defaults to the frame struct's doc.
+///
 /// ```ignore
 /// constant_group! {
 ///     #[inject("entrypoint")]
@@ -32,8 +41,9 @@ pub fn constant_group(input: TokenStream) -> TokenStream {
 
 /// Defines a signer seeds struct where every field is a `SolSignerSeed`.
 ///
-/// Generates a `#[repr(C)]` struct and registers the field names for
-/// automatic discovery by `signer_seeds!()` inside `constant_group!`.
+/// Generates a `#[repr(C)]` struct and registers field names in shared
+/// state so that `signer_seeds!(field)` inside `constant_group!` can
+/// auto-discover all seed fields without manual listing.
 ///
 /// ```ignore
 /// signer_seeds! {
@@ -117,14 +127,16 @@ pub fn instruction_data(attr: TokenStream, item: TokenStream) -> TokenStream {
 
 /// Attribute macro for stack frame structs.
 ///
-/// Applies `#[repr(C, align(8))]` to the struct (aligned to
-/// `BPF_ALIGN_OF_U128`) and asserts the struct fits within one SBPf
-/// stack frame (4096 bytes).
+/// Applies `#[repr(C, align(8))]` (aligned to `BPF_ALIGN_OF_U128`) and
+/// asserts the struct fits within one SBPf stack frame (4096 bytes).
+/// Registers field-to-type mappings and the doc comment in shared state
+/// for automatic lookup by `constant_group!`.
 ///
 /// ```ignore
 /// #[frame]
+/// /// Stack frame for REGISTER-MARKET.
 /// pub struct RegisterMarketFrame {
-///     pub pda_signer_seeds: PdaSignerSeeds,
+///     pub pda_seeds: PdaSignerSeeds,
 ///     pub pda: Address,
 ///     pub bump: u8,
 /// }

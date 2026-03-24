@@ -75,6 +75,7 @@ fn try_decompose_field_chain(expr: &syn::Expr) -> Option<(syn::Path, Vec<&syn::M
     }
 }
 
+/// Expand `offset!(expr)` or `offset!(-expr)` into an i16 offset constant.
 fn expand_offset(
     base_name: &Ident,
     asm_name: &str,
@@ -118,25 +119,24 @@ fn expand_offset(
     (def, meta_ident)
 }
 
-fn expand_frame_offset(
-    base_name: &Ident,
+/// Emit a single frame-relative offset constant with i16 range and alignment
+/// assertions. Used by both `expand_frame_offset` and `expand_signer_seeds`.
+fn emit_frame_offset_const(
+    rust_name: &Ident,
     asm_name: &str,
     doc: &str,
     frame_ty: &syn::Path,
-    fields: &[syn::Member],
+    field_chain: proc_macro2::TokenStream,
 ) -> (proc_macro2::TokenStream, Ident) {
-    let rust_name = Ident::new(&format!("{}_OFF", base_name), base_name.span());
-    let asm_name = format!("{}_OFF", asm_name);
-    let meta_ident = codegen::meta_ident(&asm_name, base_name.span());
-
-    let meta = codegen::offset_meta(&meta_ident, &asm_name, doc, &rust_name);
+    let meta_ident = codegen::meta_ident(asm_name, rust_name.span());
+    let meta = codegen::offset_meta(&meta_ident, asm_name, doc, rust_name);
 
     let def = quote! {
         #[doc = #doc]
         pub const #rust_name: i16 = {
             use super::*;
             const VALUE: i64 =
-                core::mem::offset_of!(#frame_ty, #(#fields).* ) as i64
+                core::mem::offset_of!(#frame_ty, #field_chain) as i64
                     - core::mem::size_of::<#frame_ty>() as i64;
             const _: () = assert!(
                 VALUE >= i16::MIN as i64 && VALUE <= i16::MAX as i64,
@@ -155,6 +155,20 @@ fn expand_frame_offset(
     (def, meta_ident)
 }
 
+/// Expand `offset!(field)` inside a `#[frame(Type)]` group.
+fn expand_frame_offset(
+    base_name: &Ident,
+    asm_name: &str,
+    doc: &str,
+    frame_ty: &syn::Path,
+    fields: &[syn::Member],
+) -> (proc_macro2::TokenStream, Ident) {
+    let rust_name = Ident::new(&format!("{}_OFF", base_name), base_name.span());
+    let asm_name = format!("{}_OFF", asm_name);
+    let field_chain = quote! { #(#fields).* };
+    emit_frame_offset_const(&rust_name, &asm_name, doc, frame_ty, field_chain)
+}
+
 /// Capitalize the first letter of a string (e.g. `"base_mint"` → `"Base_mint"`).
 fn capitalize_first(s: &str) -> String {
     let mut chars = s.chars();
@@ -164,6 +178,10 @@ fn capitalize_first(s: &str) -> String {
     }
 }
 
+/// Expand `signer_seeds!(parent_field)` inside a `#[frame(Type)]` group.
+///
+/// For each seed field, emits `_ADDR_OFF` and `_LEN_OFF` frame-relative
+/// offset constants. Also emits an `N_SEEDS` immediate count.
 fn expand_signer_seeds(
     asm_prefix: &str,
     frame_ty: &syn::Path,
@@ -181,31 +199,13 @@ fn expand_signer_seeds(
         {
             let asm_name = format!("{}_{}_{}_OFF", asm_prefix, seed_asm, suffix);
             let rust_name = Ident::new(&asm_name, seed_field.span());
-            let meta_ident = codegen::meta_ident(&asm_name, seed_field.span());
             let doc = format!("{} signer seed {}.", doc_name, doc_what);
             let sub = Ident::new(sub_field, seed_field.span());
-            let meta = codegen::offset_meta(&meta_ident, &asm_name, &doc, &rust_name);
+            let field_chain = quote! { #parent_field . #seed_field . #sub };
 
-            const_defs.push(quote! {
-                #[doc = #doc]
-                pub const #rust_name: i16 = {
-                    use super::*;
-                    const VALUE: i64 =
-                        core::mem::offset_of!(#frame_ty, #parent_field . #seed_field . #sub) as i64
-                            - core::mem::size_of::<#frame_ty>() as i64;
-                    const _: () = assert!(
-                        VALUE >= i16::MIN as i64 && VALUE <= i16::MAX as i64,
-                        "frame offset must fit in i16",
-                    );
-                    const _: () = assert!(
-                        VALUE % 8 == 0,
-                        "frame offset must be aligned to BPF_ALIGN_OF_U128",
-                    );
-                    VALUE as i16
-                };
-
-                #meta
-            });
+            let (def, meta_ident) =
+                emit_frame_offset_const(&rust_name, &asm_name, &doc, frame_ty, field_chain);
+            const_defs.push(def);
             meta_idents.push(meta_ident);
         }
     }
@@ -232,6 +232,7 @@ fn expand_signer_seeds(
     meta_idents.push(meta_ident);
 }
 
+/// Expand `immediate!(expr)` into a usize constant with i32 range check.
 fn expand_immediate(
     base_name: &Ident,
     asm_name: &str,

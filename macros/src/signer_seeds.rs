@@ -8,11 +8,13 @@ use syn::{
 use crate::attrs::extract_doc_comment;
 use crate::shared_state;
 
+/// A single field inside `signer_seeds! { ... }`.
 struct SignerSeedField {
     doc: Option<String>,
     name: Ident,
 }
 
+/// Parsed input for the `signer_seeds!` macro.
 pub struct SignerSeedsInput {
     vis: Visibility,
     name: Ident,
@@ -48,6 +50,8 @@ impl Parse for SignerSeedsInput {
     }
 }
 
+/// Expand a `signer_seeds!` invocation into a `#[repr(C)]` struct with all
+/// fields typed as `SolSignerSeed`, and register field names in shared state.
 pub fn expand(input: &SignerSeedsInput) -> TokenStream {
     let vis = &input.vis;
     let name = &input.name;
