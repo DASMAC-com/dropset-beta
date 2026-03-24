@@ -126,6 +126,15 @@ derive its header comment.
 
 <Include rs="interface::market#frame_example" collapsible/>
 
+### `#[svm_data]`
+
+Attribute macro for packed onchain data structs. Applies `#[repr(C, packed)]`
+to the struct so its layout matches the SVM memory map exactly. Use this for
+any struct that maps directly to an onchain memory region (account data,
+input buffer segments, tree nodes).
+
+<Include rs="interface::market#market_header" collapsible/>
+
 ### `signer_seeds!` {#signer_seeds}
 
 Function-like macro that defines a `#[repr(C)]` struct where every field is
