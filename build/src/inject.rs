@@ -97,6 +97,26 @@ pub fn inject(asm_dir: &Path, groups: &[&ConstantGroup]) {
         by_target.entry(group.target).or_default().push(group);
     }
 
+    // Validate all target files exist before writing any, so a single build
+    // reports every missing file rather than failing on the first one.
+    let missing: Vec<_> = targets
+        .iter()
+        .filter(|t| !asm_dir.join(format!("{}.s", t)).exists())
+        .collect();
+    if !missing.is_empty() {
+        let list: Vec<String> = missing
+            .iter()
+            .map(|t| {
+                format!(
+                    "  {} (expected {})",
+                    t,
+                    asm_dir.join(format!("{}.s", t)).display()
+                )
+            })
+            .collect();
+        panic!("injection target(s) not found:\n{}", list.join("\n"),);
+    }
+
     for target in targets {
         inject_target(asm_dir, target, &by_target[target]);
     }

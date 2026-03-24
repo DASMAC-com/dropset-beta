@@ -4,6 +4,35 @@ use solana_sdk::signature::read_keypair_file;
 use solana_sdk::signer::Signer;
 use std::path::Path;
 
+/// Define a test case enum with an auto-generated `ALL` slice and a
+/// [`CaseName`] impl that derives snake_case names from the variant
+/// identifiers.
+#[macro_export]
+macro_rules! test_cases {
+    (
+        $(#[$meta:meta])*
+        $vis:vis enum $name:ident {
+            $($variant:ident),* $(,)?
+        }
+    ) => {
+        $(#[$meta])*
+        $vis enum $name { $($variant),* }
+
+        impl $name {
+            pub const ALL: &[Self] = &[$(Self::$variant),*];
+        }
+
+        impl $crate::CaseName for $name {
+            fn name(&self) -> String {
+                use ::heck::ToSnakeCase;
+                match self {
+                    $(Self::$variant => stringify!($variant).to_snake_case(),)*
+                }
+            }
+        }
+    }
+}
+
 const DEFAULT_PROGRAM: &str = "dropset";
 
 fn deploy_dir() -> String {
@@ -59,6 +88,38 @@ pub struct CaseResult {
     pub error: Option<String>,
 }
 
+/// Compare a Mollusk execution result against an expected error code.
+fn evaluate(
+    result: &mollusk_svm::result::InstructionResult,
+    expected: Option<dropset_interface::ErrorCode>,
+) -> CaseResult {
+    use mollusk_svm::result::ProgramResult as MolluskResult;
+    use solana_sdk::program_error::ProgramError;
+
+    let expected_result: Result<(), ProgramError> = match expected {
+        None => Ok(()),
+        Some(e) => Err(ProgramError::Custom(e.into())),
+    };
+
+    let pass = match (&expected_result, &result.program_result) {
+        (Ok(()), MolluskResult::Success) => true,
+        (Err(e), MolluskResult::Failure(actual)) => actual == e,
+        _ => false,
+    };
+
+    CaseResult {
+        cu: result.compute_units_consumed,
+        error: if pass {
+            None
+        } else {
+            Some(format!(
+                "expected {:?}, got {:?}",
+                expected_result, result.program_result
+            ))
+        },
+    }
+}
+
 /// Sends an instruction with the given data (no accounts) and compares against
 /// an expected error code. Pass `None` for success, or `Some(ErrorCode::Variant)`
 /// for a `ProgramError::Custom` failure.
@@ -78,10 +139,8 @@ pub fn check_with_accounts(
     n_accounts: usize,
     expected: Option<dropset_interface::ErrorCode>,
 ) -> CaseResult {
-    use mollusk_svm::result::ProgramResult as MolluskResult;
     use solana_account::Account;
     use solana_sdk::instruction::{AccountMeta, Instruction};
-    use solana_sdk::program_error::ProgramError;
 
     let keys: Vec<Pubkey> = (0..n_accounts).map(|_| Pubkey::new_unique()).collect();
     let account_metas: Vec<AccountMeta> = keys
@@ -93,28 +152,7 @@ pub fn check_with_accounts(
     let instruction = Instruction::new_with_bytes(setup.program_id, data, account_metas);
     let result = setup.mollusk.process_instruction(&instruction, &accounts);
 
-    let expected_result: Result<(), ProgramError> = match expected {
-        None => Ok(()),
-        Some(e) => Err(ProgramError::Custom(e.into())),
-    };
-
-    let pass = match (&expected_result, &result.program_result) {
-        (Ok(()), MolluskResult::Success) => true,
-        (Err(e), MolluskResult::Failure(actual)) => actual == e,
-        _ => false,
-    };
-
-    CaseResult {
-        cu: result.compute_units_consumed,
-        error: if pass {
-            None
-        } else {
-            Some(format!(
-                "expected {:?}, got {:?}",
-                expected_result, result.program_result
-            ))
-        },
-    }
+    evaluate(&result, expected)
 }
 
 /// Like [`check_with_accounts`], but accepts pre-built account and meta lists
@@ -126,41 +164,22 @@ pub fn check_custom(
     accounts: Vec<(Pubkey, solana_account::Account)>,
     expected: Option<dropset_interface::ErrorCode>,
 ) -> CaseResult {
-    use mollusk_svm::result::ProgramResult as MolluskResult;
     use solana_sdk::instruction::Instruction;
-    use solana_sdk::program_error::ProgramError;
 
     let instruction = Instruction::new_with_bytes(setup.program_id, data, account_metas);
     let result = setup.mollusk.process_instruction(&instruction, &accounts);
 
-    let expected_result: Result<(), ProgramError> = match expected {
-        None => Ok(()),
-        Some(e) => Err(ProgramError::Custom(e.into())),
-    };
-
-    let pass = match (&expected_result, &result.program_result) {
-        (Ok(()), MolluskResult::Success) => true,
-        (Err(e), MolluskResult::Failure(actual)) => actual == e,
-        _ => false,
-    };
-
-    CaseResult {
-        cu: result.compute_units_consumed,
-        error: if pass {
-            None
-        } else {
-            Some(format!(
-                "expected {:?}, got {:?}",
-                expected_result, result.program_result
-            ))
-        },
-    }
+    evaluate(&result, expected)
 }
 
 // region: test_case
+/// Auto-derived by [`test_cases!`]: returns a snake_case name for each variant.
+pub trait CaseName {
+    fn name(&self) -> String;
+}
+
 /// A named, runnable test case that can be executed for correctness or CU measurement.
-pub trait TestCase: Copy {
-    fn name(&self) -> &'static str;
+pub trait TestCase: Copy + CaseName {
     fn run(&self, setup: &TestSetup) -> CaseResult;
 }
 // endregion: test_case
@@ -176,11 +195,12 @@ pub fn run_and_report<T: TestCase>(heading: &str, cases: &[T], setup: &TestSetup
     println!("  {:<40} {:>8}", "----", "---");
 
     for case in cases {
+        let name = case.name();
         let result = case.run(setup);
         let status = if result.error.is_some() { "FAIL" } else { "ok" };
-        println!("  {:<40} {:>8}  {status}", case.name(), result.cu);
+        println!("  {:<40} {:>8}  {status}", name, result.cu);
         if let Some(msg) = result.error {
-            failures.push((case.name(), msg));
+            failures.push((name, msg));
         }
     }
 

@@ -1,26 +1,20 @@
 use dropset_interface::{Discriminant, ErrorCode};
-use dropset_tests::{CaseResult, TestCase, TestSetup, check, check_custom, check_with_accounts};
+use dropset_tests::{
+    CaseResult, TestCase, TestSetup, check, check_custom, check_with_accounts, test_cases,
+};
 use solana_account::Account;
 use solana_sdk::instruction::AccountMeta;
 use solana_sdk::pubkey::Pubkey;
 
-#[derive(Clone, Copy)]
-pub enum Case {
-    InvalidNumberOfAccounts,
-    InvalidInstructionLength,
-    UserHasData,
-    MarketAccountIsDuplicate,
-    MarketHasData,
-}
-
-impl Case {
-    pub const ALL: &[Self] = &[
-        Self::InvalidNumberOfAccounts,
-        Self::InvalidInstructionLength,
-        Self::UserHasData,
-        Self::MarketAccountIsDuplicate,
-        Self::MarketHasData,
-    ];
+test_cases! {
+    #[derive(Clone, Copy)]
+    pub enum Case {
+        InvalidNumberOfAccounts,
+        InvalidInstructionLength,
+        UserHasData,
+        MarketAccountIsDuplicate,
+        MarketHasData,
+    }
 }
 
 /// Build 10 unique accounts with default (empty) data.
@@ -43,16 +37,6 @@ fn into_metas_and_accounts(
 }
 
 impl TestCase for Case {
-    fn name(&self) -> &'static str {
-        match self {
-            Self::InvalidNumberOfAccounts => "invalid_number_of_accounts",
-            Self::InvalidInstructionLength => "invalid_instruction_length",
-            Self::UserHasData => "user_has_data",
-            Self::MarketAccountIsDuplicate => "market_account_is_duplicate",
-            Self::MarketHasData => "market_has_data",
-        }
-    }
-
     fn run(&self, setup: &TestSetup) -> CaseResult {
         let insn = &[Discriminant::RegisterMarket.into()];
         match self {

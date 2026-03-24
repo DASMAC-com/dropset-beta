@@ -3,7 +3,7 @@ use quote::quote;
 use crate::attrs::extract_doc_comment;
 use crate::shared_state;
 
-/// From SBPF VM.
+/// Maximum size of a single SBPF stack frame, private to SBPF repo.
 const STACK_FRAME_SIZE: usize = 4096;
 
 /// Extract the last path segment from a type (e.g. `crate::Foo` → `Foo`).

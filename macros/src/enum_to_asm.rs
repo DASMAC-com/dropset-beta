@@ -2,6 +2,8 @@ use proc_macro2::Literal;
 use quote::quote;
 use syn::Ident;
 
+use heck::ToShoutySnakeCase;
+
 use crate::attrs::{extract_doc_comment, validate_comment};
 use crate::codegen;
 
@@ -12,18 +14,6 @@ fn typed_literal(value: u8, repr_ty: &str) -> Literal {
         "u32" => Literal::u32_suffixed(value as u32),
         _ => panic!("unsupported repr type: {}", repr_ty),
     }
-}
-
-/// Convert PascalCase to SCREAMING_SNAKE_CASE.
-pub fn to_screaming_snake(s: &str) -> String {
-    let mut result = String::new();
-    for (i, c) in s.chars().enumerate() {
-        if c.is_uppercase() && i > 0 {
-            result.push('_');
-        }
-        result.push(c.to_ascii_uppercase());
-    }
-    result
 }
 
 /// Shared implementation for enum-to-ASM attribute macros.
@@ -39,10 +29,6 @@ pub fn expand(
     input: &syn::ItemEnum,
 ) -> proc_macro2::TokenStream {
     let enum_name = &input.ident;
-    let mod_name = Ident::new(
-        &to_screaming_snake(&enum_name.to_string()).to_lowercase(),
-        enum_name.span(),
-    );
     let repr_ident = Ident::new(repr_ty, proc_macro2::Span::call_site());
 
     let mut meta_defs = Vec::new();
@@ -53,7 +39,7 @@ pub fn expand(
         let asm_name = format!(
             "{}_{}",
             prefix,
-            to_screaming_snake(&variant_name.to_string())
+            variant_name.to_string().to_shouty_snake_case()
         );
 
         let doc = extract_doc_comment(&variant.attrs)
@@ -93,9 +79,7 @@ pub fn expand(
         })
         .collect();
 
-    let group = codegen::group_module(&mod_name, target_str, "", &meta_defs, &meta_idents);
-
-    quote! {
+    let body = quote! {
         #(#attrs)*
         #[repr(#repr_ident)]
         #vis enum #enum_name {
@@ -107,8 +91,7 @@ pub fn expand(
                 value as #repr_ident
             }
         }
+    };
 
-        #[doc(hidden)]
-        #group
-    }
+    codegen::with_group(target_str, enum_name, body, &meta_defs, &meta_idents)
 }

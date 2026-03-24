@@ -836,6 +836,7 @@ name = "dropset-macros"
 version = "0.1.0"
 dependencies = [
  "dropset-build",
+ "heck",
  "proc-macro2",
  "quote",
  "syn 2.0.117",
@@ -846,6 +847,7 @@ name = "dropset-tests"
 version = "0.1.0"
 dependencies = [
  "dropset-interface",
+ "heck",
  "mollusk-svm",
  "solana-account 3.4.0",
  "solana-sdk",
@@ -1186,6 +1188,12 @@ name = "hashbrown"
 version = "0.16.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "841d1cc9bed7f9236f321df977030373f4a4163ae1a7dbfe1a51a2c1a51d9100"
+
+[[package]]
+name = "heck"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2304e00983f87ffb38b55b444b5e3b60a884b5d30c0fca7d82fe33449bbe55ea"
 
 [[package]]
 name = "hmac"

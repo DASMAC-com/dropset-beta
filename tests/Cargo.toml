@@ -3,6 +3,7 @@ dropset-interface = {path = "../interface"}
 mollusk-svm = {workspace = true}
 solana-account = {workspace = true}
 solana-sdk = {workspace = true}
+heck.workspace = true
 
 [package]
 name = "dropset-tests"

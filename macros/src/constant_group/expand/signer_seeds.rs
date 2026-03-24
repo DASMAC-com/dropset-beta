@@ -1,17 +1,9 @@
+use heck::ToTitleCase;
 use quote::quote;
 use syn::Ident;
 
 use super::offset::emit_frame_offset_const;
 use crate::codegen;
-
-/// Capitalize the first letter of a string (e.g. `"base_mint"` → `"Base_mint"`).
-fn capitalize_first(s: &str) -> String {
-    let mut chars = s.chars();
-    match chars.next() {
-        Some(c) => c.to_uppercase().collect::<String>() + chars.as_str(),
-        None => String::new(),
-    }
-}
 
 /// Expand `signer_seeds!(parent_field)` inside a `#[frame(Type)]` group.
 ///
@@ -28,7 +20,7 @@ pub fn expand_signer_seeds(
     for seed_field in seeds {
         let field_str = seed_field.to_string();
         let seed_asm = field_str.to_uppercase();
-        let doc_name = capitalize_first(&field_str).replace('_', " ");
+        let doc_name = field_str.to_title_case();
 
         for (suffix, sub_field, doc_what) in [("ADDR", "addr", "address"), ("LEN", "len", "length")]
         {

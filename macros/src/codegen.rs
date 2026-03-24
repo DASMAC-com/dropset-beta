@@ -1,3 +1,4 @@
+use heck::{ToShoutySnakeCase, ToSnakeCase};
 use quote::quote;
 use syn::Ident;
 
@@ -44,6 +45,64 @@ pub fn immediate_meta(
                 value: #value,
             };
     }
+}
+
+/// Emit item tokens followed by a hidden group module, deriving the module
+/// name from `type_name` via snake_case.
+///
+/// Shared by the attribute macros (`discriminant_enum`, `error_enum`,
+/// `instruction_data`, `instruction_accounts`) that re-emit an item and
+/// attach a hidden injection group.
+pub fn with_group(
+    target: &str,
+    type_name: &Ident,
+    body: proc_macro2::TokenStream,
+    const_defs: &[proc_macro2::TokenStream],
+    meta_idents: &[Ident],
+) -> proc_macro2::TokenStream {
+    let mod_name = Ident::new(&type_name.to_string().to_snake_case(), type_name.span());
+    let group = group_module(&mod_name, target, "", const_defs, meta_idents);
+
+    quote! {
+        #body
+
+        #[doc(hidden)]
+        #group
+    }
+}
+
+/// Emit a single-constant `_LEN` group with an `impl Type { pub const LEN }`.
+///
+/// Shared by `#[instruction_data]` (struct, `size_of`) and
+/// `#[instruction_accounts]` (enum, variant count). The caller supplies the
+/// `len_expr` that computes the value and the original item to re-emit.
+pub fn len_group(
+    target: &str,
+    type_name: &Ident,
+    doc: &str,
+    len_expr: proc_macro2::TokenStream,
+    original_item: proc_macro2::TokenStream,
+) -> proc_macro2::TokenStream {
+    let asm_name = format!("{}_LEN", type_name.to_string().to_shouty_snake_case());
+    let meta_ident = meta_ident(&asm_name, type_name.span());
+
+    let meta_def = immediate_meta(
+        &meta_ident,
+        &asm_name,
+        doc,
+        quote! { super::#type_name::LEN as i32 },
+    );
+
+    let body = quote! {
+        #original_item
+
+        impl #type_name {
+            #[doc = #doc]
+            pub const LEN: u64 = #len_expr;
+        }
+    };
+
+    with_group(target, type_name, body, &[meta_def], &[meta_ident])
 }
 
 /// Emit a `pub mod name { ...defs... pub const GROUP = ... }`.

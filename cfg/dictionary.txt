@@ -22,6 +22,7 @@ punc
 repr
 sbpf
 shiki
+shouty
 solana
 swatinem
 syscall

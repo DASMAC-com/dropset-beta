@@ -50,8 +50,11 @@ pub fn lookup_signer_seed_fields(
     let frame_info = FRAME_INFO.lock().unwrap();
     let info = frame_info.get(frame_name).ok_or_else(|| {
         format!(
-            "frame struct `{}` not found — ensure `#[frame]` is defined above `constant_group!`",
-            frame_name,
+            "frame struct `{f}` not found. `#[frame]` structs must be defined \
+             before the `constant_group!` that references them (proc macros \
+             execute in source order within a file, and in dependency order \
+             across crates).",
+            f = frame_name,
         )
     })?;
 
@@ -69,8 +72,11 @@ pub fn lookup_signer_seed_fields(
     let signer_seeds = SIGNER_SEEDS.lock().unwrap();
     signer_seeds.get(type_name).cloned().ok_or_else(|| {
         format!(
-            "type `{}` (field `{}`) is not annotated with `#[signer_seeds]`",
-            type_name, parent_field,
+            "type `{t}` (field `{f}`) is not annotated with `signer_seeds!`. \
+             The `signer_seeds!` invocation must appear before the \
+             `constant_group!` that references it.",
+            t = type_name,
+            f = parent_field,
         )
     })
 }
