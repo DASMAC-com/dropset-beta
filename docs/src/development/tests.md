@@ -46,9 +46,10 @@ here and a `pub mod` in `cases/mod.rs`.
 
 ## Anatomy of a case file
 
-Each case file defines an enum of test cases that implements the `TestCase`
-trait. Cases are data: the enum variants hold no fields and the `ALL` constant
-lists them for the runner.
+Each case file defines an enum of test cases wrapped in the `test_cases!` macro,
+which auto-generates an `ALL` slice and a `CaseName` impl that derives
+snake_case display names from the variant identifiers. The file then implements
+`TestCase` with only a `run()` method.
 
 <Include rs="test-cases::cases/entrypoint" collapsible/>
 
@@ -100,13 +101,14 @@ Like `check_with_accounts`, but accepts pre-built account and meta lists for
 full control over account contents and keys. Use this when a test needs specific
 account data or duplicate keys.
 
-### `TestCase` trait
+### `test_cases!` macro and `TestCase` trait
 
 <Include rs="tests::lib#test_case" collapsible/>
 
-Implement this on your case enum. `name()` returns a display string for the CU
-table; `run()` executes the case and returns a `CaseResult` with the CU count
-and an optional error message.
+Wrap your case enum in `test_cases!` to auto-generate the `ALL` slice and
+`CaseName` impl (snake_case names derived from variant identifiers). Then
+implement `TestCase` on your enum with only `run()`. The `CaseName` trait
+(required by `TestCase`) provides the display name for the CU table.
 
 ### `run_and_report(heading, cases, setup)`
 
@@ -115,8 +117,8 @@ and panics at the end if any case failed.
 
 ## Adding a new case group
 
-1. Create `tests/tests/cases/my_feature.rs` with a `Case` enum implementing
-   `TestCase`.
+1. Create `tests/tests/cases/my_feature.rs` with a `Case` enum wrapped in
+   `test_cases!` and a `TestCase` impl containing only `run()`.
 2. Add `pub mod my_feature;` to `tests/tests/cases/mod.rs`.
 3. Add a `run_and_report("MyFeature", cases::my_feature::Case::ALL, &setup);`
    line in `tests/tests/run.rs`.
