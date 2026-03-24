@@ -13,6 +13,7 @@ keypair
 lamports
 ldxb
 ldxdw
+metaprogramming
 metas
 mollusk
 nocapture

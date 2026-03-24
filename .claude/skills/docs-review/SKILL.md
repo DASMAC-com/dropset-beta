@@ -53,6 +53,15 @@ gaps, outdated content, and stale comments.
    - `<Include>` and `<Algorithm>` component
      attributes should resolve correctly.
 
+1. Check that `CLAUDE.md` is current with `docs/`:
+
+   - Every docs page listed in the Documentation
+     section of `CLAUDE.md` should still exist.
+   - New docs pages added in this PR should be
+     listed in `CLAUDE.md`.
+   - Conventions listed in `CLAUDE.md` should not
+     contradict what the docs describe.
+
 1. Do NOT make any changes. Instead, compile all
    findings into a checklist using the TodoWrite
    tool. Each item should include:
