@@ -26,6 +26,7 @@
 .equ RM_IB_BASE_ADDR_OFF, 20688 # From input buffer to base mint address.
 # From input buffer to quote mint duplicate flag.
 .equ RM_IB_QUOTE_MINT_DUPLICATE_OFF, 31016
+.equ RM_IB_QUOTE_ADDR_OFF, 31024 # From input buffer to quote mint address.
 # -------------------------------------------------------------------------
 
 register_market:
@@ -67,4 +68,11 @@ register_market:
     #     return ErrorCode::QuoteMintIsDuplicate
     ldxb r4, [r3 + RM_IB_QUOTE_MINT_DUPLICATE_OFF]
     jne r4, IB_NON_DUP_MARKER, e_quote_mint_is_duplicate
+    # pda_seeds.quote.addr = quote_mint.pubkey
+    mov64 r4, r3
+    add64 r4, RM_IB_QUOTE_ADDR_OFF
+    stxdw [r10 + RM_PDA_SEEDS_QUOTE_ADDR_OFF], r4
+    # pda_seeds.quote.len = Address.size
+    mov64 r4, SIZE_OF_ADDRESS
+    stxdw [r10 + RM_PDA_SEEDS_QUOTE_LEN_OFF], r4
     exit

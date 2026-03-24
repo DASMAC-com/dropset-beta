@@ -56,6 +56,8 @@ constant_group! {
         BASE_ADDR = offset!(InputBufferHeader.base_mint.header.address),
         /// From input buffer to quote mint duplicate flag.
         QUOTE_MINT_DUPLICATE = offset!(InputBufferHeader.quote_mint.header.borrow_state),
+        /// From input buffer to quote mint address.
+        QUOTE_ADDR = offset!(InputBufferHeader.quote_mint.header.address),
     }
 }
 

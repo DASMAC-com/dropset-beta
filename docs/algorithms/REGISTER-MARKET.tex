@@ -11,6 +11,7 @@
   \INPUT $r_4 = insn\_len$
   \REQUIRE $insn.discriminant ==$ \texttt{Discriminant::RegisterMarket}
 \PROCEDURE{REGISTER-MARKET}{$input, insn, n\_accounts, insn\_len$}
+  \COMMENT{Error check user, market accounts.}
   \IF{$n\_accounts <$ \texttt{RegisterMarketAccounts.LEN}}
     \RETURN \texttt{ErrorCode::InvalidNumberOfAccounts}
   \ENDIF
@@ -36,6 +37,8 @@
   \IF{$quote\_mint.duplicate \neq$ \texttt{input\_buffer.NON\_DUP\_MARKER}}
     \RETURN \texttt{ErrorCode::QuoteMintIsDuplicate}
   \ENDIF
+  \STATE $pda\_seeds.quote.addr = quote\_mint.pubkey$
+  \STATE $pda\_seeds.quote.len =$ \texttt{Address.size}
   \STATE $market\_pda =$ \CALL{sol-try-find-program-address}{
     $program\_id, base\_mint, quote\_mint$
   }
