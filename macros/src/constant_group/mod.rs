@@ -1,5 +1,10 @@
 mod expand;
+mod immediate;
+mod offset;
 mod parse;
+mod parse_offset;
+mod parse_signer_seeds;
+mod signer_seeds;
 
 use syn::{Expr, Ident};
 

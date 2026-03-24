@@ -4,6 +4,8 @@ use syn::{
 };
 
 use super::{ConstantDef, ConstantKind};
+use super::parse_offset::parse_offset;
+use super::parse_signer_seeds::parse_signer_seeds;
 use crate::attrs::{
     extract_attr_path, extract_attr_string, extract_doc_comment, extract_inject_target,
     validate_comment, validate_name,
@@ -109,84 +111,4 @@ impl Parse for ConstantGroupInput {
             constants,
         })
     }
-}
-
-/// Parse the inside of `signer_seeds!(parent_field)`.
-///
-/// The field list is resolved from shared state registered by `signer_seeds!`
-/// (on the struct) and `#[frame]` (on the frame struct).
-fn parse_signer_seeds(
-    inner: ParseStream,
-    frame_type: &Option<syn::Path>,
-    span: proc_macro2::Span,
-) -> syn::Result<ConstantKind> {
-    let frame_path = frame_type
-        .as_ref()
-        .ok_or_else(|| syn::Error::new(span, "signer_seeds! requires #[frame(Type)] attribute"))?;
-
-    let frame_name = frame_path
-        .segments
-        .last()
-        .map(|s| s.ident.to_string())
-        .unwrap_or_default();
-
-    let parent_field: Ident = inner.parse()?;
-
-    let field_names = shared_state::lookup_signer_seed_fields(
-        &frame_name,
-        &parent_field.to_string(),
-    )
-    .map_err(|e| syn::Error::new(parent_field.span(), e))?;
-
-    let seeds: Vec<Ident> = field_names
-        .iter()
-        .map(|name| Ident::new(name, parent_field.span()))
-        .collect();
-
-    Ok(ConstantKind::SignerSeeds {
-        parent_field,
-        seeds,
-    })
-}
-
-/// Parse the inside of `offset!(...)`.
-///
-/// When a `#[frame(Type)]` is present, a bare identifier like `offset!(bump)`
-/// or a field chain like `offset!(pda_signer_seeds.base_signer_seed)` is parsed
-/// as a frame-relative offset. Without a frame, the existing syntax applies.
-fn parse_offset(
-    inner: ParseStream,
-    frame_type: &Option<syn::Path>,
-) -> syn::Result<ConstantKind> {
-    // When a frame is set, try to parse as a bare field chain (no type prefix).
-    // A bare field chain starts with an identifier that is *not* followed by `!`
-    // (which would indicate a macro call like `size_of!`), and where the first
-    // segment is lowercase (field name, not a type).
-    if frame_type.is_some() {
-        let fork = inner.fork();
-        if let Ok(first) = fork.parse::<Ident>() {
-            let first_char = first.to_string().chars().next().unwrap();
-            // Lowercase first char → field name, not a type path.
-            if first_char.is_ascii_lowercase() && !fork.peek(Token![!]) {
-                // Commit: parse the real stream.
-                let mut fields: Vec<syn::Member> = Vec::new();
-                let ident: Ident = inner.parse()?;
-                fields.push(syn::Member::Named(ident));
-                while inner.peek(Token![.]) {
-                    inner.parse::<Token![.]>()?;
-                    let member: Ident = inner.parse()?;
-                    fields.push(syn::Member::Named(member));
-                }
-                return Ok(ConstantKind::FrameOffset { fields });
-            }
-        }
-    }
-
-    // Fall through to standard offset parsing.
-    let negate = inner.peek(Token![-]);
-    if negate {
-        inner.parse::<Token![-]>()?;
-    }
-    let expr: Expr = inner.parse()?;
-    Ok(ConstantKind::Offset { negate, expr })
 }
