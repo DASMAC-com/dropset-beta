@@ -33,7 +33,7 @@ register_market:
     jlt r3, REGISTER_MARKET_ACCOUNTS_LEN, e_invalid_number_of_accounts
     # if insn_len != RegisterMarketData.LEN
     #     return ErrorCode::InvalidInstructionLength
-    jne r3, REGISTER_MARKET_DATA_LEN, e_invalid_instruction_length
+    jne r4, REGISTER_MARKET_DATA_LEN, e_invalid_instruction_length
     # if user.data_len != data.DATA_LEN_ZERO
     #     return ErrorCode::UserHasData
     ldxdw r3, [r1 + IB_USER_DATA_LEN_OFF]

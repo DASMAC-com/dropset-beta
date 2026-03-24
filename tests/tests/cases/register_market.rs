@@ -16,6 +16,7 @@ test_cases! {
         MarketAccountIsDuplicate,
         MarketHasData,
         BaseMintIsDuplicate,
+        QuoteMintIsDuplicate,
     }
 }
 
@@ -99,6 +100,22 @@ impl TestCase for Case {
                     metas,
                     accounts,
                     Some(ErrorCode::BaseMintIsDuplicate),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            Self::QuoteMintIsDuplicate => {
+                let (mut keys, accounts) = default_accounts();
+                // QuoteMint shares key with User, causing the runtime
+                // to serialize it as a duplicate.
+                keys[RegisterMarketAccounts::QuoteMint as usize] =
+                    keys[RegisterMarketAccounts::User as usize];
+                let (metas, accounts) = into_metas_and_accounts(keys, accounts);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::QuoteMintIsDuplicate),
                 )
             }
         }
