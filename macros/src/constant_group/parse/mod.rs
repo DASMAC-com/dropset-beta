@@ -3,16 +3,23 @@ use syn::{
     parse::{Parse, ParseStream},
 };
 
+mod offset;
+mod signer_seeds;
+
 use super::{ConstantDef, ConstantKind};
 use crate::attrs::{
-    extract_attr_string, extract_doc_comment, extract_inject_target, validate_comment,
-    validate_name,
+    extract_attr_path, extract_attr_string, extract_doc_comment, extract_inject_target,
+    validate_comment, validate_name,
 };
+use crate::shared_state;
+use offset::parse_offset;
+use signer_seeds::parse_signer_seeds;
 
 /// The body of `constant_group! { ... }` with custom constant syntax inside.
 pub struct ConstantGroupInput {
     pub(crate) target: String,
     pub(crate) prefix: Option<String>,
+    pub(crate) frame_type: Option<syn::Path>,
     pub(crate) doc: String,
     pub(crate) mod_name: Ident,
     pub(crate) constants: Vec<ConstantDef>,
@@ -24,7 +31,16 @@ impl Parse for ConstantGroupInput {
         let target = extract_inject_target(&attrs)
             .ok_or_else(|| input.error("constant group must have #[inject(\"target\")]"))?;
         let prefix = extract_attr_string(&attrs, "prefix");
-        let doc = extract_doc_comment(&attrs).unwrap_or_default();
+        let frame_type = extract_attr_path(&attrs, "frame");
+
+        // Use explicit doc comment, or fall back to the frame struct's doc.
+        let doc = extract_doc_comment(&attrs).unwrap_or_else(|| {
+            frame_type
+                .as_ref()
+                .and_then(|p| p.segments.last())
+                .and_then(|s| shared_state::lookup_frame_doc(&s.ident.to_string()))
+                .unwrap_or_default()
+        });
         if !doc.is_empty()
             && let Err(e) = validate_comment(&doc)
         {
@@ -59,12 +75,12 @@ impl Parse for ConstantGroupInput {
                 "offset" => {
                     let inner;
                     syn::parenthesized!(inner in content);
-                    let negate = inner.peek(Token![-]);
-                    if negate {
-                        inner.parse::<Token![-]>()?;
-                    }
-                    let expr: Expr = inner.parse()?;
-                    ConstantKind::Offset { negate, expr }
+                    parse_offset(&inner, &frame_type)?
+                }
+                "signer_seeds" => {
+                    let inner;
+                    syn::parenthesized!(inner in content);
+                    parse_signer_seeds(&inner, &frame_type, kind_ident.span())?
                 }
                 "immediate" => {
                     let inner;
@@ -92,6 +108,7 @@ impl Parse for ConstantGroupInput {
         Ok(ConstantGroupInput {
             target,
             prefix,
+            frame_type,
             doc,
             mod_name,
             constants,

@@ -1,8 +1,9 @@
-use crate::cpi_bindings::SolInstruction;
+use crate::cpi_bindings::SolSignerSeed;
 use crate::memory::StackNode;
 use crate::order::Order;
 use crate::seat::Seat;
-use dropset_macros::{instruction_accounts, instruction_data};
+use dropset_macros::{constant_group, frame, instruction_accounts, instruction_data, signer_seeds};
+use pinocchio::Address;
 
 // region: market_header
 #[repr(C, packed)]
@@ -45,8 +46,45 @@ pub enum RegisterMarketAccounts {
 // endregion: register_market_accounts
 
 // region: register_market_stack
-#[repr(C)]
-pub struct RegisterMarketStack {
-    pub instruction: SolInstruction,
+
+// region: frame_example
+#[frame]
+/// Stack frame for REGISTER-MARKET.
+pub struct RegisterMarketFrame {
+    /// For CreateAccount CPI.
+    pub pda_seeds: PdaSignerSeeds,
+    /// From `sol_try_find_program_address`.
+    pub pda: Address,
+    /// From `sol_try_find_program_address`.
+    pub bump: u8,
 }
+// endregion: frame_example
+
+// region: signer_seeds_example
+signer_seeds! {
+    pub struct PdaSignerSeeds {
+        /// Base mint seed.
+        base,
+        /// Quote mint seed.
+        quote,
+        /// Bump seed from `sol_try_find_program_address`.
+        bump,
+    }
+}
+// endregion: signer_seeds_example
+
+constant_group! {
+    #[prefix("RM")]
+    #[inject("market/register")]
+    #[frame(RegisterMarketFrame)]
+    register_market_frame {
+        /// PDA signer seeds.
+        PDA_SEEDS = signer_seeds!(pda_seeds),
+        /// PDA address.
+        PDA = offset!(pda),
+        /// Bump seed.
+        BUMP = offset!(bump),
+    }
+}
+
 // endregion: register_market_stack

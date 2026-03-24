@@ -1,42 +1,7 @@
 use quote::quote;
 use syn::Ident;
 
-use super::{ConstantKind, parse::ConstantGroupInput};
 use crate::codegen;
-
-/// Expand a parsed `ConstantGroupInput` into a module with constants and a GROUP.
-pub fn expand(input: &ConstantGroupInput) -> proc_macro2::TokenStream {
-    let mut const_defs = Vec::new();
-    let mut meta_idents = Vec::new();
-
-    for c in &input.constants {
-        let doc = &c.doc;
-        let base_name = &c.name;
-
-        let asm_name = match &input.prefix {
-            Some(p) => format!("{}_{}", p, base_name),
-            None => base_name.to_string(),
-        };
-
-        let (def, meta_ident) = match &c.kind {
-            ConstantKind::Offset { negate, expr } => {
-                expand_offset(base_name, &asm_name, doc, *negate, expr)
-            }
-            ConstantKind::Immediate { expr } => expand_immediate(base_name, &asm_name, doc, expr),
-        };
-
-        const_defs.push(def);
-        meta_idents.push(meta_ident);
-    }
-
-    codegen::group_module(
-        &input.mod_name,
-        &input.target,
-        &input.doc,
-        &const_defs,
-        &meta_idents,
-    )
-}
 
 /// Try to decompose a field-access chain like `Foo.bar.baz` into `(Foo, [bar, baz])`.
 fn try_decompose_field_chain(expr: &syn::Expr) -> Option<(syn::Path, Vec<&syn::Member>)> {
@@ -57,7 +22,8 @@ fn try_decompose_field_chain(expr: &syn::Expr) -> Option<(syn::Path, Vec<&syn::M
     }
 }
 
-fn expand_offset(
+/// Expand `offset!(expr)` or `offset!(-expr)` into an i16 offset constant.
+pub fn expand_offset(
     base_name: &Ident,
     asm_name: &str,
     doc: &str,
@@ -100,31 +66,52 @@ fn expand_offset(
     (def, meta_ident)
 }
 
-fn expand_immediate(
-    base_name: &Ident,
+/// Emit a single frame-relative offset constant with i16 range and alignment
+/// assertions. Used by both `expand_frame_offset` and `expand_signer_seeds`.
+pub fn emit_frame_offset_const(
+    rust_name: &Ident,
     asm_name: &str,
     doc: &str,
-    expr: &syn::Expr,
+    frame_ty: &syn::Path,
+    field_chain: proc_macro2::TokenStream,
 ) -> (proc_macro2::TokenStream, Ident) {
-    let rust_name = base_name.clone();
-    let meta_ident = codegen::meta_ident(asm_name, base_name.span());
-
-    let meta = codegen::immediate_meta(&meta_ident, asm_name, doc, quote! { #rust_name as i32 });
+    let meta_ident = codegen::meta_ident(asm_name, rust_name.span());
+    let meta = codegen::offset_meta(&meta_ident, asm_name, doc, rust_name);
 
     let def = quote! {
         #[doc = #doc]
-        pub const #rust_name: usize = {
+        pub const #rust_name: i16 = {
             use super::*;
-            const VALUE: usize = #expr;
+            const VALUE: i64 =
+                core::mem::offset_of!(#frame_ty, #field_chain) as i64
+                    - core::mem::size_of::<#frame_ty>() as i64;
             const _: () = assert!(
-                VALUE <= i32::MAX as usize,
-                "immediate must fit in i32",
+                VALUE >= i16::MIN as i64 && VALUE <= i16::MAX as i64,
+                "frame offset must fit in i16",
             );
-            VALUE
+            const _: () = assert!(
+                VALUE % 8 == 0,
+                "frame offset must be aligned to BPF_ALIGN_OF_U128",
+            );
+            VALUE as i16
         };
 
         #meta
     };
 
     (def, meta_ident)
+}
+
+/// Expand `offset!(field)` inside a `#[frame(Type)]` group.
+pub fn expand_frame_offset(
+    base_name: &Ident,
+    asm_name: &str,
+    doc: &str,
+    frame_ty: &syn::Path,
+    fields: &[syn::Member],
+) -> (proc_macro2::TokenStream, Ident) {
+    let rust_name = Ident::new(&format!("{}_OFF", base_name), base_name.span());
+    let asm_name = format!("{}_OFF", asm_name);
+    let field_chain = quote! { #(#fields).* };
+    emit_frame_offset_const(&rust_name, &asm_name, doc, frame_ty, field_chain)
 }

@@ -5,10 +5,22 @@ mod attrs;
 mod codegen;
 mod constant_group;
 mod enum_to_asm;
+mod frame;
 mod instruction_accounts;
 mod instruction_length;
+mod shared_state;
+mod signer_seeds;
 
 /// Defines a group of assembly constants with an injection target.
+///
+/// Supports three constant kinds:
+/// - `offset!(expr)` — signed offset, gets `_OFF` suffix.
+/// - `immediate!(expr)` — unsigned immediate, no suffix.
+/// - `signer_seeds!(field)` — auto-expands seed offsets (requires `#[frame]`).
+///
+/// With `#[frame(Type)]`, `offset!(field)` computes a negative frame-pointer-
+/// relative offset with alignment enforcement, and the group's doc comment
+/// defaults to the frame struct's doc.
 ///
 /// ```ignore
 /// constant_group! {
@@ -25,6 +37,30 @@ mod instruction_length;
 pub fn constant_group(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as constant_group::ConstantGroupInput);
     TokenStream::from(constant_group::expand(&input))
+}
+
+/// Defines a signer seeds struct where every field is a `SolSignerSeed`.
+///
+/// Generates a `#[repr(C)]` struct and registers field names in shared
+/// state so that `signer_seeds!(field)` inside `constant_group!` can
+/// auto-discover all seed fields without manual listing.
+///
+/// ```ignore
+/// signer_seeds! {
+///     pub struct PdaSignerSeeds {
+///         /// Base mint seed.
+///         base,
+///         /// Quote mint seed.
+///         quote,
+///         /// Bump seed.
+///         bump,
+///     }
+/// }
+/// ```
+#[proc_macro]
+pub fn signer_seeds(input: TokenStream) -> TokenStream {
+    let input = parse_macro_input!(input as signer_seeds::SignerSeedsInput);
+    TokenStream::from(signer_seeds::expand(&input))
 }
 
 /// Attribute macro for instruction discriminant enums.
@@ -87,6 +123,28 @@ pub fn instruction_data(attr: TokenStream, item: TokenStream) -> TokenStream {
     let target = parse_macro_input!(attr as LitStr);
     let input = parse_macro_input!(item as syn::ItemStruct);
     TokenStream::from(instruction_length::expand(&target.value(), &input))
+}
+
+/// Attribute macro for stack frame structs.
+///
+/// Applies `#[repr(C, align(8))]` (aligned to `BPF_ALIGN_OF_U128`) and
+/// asserts the struct fits within one SBPf stack frame (4096 bytes).
+/// Registers field-to-type mappings and the doc comment in shared state
+/// for automatic lookup by `constant_group!`.
+///
+/// ```ignore
+/// #[frame]
+/// /// Stack frame for REGISTER-MARKET.
+/// pub struct RegisterMarketFrame {
+///     pub pda_seeds: PdaSignerSeeds,
+///     pub pda: Address,
+///     pub bump: u8,
+/// }
+/// ```
+#[proc_macro_attribute]
+pub fn frame(_attr: TokenStream, item: TokenStream) -> TokenStream {
+    let input = parse_macro_input!(item as syn::ItemStruct);
+    TokenStream::from(frame::expand(&input))
 }
 
 /// Attribute macro for instruction accounts enums.
