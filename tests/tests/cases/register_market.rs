@@ -37,16 +37,6 @@ fn into_metas_and_accounts(
 }
 
 impl TestCase for Case {
-    fn name(&self) -> &'static str {
-        match self {
-            Self::InvalidNumberOfAccounts => "invalid_number_of_accounts",
-            Self::InvalidInstructionLength => "invalid_instruction_length",
-            Self::UserHasData => "user_has_data",
-            Self::MarketAccountIsDuplicate => "market_account_is_duplicate",
-            Self::MarketHasData => "market_has_data",
-        }
-    }
-
     fn run(&self, setup: &TestSetup) -> CaseResult {
         let insn = &[Discriminant::RegisterMarket.into()];
         match self {

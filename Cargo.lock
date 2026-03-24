@@ -847,6 +847,7 @@ name = "dropset-tests"
 version = "0.1.0"
 dependencies = [
  "dropset-interface",
+ "heck",
  "mollusk-svm",
  "solana-account 3.4.0",
  "solana-sdk",

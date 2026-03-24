@@ -4,8 +4,9 @@ use solana_sdk::signature::read_keypair_file;
 use solana_sdk::signer::Signer;
 use std::path::Path;
 
-/// Define a test case enum with an auto-generated `ALL` slice containing
-/// every variant in declaration order.
+/// Define a test case enum with an auto-generated `ALL` slice and a
+/// [`CaseName`] impl that derives snake_case names from the variant
+/// identifiers.
 #[macro_export]
 macro_rules! test_cases {
     (
@@ -19,6 +20,15 @@ macro_rules! test_cases {
 
         impl $name {
             pub const ALL: &[Self] = &[$(Self::$variant),*];
+        }
+
+        impl $crate::CaseName for $name {
+            fn name(&self) -> String {
+                use ::heck::ToSnakeCase;
+                match self {
+                    $(Self::$variant => stringify!($variant).to_snake_case(),)*
+                }
+            }
         }
     }
 }
@@ -163,9 +173,13 @@ pub fn check_custom(
 }
 
 // region: test_case
+/// Auto-derived by [`test_cases!`]: returns a snake_case name for each variant.
+pub trait CaseName {
+    fn name(&self) -> String;
+}
+
 /// A named, runnable test case that can be executed for correctness or CU measurement.
-pub trait TestCase: Copy {
-    fn name(&self) -> &'static str;
+pub trait TestCase: Copy + CaseName {
     fn run(&self, setup: &TestSetup) -> CaseResult;
 }
 // endregion: test_case
@@ -181,11 +195,12 @@ pub fn run_and_report<T: TestCase>(heading: &str, cases: &[T], setup: &TestSetup
     println!("  {:<40} {:>8}", "----", "---");
 
     for case in cases {
+        let name = case.name();
         let result = case.run(setup);
         let status = if result.error.is_some() { "FAIL" } else { "ok" };
-        println!("  {:<40} {:>8}  {status}", case.name(), result.cu);
+        println!("  {:<40} {:>8}  {status}", name, result.cu);
         if let Some(msg) = result.error {
-            failures.push((case.name(), msg));
+            failures.push((name, msg));
         }
     }
 

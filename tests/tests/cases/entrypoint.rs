@@ -10,13 +10,6 @@ test_cases! {
 }
 
 impl TestCase for Case {
-    fn name(&self) -> &'static str {
-        match self {
-            Self::InvalidDiscriminant => "invalid_discriminant",
-            Self::EmptyInstructionData => "empty_instruction_data",
-        }
-    }
-
     fn run(&self, setup: &TestSetup) -> CaseResult {
         match self {
             // Verifies: ENTRYPOINT
