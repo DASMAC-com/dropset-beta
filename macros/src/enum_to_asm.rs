@@ -2,9 +2,10 @@ use proc_macro2::Literal;
 use quote::quote;
 use syn::Ident;
 
+use heck::{ToShoutySnakeCase, ToSnakeCase};
+
 use crate::attrs::{extract_doc_comment, validate_comment};
 use crate::codegen;
-use crate::codegen::to_screaming_snake;
 
 /// Create a suffixed integer literal matching the given repr type.
 fn typed_literal(value: u8, repr_ty: &str) -> Literal {
@@ -28,10 +29,7 @@ pub fn expand(
     input: &syn::ItemEnum,
 ) -> proc_macro2::TokenStream {
     let enum_name = &input.ident;
-    let mod_name = Ident::new(
-        &to_screaming_snake(&enum_name.to_string()).to_lowercase(),
-        enum_name.span(),
-    );
+    let mod_name = Ident::new(&enum_name.to_string().to_snake_case(), enum_name.span());
     let repr_ident = Ident::new(repr_ty, proc_macro2::Span::call_site());
 
     let mut meta_defs = Vec::new();
@@ -42,7 +40,7 @@ pub fn expand(
         let asm_name = format!(
             "{}_{}",
             prefix,
-            to_screaming_snake(&variant_name.to_string())
+            variant_name.to_string().to_shouty_snake_case()
         );
 
         let doc = extract_doc_comment(&variant.attrs)

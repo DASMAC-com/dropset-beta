@@ -13,6 +13,7 @@ resolver = "3"
 
 [workspace.dependencies]
 bindgen = "0.72.1"
+heck = "0.5"
 mollusk-svm = "0.11.0"
 pinocchio = "0.10.2"
 proc-macro2 = "1.0.106"

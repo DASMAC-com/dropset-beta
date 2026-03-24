@@ -1,17 +1,6 @@
+use heck::{ToShoutySnakeCase, ToSnakeCase};
 use quote::quote;
 use syn::Ident;
-
-/// Convert PascalCase to SCREAMING_SNAKE_CASE.
-pub fn to_screaming_snake(s: &str) -> String {
-    let mut result = String::new();
-    for (i, c) in s.chars().enumerate() {
-        if c.is_uppercase() && i > 0 {
-            result.push('_');
-        }
-        result.push(c.to_ascii_uppercase());
-    }
-    result
-}
 
 /// Build the identifier for the private `const` that holds the
 /// `dropset_build::Constant` metadata used in `GROUP.constants`.
@@ -70,9 +59,9 @@ pub fn len_group(
     len_expr: proc_macro2::TokenStream,
     original_item: proc_macro2::TokenStream,
 ) -> proc_macro2::TokenStream {
-    let screaming = to_screaming_snake(&type_name.to_string());
-    let mod_name = Ident::new(&screaming.to_lowercase(), type_name.span());
-    let asm_name = format!("{}_LEN", screaming);
+    let name_str = type_name.to_string();
+    let mod_name = Ident::new(&name_str.to_snake_case(), type_name.span());
+    let asm_name = format!("{}_LEN", name_str.to_shouty_snake_case());
 
     let meta_ident = meta_ident(&asm_name, type_name.span());
 
