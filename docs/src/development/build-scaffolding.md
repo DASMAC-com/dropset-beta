@@ -34,7 +34,7 @@ The [`macros`] crate provides several [proc macros]:
 
 <Include rs="macros::lib" collapsed/>
 
-### `constant_group!`
+### `constant_group!` {#constant_group}
 
 Defines a group of named assembly constants with an injection target. The
 `#[inject("file")]` attribute specifies which assembly file receives the
