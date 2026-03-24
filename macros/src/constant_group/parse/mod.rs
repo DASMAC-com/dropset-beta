@@ -7,13 +7,13 @@ mod offset;
 mod signer_seeds;
 
 use super::{ConstantDef, ConstantKind};
-use offset::parse_offset;
-use signer_seeds::parse_signer_seeds;
 use crate::attrs::{
     extract_attr_path, extract_attr_string, extract_doc_comment, extract_inject_target,
     validate_comment, validate_name,
 };
 use crate::shared_state;
+use offset::parse_offset;
+use signer_seeds::parse_signer_seeds;
 
 /// The body of `constant_group! { ... }` with custom constant syntax inside.
 pub struct ConstantGroupInput {

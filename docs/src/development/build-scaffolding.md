@@ -130,9 +130,9 @@ derive its header comment.
 
 Function-like macro that defines a `#[repr(C)]` struct where every field is
 typed as `SolSignerSeed`. Field names are registered in proc-macro shared
-state so that `signer_seeds!(field)` inside a [`constant_group!`](#constant_group)
-can auto-discover all seed fields by looking up the parent field's type on the
-frame struct.
+state so that `signer_seeds!(field)` inside a
+[`constant_group!`](#constant_group) can auto-discover all seed fields by
+looking up the parent field's type on the frame struct.
 
 <Include rs="interface::market#signer_seeds_example" collapsible/>
 

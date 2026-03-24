@@ -1,7 +1,4 @@
-use syn::{
-    Ident,
-    parse::ParseStream,
-};
+use syn::{Ident, parse::ParseStream};
 
 use super::super::ConstantKind;
 use crate::shared_state;
@@ -27,11 +24,9 @@ pub fn parse_signer_seeds(
 
     let parent_field: Ident = inner.parse()?;
 
-    let field_names = shared_state::lookup_signer_seed_fields(
-        &frame_name,
-        &parent_field.to_string(),
-    )
-    .map_err(|e| syn::Error::new(parent_field.span(), e))?;
+    let field_names =
+        shared_state::lookup_signer_seed_fields(&frame_name, &parent_field.to_string())
+            .map_err(|e| syn::Error::new(parent_field.span(), e))?;
 
     let seeds: Vec<Ident> = field_names
         .iter()

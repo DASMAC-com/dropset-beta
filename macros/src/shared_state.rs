@@ -26,10 +26,10 @@ pub fn register_signer_seeds(struct_name: &str, fields: Vec<String>) {
 
 /// Store the metadata of a `#[frame]` struct.
 pub fn register_frame(struct_name: &str, fields: Vec<(String, String)>, doc: String) {
-    FRAME_INFO.lock().unwrap().insert(
-        struct_name.to_string(),
-        FrameInfo { fields, doc },
-    );
+    FRAME_INFO
+        .lock()
+        .unwrap()
+        .insert(struct_name.to_string(), FrameInfo { fields, doc });
 }
 
 /// Look up the doc comment registered by `#[frame]`.
@@ -55,7 +55,8 @@ pub fn lookup_signer_seed_fields(
         )
     })?;
 
-    let (_, type_name) = info.fields
+    let (_, type_name) = info
+        .fields
         .iter()
         .find(|(name, _)| name == parent_field)
         .ok_or_else(|| {

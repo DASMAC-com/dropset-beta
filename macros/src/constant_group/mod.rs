@@ -16,7 +16,7 @@ pub(crate) enum ConstantKind {
     /// `signer_seeds!(parent_field)` inside a `#[frame(Type)]` group: seed
     /// fields are auto-discovered via shared state from the `signer_seeds!`
     /// struct definition. Expands to `_ADDR_OFF` and `_LEN_OFF` per seed plus
-    /// an `N_SEEDS` count. ASM names are derived by uppercasing the field name.
+    /// an `N_SEEDS` count. ASM names are derived by upper casing the field name.
     SignerSeeds {
         parent_field: Ident,
         seeds: Vec<Ident>,

@@ -51,12 +51,7 @@ pub fn expand_signer_seeds(
     let rust_name = Ident::new(&asm_name, parent_field.span());
     let meta_ident = codegen::meta_ident(&asm_name, parent_field.span());
     let doc = "Number of signer seeds.";
-    let meta = codegen::immediate_meta(
-        &meta_ident,
-        &asm_name,
-        doc,
-        quote! { #rust_name as i32 },
-    );
+    let meta = codegen::immediate_meta(&meta_ident, &asm_name, doc, quote! { #rust_name as i32 });
 
     const_defs.push(quote! {
         #[doc = #doc]

@@ -1,7 +1,4 @@
-use syn::{
-    Expr, Ident, Token,
-    parse::ParseStream,
-};
+use syn::{Expr, Ident, Token, parse::ParseStream};
 
 use super::super::ConstantKind;
 
