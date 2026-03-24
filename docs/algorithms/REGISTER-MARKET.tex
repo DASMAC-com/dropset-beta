@@ -11,13 +11,13 @@
   \INPUT $r_4 = insn\_len$
   \REQUIRE $insn.discriminant ==$ \texttt{Discriminant::RegisterMarket}
 \PROCEDURE{REGISTER-MARKET}{$input, insn, n\_accounts, insn\_len$}
-  \COMMENT{Error check user, market accounts.}
   \IF{$n\_accounts <$ \texttt{RegisterMarketAccounts.LEN}}
     \RETURN \texttt{ErrorCode::InvalidNumberOfAccounts}
   \ENDIF
   \IF{$insn\_len \neq$ \texttt{RegisterMarketData.LEN}}
     \RETURN \texttt{ErrorCode::InvalidInstructionLength}
   \ENDIF
+  \COMMENT{Error check user, market accounts.}
   \IF{$user.data\_len \neq 0$}
     \RETURN \texttt{ErrorCode::UserHasData}
   \ENDIF
@@ -27,6 +27,7 @@
   \IF{$market.data\_len \neq 0$}
     \RETURN \texttt{ErrorCode::MarketHasData}
   \ENDIF
+  \COMMENT{Check base mint account, create signer seed.}
   \IF{$base\_mint.duplicate \neq$ \texttt{input\_buffer.NON\_DUP\_MARKER}}
     \RETURN \texttt{ErrorCode::BaseMintIsDuplicate}
   \ENDIF
@@ -34,6 +35,7 @@
   \STATE $pda\_seeds.base.len =$ \texttt{Address.size}
   \COMMENT{Get the input buffer, incremented by the base mint padded data length.}
   \STATE $input\_shifted = input + base\_mint.padded\_data\_len$
+  \COMMENT{Check quote mint account, create signer seed.}
   \IF{$quote\_mint.duplicate \neq$ \texttt{input\_buffer.NON\_DUP\_MARKER}}
     \RETURN \texttt{ErrorCode::QuoteMintIsDuplicate}
   \ENDIF
