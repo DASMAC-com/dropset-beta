@@ -2,7 +2,7 @@ use proc_macro2::Literal;
 use quote::quote;
 use syn::Ident;
 
-use heck::{ToShoutySnakeCase, ToSnakeCase};
+use heck::ToShoutySnakeCase;
 
 use crate::attrs::{extract_doc_comment, validate_comment};
 use crate::codegen;
@@ -29,7 +29,6 @@ pub fn expand(
     input: &syn::ItemEnum,
 ) -> proc_macro2::TokenStream {
     let enum_name = &input.ident;
-    let mod_name = Ident::new(&enum_name.to_string().to_snake_case(), enum_name.span());
     let repr_ident = Ident::new(repr_ty, proc_macro2::Span::call_site());
 
     let mut meta_defs = Vec::new();
@@ -80,9 +79,7 @@ pub fn expand(
         })
         .collect();
 
-    let group = codegen::group_module(&mod_name, target_str, "", &meta_defs, &meta_idents);
-
-    quote! {
+    let body = quote! {
         #(#attrs)*
         #[repr(#repr_ident)]
         #vis enum #enum_name {
@@ -94,8 +91,7 @@ pub fn expand(
                 value as #repr_ident
             }
         }
+    };
 
-        #[doc(hidden)]
-        #group
-    }
+    codegen::with_group(target_str, enum_name, body, &meta_defs, &meta_idents)
 }
