@@ -55,6 +55,9 @@ register_market:
     mov64 r3, r1
     add64 r3, RM_IB_BASE_ADDR_OFF
     stxdw [r10 + RM_PDA_SEEDS_BASE_ADDR_OFF], r3
+    # pda_seeds.base.len = Address.size
+    mov64 r3, SIZE_OF_ADDRESS
+    stxdw [r10 + RM_PDA_SEEDS_BASE_LEN_OFF], r3
     # input_shifted = input + base_mint.padded_data_len
     ldxdw r3, [r1 + RM_IB_BASE_DATA_LEN_OFF]
     add64 r3, DATA_MAX_DATA_PAD

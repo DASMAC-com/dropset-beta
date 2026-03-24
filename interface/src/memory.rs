@@ -1,4 +1,5 @@
-use dropset_macros::{constant_group, svm_data};
+use dropset_macros::{constant_group, size_of_group, svm_data};
+use pinocchio::Address;
 use pinocchio::account::{MAX_PERMITTED_DATA_INCREASE, RuntimeAccount};
 use pinocchio::entrypoint::NON_DUP_MARKER;
 
@@ -61,6 +62,11 @@ constant_group! {
     }
 }
 // endregion: constant_group_example
+
+size_of_group! {
+    #[inject("common/memory")]
+    [Address]
+}
 
 /// Compute the data buffer size for a runtime account with the given data length.
 pub const fn runtime_data_size(data_len: i32) -> usize {

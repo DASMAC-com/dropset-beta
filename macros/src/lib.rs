@@ -10,6 +10,7 @@ mod instruction_accounts;
 mod instruction_length;
 mod shared_state;
 mod signer_seeds;
+mod size_of_group;
 mod svm_data;
 
 /// Defines a group of assembly constants with an injection target.
@@ -183,4 +184,18 @@ pub fn instruction_accounts(attr: TokenStream, item: TokenStream) -> TokenStream
 pub fn svm_data(_attr: TokenStream, item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as syn::ItemStruct);
     TokenStream::from(svm_data::expand(&input))
+}
+
+/// Injects `SIZE_OF_<TYPE>` immediates for each listed type.
+///
+/// ```ignore
+/// size_of_group! {
+///     #[inject("common/memory")]
+///     [Address]
+/// }
+/// ```
+#[proc_macro]
+pub fn size_of_group(input: TokenStream) -> TokenStream {
+    let input = parse_macro_input!(input as size_of_group::SizeOfGroupInput);
+    TokenStream::from(size_of_group::expand(&input))
 }

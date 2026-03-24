@@ -30,7 +30,7 @@
     \RETURN \texttt{ErrorCode::BaseMintIsDuplicate}
   \ENDIF
   \STATE $pda\_seeds.base.addr = base\_mint.pubkey$
-  \STATE $pda\_seeds.base.len = 32$
+  \STATE $pda\_seeds.base.len = Address.size$
   \COMMENT{Get the input buffer, incremented by the base mint padded data length.}
   \STATE $input\_shifted = input + base\_mint.padded\_data\_len$
   \IF{$quote\_mint.duplicate \neq$ \texttt{input\_buffer.NON\_DUP\_MARKER}}

@@ -16,3 +16,5 @@
 # From input buffer to market data length.
 .equ IB_MARKET_DATA_LEN_OFF, 10424
 # -------------------------------------------------------------------------
+
+.equ SIZE_OF_ADDRESS, 32 # Size of Address in bytes.
