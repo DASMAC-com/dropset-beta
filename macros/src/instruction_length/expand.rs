@@ -2,7 +2,7 @@ use quote::quote;
 use syn::Ident;
 
 use crate::codegen;
-use crate::enum_to_asm::to_screaming_snake;
+use crate::codegen::to_screaming_snake;
 
 /// Expand `#[instruction_data("target")]` on a struct into:
 /// - The original struct

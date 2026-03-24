@@ -4,6 +4,7 @@ use syn::Ident;
 
 use crate::attrs::{extract_doc_comment, validate_comment};
 use crate::codegen;
+use crate::codegen::to_screaming_snake;
 
 /// Create a suffixed integer literal matching the given repr type.
 fn typed_literal(value: u8, repr_ty: &str) -> Literal {
@@ -12,18 +13,6 @@ fn typed_literal(value: u8, repr_ty: &str) -> Literal {
         "u32" => Literal::u32_suffixed(value as u32),
         _ => panic!("unsupported repr type: {}", repr_ty),
     }
-}
-
-/// Convert PascalCase to SCREAMING_SNAKE_CASE.
-pub fn to_screaming_snake(s: &str) -> String {
-    let mut result = String::new();
-    for (i, c) in s.chars().enumerate() {
-        if c.is_uppercase() && i > 0 {
-            result.push('_');
-        }
-        result.push(c.to_ascii_uppercase());
-    }
-    result
 }
 
 /// Shared implementation for enum-to-ASM attribute macros.

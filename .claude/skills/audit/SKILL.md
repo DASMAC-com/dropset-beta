@@ -29,6 +29,9 @@ algorithm parity, and documentation freshness.
      single source of truth.
    - Repeated instruction sequences in `.s` files
      that could be factored into a shared routine.
+   - Exception: minimal error exit handlers
+     (`mov32`/`exit` pairs) are intentionally
+     inlined for CU savings. Do not flag these.
 
 1. Check modularity and decomposition:
 

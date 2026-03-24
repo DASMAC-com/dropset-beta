@@ -57,7 +57,7 @@ syntax forms (parsed within the proc macro, not standalone macros):
 
 When annotated with `#[frame(Type)]`, the group enters frame-relative mode.
 In this mode, `offset!(field)` computes a negative offset from the frame
-pointer (`offset_of - size_of`) and asserts 8-byte alignment
+pointer (`offset_of` minus `size_of`) and asserts 8-byte alignment
 (`BPF_ALIGN_OF_U128`). The group's doc comment defaults to the frame struct's
 doc comment if not explicitly provided. The `signer_seeds!(field)` form is
 only available in frame-relative mode.

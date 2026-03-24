@@ -1,6 +1,18 @@
 use quote::quote;
 use syn::Ident;
 
+/// Convert PascalCase to SCREAMING_SNAKE_CASE.
+pub fn to_screaming_snake(s: &str) -> String {
+    let mut result = String::new();
+    for (i, c) in s.chars().enumerate() {
+        if c.is_uppercase() && i > 0 {
+            result.push('_');
+        }
+        result.push(c.to_ascii_uppercase());
+    }
+    result
+}
+
 /// Build the identifier for the private `const` that holds the
 /// `dropset_build::Constant` metadata used in `GROUP.constants`.
 /// Prefixed with `_BUILD_` to avoid colliding with the public Rust const.
