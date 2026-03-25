@@ -68,11 +68,25 @@ pub fn expand(input: &ConstantGroupInput) -> proc_macro2::TokenStream {
                     &mut meta_idents,
                 );
             }
-            ConstantKind::ChunkOffsets { expr } => {
-                offset::expand_chunk_offsets(
+            ConstantKind::PubkeyOffsets { expr } => {
+                offset::expand_pubkey_offsets(
                     &asm_name,
                     doc,
                     expr,
+                    &mut const_defs,
+                    &mut meta_idents,
+                );
+            }
+            ConstantKind::FramePubkeyOffsets { fields } => {
+                let frame_ty = input
+                    .frame_type
+                    .as_ref()
+                    .expect("frame_type must be set for FramePubkeyOffsets");
+                offset::expand_frame_pubkey_offsets(
+                    &asm_name,
+                    doc,
+                    frame_ty,
+                    fields,
                     &mut const_defs,
                     &mut meta_idents,
                 );

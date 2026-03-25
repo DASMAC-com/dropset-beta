@@ -15,6 +15,10 @@
 .equ RM_PDA_SEEDS_BUMP_ADDR_OFF, -56 # Bump signer seed address.
 .equ RM_PDA_SEEDS_BUMP_LEN_OFF, -48 # Bump signer seed length.
 .equ RM_PDA_OFF, -40 # PDA address.
+.equ RM_PDA_CHUNK_0_OFF, -40 # PDA address (chunk 0).
+.equ RM_PDA_CHUNK_1_OFF, -32 # PDA address (chunk 1).
+.equ RM_PDA_CHUNK_2_OFF, -24 # PDA address (chunk 2).
+.equ RM_PDA_CHUNK_3_OFF, -16 # PDA address (chunk 3).
 .equ RM_BUMP_OFF, -8 # Bump seed.
 # -------------------------------------------------------------------------
 

@@ -60,7 +60,7 @@ constant_group! {
         /// From input buffer to market data length.
         MARKET_DATA_LEN = offset!(InputBufferHeader.market.data_len),
         /// From input buffer to market address.
-        MARKET_PUBKEY = chunk_offsets!(InputBufferHeader.market.address),
+        MARKET_PUBKEY = pubkey_offsets!(InputBufferHeader.market.address),
     }
 }
 // endregion: constant_group_example

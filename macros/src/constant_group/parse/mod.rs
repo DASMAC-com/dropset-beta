@@ -94,11 +94,12 @@ impl Parse for ConstantGroupInput {
                     let expr: Expr = inner.parse()?;
                     ConstantKind::Address { expr }
                 }
-                "chunk_offsets" => {
+                "pubkey_offsets" => {
                     let inner;
                     syn::parenthesized!(inner in content);
-                    let expr: Expr = inner.parse()?;
-                    ConstantKind::ChunkOffsets { expr }
+                    parse_offset(&inner, &frame_type)?
+                        .into_pubkey_offsets()
+                        .map_err(|msg| syn::Error::new(kind_ident.span(), msg))?
                 }
                 other => {
                     return Err(syn::Error::new(

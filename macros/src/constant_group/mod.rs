@@ -26,9 +26,30 @@ pub(crate) enum ConstantKind {
     /// `address!(expr)`: splits an `Address` into four 8-byte chunks, emitting
     /// `_CHUNK_{0..3}_LO` and `_CHUNK_{0..3}_HI` i32 immediates.
     Address { expr: Expr },
-    /// `chunk_offsets!(Type.field.path)`: emits four `_CHUNK_OFF_{0..3}` offset
-    /// constants, one per 8-byte chunk of the 32-byte field.
-    ChunkOffsets { expr: Expr },
+    /// `pubkey_offsets!(Type.field.path)`: emits `_OFF` plus four
+    /// `_CHUNK_{0..3}_OFF` offset constants for the 32-byte field.
+    PubkeyOffsets { expr: Expr },
+    /// `pubkey_offsets!(field)` inside a `#[frame(Type)]` group: frame-relative
+    /// variant that emits `_OFF` plus four `_CHUNK_{0..3}_OFF` constants.
+    FramePubkeyOffsets { fields: Vec<syn::Member> },
+}
+
+impl ConstantKind {
+    /// Convert an `Offset` or `FrameOffset` (from `parse_offset`) into its
+    /// pubkey-offsets equivalent. Returns an error message if the kind cannot
+    /// be converted (e.g. negated offsets).
+    pub fn into_pubkey_offsets(self) -> Result<Self, &'static str> {
+        match self {
+            ConstantKind::Offset { negate: true, .. } => {
+                Err("pubkey_offsets does not support negation")
+            }
+            ConstantKind::Offset { expr, .. } => Ok(ConstantKind::PubkeyOffsets { expr }),
+            ConstantKind::FrameOffset { fields } => {
+                Ok(ConstantKind::FramePubkeyOffsets { fields })
+            }
+            _ => Err("unexpected constant kind inside pubkey_offsets"),
+        }
+    }
 }
 
 pub(crate) struct ConstantDef {
