@@ -88,6 +88,12 @@ impl Parse for ConstantGroupInput {
                     let expr: Expr = inner.parse()?;
                     ConstantKind::Immediate { expr }
                 }
+                "address" => {
+                    let inner;
+                    syn::parenthesized!(inner in content);
+                    let expr: Expr = inner.parse()?;
+                    ConstantKind::Address { expr }
+                }
                 other => {
                     return Err(syn::Error::new(
                         kind_ident.span(),

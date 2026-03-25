@@ -4,6 +4,7 @@ pub mod cpi_bindings;
 pub mod market;
 pub mod memory;
 pub mod order;
+pub mod pubkey;
 pub mod seat;
 
 // region: discriminant_enum
@@ -59,4 +60,5 @@ pub const INJECTION_GROUPS: &[&dropset_build::ConstantGroup] = &[
     &memory::data::GROUP,
     &memory::input_buffer::GROUP,
     &memory::size_of::GROUP,
+    &pubkey::pubkey::GROUP,
 ];

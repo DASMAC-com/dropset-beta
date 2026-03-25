@@ -23,6 +23,9 @@ pub(crate) enum ConstantKind {
     },
     /// `immediate!(expr)`: value must fit i32, exposed as i32 in Rust.
     Immediate { expr: Expr },
+    /// `address!(expr)`: splits an `Address` into four 8-byte chunks, emitting
+    /// `_CHUNK_{0..3}_LO` and `_CHUNK_{0..3}_HI` i32 immediates.
+    Address { expr: Expr },
 }
 
 pub(crate) struct ConstantDef {

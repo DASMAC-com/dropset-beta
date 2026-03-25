@@ -1,3 +1,4 @@
+mod address;
 mod immediate;
 mod offset;
 mod signer_seeds;
@@ -57,6 +58,15 @@ pub fn expand(input: &ConstantGroupInput) -> proc_macro2::TokenStream {
                 let (def, meta) = immediate::expand_immediate(base_name, &asm_name, doc, expr);
                 const_defs.push(def);
                 meta_idents.push(meta);
+            }
+            ConstantKind::Address { expr } => {
+                address::expand_address(
+                    &asm_name,
+                    doc,
+                    expr,
+                    &mut const_defs,
+                    &mut meta_idents,
+                );
             }
         };
     }
