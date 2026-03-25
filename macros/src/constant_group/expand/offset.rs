@@ -176,12 +176,11 @@ pub fn expand_pubkey_offsets(
     const_defs: &mut Vec<proc_macro2::TokenStream>,
     meta_idents: &mut Vec<Ident>,
 ) {
-    let base_value_expr =
-        if let Some((ty, fields)) = try_decompose_field_chain(expr) {
-            quote! { core::mem::offset_of!(#ty, #(#fields).* ) as i64 }
-        } else {
-            quote! { #expr as i64 }
-        };
+    let base_value_expr = if let Some((ty, fields)) = try_decompose_field_chain(expr) {
+        quote! { core::mem::offset_of!(#ty, #(#fields).* ) as i64 }
+    } else {
+        quote! { #expr as i64 }
+    };
 
     emit_pubkey_offset_group(asm_prefix, doc, base_value_expr, const_defs, meta_idents);
 }

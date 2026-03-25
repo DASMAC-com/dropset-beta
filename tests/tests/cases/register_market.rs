@@ -1,8 +1,8 @@
 use dropset_interface::market::RegisterMarketAccounts;
 use dropset_interface::{Discriminant, ErrorCode};
 use dropset_tests::{
-    CaseResult, TestCase, TestSetup, check, check_custom, check_with_accounts,
-    find_pda_seed_pair, test_cases,
+    CaseResult, TestCase, TestSetup, check, check_custom, check_with_accounts, find_pda_seed_pair,
+    test_cases,
 };
 use solana_account::Account;
 use solana_sdk::instruction::AccountMeta;
@@ -51,15 +51,16 @@ fn into_metas_and_accounts(
 fn pda_mismatch_accounts(
     setup: &TestSetup,
     corrupt_chunk: usize,
-) -> (Vec<solana_sdk::instruction::AccountMeta>, Vec<(Pubkey, Account)>) {
+) -> (
+    Vec<solana_sdk::instruction::AccountMeta>,
+    Vec<(Pubkey, Account)>,
+) {
     let (mut keys, accounts) = default_accounts();
     let (base_key, quote_key) = find_pda_seed_pair(&setup.program_id);
     keys[RegisterMarketAccounts::BaseMint as usize] = base_key;
     keys[RegisterMarketAccounts::QuoteMint as usize] = quote_key;
-    let (mut pda, _bump) = Pubkey::find_program_address(
-        &[base_key.as_ref(), quote_key.as_ref()],
-        &setup.program_id,
-    );
+    let (mut pda, _bump) =
+        Pubkey::find_program_address(&[base_key.as_ref(), quote_key.as_ref()], &setup.program_id);
     // Flip a byte in the target chunk so only that comparison fails.
     let offset = corrupt_chunk * 8;
     pda.as_mut()[offset] ^= 0xFF;
@@ -147,22 +148,46 @@ impl TestCase for Case {
             // Verifies: REGISTER-MARKET
             Self::InvalidMarketPubkeyChunk0 => {
                 let (metas, accounts) = pda_mismatch_accounts(setup, 0);
-                check_custom(setup, insn, metas, accounts, Some(ErrorCode::InvalidMarketPubkey))
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::InvalidMarketPubkey),
+                )
             }
             // Verifies: REGISTER-MARKET
             Self::InvalidMarketPubkeyChunk1 => {
                 let (metas, accounts) = pda_mismatch_accounts(setup, 1);
-                check_custom(setup, insn, metas, accounts, Some(ErrorCode::InvalidMarketPubkey))
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::InvalidMarketPubkey),
+                )
             }
             // Verifies: REGISTER-MARKET
             Self::InvalidMarketPubkeyChunk2 => {
                 let (metas, accounts) = pda_mismatch_accounts(setup, 2);
-                check_custom(setup, insn, metas, accounts, Some(ErrorCode::InvalidMarketPubkey))
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::InvalidMarketPubkey),
+                )
             }
             // Verifies: REGISTER-MARKET
             Self::InvalidMarketPubkeyChunk3 => {
                 let (metas, accounts) = pda_mismatch_accounts(setup, 3);
-                check_custom(setup, insn, metas, accounts, Some(ErrorCode::InvalidMarketPubkey))
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::InvalidMarketPubkey),
+                )
             }
         }
     }

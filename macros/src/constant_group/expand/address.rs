@@ -57,8 +57,7 @@ pub fn expand_address(
             let rust_name = Ident::new(&asm_name, Span::call_site());
             let doc = format!("{} (chunk {} lo).", doc_base, i);
             let meta_ident = codegen::meta_ident(&asm_name, Span::call_site());
-            let meta =
-                codegen::immediate_meta(&meta_ident, &asm_name, &doc, quote! { #rust_name });
+            let meta = codegen::immediate_meta(&meta_ident, &asm_name, &doc, quote! { #rust_name });
 
             const_defs.push(quote! {
                 #[doc = #doc]
@@ -75,8 +74,7 @@ pub fn expand_address(
             let rust_name = Ident::new(&asm_name, Span::call_site());
             let doc = format!("{} (chunk {} hi).", doc_base, i);
             let meta_ident = codegen::meta_ident(&asm_name, Span::call_site());
-            let meta =
-                codegen::immediate_meta(&meta_ident, &asm_name, &doc, quote! { #rust_name });
+            let meta = codegen::immediate_meta(&meta_ident, &asm_name, &doc, quote! { #rust_name });
 
             const_defs.push(quote! {
                 #[doc = #doc]

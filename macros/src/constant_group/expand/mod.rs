@@ -62,13 +62,7 @@ pub fn expand(input: &ConstantGroupInput) -> proc_macro2::TokenStream {
                 meta_idents.push(meta);
             }
             ConstantKind::Address { expr } => {
-                address::expand_address(
-                    &asm_name,
-                    doc,
-                    expr,
-                    &mut const_defs,
-                    &mut meta_idents,
-                );
+                address::expand_address(&asm_name, doc, expr, &mut const_defs, &mut meta_idents);
             }
             ConstantKind::PubkeyOffsets { expr } => {
                 offset::expand_pubkey_offsets(

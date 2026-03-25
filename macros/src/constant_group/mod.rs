@@ -44,9 +44,7 @@ impl ConstantKind {
                 Err("pubkey_offsets does not support negation")
             }
             ConstantKind::Offset { expr, .. } => Ok(ConstantKind::PubkeyOffsets { expr }),
-            ConstantKind::FrameOffset { fields } => {
-                Ok(ConstantKind::FramePubkeyOffsets { fields })
-            }
+            ConstantKind::FrameOffset { fields } => Ok(ConstantKind::FramePubkeyOffsets { fields }),
             _ => Err("unexpected constant kind inside pubkey_offsets"),
         }
     }
