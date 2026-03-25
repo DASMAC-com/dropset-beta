@@ -1,7 +1,8 @@
 use dropset_interface::market::RegisterMarketAccounts;
 use dropset_interface::{Discriminant, ErrorCode};
 use dropset_tests::{
-    CaseResult, TestCase, TestSetup, check, check_custom, check_with_accounts, test_cases,
+    CaseResult, TestCase, TestSetup, check, check_custom, check_with_accounts,
+    find_pda_seed_pair, test_cases,
 };
 use solana_account::Account;
 use solana_sdk::instruction::AccountMeta;
@@ -52,8 +53,9 @@ fn pda_mismatch_accounts(
     corrupt_chunk: usize,
 ) -> (Vec<solana_sdk::instruction::AccountMeta>, Vec<(Pubkey, Account)>) {
     let (mut keys, accounts) = default_accounts();
-    let base_key = keys[RegisterMarketAccounts::BaseMint as usize];
-    let quote_key = keys[RegisterMarketAccounts::QuoteMint as usize];
+    let (base_key, quote_key) = find_pda_seed_pair(&setup.program_id);
+    keys[RegisterMarketAccounts::BaseMint as usize] = base_key;
+    keys[RegisterMarketAccounts::QuoteMint as usize] = quote_key;
     let (mut pda, _bump) = Pubkey::find_program_address(
         &[base_key.as_ref(), quote_key.as_ref()],
         &setup.program_id,
