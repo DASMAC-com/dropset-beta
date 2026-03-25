@@ -7,8 +7,8 @@ use crate::codegen;
 
 /// Expand `signer_seeds!(parent_field)` inside a `#[frame(Type)]` group.
 ///
-/// For each seed field, emits `_ADDR_OFF` and `_LEN_OFF` frame-relative
-/// offset constants. Also emits an `N_SEEDS` immediate count.
+/// Emits an `_OFF` offset to the struct, an `N_SEEDS` immediate count,
+/// and per-seed `_ADDR_OFF` and `_LEN_OFF` frame-relative offset constants.
 pub fn expand_signer_seeds(
     asm_prefix: &str,
     frame_ty: &syn::Path,

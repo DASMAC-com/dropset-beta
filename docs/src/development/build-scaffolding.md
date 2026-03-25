@@ -48,8 +48,8 @@ syntax forms (parsed within the proc macro, not standalone macros):
   `_OFF`
 - `immediate!(expr)`: an `i32` immediate value
 - `signer_seeds!(field)`: expands a [`signer_seeds!`](#signer_seeds) field into
-  `_ADDR_OFF` and `_LEN_OFF` constants per seed, plus an `N_SEEDS` count
-  (requires `#[frame(Type)]`, see below)
+  an `_OFF` offset to the struct, an `N_SEEDS` count, and per-seed `_ADDR_OFF`
+  and `_LEN_OFF` constants (requires `#[frame(Type)]`, see below)
 
 <Include rs="interface::memory#constant_group_example" collapsible/>
 
