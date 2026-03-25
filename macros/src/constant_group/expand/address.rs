@@ -5,10 +5,10 @@ use syn::Ident;
 use crate::codegen;
 
 /// Number of 8-byte chunks in a 32-byte address.
-const N_CHUNKS: usize = 4;
+pub const N_CHUNKS: usize = 4;
 
 /// Size of each chunk in bytes.
-const CHUNK_SIZE: usize = 8;
+pub const CHUNK_SIZE: usize = 8;
 
 /// Build a `u64::from_le_bytes([b[off], ..., b[off+7]])` expression for a
 /// given chunk index, referencing a local `b: [u8; 32]` binding.
@@ -24,8 +24,7 @@ fn chunk_expr(chunk: usize) -> proc_macro2::TokenStream {
 ///
 /// For a pubkey named `RENT` with prefix `PUBKEY`, this emits:
 ///   - `PUBKEY_RENT_CHUNK_0_LO` / `PUBKEY_RENT_CHUNK_0_HI`
-///   - `PUBKEY_RENT_CHUNK_1_LO` / `PUBKEY_RENT_CHUNK_1_HI`
-///   - `PUBKEY_RENT_CHUNK_2_LO` / `PUBKEY_RENT_CHUNK_2_HI`
+///   - ...
 ///   - `PUBKEY_RENT_CHUNK_3_LO` / `PUBKEY_RENT_CHUNK_3_HI`
 pub fn expand_address(
     asm_prefix: &str,

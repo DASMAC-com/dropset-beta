@@ -68,6 +68,15 @@ pub fn expand(input: &ConstantGroupInput) -> proc_macro2::TokenStream {
                     &mut meta_idents,
                 );
             }
+            ConstantKind::ChunkOffsets { expr } => {
+                offset::expand_chunk_offsets(
+                    &asm_name,
+                    doc,
+                    expr,
+                    &mut const_defs,
+                    &mut meta_idents,
+                );
+            }
         };
     }
 

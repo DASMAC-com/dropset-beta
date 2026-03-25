@@ -26,6 +26,9 @@ pub(crate) enum ConstantKind {
     /// `address!(expr)`: splits an `Address` into four 8-byte chunks, emitting
     /// `_CHUNK_{0..3}_LO` and `_CHUNK_{0..3}_HI` i32 immediates.
     Address { expr: Expr },
+    /// `chunk_offsets!(Type.field.path)`: emits four `_CHUNK_OFF_{0..3}` offset
+    /// constants, one per 8-byte chunk of the 32-byte field.
+    ChunkOffsets { expr: Expr },
 }
 
 pub(crate) struct ConstantDef {
