@@ -47,8 +47,6 @@ development topics:
 - `docs/src/program/layout.md` program memory layout
 - `docs/src/program/inputs.md` input format specs
 - `docs/src/program/markets.md` market structure
-- `docs/src/program/pubkeys.md` pubkey chunk layout
-  and known address constants
 - `docs/src/program/algorithm-index.md` algorithm
   documentation
 

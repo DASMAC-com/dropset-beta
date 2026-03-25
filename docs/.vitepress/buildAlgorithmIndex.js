@@ -59,6 +59,12 @@ export function buildAlgorithmIndex() {
     };
   }
 
+  // Filter calls to only reference known algorithms (removes notation-only
+  // names like "Store" that have no .tex definition).
+  for (const entry of Object.values(index)) {
+    entry.calls = entry.calls.filter((c) => c in index);
+  }
+
   // Scan .md files to find which page each algorithm is on.
   for (const fullPath of findMdFiles(SRC_DIR)) {
     const md = readFileSync(fullPath, "utf-8");

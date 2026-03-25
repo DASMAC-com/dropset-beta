@@ -8,13 +8,6 @@ the instruction discriminant to the appropriate handler.
 
 <Algorithm tex="ENTRYPOINT" asm="entrypoint"/>
 
-## Algorithm conventions
-
-- `procedure`: a label that does not return (no stack push); control flow
-  exits via `exit` or jumps to another procedure.
-- `function`: a label that pushes onto the call stack and returns to the
-  caller.
-
 ## Input buffer
 
 The Solana runtime serializes accounts and instruction data into a contiguous
