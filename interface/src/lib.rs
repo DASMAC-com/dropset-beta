@@ -34,6 +34,8 @@ pub enum ErrorCode {
     BaseMintIsDuplicate,
     /// The quote mint account is a duplicate.
     QuoteMintIsDuplicate,
+    /// The market account pubkey is invalid.
+    InvalidMarketPubkey,
 }
 // endregion: error_enum
 

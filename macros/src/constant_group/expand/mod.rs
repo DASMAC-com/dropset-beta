@@ -16,9 +16,11 @@ pub fn expand(input: &ConstantGroupInput) -> proc_macro2::TokenStream {
         let doc = &c.doc;
         let base_name = &c.name;
 
-        let asm_name = match &input.prefix {
-            Some(p) => format!("{}_{}", p, base_name),
-            None => base_name.to_string(),
+        let asm_name = match (&input.prefix, &input.frame_type) {
+            (Some(p), Some(_)) => format!("{}_FM_{}", p, base_name),
+            (Some(p), None) => format!("{}_{}", p, base_name),
+            (None, Some(_)) => format!("FM_{}", base_name),
+            (None, None) => base_name.to_string(),
         };
 
         match &c.kind {
