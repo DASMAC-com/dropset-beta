@@ -83,12 +83,14 @@ register_market:
     # pda_seeds.quote.len = Address.size
     mov64 r8, SIZE_OF_ADDRESS
     stxdw [r10 + RM_FM_PDA_SEEDS_QUOTE_LEN_OFF], r8
-    # syscall.program_id = program_id
-    mov64 r3, r2
-    add64 r3, REGISTER_MARKET_DATA_LEN
+    # Store(input)
+    mov64 r6, r1
     # syscall.seeds = pda_seeds
     mov64 r1, r10
     add64 r1, RM_FM_PDA_SEEDS_OFF
+    # syscall.program_id = program_id
+    mov64 r3, r2
+    add64 r3, REGISTER_MARKET_DATA_LEN
     # syscall.seeds_len = register_misc.TRY_FIND_PDA_SEEDS_LEN
     mov64 r2, RM_MISC_TRY_FIND_PDA_SEEDS_LEN
     # syscall.program_address = RegisterMarketFrame.pda
