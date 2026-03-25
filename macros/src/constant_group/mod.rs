@@ -21,7 +21,7 @@ pub(crate) enum ConstantKind {
         parent_field: Ident,
         seeds: Vec<Ident>,
     },
-    /// `immediate!(expr)`: value must fit i32, exposed as usize in Rust.
+    /// `immediate!(expr)`: value must fit i32, exposed as i32 in Rust.
     Immediate { expr: Expr },
 }
 

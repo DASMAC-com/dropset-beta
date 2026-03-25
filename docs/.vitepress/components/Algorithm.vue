@@ -150,6 +150,11 @@ onMounted(async () => {
         a.target = "_blank";
         a.className = "ps-funcname ps-syscall";
         a.textContent = syscallKey;
+        // Strip the trailing "()" that pseudocode.js emits for \CALL.
+        let next = span.nextSibling;
+        if (next?.nodeType === Node.TEXT_NODE) {
+          next.textContent = next.textContent.replace(/^\(\)/, "");
+        }
         span.replaceWith(a);
       } else if (algorithmIndex[name]) {
         const a = document.createElement("a");
@@ -372,6 +377,7 @@ onMounted(async () => {
 .pseudocode-container :deep(.ps-comment) {
   color: var(--vp-c-green-2);
   font-style: italic;
+  display: block;
 }
 .pseudocode-container :deep(.ps-algorithm) {
   border-top: none;

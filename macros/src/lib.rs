@@ -10,13 +10,14 @@ mod instruction_accounts;
 mod instruction_length;
 mod shared_state;
 mod signer_seeds;
+mod size_of_group;
 mod svm_data;
 
 /// Defines a group of assembly constants with an injection target.
 ///
 /// Supports three constant kinds:
 /// - `offset!(expr)` — signed offset, gets `_OFF` suffix.
-/// - `immediate!(expr)` — unsigned immediate, no suffix.
+/// - `immediate!(expr)` — signed immediate (i32), no suffix.
 /// - `signer_seeds!(field)` — auto-expands seed offsets (requires `#[frame]`).
 ///
 /// With `#[frame(Type)]`, `offset!(field)` computes a negative frame-pointer-
@@ -183,4 +184,18 @@ pub fn instruction_accounts(attr: TokenStream, item: TokenStream) -> TokenStream
 pub fn svm_data(_attr: TokenStream, item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as syn::ItemStruct);
     TokenStream::from(svm_data::expand(&input))
+}
+
+/// Injects `SIZE_OF_<TYPE>` immediates for each listed type.
+///
+/// ```ignore
+/// size_of_group! {
+///     #[inject("common/memory")]
+///     [Address]
+/// }
+/// ```
+#[proc_macro]
+pub fn size_of_group(input: TokenStream) -> TokenStream {
+    let input = parse_macro_input!(input as size_of_group::SizeOfGroupInput);
+    TokenStream::from(size_of_group::expand(&input))
 }

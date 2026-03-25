@@ -48,8 +48,8 @@ syntax forms (parsed within the proc macro, not standalone macros):
   `_OFF`
 - `immediate!(expr)`: an `i32` immediate value
 - `signer_seeds!(field)`: expands a [`signer_seeds!`](#signer_seeds) field into
-  `_ADDR_OFF` and `_LEN_OFF` constants per seed, plus an `N_SEEDS` count
-  (requires `#[frame(Type)]`, see below)
+  an `_OFF` offset to the struct, an `N_SEEDS` count, and per-seed `_ADDR_OFF`
+  and `_LEN_OFF` constants (requires `#[frame(Type)]`, see below)
 
 <Include rs="interface::memory#constant_group_example" collapsible/>
 
@@ -144,6 +144,14 @@ state so that `signer_seeds!(field)` inside a
 looking up the parent field's type on the frame struct.
 
 <Include rs="interface::market#signer_seeds_example" collapsible/>
+
+### `size_of_group!`
+
+Injects `SIZE_OF_<TYPE>` immediates for each listed type. Names and doc
+comments are auto-derived from the type name (`Address` becomes
+`SIZE_OF_ADDRESS`). The value is `std::mem::size_of::<Type>()` cast to `i32`.
+
+<Include rs="interface::memory#size_of_group_example" collapsible/>
 
 ## Interface
 

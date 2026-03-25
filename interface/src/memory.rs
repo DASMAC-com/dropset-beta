@@ -1,4 +1,5 @@
-use dropset_macros::{constant_group, svm_data};
+use dropset_macros::{constant_group, size_of_group, svm_data};
+use pinocchio::Address;
 use pinocchio::account::{MAX_PERMITTED_DATA_INCREASE, RuntimeAccount};
 use pinocchio::entrypoint::NON_DUP_MARKER;
 
@@ -17,6 +18,10 @@ constant_group! {
         /// Data alignment during runtime.
         // pinocchio constant is private.
         BPF_ALIGN_OF_U128 = immediate!(8),
+        /// Maximum possible data length padding for a runtime account.
+        MAX_DATA_PAD = immediate!(7),
+        /// And mask for data length alignment.
+        DATA_LEN_AND_MASK = immediate!(-8),
     }
 }
 
@@ -47,7 +52,7 @@ constant_group! {
     /// Input buffer constants for static header.
     input_buffer {
         /// Non-dup marker for accounts.
-        NON_DUP_MARKER = immediate!(NON_DUP_MARKER as usize),
+        NON_DUP_MARKER = immediate!(NON_DUP_MARKER as i32),
         /// From input buffer to user data length.
         USER_DATA_LEN = offset!(InputBufferHeader.user.header.data_len),
         /// From input buffer to market duplicate flag.
@@ -58,7 +63,15 @@ constant_group! {
 }
 // endregion: constant_group_example
 
+// region: size_of_group_example
+size_of_group! {
+    #[inject("common/memory")]
+    [Address]
+}
+// endregion: size_of_group_example
+
 /// Compute the data buffer size for a runtime account with the given data length.
-pub const fn runtime_data_size(data_len: usize) -> usize {
-    MAX_PERMITTED_DATA_INCREASE + data_len.next_multiple_of(data::BPF_ALIGN_OF_U128)
+pub const fn runtime_data_size(data_len: i32) -> usize {
+    MAX_PERMITTED_DATA_INCREASE
+        + (data_len as usize).next_multiple_of(data::BPF_ALIGN_OF_U128 as usize)
 }

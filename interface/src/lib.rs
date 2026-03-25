@@ -29,6 +29,10 @@ pub enum ErrorCode {
     MarketAccountIsDuplicate,
     /// The market account already has data.
     MarketHasData,
+    /// The base mint account is a duplicate.
+    BaseMintIsDuplicate,
+    /// The quote mint account is a duplicate.
+    QuoteMintIsDuplicate,
 }
 // endregion: error_enum
 
@@ -51,6 +55,8 @@ pub const INJECTION_GROUPS: &[&dropset_build::ConstantGroup] = &[
     &market::register_market_data::GROUP,
     &market::register_market_accounts::GROUP,
     &market::register_market_frame::GROUP,
+    &market::register_misc::GROUP,
     &memory::data::GROUP,
     &memory::input_buffer::GROUP,
+    &memory::size_of::GROUP,
 ];
