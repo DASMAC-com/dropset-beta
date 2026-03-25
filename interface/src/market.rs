@@ -114,7 +114,7 @@ constant_group! {
         /// PDA signer seeds.
         PDA_SEEDS = signer_seeds!(pda_seeds),
         /// PDA address.
-        PDA = offset!(pda),
+        PDA = pubkey_offsets!(pda),
         /// Bump seed.
         BUMP = offset!(bump),
     }

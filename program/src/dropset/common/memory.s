@@ -15,6 +15,15 @@
 .equ IB_MARKET_DUPLICATE_OFF, 10344
 # From input buffer to market data length.
 .equ IB_MARKET_DATA_LEN_OFF, 10424
+.equ IB_MARKET_PUBKEY_OFF, 10352 # From input buffer to market address.
+# From input buffer to market address (chunk 0).
+.equ IB_MARKET_PUBKEY_CHUNK_0_OFF, 10352
+# From input buffer to market address (chunk 1).
+.equ IB_MARKET_PUBKEY_CHUNK_1_OFF, 10360
+# From input buffer to market address (chunk 2).
+.equ IB_MARKET_PUBKEY_CHUNK_2_OFF, 10368
+# From input buffer to market address (chunk 3).
+.equ IB_MARKET_PUBKEY_CHUNK_3_OFF, 10376
 # -------------------------------------------------------------------------
 
 .equ SIZE_OF_ADDRESS, 32 # Size of Address in bytes.

@@ -4,5 +4,6 @@
 .include "common/discriminant.s"
 .include "common/error.s"
 .include "common/memory.s"
+.include "common/pubkey.s"
 .include "entrypoint.s"
 .include "market/register.s"

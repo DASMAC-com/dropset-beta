@@ -4,6 +4,7 @@ pub mod cpi_bindings;
 pub mod market;
 pub mod memory;
 pub mod order;
+pub mod pubkey;
 pub mod seat;
 
 // region: discriminant_enum
@@ -33,6 +34,8 @@ pub enum ErrorCode {
     BaseMintIsDuplicate,
     /// The quote mint account is a duplicate.
     QuoteMintIsDuplicate,
+    /// The market account pubkey is invalid.
+    InvalidMarketPubkey,
 }
 // endregion: error_enum
 
@@ -59,4 +62,5 @@ pub const INJECTION_GROUPS: &[&dropset_build::ConstantGroup] = &[
     &memory::data::GROUP,
     &memory::input_buffer::GROUP,
     &memory::size_of::GROUP,
+    &pubkey::pubkey::GROUP,
 ];

@@ -1,3 +1,4 @@
+mod address;
 mod immediate;
 mod offset;
 mod signer_seeds;
@@ -15,9 +16,11 @@ pub fn expand(input: &ConstantGroupInput) -> proc_macro2::TokenStream {
         let doc = &c.doc;
         let base_name = &c.name;
 
-        let asm_name = match &input.prefix {
-            Some(p) => format!("{}_{}", p, base_name),
-            None => base_name.to_string(),
+        let asm_name = match (&input.prefix, &input.frame_type) {
+            (Some(p), Some(_)) => format!("{}_FM_{}", p, base_name),
+            (Some(p), None) => format!("{}_{}", p, base_name),
+            (None, Some(_)) => format!("FM_{}", base_name),
+            (None, None) => base_name.to_string(),
         };
 
         match &c.kind {
@@ -57,6 +60,32 @@ pub fn expand(input: &ConstantGroupInput) -> proc_macro2::TokenStream {
                 let (def, meta) = immediate::expand_immediate(base_name, &asm_name, doc, expr);
                 const_defs.push(def);
                 meta_idents.push(meta);
+            }
+            ConstantKind::Address { expr } => {
+                address::expand_address(&asm_name, doc, expr, &mut const_defs, &mut meta_idents);
+            }
+            ConstantKind::PubkeyOffsets { expr } => {
+                offset::expand_pubkey_offsets(
+                    &asm_name,
+                    doc,
+                    expr,
+                    &mut const_defs,
+                    &mut meta_idents,
+                );
+            }
+            ConstantKind::FramePubkeyOffsets { fields } => {
+                let frame_ty = input
+                    .frame_type
+                    .as_ref()
+                    .expect("frame_type must be set for FramePubkeyOffsets");
+                offset::expand_frame_pubkey_offsets(
+                    &asm_name,
+                    doc,
+                    frame_ty,
+                    fields,
+                    &mut const_defs,
+                    &mut meta_idents,
+                );
             }
         };
     }

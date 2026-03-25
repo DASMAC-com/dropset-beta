@@ -1,7 +1,10 @@
+use proc_macro2::Span;
 use quote::quote;
 use syn::Ident;
 
 use crate::codegen;
+
+use super::address::{CHUNK_SIZE, N_CHUNKS};
 
 /// Try to decompose a field-access chain like `Foo.bar.baz` into `(Foo, [bar, baz])`.
 fn try_decompose_field_chain(expr: &syn::Expr) -> Option<(syn::Path, Vec<&syn::Member>)> {
@@ -100,6 +103,105 @@ pub fn emit_frame_offset_const(
     };
 
     (def, meta_ident)
+}
+
+/// Emit a base `_OFF` plus four `_CHUNK_{0..3}_OFF` offset constants given a
+/// value expression for the base offset.
+fn emit_pubkey_offset_group(
+    asm_prefix: &str,
+    doc: &str,
+    base_value_expr: proc_macro2::TokenStream,
+    const_defs: &mut Vec<proc_macro2::TokenStream>,
+    meta_idents: &mut Vec<Ident>,
+) {
+    let doc_base = doc.trim_end_matches('.');
+
+    // Base offset (same value as chunk 0).
+    {
+        let asm_name = format!("{}_OFF", asm_prefix);
+        let rust_name = Ident::new(&asm_name, Span::call_site());
+        let meta_ident = codegen::meta_ident(&asm_name, Span::call_site());
+        let meta = codegen::offset_meta(&meta_ident, &asm_name, doc, &rust_name);
+
+        const_defs.push(quote! {
+            #[doc = #doc]
+            pub const #rust_name: i16 = {
+                use super::*;
+                const VALUE: i64 = #base_value_expr;
+                const _: () = assert!(
+                    VALUE >= i16::MIN as i64 && VALUE <= i16::MAX as i64,
+                    "pubkey offset must fit in i16",
+                );
+                VALUE as i16
+            };
+
+            #meta
+        });
+        meta_idents.push(meta_ident);
+    }
+
+    // Per-chunk offsets.
+    for i in 0..N_CHUNKS {
+        let chunk_byte_offset = (i * CHUNK_SIZE) as i64;
+        let asm_name = format!("{}_CHUNK_{}_OFF", asm_prefix, i);
+        let rust_name = Ident::new(&asm_name, Span::call_site());
+        let doc = format!("{} (chunk {}).", doc_base, i);
+        let meta_ident = codegen::meta_ident(&asm_name, Span::call_site());
+        let meta = codegen::offset_meta(&meta_ident, &asm_name, &doc, &rust_name);
+
+        const_defs.push(quote! {
+            #[doc = #doc]
+            pub const #rust_name: i16 = {
+                use super::*;
+                const VALUE: i64 = #base_value_expr + #chunk_byte_offset;
+                const _: () = assert!(
+                    VALUE >= i16::MIN as i64 && VALUE <= i16::MAX as i64,
+                    "pubkey offset must fit in i16",
+                );
+                VALUE as i16
+            };
+
+            #meta
+        });
+        meta_idents.push(meta_ident);
+    }
+}
+
+/// Expand `pubkey_offsets!(Type.field.path)` into a base `_OFF` offset plus
+/// four `_CHUNK_{0..3}_OFF` offset constants for each 8-byte chunk.
+pub fn expand_pubkey_offsets(
+    asm_prefix: &str,
+    doc: &str,
+    expr: &syn::Expr,
+    const_defs: &mut Vec<proc_macro2::TokenStream>,
+    meta_idents: &mut Vec<Ident>,
+) {
+    let base_value_expr = if let Some((ty, fields)) = try_decompose_field_chain(expr) {
+        quote! { core::mem::offset_of!(#ty, #(#fields).* ) as i64 }
+    } else {
+        quote! { #expr as i64 }
+    };
+
+    emit_pubkey_offset_group(asm_prefix, doc, base_value_expr, const_defs, meta_idents);
+}
+
+/// Expand `pubkey_offsets!(field)` inside a `#[frame(Type)]` group into a base
+/// `_OFF` plus four `_CHUNK_{0..3}_OFF` frame-relative offset constants.
+pub fn expand_frame_pubkey_offsets(
+    asm_prefix: &str,
+    doc: &str,
+    frame_ty: &syn::Path,
+    fields: &[syn::Member],
+    const_defs: &mut Vec<proc_macro2::TokenStream>,
+    meta_idents: &mut Vec<Ident>,
+) {
+    let field_chain = quote! { #(#fields).* };
+    let base_value_expr = quote! {
+        core::mem::offset_of!(#frame_ty, #field_chain) as i64
+            - core::mem::size_of::<#frame_ty>() as i64
+    };
+
+    emit_pubkey_offset_group(asm_prefix, doc, base_value_expr, const_defs, meta_idents);
 }
 
 /// Expand `offset!(field)` inside a `#[frame(Type)]` group.

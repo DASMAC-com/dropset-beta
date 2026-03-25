@@ -19,6 +19,7 @@ metas
 mollusk
 nocapture
 oneline
+pubkeys
 punc
 repr
 sbpf
@@ -30,6 +31,7 @@ swatinem
 syscall
 syscalls
 sysvar
+sysvars
 ureq
 vite
 vitepress

@@ -184,6 +184,20 @@ pub trait TestCase: Copy + CaseName {
 }
 // endregion: test_case
 
+/// Returns a pair of unique pubkeys whose PDA derivation against
+/// `program_id` succeeds on the first bump (255), avoiding iteration
+/// overhead in `sol_try_find_program_address`.
+pub fn find_pda_seed_pair(program_id: &Pubkey) -> (Pubkey, Pubkey) {
+    loop {
+        let a = Pubkey::new_unique();
+        let b = Pubkey::new_unique();
+        let (_pda, bump) = Pubkey::find_program_address(&[a.as_ref(), b.as_ref()], program_id);
+        if bump == u8::MAX {
+            return (a, b);
+        }
+    }
+}
+
 /// Runs all cases, prints a CU table, and panics if any case failed.
 pub fn run_and_report<T: TestCase>(heading: &str, cases: &[T], setup: &TestSetup) {
     let mut failures = Vec::new();

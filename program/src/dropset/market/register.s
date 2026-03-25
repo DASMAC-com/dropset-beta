@@ -6,16 +6,20 @@
 
 # Stack frame for REGISTER-MARKET.
 # -------------------------------------------------------------------------
-.equ RM_PDA_SEEDS_OFF, -88 # Signer seeds offset.
-.equ RM_PDA_SEEDS_N_SEEDS, 3 # Number of signer seeds.
-.equ RM_PDA_SEEDS_BASE_ADDR_OFF, -88 # Base signer seed address.
-.equ RM_PDA_SEEDS_BASE_LEN_OFF, -80 # Base signer seed length.
-.equ RM_PDA_SEEDS_QUOTE_ADDR_OFF, -72 # Quote signer seed address.
-.equ RM_PDA_SEEDS_QUOTE_LEN_OFF, -64 # Quote signer seed length.
-.equ RM_PDA_SEEDS_BUMP_ADDR_OFF, -56 # Bump signer seed address.
-.equ RM_PDA_SEEDS_BUMP_LEN_OFF, -48 # Bump signer seed length.
-.equ RM_PDA_OFF, -40 # PDA address.
-.equ RM_BUMP_OFF, -8 # Bump seed.
+.equ RM_FM_PDA_SEEDS_OFF, -88 # Signer seeds offset.
+.equ RM_FM_PDA_SEEDS_N_SEEDS, 3 # Number of signer seeds.
+.equ RM_FM_PDA_SEEDS_BASE_ADDR_OFF, -88 # Base signer seed address.
+.equ RM_FM_PDA_SEEDS_BASE_LEN_OFF, -80 # Base signer seed length.
+.equ RM_FM_PDA_SEEDS_QUOTE_ADDR_OFF, -72 # Quote signer seed address.
+.equ RM_FM_PDA_SEEDS_QUOTE_LEN_OFF, -64 # Quote signer seed length.
+.equ RM_FM_PDA_SEEDS_BUMP_ADDR_OFF, -56 # Bump signer seed address.
+.equ RM_FM_PDA_SEEDS_BUMP_LEN_OFF, -48 # Bump signer seed length.
+.equ RM_FM_PDA_OFF, -40 # PDA address.
+.equ RM_FM_PDA_CHUNK_0_OFF, -40 # PDA address (chunk 0).
+.equ RM_FM_PDA_CHUNK_1_OFF, -32 # PDA address (chunk 1).
+.equ RM_FM_PDA_CHUNK_2_OFF, -24 # PDA address (chunk 2).
+.equ RM_FM_PDA_CHUNK_3_OFF, -16 # PDA address (chunk 3).
+.equ RM_FM_BUMP_OFF, -8 # Bump seed.
 # -------------------------------------------------------------------------
 
 # Assorted register market constants.
@@ -59,10 +63,10 @@ register_market:
     # pda_seeds.base.addr = base_mint.pubkey
     mov64 r9, r1
     add64 r9, RM_MISC_BASE_ADDR_OFF
-    stxdw [r10 + RM_PDA_SEEDS_BASE_ADDR_OFF], r9
+    stxdw [r10 + RM_FM_PDA_SEEDS_BASE_ADDR_OFF], r9
     # pda_seeds.base.len = Address.size
     mov64 r9, SIZE_OF_ADDRESS
-    stxdw [r10 + RM_PDA_SEEDS_BASE_LEN_OFF], r9
+    stxdw [r10 + RM_FM_PDA_SEEDS_BASE_LEN_OFF], r9
     # input_shifted = input + base_mint.padded_data_len
     ldxdw r9, [r1 + RM_MISC_BASE_DATA_LEN_OFF]
     add64 r9, DATA_MAX_DATA_PAD
@@ -75,23 +79,39 @@ register_market:
     # pda_seeds.quote.addr = quote_mint.pubkey
     mov64 r8, r9
     add64 r8, RM_MISC_QUOTE_ADDR_OFF
-    stxdw [r10 + RM_PDA_SEEDS_QUOTE_ADDR_OFF], r8
+    stxdw [r10 + RM_FM_PDA_SEEDS_QUOTE_ADDR_OFF], r8
     # pda_seeds.quote.len = Address.size
     mov64 r8, SIZE_OF_ADDRESS
-    stxdw [r10 + RM_PDA_SEEDS_QUOTE_LEN_OFF], r8
+    stxdw [r10 + RM_FM_PDA_SEEDS_QUOTE_LEN_OFF], r8
+    # Store(input)
+    mov64 r6, r1
+    # syscall.seeds = pda_seeds
+    mov64 r1, r10
+    add64 r1, RM_FM_PDA_SEEDS_OFF
     # syscall.program_id = program_id
     mov64 r3, r2
     add64 r3, REGISTER_MARKET_DATA_LEN
-    # syscall.seeds = pda_seeds
-    mov64 r1, r10
-    add64 r1, RM_PDA_SEEDS_OFF
     # syscall.seeds_len = register_misc.TRY_FIND_PDA_SEEDS_LEN
     mov64 r2, RM_MISC_TRY_FIND_PDA_SEEDS_LEN
     # syscall.program_address = RegisterMarketFrame.pda
     mov64 r4, r10
-    add64 r4, RM_PDA_OFF
+    add64 r4, RM_FM_PDA_OFF
     # syscall.bump_seed = RegisterMarketFrame.bump
     mov64 r5, r10
-    add64 r5, RM_BUMP_OFF
+    add64 r5, RM_FM_BUMP_OFF
     call sol_try_find_program_address
+    # if market.pubkey != market_pda
+    #     return ErrorCode::InvalidMarketPubkey
+    ldxdw r9, [r6 + IB_MARKET_PUBKEY_CHUNK_0_OFF]
+    ldxdw r8, [r10 + RM_FM_PDA_CHUNK_0_OFF]
+    jne r9, r8, e_invalid_market_pubkey
+    ldxdw r9, [r6 + IB_MARKET_PUBKEY_CHUNK_1_OFF]
+    ldxdw r8, [r10 + RM_FM_PDA_CHUNK_1_OFF]
+    jne r9, r8, e_invalid_market_pubkey
+    ldxdw r9, [r6 + IB_MARKET_PUBKEY_CHUNK_2_OFF]
+    ldxdw r8, [r10 + RM_FM_PDA_CHUNK_2_OFF]
+    jne r9, r8, e_invalid_market_pubkey
+    ldxdw r9, [r6 + IB_MARKET_PUBKEY_CHUNK_3_OFF]
+    ldxdw r8, [r10 + RM_FM_PDA_CHUNK_3_OFF]
+    jne r9, r8, e_invalid_market_pubkey
     exit

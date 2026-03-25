@@ -13,10 +13,21 @@ program/src/dropset/
 ├── common/
 │   ├── discriminant.s     # Instruction discriminants
 │   ├── error.s            # Error codes and subroutines
-│   └── memory.s           # Memory layout constants
+│   ├── memory.s           # Memory layout constants
+│   └── pubkey.s           # Pubkey chunk offsets and known addresses
 └── market/
     └── register.s         # RegisterMarket handler
 ```
+
+## Algorithm conventions
+
+- `procedure`: a label that does not return (no stack push); control flow
+  exits via `exit` or jumps to another procedure.
+- `function`: a label that pushes onto the call stack and returns to the
+  caller.
+- `Store(var)`: saves `var` to a callee-saved register before a call that
+  would clobber caller-saved registers. The stored value is available after
+  the call returns.
 
 ## Top-level file
 
@@ -52,10 +63,35 @@ Data-related constants and [input buffer] offset constants are in `memory.s`:
 
 <Include asm="common/memory" collapsible/>
 
+### Pubkeys
+
+Pubkey operations in SBPF work on 32-byte addresses split into four 8-byte
+chunks. The [`pubkey`][pubkey-mod] module defines chunk offsets and known
+address immediates injected via [`constant_group!`][bs-constant-group].
+
+Each 32-byte pubkey is accessed as four 8-byte (`u64`) chunks at offsets 0, 8,
+16, and 24. These are emitted as `PUBKEY_CHUNK_{0..3}_OFF` immediates.
+
+Known addresses (such as the rent sysvar ID) are split into `_CHUNK_{0..3}_LO`
+and `_CHUNK_{0..3}_HI` `i32` immediates using [`address!`][bs-constant-group]
+so they can be loaded with `mov32` / `lsh64` pairs without runtime memory
+access.
+
+When a struct field holds a 32-byte pubkey that needs per-chunk access,
+[`pubkey_offsets!`][bs-constant-group] generates a base `_OFF` plus four
+`_CHUNK_{0..3}_OFF` constants. This is used for input buffer fields
+(e.g. `IB_MARKET_PUBKEY_CHUNK_{0..3}_OFF`) and frame-relative fields
+(e.g. `RM_FM_PDA_CHUNK_{0..3}_OFF`).
+
+<Include rs="interface::pubkey#pubkey_constants" collapsible/>
+<Include asm="common/pubkey" collapsible/>
+
 [input buffer]: ../program/inputs#input-buffer
 [`program/src/dropset/`]: https://github.com/DASMAC-com/dropset-beta/tree/main/program/src/dropset
 [multi-file assembly]: https://github.com/blueshift-gg/sbpf/pull/109
 [bs-interface]: ../development/build-scaffolding#interface
 [bs-discriminant]: ../development/build-scaffolding#discriminant-enum-target
 [bs-error]: ../development/build-scaffolding#error-enum-target
+[pubkey-mod]: https://github.com/DASMAC-com/dropset-beta/blob/main/interface/src/pubkey.rs
+[bs-constant-group]: ../development/build-scaffolding#constant_group
 [build scaffolding]: ../development/build-scaffolding
