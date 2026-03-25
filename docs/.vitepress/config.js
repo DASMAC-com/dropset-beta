@@ -76,6 +76,7 @@ export default {
           { text: "Layout", link: "/program/layout" },
           { text: "Inputs", link: "/program/inputs" },
           { text: "Markets", link: "/program/markets" },
+          { text: "Pubkeys", link: "/program/pubkeys" },
           { text: "Algorithm Index", link: "/program/algorithm-index" },
         ],
       },

@@ -1,6 +1,7 @@
 use dropset_macros::constant_group;
 use pinocchio::sysvars::rent::RENT_ID;
 
+// region: pubkey_constants
 constant_group! {
     #[prefix("PUBKEY")]
     #[inject("common/pubkey")]
@@ -18,3 +19,4 @@ constant_group! {
         RENT = address!(RENT_ID),
     }
 }
+// endregion: pubkey_constants

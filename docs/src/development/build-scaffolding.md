@@ -41,7 +41,7 @@ Defines a group of named assembly constants with an injection target. The
 constants. An optional `#[prefix("...")]` attribute prepends a prefix to all
 generated constant names. An optional `///` doc comment on the group itself
 adds a header comment and separator lines around the group in the output
-assembly file. Each constant is assigned a value using one of three custom
+assembly file. Each constant is assigned a value using one of five custom
 syntax forms (parsed within the proc macro, not standalone macros):
 
 - `offset!(expr)`: an `i16` memory offset, the generated name is suffixed with
@@ -50,6 +50,11 @@ syntax forms (parsed within the proc macro, not standalone macros):
 - `signer_seeds!(field)`: expands a [`signer_seeds!`](#signer_seeds) field into
   an `_OFF` offset to the struct, an `N_SEEDS` count, and per-seed `_ADDR_OFF`
   and `_LEN_OFF` constants (requires `#[frame(Type)]`, see below)
+- `address!(expr)`: splits a 32-byte address into four 8-byte chunks, emitting
+  `_CHUNK_{0..3}_LO` and `_CHUNK_{0..3}_HI` `i32` immediates (eight constants
+  total)
+- `pubkey_offsets!(expr)`: emits a base `_OFF` offset plus four
+  `_CHUNK_{0..3}_OFF` offsets for each 8-byte chunk of a 32-byte pubkey field
 
 <Include rs="interface::memory#constant_group_example" collapsible/>
 
@@ -59,8 +64,12 @@ When annotated with `#[frame(Type)]`, the group enters frame-relative mode.
 In this mode, `offset!(field)` computes a negative offset from the frame
 pointer (`offset_of` minus `size_of`) and asserts 8-byte alignment
 (`BPF_ALIGN_OF_U128`). The group's doc comment defaults to the frame struct's
-doc comment if not explicitly provided. The `signer_seeds!(field)` form is
-only available in frame-relative mode.
+doc comment if not explicitly provided. The `signer_seeds!(field)` and
+`pubkey_offsets!(field)` forms are only available in frame-relative mode.
+
+In frame-relative mode, generated constant names include a `_FM_` infix after
+the prefix (e.g. `RM_FM_PDA_OFF` instead of `RM_PDA_OFF`) to distinguish
+frame-relative constants from other offset constants.
 
 <Include rs="interface::market#register_market_stack" collapsible/>
 

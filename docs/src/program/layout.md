@@ -13,7 +13,8 @@ program/src/dropset/
 ├── common/
 │   ├── discriminant.s     # Instruction discriminants
 │   ├── error.s            # Error codes and subroutines
-│   └── memory.s           # Memory layout constants
+│   ├── memory.s           # Memory layout constants
+│   └── pubkey.s           # Pubkey chunk offsets and known addresses
 └── market/
     └── register.s         # RegisterMarket handler
 ```
@@ -52,10 +53,19 @@ Data-related constants and [input buffer] offset constants are in `memory.s`:
 
 <Include asm="common/memory" collapsible/>
 
+### Pubkeys
+
+Pubkey chunk offsets and known address immediates injected via
+[`constant_group!`][bs-constant-group]:
+
+<Include rs="interface::pubkey#pubkey_constants" collapsible/>
+<Include asm="common/pubkey" collapsible/>
+
 [input buffer]: ../program/inputs#input-buffer
 [`program/src/dropset/`]: https://github.com/DASMAC-com/dropset-beta/tree/main/program/src/dropset
 [multi-file assembly]: https://github.com/blueshift-gg/sbpf/pull/109
 [bs-interface]: ../development/build-scaffolding#interface
 [bs-discriminant]: ../development/build-scaffolding#discriminant-enum-target
 [bs-error]: ../development/build-scaffolding#error-enum-target
+[bs-constant-group]: ../development/build-scaffolding#constant_group
 [build scaffolding]: ../development/build-scaffolding
