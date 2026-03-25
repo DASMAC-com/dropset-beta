@@ -93,4 +93,5 @@ register_market:
     # syscall.bump_seed = RegisterMarketFrame.bump
     mov64 r5, r10
     add64 r5, RM_BUMP_OFF
+    call sol_try_find_program_address
     exit
