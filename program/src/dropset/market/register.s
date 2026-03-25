@@ -42,41 +42,55 @@ register_market:
     jne r4, REGISTER_MARKET_DATA_LEN, e_invalid_instruction_length
     # if user.data_len != data.DATA_LEN_ZERO
     #     return ErrorCode::UserHasData
-    ldxdw r3, [r1 + IB_USER_DATA_LEN_OFF]
-    jne r3, DATA_DATA_LEN_ZERO, e_user_has_data
+    ldxdw r9, [r1 + IB_USER_DATA_LEN_OFF]
+    jne r9, DATA_DATA_LEN_ZERO, e_user_has_data
     # if market.duplicate != input_buffer.NON_DUP_MARKER
     #     return ErrorCode::MarketAccountIsDuplicate
-    ldxb r3, [r1 + IB_MARKET_DUPLICATE_OFF]
-    jne r3, IB_NON_DUP_MARKER, e_market_account_is_duplicate
+    ldxb r9, [r1 + IB_MARKET_DUPLICATE_OFF]
+    jne r9, IB_NON_DUP_MARKER, e_market_account_is_duplicate
     # if market.data_len != DATA_DATA_LEN_ZERO
     #     return ErrorCode::MarketHasData
-    ldxdw r3, [r1 + IB_MARKET_DATA_LEN_OFF]
-    jne r3, DATA_DATA_LEN_ZERO, e_market_has_data
+    ldxdw r9, [r1 + IB_MARKET_DATA_LEN_OFF]
+    jne r9, DATA_DATA_LEN_ZERO, e_market_has_data
     # if base_mint.duplicate != input_buffer.NON_DUP_MARKER
     #     return ErrorCode::BaseMintIsDuplicate
-    ldxb r3, [r1 + RM_IB_BASE_MINT_DUPLICATE_OFF]
-    jne r3, IB_NON_DUP_MARKER, e_base_mint_is_duplicate
+    ldxb r9, [r1 + RM_MISC_BASE_MINT_DUPLICATE_OFF]
+    jne r9, IB_NON_DUP_MARKER, e_base_mint_is_duplicate
     # pda_seeds.base.addr = base_mint.pubkey
-    mov64 r3, r1
-    add64 r3, RM_IB_BASE_ADDR_OFF
-    stxdw [r10 + RM_PDA_SEEDS_BASE_ADDR_OFF], r3
+    mov64 r9, r1
+    add64 r9, RM_MISC_BASE_ADDR_OFF
+    stxdw [r10 + RM_PDA_SEEDS_BASE_ADDR_OFF], r9
     # pda_seeds.base.len = Address.size
-    mov64 r3, SIZE_OF_ADDRESS
-    stxdw [r10 + RM_PDA_SEEDS_BASE_LEN_OFF], r3
+    mov64 r9, SIZE_OF_ADDRESS
+    stxdw [r10 + RM_PDA_SEEDS_BASE_LEN_OFF], r9
     # input_shifted = input + base_mint.padded_data_len
-    ldxdw r3, [r1 + RM_IB_BASE_DATA_LEN_OFF]
-    add64 r3, DATA_MAX_DATA_PAD
-    and64 r3, DATA_DATA_LEN_AND_MASK
-    add64 r3, r1
+    ldxdw r9, [r1 + RM_MISC_BASE_DATA_LEN_OFF]
+    add64 r9, DATA_MAX_DATA_PAD
+    and64 r9, DATA_DATA_LEN_AND_MASK
+    add64 r9, r1
     # if quote_mint.duplicate != input_buffer.NON_DUP_MARKER
     #     return ErrorCode::QuoteMintIsDuplicate
-    ldxb r4, [r3 + RM_IB_QUOTE_MINT_DUPLICATE_OFF]
-    jne r4, IB_NON_DUP_MARKER, e_quote_mint_is_duplicate
+    ldxb r8, [r9 + RM_MISC_QUOTE_MINT_DUPLICATE_OFF]
+    jne r8, IB_NON_DUP_MARKER, e_quote_mint_is_duplicate
     # pda_seeds.quote.addr = quote_mint.pubkey
-    mov64 r4, r3
-    add64 r4, RM_IB_QUOTE_ADDR_OFF
-    stxdw [r10 + RM_PDA_SEEDS_QUOTE_ADDR_OFF], r4
+    mov64 r8, r9
+    add64 r8, RM_MISC_QUOTE_ADDR_OFF
+    stxdw [r10 + RM_PDA_SEEDS_QUOTE_ADDR_OFF], r8
     # pda_seeds.quote.len = Address.size
-    mov64 r4, SIZE_OF_ADDRESS
-    stxdw [r10 + RM_PDA_SEEDS_QUOTE_LEN_OFF], r4
+    mov64 r8, SIZE_OF_ADDRESS
+    stxdw [r10 + RM_PDA_SEEDS_QUOTE_LEN_OFF], r8
+    # syscall.program_id = program_id
+    mov64 r3, r2
+    add64 r3, REGISTER_MARKET_DATA_LEN
+    # syscall.seeds = pda_seeds
+    mov64 r1, r10
+    add64 r1, RM_PDA_SEEDS_OFF
+    # syscall.seeds_len = register_misc.TRY_FIND_PDA_SEEDS_LEN
+    mov64 r2, RM_MISC_TRY_FIND_PDA_SEEDS_LEN
+    # syscall.program_address = RegisterMarketFrame.pda
+    mov64 r4, r10
+    add64 r4, RM_PDA_OFF
+    # syscall.bump_seed = RegisterMarketFrame.bump
+    mov64 r5, r10
+    add64 r5, RM_BUMP_OFF
     exit
