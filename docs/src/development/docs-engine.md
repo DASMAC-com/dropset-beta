@@ -46,8 +46,9 @@ below the pseudocode.
 build-time index records them separately, and at render time the hyphenated name
 is converted to underscore form (e.g. `sol-try-find-program-address` becomes
 `sol_try_find_program_address`) and linked to its upstream source definition via
-the [syscall registry]. Syscalls appear in the "Calls" section alongside
-algorithm dependencies.
+the [syscall registry]. The trailing `()` that pseudocode.js emits for `\CALL`
+is stripped for syscalls so they render as plain linked names. Syscalls appear
+in the "Calls" section alongside algorithm dependencies.
 
 If the algorithm has associated
 [test cases], a collapsed **Tests** section is
