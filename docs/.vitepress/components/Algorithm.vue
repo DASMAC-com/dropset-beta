@@ -150,6 +150,11 @@ onMounted(async () => {
         a.target = "_blank";
         a.className = "ps-funcname ps-syscall";
         a.textContent = syscallKey;
+        // Strip the trailing "()" that pseudocode.js emits for \CALL.
+        let next = span.nextSibling;
+        if (next?.nodeType === Node.TEXT_NODE) {
+          next.textContent = next.textContent.replace(/^\(\)/, "");
+        }
         span.replaceWith(a);
       } else if (algorithmIndex[name]) {
         const a = document.createElement("a");

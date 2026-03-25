@@ -6,13 +6,14 @@
 
 # Stack frame for REGISTER-MARKET.
 # -------------------------------------------------------------------------
+.equ RM_PDA_SEEDS_OFF, -88 # Signer seeds offset.
+.equ RM_PDA_SEEDS_N_SEEDS, 3 # Number of signer seeds.
 .equ RM_PDA_SEEDS_BASE_ADDR_OFF, -88 # Base signer seed address.
 .equ RM_PDA_SEEDS_BASE_LEN_OFF, -80 # Base signer seed length.
 .equ RM_PDA_SEEDS_QUOTE_ADDR_OFF, -72 # Quote signer seed address.
 .equ RM_PDA_SEEDS_QUOTE_LEN_OFF, -64 # Quote signer seed length.
 .equ RM_PDA_SEEDS_BUMP_ADDR_OFF, -56 # Bump signer seed address.
 .equ RM_PDA_SEEDS_BUMP_LEN_OFF, -48 # Bump signer seed length.
-.equ RM_PDA_SEEDS_N_SEEDS, 3 # Number of signer seeds.
 .equ RM_PDA_OFF, -40 # PDA address.
 .equ RM_BUMP_OFF, -8 # Bump seed.
 # -------------------------------------------------------------------------
@@ -20,13 +21,16 @@
 # Assorted register market constants.
 # -------------------------------------------------------------------------
 # From input buffer to base mint duplicate flag.
-.equ RM_IB_BASE_MINT_DUPLICATE_OFF, 20680
+.equ RM_MISC_BASE_MINT_DUPLICATE_OFF, 20680
 # From input buffer to base mint data length.
-.equ RM_IB_BASE_DATA_LEN_OFF, 20760
-.equ RM_IB_BASE_ADDR_OFF, 20688 # From input buffer to base mint address.
+.equ RM_MISC_BASE_DATA_LEN_OFF, 20760
+.equ RM_MISC_BASE_ADDR_OFF, 20688 # From input buffer to base mint address.
 # From input buffer to quote mint duplicate flag.
-.equ RM_IB_QUOTE_MINT_DUPLICATE_OFF, 31016
-.equ RM_IB_QUOTE_ADDR_OFF, 31024 # From input buffer to quote mint address.
+.equ RM_MISC_QUOTE_MINT_DUPLICATE_OFF, 31016
+# From input buffer to quote mint address.
+.equ RM_MISC_QUOTE_ADDR_OFF, 31024
+# Number of seeds for market PDA derivation (base, quote).
+.equ RM_MISC_TRY_FIND_PDA_SEEDS_LEN, 2
 # -------------------------------------------------------------------------
 
 register_market:

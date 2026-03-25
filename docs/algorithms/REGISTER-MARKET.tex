@@ -41,9 +41,13 @@
   \ENDIF
   \STATE $pda\_seeds.quote.addr = quote\_mint.pubkey$
   \STATE $pda\_seeds.quote.len =$ \texttt{Address.size}
-  \STATE $market\_pda =$ \CALL{sol-try-find-program-address}{
-    $program\_id, base\_mint, quote\_mint$
-  }
+  \COMMENT{Derive market PDA, check it matches the market account pubkey.}
+  \STATE $syscall.seeds = pda\_seeds$
+  \STATE $syscall.seeds\_len =$ \texttt{register\_misc.TRY\_FIND\_PDA\_SEEDS\_LEN}
+  \STATE $syscall.program\_id = program\_id$
+  \STATE $syscall.program\_address =$ \texttt{RegisterMarketFrame.pda}
+  \STATE $syscall.bump\_seed =$ \texttt{RegisterMarketFrame.bump}
+  \STATE \CALL{sol-try-find-program-address}{}
   \IF{$market.pubkey \neq market\_pda$}
     \RETURN \texttt{ErrorCode::InvalidMarketPubkey}
   \ENDIF
