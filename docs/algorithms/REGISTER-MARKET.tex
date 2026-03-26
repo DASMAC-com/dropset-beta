@@ -36,7 +36,9 @@
   \COMMENT{Increment input buffer by base mint padded data length for quote offsets.}
   \STATE $input\_shifted = input + input.base\_mint.padded\_data\_len$
   \COMMENT{Check quote mint account, create signer seed.}
-  \IF{$input\_shifted.quote\_mint.duplicate \neq$ \texttt{input\_buffer.NON\_DUP\_MARKER}}
+  \IF{$input\_shifted.quote\_mint.duplicate \neq$
+    \texttt{input\_buffer.NON\_DUP\_MARKER}
+  }
     \RETURN \texttt{ErrorCode::QuoteMintIsDuplicate}
   \ENDIF
   \STATE $frame.pda\_seeds.quote.addr = input\_shifted.quote\_mint.pubkey$
@@ -44,8 +46,8 @@
   \COMMENT{Advance pointer to next account.}
   \STATE $quote\_mint\_padded\_data\_len = input\_shifted.quote\_mint.padded\_data\_len$
   \STATE $acct\_ptr = \&input\_shifted.quote\_mint$
-  \STATE $acct\_ptr = acct\_ptr + quote\_mint\_padded\_data\_len$
-  \STATE $acct\_ptr = acct\_ptr$ + \texttt{EmptyAccount.size}
+  \STATE $acct\_ptr \mathrel{{+}{=}} quote\_mint\_padded\_data\_len$ +
+  \texttt{EmptyAccount.size}
   \COMMENT{Derive market PDA, check it matches the market account pubkey.}
   \STATE \CALL{Store}{$input$}
   \STATE $syscall.seeds = \&frame.pda\_seeds$

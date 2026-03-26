@@ -20,11 +20,11 @@
 
 # Common data-related constants.
 # -------------------------------------------------------------------------
-.equ DATA_DATA_LEN_ZERO, 0 # Data length of zero.
+.equ DATA_LEN_ZERO, 0 # Data length of zero.
 .equ DATA_BPF_ALIGN_OF_U128, 8 # Data alignment during runtime.
 # Maximum possible data length padding for a runtime account.
-.equ DATA_MAX_DATA_PAD, 7
-.equ DATA_DATA_LEN_AND_MASK, -8 # And mask for data length alignment.
+.equ DATA_LEN_MAX_PAD, 7
+.equ DATA_LEN_AND_MASK, -8 # And mask for data length alignment.
 # -------------------------------------------------------------------------
 
 # Input buffer constants for static header.

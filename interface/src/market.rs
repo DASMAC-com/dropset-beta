@@ -45,18 +45,22 @@ pub struct InputBufferHeader {
 constant_group! {
     #[prefix("RM_MISC")]
     #[inject("market/register")]
-    /// Assorted register market constants.
+    /// Miscellaneous register market constants.
     register_misc {
         /// From input buffer to base mint duplicate flag.
-        BASE_MINT_DUPLICATE = offset!(InputBufferHeader.base_mint.header.borrow_state),
+        BASE_DUPLICATE = offset!(InputBufferHeader.base_mint.header.borrow_state),
         /// From input buffer to base mint data length.
         BASE_DATA_LEN = offset!(InputBufferHeader.base_mint.header.data_len),
         /// From input buffer to base mint address.
         BASE_ADDR = offset!(InputBufferHeader.base_mint.header.address),
+        /// From input buffer to quote mint.
+        QUOTE = offset!(InputBufferHeader.quote_mint),
         /// From input buffer to quote mint duplicate flag.
-        QUOTE_MINT_DUPLICATE = offset!(InputBufferHeader.quote_mint.header.borrow_state),
+        QUOTE_DUPLICATE = offset!(InputBufferHeader.quote_mint.header.borrow_state),
         /// From input buffer to quote mint address.
         QUOTE_ADDR = offset!(InputBufferHeader.quote_mint.header.address),
+        /// From input buffer to quote mint data length.
+        QUOTE_DATA_LEN = offset!(InputBufferHeader.quote_mint.header.data_len),
         /// Number of seeds for market PDA derivation (base, quote).
         TRY_FIND_PDA_SEEDS_LEN = immediate!(2),
     }

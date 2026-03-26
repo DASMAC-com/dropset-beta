@@ -22,17 +22,20 @@
 .equ RM_FM_BUMP_OFF, -8 # Bump seed.
 # -------------------------------------------------------------------------
 
-# Assorted register market constants.
+# Miscellaneous register market constants.
 # -------------------------------------------------------------------------
 # From input buffer to base mint duplicate flag.
-.equ RM_MISC_BASE_MINT_DUPLICATE_OFF, 20680
+.equ RM_MISC_BASE_DUPLICATE_OFF, 20680
 # From input buffer to base mint data length.
 .equ RM_MISC_BASE_DATA_LEN_OFF, 20760
 .equ RM_MISC_BASE_ADDR_OFF, 20688 # From input buffer to base mint address.
+.equ RM_MISC_QUOTE_OFF, 31016 # From input buffer to quote mint.
 # From input buffer to quote mint duplicate flag.
-.equ RM_MISC_QUOTE_MINT_DUPLICATE_OFF, 31016
+.equ RM_MISC_QUOTE_DUPLICATE_OFF, 31016
 # From input buffer to quote mint address.
 .equ RM_MISC_QUOTE_ADDR_OFF, 31024
+# From input buffer to quote mint data length.
+.equ RM_MISC_QUOTE_DATA_LEN_OFF, 31096
 # Number of seeds for market PDA derivation (base, quote).
 .equ RM_MISC_TRY_FIND_PDA_SEEDS_LEN, 2
 # -------------------------------------------------------------------------
@@ -44,57 +47,60 @@ register_market:
     # if insn_len != RegisterMarketData.LEN
     #     return ErrorCode::InvalidInstructionLength
     jne r4, REGISTER_MARKET_DATA_LEN, e_invalid_instruction_length
-    # if user.data_len != data.DATA_LEN_ZERO
+    # if input.user.data_len != data.DATA_LEN_ZERO
     #     return ErrorCode::UserHasData
     ldxdw r9, [r1 + IB_USER_DATA_LEN_OFF]
-    jne r9, DATA_DATA_LEN_ZERO, e_user_has_data
-    # if market.duplicate != input_buffer.NON_DUP_MARKER
+    jne r9, DATA_LEN_ZERO, e_user_has_data
+    # if input.market.duplicate != input_buffer.NON_DUP_MARKER
     #     return ErrorCode::MarketAccountIsDuplicate
     ldxb r9, [r1 + IB_MARKET_DUPLICATE_OFF]
     jne r9, IB_NON_DUP_MARKER, e_market_account_is_duplicate
-    # if market.data_len != DATA_DATA_LEN_ZERO
+    # if input.market.data_len != DATA_LEN_ZERO
     #     return ErrorCode::MarketHasData
     ldxdw r9, [r1 + IB_MARKET_DATA_LEN_OFF]
-    jne r9, DATA_DATA_LEN_ZERO, e_market_has_data
-    # if base_mint.duplicate != input_buffer.NON_DUP_MARKER
+    jne r9, DATA_LEN_ZERO, e_market_has_data
+    # if input.base_mint.duplicate != input_buffer.NON_DUP_MARKER
     #     return ErrorCode::BaseMintIsDuplicate
-    ldxb r9, [r1 + RM_MISC_BASE_MINT_DUPLICATE_OFF]
+    ldxb r9, [r1 + RM_MISC_BASE_DUPLICATE_OFF]
     jne r9, IB_NON_DUP_MARKER, e_base_mint_is_duplicate
-    # pda_seeds.base.addr = base_mint.pubkey
+    # frame.pda_seeds.base.addr = input.base_mint.pubkey
     mov64 r9, r1
     add64 r9, RM_MISC_BASE_ADDR_OFF
     stxdw [r10 + RM_FM_PDA_SEEDS_BASE_ADDR_OFF], r9
-    # pda_seeds.base.len = Address.size
+    # frame.pda_seeds.base.len = Address.size
     mov64 r9, SIZE_OF_ADDRESS
     stxdw [r10 + RM_FM_PDA_SEEDS_BASE_LEN_OFF], r9
-    # input_shifted = input + base_mint.padded_data_len
+    # input_shifted = input + input.base_mint.padded_data_len
     ldxdw r9, [r1 + RM_MISC_BASE_DATA_LEN_OFF]
-    add64 r9, DATA_MAX_DATA_PAD
-    and64 r9, DATA_DATA_LEN_AND_MASK
+    add64 r9, DATA_LEN_MAX_PAD
+    and64 r9, DATA_LEN_AND_MASK
     add64 r9, r1
-    # if quote_mint.duplicate != input_buffer.NON_DUP_MARKER
+    # if input_shifted.quote_mint.duplicate != input_buffer.NON_DUP_MARKER
     #     return ErrorCode::QuoteMintIsDuplicate
-    ldxb r8, [r9 + RM_MISC_QUOTE_MINT_DUPLICATE_OFF]
+    ldxb r8, [r9 + RM_MISC_QUOTE_DUPLICATE_OFF]
     jne r8, IB_NON_DUP_MARKER, e_quote_mint_is_duplicate
-    # pda_seeds.quote.addr = quote_mint.pubkey
+    # frame.pda_seeds.quote.addr = input_shifted.quote_mint.pubkey
     mov64 r8, r9
     add64 r8, RM_MISC_QUOTE_ADDR_OFF
     stxdw [r10 + RM_FM_PDA_SEEDS_QUOTE_ADDR_OFF], r8
-
-    # Get quote padded length
-    # Point input_shifted at quote start
-    # Increment input_shifted  by quote padded length
-    # Increment input_shifted by distant between accounts next to eachother
-
-    # pda_seeds.quote.len = Address.size
+    # quote_mint_padded_data_len = input_shifted.quote_mint.padded_data_len
+    ldxdw r8, [r9 + RM_MISC_QUOTE_DATA_LEN_OFF]
+    add64 r8, DATA_LEN_MAX_PAD
+    and64 r8, DATA_LEN_AND_MASK
+    # acct_ptr = &input_shifted.quote_mint
+    add64 r9, RM_MISC_QUOTE_OFF
+    # acct_ptr += quote_mint_padded_data_len + EmptyAccount.size
+    add64 r9, r8
+    add64 r9, SIZE_OF_EMPTY_ACCOUNT
+    # frame.pda_seeds.quote.len = Address.size
     mov64 r8, SIZE_OF_ADDRESS
     stxdw [r10 + RM_FM_PDA_SEEDS_QUOTE_LEN_OFF], r8
     # Store(input)
     mov64 r6, r1
-    # syscall.seeds = pda_seeds
+    # syscall.seeds = &frame.pda_seeds
     mov64 r1, r10
     add64 r1, RM_FM_PDA_SEEDS_OFF
-    # syscall.program_id = program_id
+    # syscall.program_id = &insn.program_id
     mov64 r3, r2
     add64 r3, REGISTER_MARKET_DATA_LEN
     # syscall.seeds_len = register_misc.TRY_FIND_PDA_SEEDS_LEN
@@ -106,18 +112,18 @@ register_market:
     mov64 r5, r10
     add64 r5, RM_FM_BUMP_OFF
     call sol_try_find_program_address
-    # if market.pubkey != market_pda
+    # if input.market.pubkey != frame.market_pda
     #     return ErrorCode::InvalidMarketPubkey
-    ldxdw r9, [r6 + IB_MARKET_PUBKEY_CHUNK_0_OFF]
+    ldxdw r7, [r6 + IB_MARKET_PUBKEY_CHUNK_0_OFF]
     ldxdw r8, [r10 + RM_FM_PDA_CHUNK_0_OFF]
-    jne r9, r8, e_invalid_market_pubkey
-    ldxdw r9, [r6 + IB_MARKET_PUBKEY_CHUNK_1_OFF]
+    jne r7, r8, e_invalid_market_pubkey
+    ldxdw r7, [r6 + IB_MARKET_PUBKEY_CHUNK_1_OFF]
     ldxdw r8, [r10 + RM_FM_PDA_CHUNK_1_OFF]
-    jne r9, r8, e_invalid_market_pubkey
-    ldxdw r9, [r6 + IB_MARKET_PUBKEY_CHUNK_2_OFF]
+    jne r7, r8, e_invalid_market_pubkey
+    ldxdw r7, [r6 + IB_MARKET_PUBKEY_CHUNK_2_OFF]
     ldxdw r8, [r10 + RM_FM_PDA_CHUNK_2_OFF]
-    jne r9, r8, e_invalid_market_pubkey
-    ldxdw r9, [r6 + IB_MARKET_PUBKEY_CHUNK_3_OFF]
+    jne r7, r8, e_invalid_market_pubkey
+    ldxdw r7, [r6 + IB_MARKET_PUBKEY_CHUNK_3_OFF]
     ldxdw r8, [r10 + RM_FM_PDA_CHUNK_3_OFF]
-    jne r9, r8, e_invalid_market_pubkey
+    jne r7, r8, e_invalid_market_pubkey
     exit

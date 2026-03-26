@@ -14,14 +14,14 @@ constant_group! {
     /// Common data-related constants.
     data {
         /// Data length of zero.
-        DATA_LEN_ZERO = immediate!(0),
+        LEN_ZERO = immediate!(0),
         /// Data alignment during runtime.
         // pinocchio constant is private.
         BPF_ALIGN_OF_U128 = immediate!(8),
         /// Maximum possible data length padding for a runtime account.
-        MAX_DATA_PAD = immediate!(7),
+        LEN_MAX_PAD = immediate!(7),
         /// And mask for data length alignment.
-        DATA_LEN_AND_MASK = immediate!(-8),
+        LEN_AND_MASK = immediate!(-8),
     }
 }
 
@@ -36,7 +36,7 @@ pub struct FullRuntimeAccount<const DATA_SIZE: usize> {
 // endregion: full_runtime_account
 
 /// Type alias for offset computation with zero-length data.
-pub type EmptyAccount = FullRuntimeAccount<{ runtime_data_size(data::DATA_LEN_ZERO) }>;
+pub type EmptyAccount = FullRuntimeAccount<{ runtime_data_size(data::LEN_ZERO) }>;
 
 constant_group! {
     #[prefix("ACCT")]
