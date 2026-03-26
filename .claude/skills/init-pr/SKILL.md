@@ -18,12 +18,12 @@ caches start warming while work continues.
    git branch --show-current
    ```
 
-2. Extract the ticket ID from the branch name.
+1. Extract the ticket ID from the branch name.
    The branch name follows the pattern `ENG-###`
    (possibly with a suffix). Use the `ENG-###`
    portion as the placeholder title.
 
-3. Confirm there is no existing PR for this branch:
+1. Confirm there is no existing PR for this branch:
 
    ```sh
    gh pr list --head <branch> --json number
@@ -31,13 +31,13 @@ caches start warming while work continues.
 
    If a PR already exists, print its URL and stop.
 
-4. Push the branch if it has not been pushed yet:
+1. Push the branch if it has not been pushed yet:
 
    ```sh
    git push -u origin <branch>
    ```
 
-5. Create a draft PR with the placeholder title
+1. Create a draft PR with the placeholder title
    and an empty body:
 
    ```sh
@@ -46,4 +46,4 @@ caches start warming while work continues.
      --body ""
    ```
 
-6. Print the new PR URL.
+1. Print the new PR URL.
