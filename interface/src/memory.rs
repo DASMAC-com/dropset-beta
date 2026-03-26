@@ -59,6 +59,8 @@ constant_group! {
         OWNER = pubkey_offsets!(EmptyAccount.header.owner),
         /// Account data length.
         DATA_LEN = offset!(EmptyAccount.header.data_len),
+        /// Non-dup marker for accounts.
+        NON_DUP_MARKER = immediate!(NON_DUP_MARKER as i32),
     }
 }
 
@@ -78,8 +80,6 @@ constant_group! {
     #[inject("common/memory")]
     /// Input buffer constants for static header.
     input_buffer {
-        /// Non-dup marker for accounts.
-        NON_DUP_MARKER = immediate!(NON_DUP_MARKER as i32),
         /// From input buffer to user data length.
         USER_DATA_LEN = offset!(InputBufferHeader.user.header.data_len),
         /// From input buffer to market duplicate flag.

@@ -60,18 +60,18 @@ register_market:
     #     return ErrorCode::UserHasData
     ldxdw r9, [r1 + IB_USER_DATA_LEN_OFF]
     jne r9, DATA_LEN_ZERO, e_user_has_data
-    # if input.market.duplicate != input_buffer.NON_DUP_MARKER
+    # if input.market.duplicate != account.NON_DUP_MARKER
     #     return ErrorCode::MarketAccountIsDuplicate
     ldxb r9, [r1 + IB_MARKET_DUPLICATE_OFF]
-    jne r9, IB_NON_DUP_MARKER, e_market_account_is_duplicate
+    jne r9, ACCT_NON_DUP_MARKER, e_market_account_is_duplicate
     # if input.market.data_len != DATA_LEN_ZERO
     #     return ErrorCode::MarketHasData
     ldxdw r9, [r1 + IB_MARKET_DATA_LEN_OFF]
     jne r9, DATA_LEN_ZERO, e_market_has_data
-    # if input.base_mint.duplicate != input_buffer.NON_DUP_MARKER
+    # if input.base_mint.duplicate != account.NON_DUP_MARKER
     #     return ErrorCode::BaseMintIsDuplicate
     ldxb r9, [r1 + RM_MISC_BASE_DUPLICATE_OFF]
-    jne r9, IB_NON_DUP_MARKER, e_base_mint_is_duplicate
+    jne r9, ACCT_NON_DUP_MARKER, e_base_mint_is_duplicate
     # frame.pda_seeds.base.addr = input.base_mint.pubkey
     mov64 r9, r1
     add64 r9, RM_MISC_BASE_ADDR_OFF
@@ -84,10 +84,10 @@ register_market:
     add64 r9, DATA_LEN_MAX_PAD
     and64 r9, DATA_LEN_AND_MASK
     add64 r9, r1
-    # if input_shifted.quote_mint.duplicate != input_buffer.NON_DUP_MARKER
+    # if input_shifted.quote_mint.duplicate != account.NON_DUP_MARKER
     #     return ErrorCode::QuoteMintIsDuplicate
     ldxb r8, [r9 + RM_MISC_QUOTE_DUPLICATE_OFF]
-    jne r8, IB_NON_DUP_MARKER, e_quote_mint_is_duplicate
+    jne r8, ACCT_NON_DUP_MARKER, e_quote_mint_is_duplicate
     # frame.pda_seeds.quote.addr = input_shifted.quote_mint.pubkey
     mov64 r8, r9
     add64 r8, RM_MISC_QUOTE_ADDR_OFF
@@ -135,10 +135,10 @@ register_market:
     ldxdw r7, [r6 + IB_MARKET_PUBKEY_CHUNK_3_OFF]
     ldxdw r8, [r10 + RM_FM_PDA_CHUNK_3_OFF]
     jne r7, r8, e_invalid_market_pubkey
-    # if acct.duplicate != input_buffer.NON_DUP_MARKER
+    # if acct.duplicate != account.NON_DUP_MARKER
     #     return ErrorCode::SystemProgramIsDuplicate
     ldxb r7, [r9 + ACCT_DUPLICATE_OFF]
-    jne r7, IB_NON_DUP_MARKER, e_system_program_is_duplicate
+    jne r7, ACCT_NON_DUP_MARKER, e_system_program_is_duplicate
     # if acct.pubkey != frame.system_program_pubkey
     #     return ErrorCode::InvalidSystemProgramPubkey
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_0_OFF]

@@ -21,14 +21,14 @@
   \IF{$input.user.data\_len \neq 0$}
     \RETURN \texttt{ErrorCode::UserHasData}
   \ENDIF
-  \IF{$input.market.duplicate \neq$ \texttt{input\_buffer.NON\_DUP\_MARKER}}
+  \IF{$input.market.duplicate \neq$ \texttt{account.NON\_DUP\_MARKER}}
     \RETURN \texttt{ErrorCode::MarketAccountIsDuplicate}
   \ENDIF
   \IF{$input.market.data\_len \neq 0$}
     \RETURN \texttt{ErrorCode::MarketHasData}
   \ENDIF
   \COMMENT{Check base mint account, create signer seed.}
-  \IF{$input.base\_mint.duplicate \neq$ \texttt{input\_buffer.NON\_DUP\_MARKER}}
+  \IF{$input.base\_mint.duplicate \neq$ \texttt{account.NON\_DUP\_MARKER}}
     \RETURN \texttt{ErrorCode::BaseMintIsDuplicate}
   \ENDIF
   \STATE $frame.pda\_seeds.base.addr = input.base\_mint.pubkey$
@@ -37,7 +37,7 @@
   \STATE $input\_shifted = input + input.base\_mint.padded\_data\_len$
   \COMMENT{Check quote mint account, create signer seed.}
   \IF{$input\_shifted.quote\_mint.duplicate \neq$
-    \texttt{input\_buffer.NON\_DUP\_MARKER}
+    \texttt{account.NON\_DUP\_MARKER}
   }
     \RETURN \texttt{ErrorCode::QuoteMintIsDuplicate}
   \ENDIF
@@ -60,7 +60,7 @@
     \RETURN \texttt{ErrorCode::InvalidMarketPubkey}
   \ENDIF
   \COMMENT{Check System Program account.}
-  \IF{$acct.duplicate \neq$ \texttt{input\_buffer.NON\_DUP\_MARKER}}
+  \IF{$acct.duplicate \neq$ \texttt{account.NON\_DUP\_MARKER}}
     \RETURN \texttt{ErrorCode::SystemProgramIsDuplicate}
   \ENDIF
   \IF{$acct.pubkey \neq frame.system\_program\_pubkey$}

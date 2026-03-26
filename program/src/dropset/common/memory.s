@@ -16,6 +16,7 @@
 .equ ACCT_OWNER_CHUNK_2_OFF, 56 # Account owner (chunk 2).
 .equ ACCT_OWNER_CHUNK_3_OFF, 64 # Account owner (chunk 3).
 .equ ACCT_DATA_LEN_OFF, 80 # Account data length.
+.equ ACCT_NON_DUP_MARKER, 255 # Non-dup marker for accounts.
 # -------------------------------------------------------------------------
 
 # Common data-related constants.
@@ -29,7 +30,6 @@
 
 # Input buffer constants for static header.
 # -------------------------------------------------------------------------
-.equ IB_NON_DUP_MARKER, 255 # Non-dup marker for accounts.
 .equ IB_USER_DATA_LEN_OFF, 88 # From input buffer to user data length.
 # From input buffer to market duplicate flag.
 .equ IB_MARKET_DUPLICATE_OFF, 10344
