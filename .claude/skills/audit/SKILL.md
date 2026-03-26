@@ -1,6 +1,6 @@
 ---
 name: audit
-description: Audit the codebase for code quality, DRY violations, modularity, LaTeX/asm parity, and doc freshness.
+description: Audit the codebase for code quality, DRY violations, modularity, LaTeX/asm parity, doc freshness, and doc structure.
 disable-model-invocation: true
 user-invocable: true
 ---
@@ -8,7 +8,8 @@ user-invocable: true
 # `audit`
 
 Full codebase audit covering code quality, structure,
-algorithm parity, and documentation freshness.
+algorithm parity, documentation freshness, and
+documentation structure.
 
 ## Steps
 
@@ -101,6 +102,47 @@ algorithm parity, and documentation freshness.
    - New docs pages should be listed.
    - Conventions should not contradict the docs.
 
+### Documentation structure
+
+1. For each page in `docs/src/`, check whether
+   it needs decomposition:
+
+   - Flag pages that cover multiple distinct topics
+     that would be better served by their own pages
+     (e.g. a single page explaining both memory
+     layout and serialization format).
+   - Flag pages with deeply nested heading
+     hierarchies (h4+) that suggest the content has
+     outgrown a single page.
+   - Flag long pages where distinct sections have
+     no cross-references between them, indicating
+     they are independent topics bundled together.
+
+1. Check for misplaced content:
+
+   - Each page should belong to the sidebar section
+     that matches its topic. Flag content that
+     lives under the wrong section (e.g. a build
+     topic under Program, or a runtime topic under
+     Development).
+   - Flag content that duplicates or overlaps with
+     another page instead of linking to it.
+   - Flag pages whose title or heading does not
+     match what the page actually covers.
+
+1. Check sidebar and navigation coherence:
+
+   - Every `.md` file in `docs/src/` (excluding
+     `index.md` files used as section landing pages)
+     should appear in the sidebar config in
+     `docs/.vitepress/config.js`.
+   - Sidebar ordering should follow a logical
+     progression (concepts before usage, general
+     before specific).
+   - Flag orphan pages (exist on disk but missing
+     from sidebar) and ghost entries (in sidebar
+     but file does not exist).
+
 ### Output
 
 1. Do NOT make any changes. Compile all findings
@@ -110,7 +152,8 @@ algorithm parity, and documentation freshness.
    - The file path and line number.
    - Which category it falls under (DRY,
      modularity, abstraction, ETC, algorithm
-     parity, doc freshness, or CLAUDE.md).
+     parity, doc freshness, doc structure,
+     or CLAUDE.md).
    - A brief description of the issue.
 
 1. If nothing needed fixing, confirm the audit
