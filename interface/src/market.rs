@@ -1,8 +1,8 @@
+use crate::cpi_bindings::SolSignerSeed;
+use crate::memory::EmptyAccount;
 use crate::memory::StackNode;
-use crate::memory::{data, runtime_data_size};
 use crate::order::Order;
 use crate::seat::Seat;
-use crate::{cpi_bindings::SolSignerSeed, memory::FullRuntimeAccount};
 use dropset_macros::{
     constant_group, frame, instruction_accounts, instruction_data, signer_seeds, svm_data,
 };
@@ -35,11 +35,11 @@ pub struct RegisterMarketData {
 #[svm_data]
 pub struct InputBufferHeader {
     pub n_accounts: u64,
-    pub user: FullRuntimeAccount<{ runtime_data_size(data::DATA_LEN_ZERO) }>,
-    pub market: FullRuntimeAccount<{ runtime_data_size(data::DATA_LEN_ZERO) }>,
+    pub user: EmptyAccount,
+    pub market: EmptyAccount,
     /// Zero account data statically assumed in order to dynamically check quote offset at runtime.
-    pub base_mint: FullRuntimeAccount<{ runtime_data_size(data::DATA_LEN_ZERO) }>,
-    pub quote_mint: FullRuntimeAccount<{ runtime_data_size(data::DATA_LEN_ZERO) }>,
+    pub base_mint: EmptyAccount,
+    pub quote_mint: EmptyAccount,
 }
 
 constant_group! {
