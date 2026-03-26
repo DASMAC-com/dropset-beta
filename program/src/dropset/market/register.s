@@ -6,20 +6,29 @@
 
 # Stack frame for REGISTER-MARKET.
 # -------------------------------------------------------------------------
-.equ RM_FM_PDA_SEEDS_OFF, -88 # Signer seeds offset.
+.equ RM_FM_PDA_SEEDS_OFF, -120 # Signer seeds offset.
 .equ RM_FM_PDA_SEEDS_N_SEEDS, 3 # Number of signer seeds.
-.equ RM_FM_PDA_SEEDS_BASE_ADDR_OFF, -88 # Base signer seed address.
-.equ RM_FM_PDA_SEEDS_BASE_LEN_OFF, -80 # Base signer seed length.
-.equ RM_FM_PDA_SEEDS_QUOTE_ADDR_OFF, -72 # Quote signer seed address.
-.equ RM_FM_PDA_SEEDS_QUOTE_LEN_OFF, -64 # Quote signer seed length.
-.equ RM_FM_PDA_SEEDS_BUMP_ADDR_OFF, -56 # Bump signer seed address.
-.equ RM_FM_PDA_SEEDS_BUMP_LEN_OFF, -48 # Bump signer seed length.
-.equ RM_FM_PDA_OFF, -40 # PDA address.
-.equ RM_FM_PDA_CHUNK_0_OFF, -40 # PDA address (chunk 0).
-.equ RM_FM_PDA_CHUNK_1_OFF, -32 # PDA address (chunk 1).
-.equ RM_FM_PDA_CHUNK_2_OFF, -24 # PDA address (chunk 2).
-.equ RM_FM_PDA_CHUNK_3_OFF, -16 # PDA address (chunk 3).
+.equ RM_FM_PDA_SEEDS_BASE_ADDR_OFF, -120 # Base signer seed address.
+.equ RM_FM_PDA_SEEDS_BASE_LEN_OFF, -112 # Base signer seed length.
+.equ RM_FM_PDA_SEEDS_QUOTE_ADDR_OFF, -104 # Quote signer seed address.
+.equ RM_FM_PDA_SEEDS_QUOTE_LEN_OFF, -96 # Quote signer seed length.
+.equ RM_FM_PDA_SEEDS_BUMP_ADDR_OFF, -88 # Bump signer seed address.
+.equ RM_FM_PDA_SEEDS_BUMP_LEN_OFF, -80 # Bump signer seed length.
+.equ RM_FM_PDA_OFF, -72 # PDA address.
+.equ RM_FM_PDA_CHUNK_0_OFF, -72 # PDA address (chunk 0).
+.equ RM_FM_PDA_CHUNK_1_OFF, -64 # PDA address (chunk 1).
+.equ RM_FM_PDA_CHUNK_2_OFF, -56 # PDA address (chunk 2).
+.equ RM_FM_PDA_CHUNK_3_OFF, -48 # PDA address (chunk 3).
 .equ RM_FM_BUMP_OFF, -8 # Bump seed.
+.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_OFF, -40 # System Program pubkey.
+# System Program pubkey (chunk 0).
+.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_0_OFF, -40
+# System Program pubkey (chunk 1).
+.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_1_OFF, -32
+# System Program pubkey (chunk 2).
+.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_2_OFF, -24
+# System Program pubkey (chunk 3).
+.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_3_OFF, -16
 # -------------------------------------------------------------------------
 
 # Miscellaneous register market constants.
@@ -126,4 +135,18 @@ register_market:
     ldxdw r7, [r6 + IB_MARKET_PUBKEY_CHUNK_3_OFF]
     ldxdw r8, [r10 + RM_FM_PDA_CHUNK_3_OFF]
     jne r7, r8, e_invalid_market_pubkey
+    # if acct.pubkey != frame.system_program_pubkey
+    #     return ErrorCode::InvalidSystemProgramPubkey
+    ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_0_OFF]
+    ldxdw r8, [r10 + RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_0_OFF]
+    jne r7, r8, e_invalid_system_program_pubkey
+    ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_1_OFF]
+    ldxdw r8, [r10 + RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_1_OFF]
+    jne r7, r8, e_invalid_system_program_pubkey
+    ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_2_OFF]
+    ldxdw r8, [r10 + RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_2_OFF]
+    jne r7, r8, e_invalid_system_program_pubkey
+    ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_3_OFF]
+    ldxdw r8, [r10 + RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_3_OFF]
+    jne r7, r8, e_invalid_system_program_pubkey
     exit

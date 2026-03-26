@@ -92,6 +92,8 @@ pub struct RegisterMarketFrame {
     pub pda_seeds: PDASignerSeeds,
     /// From `sol_try_find_program_address`.
     pub pda: Address,
+    /// System Program pubkey, zero-initialized on stack
+    pub system_program_pubkey: Address,
     /// From `sol_try_find_program_address`.
     pub bump: u8,
 }
@@ -121,6 +123,8 @@ constant_group! {
         PDA = pubkey_offsets!(pda),
         /// Bump seed.
         BUMP = offset!(bump),
+        /// System Program pubkey.
+        SYSTEM_PROGRAM_PUBKEY = pubkey_offsets!(system_program_pubkey),
     }
 }
 

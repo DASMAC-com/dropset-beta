@@ -60,6 +60,9 @@
     \RETURN \texttt{ErrorCode::InvalidMarketPubkey}
   \ENDIF
   \COMMENT{Check System Program account.}
+  \IF{$acct.pubkey \neq frame.system\_program\_pubkey$}
+    \RETURN \texttt{ErrorCode::InvalidSystemProgramPubkey}
+  \ENDIF
 \ENDPROCEDURE
 \end{algorithmic}
 \end{algorithm}
