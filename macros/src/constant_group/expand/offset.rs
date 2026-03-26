@@ -6,6 +6,18 @@ use crate::codegen;
 
 use super::address::{CHUNK_SIZE, N_CHUNKS};
 
+/// Build the token stream for a frame-relative offset expression:
+/// `offset_of!(frame, field_chain) - size_of::<frame>()`.
+fn frame_offset_expr(
+    frame_ty: &syn::Path,
+    field_chain: &proc_macro2::TokenStream,
+) -> proc_macro2::TokenStream {
+    quote! {
+        core::mem::offset_of!(#frame_ty, #field_chain) as i64
+            - core::mem::size_of::<#frame_ty>() as i64
+    }
+}
+
 /// Try to decompose a field-access chain like `Foo.bar.baz` into `(Foo, [bar, baz])`.
 fn try_decompose_field_chain(expr: &syn::Expr) -> Option<(syn::Path, Vec<&syn::Member>)> {
     let mut fields = Vec::new();
@@ -80,14 +92,13 @@ pub fn emit_frame_offset_const(
 ) -> (proc_macro2::TokenStream, Ident) {
     let meta_ident = codegen::meta_ident(asm_name, rust_name.span());
     let meta = codegen::offset_meta(&meta_ident, asm_name, doc, rust_name);
+    let value_expr = frame_offset_expr(frame_ty, &field_chain);
 
     let def = quote! {
         #[doc = #doc]
         pub const #rust_name: i16 = {
             use super::*;
-            const VALUE: i64 =
-                core::mem::offset_of!(#frame_ty, #field_chain) as i64
-                    - core::mem::size_of::<#frame_ty>() as i64;
+            const VALUE: i64 = #value_expr;
             const _: () = assert!(
                 VALUE >= i16::MIN as i64 && VALUE <= i16::MAX as i64,
                 "frame offset must fit in i16",
@@ -196,10 +207,7 @@ pub fn expand_frame_pubkey_offsets(
     meta_idents: &mut Vec<Ident>,
 ) {
     let field_chain = quote! { #(#fields).* };
-    let base_value_expr = quote! {
-        core::mem::offset_of!(#frame_ty, #field_chain) as i64
-            - core::mem::size_of::<#frame_ty>() as i64
-    };
+    let base_value_expr = frame_offset_expr(frame_ty, &field_chain);
 
     emit_pubkey_offset_group(asm_prefix, doc, base_value_expr, const_defs, meta_idents);
 }

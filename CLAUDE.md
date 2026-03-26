@@ -16,7 +16,8 @@ project works. Refer to the docs before making assumptions.
 build/       constant injection + CPI bindings
 macros/      proc macros (constant_group!,
              error_enum!, discriminant_enum!,
-             frame!, signer_seeds!,
+             frame!, instruction_accounts!,
+             instruction_data!, signer_seeds!,
              size_of_group!, svm_data!)
 interface/   constants, enums, PDAs, packed structs
 program/     SBPF assembly (program/src/dropset/)
