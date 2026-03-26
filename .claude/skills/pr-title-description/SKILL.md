@@ -28,6 +28,29 @@ for the pull request on the current branch.
      --json number,title,body
    ```
 
+1. Write the PR title using the **Semantic PR /
+   Conventional Commits** format:
+
+   ```txt
+   <type>(<scope>): <short summary>
+   ```
+
+   - **type**: one of `feat`, `fix`, `refactor`,
+     `test`, `docs`, `ci`, `chore`, `perf`,
+     `build`, or `style`.
+   - **scope**: the ticket ID extracted from the
+     branch name (e.g. `ENG-254`). If the branch
+     has no ticket ID, use the most relevant
+     module or area instead.
+   - **short summary**: capitalize the first word,
+     imperative, no trailing period.
+
+   Examples:
+
+   - `feat(ENG-123): Add frame offset scaffolding and SBPF config sourcing`
+   - `fix(ENG-456): Correct off-by-one in order matching`
+   - `docs(ENG-789): Add algorithm index page`
+
 1. Write a concise PR description that mirrors
    the format and tone of those recent PRs.
    Typically this means a `# Changes` section
