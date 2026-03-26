@@ -45,7 +45,7 @@ pub struct InputBufferHeader {
 constant_group! {
     #[prefix("RM_MISC")]
     #[inject("market/register")]
-    /// Miscellaneous register market constants.
+    /// Miscellaneous market registration constants.
     register_misc {
         /// From input buffer to base mint duplicate flag.
         BASE_DUPLICATE = offset!(InputBufferHeader.base_mint.header.borrow_state),

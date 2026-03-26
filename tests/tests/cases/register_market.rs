@@ -22,6 +22,10 @@ test_cases! {
         InvalidMarketPubkeyChunk1,
         InvalidMarketPubkeyChunk2,
         InvalidMarketPubkeyChunk3,
+        InvalidSystemProgramPubkeyChunk0,
+        InvalidSystemProgramPubkeyChunk1,
+        InvalidSystemProgramPubkeyChunk2,
+        InvalidSystemProgramPubkeyChunk3,
     }
 }
 
@@ -65,6 +69,33 @@ fn pda_mismatch_accounts(
     let offset = corrupt_chunk * 8;
     pda.as_mut()[offset] ^= 0xFF;
     keys[RegisterMarketAccounts::Market as usize] = pda;
+    into_metas_and_accounts(keys, accounts)
+}
+
+/// Build accounts where the market key is the correct PDA but the
+/// System Program account has a non-zero pubkey with one 8-byte chunk
+/// flipped. The System Program ID is `Pubkey::default()` (all zeroes),
+/// so any nonzero byte in a chunk causes a mismatch.
+fn system_program_mismatch_accounts(
+    setup: &TestSetup,
+    corrupt_chunk: usize,
+) -> (
+    Vec<solana_sdk::instruction::AccountMeta>,
+    Vec<(Pubkey, Account)>,
+) {
+    let (mut keys, accounts) = default_accounts();
+    let (base_key, quote_key) = find_pda_seed_pair(&setup.program_id);
+    keys[RegisterMarketAccounts::BaseMint as usize] = base_key;
+    keys[RegisterMarketAccounts::QuoteMint as usize] = quote_key;
+    let (pda, _bump) =
+        Pubkey::find_program_address(&[base_key.as_ref(), quote_key.as_ref()], &setup.program_id);
+    keys[RegisterMarketAccounts::Market as usize] = pda;
+    // System Program ID is Pubkey::default() (all zeroes).
+    // Flip a byte in the target chunk so only that comparison fails.
+    let mut system_program_key = Pubkey::default();
+    let offset = corrupt_chunk * 8;
+    system_program_key.as_mut()[offset] ^= 0xFF;
+    keys[RegisterMarketAccounts::SystemProgram as usize] = system_program_key;
     into_metas_and_accounts(keys, accounts)
 }
 
@@ -187,6 +218,50 @@ impl TestCase for Case {
                     metas,
                     accounts,
                     Some(ErrorCode::InvalidMarketPubkey),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            Self::InvalidSystemProgramPubkeyChunk0 => {
+                let (metas, accounts) = system_program_mismatch_accounts(setup, 0);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::InvalidSystemProgramPubkey),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            Self::InvalidSystemProgramPubkeyChunk1 => {
+                let (metas, accounts) = system_program_mismatch_accounts(setup, 1);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::InvalidSystemProgramPubkey),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            Self::InvalidSystemProgramPubkeyChunk2 => {
+                let (metas, accounts) = system_program_mismatch_accounts(setup, 2);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::InvalidSystemProgramPubkey),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            Self::InvalidSystemProgramPubkeyChunk3 => {
+                let (metas, accounts) = system_program_mismatch_accounts(setup, 3);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::InvalidSystemProgramPubkey),
                 )
             }
         }

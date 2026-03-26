@@ -31,7 +31,7 @@
 .equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_3_OFF, -16
 # -------------------------------------------------------------------------
 
-# Miscellaneous register market constants.
+# Miscellaneous market registration constants.
 # -------------------------------------------------------------------------
 # From input buffer to base mint duplicate flag.
 .equ RM_MISC_BASE_DUPLICATE_OFF, 20680
