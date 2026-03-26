@@ -80,6 +80,12 @@ register_market:
     mov64 r8, r9
     add64 r8, RM_MISC_QUOTE_ADDR_OFF
     stxdw [r10 + RM_FM_PDA_SEEDS_QUOTE_ADDR_OFF], r8
+
+    # Get quote padded length
+    # Point input_shifted at quote start
+    # Increment input_shifted  by quote padded length
+    # Increment input_shifted by distant between accounts next to eachother
+
     # pda_seeds.quote.len = Address.size
     mov64 r8, SIZE_OF_ADDRESS
     stxdw [r10 + RM_FM_PDA_SEEDS_QUOTE_LEN_OFF], r8

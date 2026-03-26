@@ -41,6 +41,10 @@
   \ENDIF
   \STATE $pda\_seeds.quote.addr = quote\_mint.pubkey$
   \STATE $pda\_seeds.quote.len =$ \texttt{Address.size}
+  \COMMENT{Advance pointer to next account.}
+  % This should actually be a different name
+  \STATE $input\_shifted = input\_shifted +  quote\_mint.padded\_data\_len$
+  \STATE $input\_shifted = input\_shifted +$ \texttt{EmptyAccount.size}
   \COMMENT{Derive market PDA, check it matches the market account pubkey.}
   \STATE \CALL{Store}{$input$}
   \STATE $syscall.seeds = pda\_seeds$
@@ -52,6 +56,7 @@
   \IF{$market.pubkey \neq market\_pda$}
     \RETURN \texttt{ErrorCode::InvalidMarketPubkey}
   \ENDIF
+  \COMMENT{Check System Program account.}
 \ENDPROCEDURE
 \end{algorithmic}
 \end{algorithm}
