@@ -36,6 +36,8 @@ pub enum ErrorCode {
     QuoteMintIsDuplicate,
     /// The market account pubkey is invalid.
     InvalidMarketPubkey,
+    /// The System Program account is a duplicate.
+    SystemProgramIsDuplicate,
     /// The System Program account pubkey is invalid.
     InvalidSystemProgramPubkey,
 }

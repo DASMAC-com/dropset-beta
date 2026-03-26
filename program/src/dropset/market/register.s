@@ -135,6 +135,10 @@ register_market:
     ldxdw r7, [r6 + IB_MARKET_PUBKEY_CHUNK_3_OFF]
     ldxdw r8, [r10 + RM_FM_PDA_CHUNK_3_OFF]
     jne r7, r8, e_invalid_market_pubkey
+    # if acct.duplicate != input_buffer.NON_DUP_MARKER
+    #     return ErrorCode::SystemProgramIsDuplicate
+    ldxb r7, [r9 + ACCT_DUPLICATE_OFF]
+    jne r7, IB_NON_DUP_MARKER, e_system_program_is_duplicate
     # if acct.pubkey != frame.system_program_pubkey
     #     return ErrorCode::InvalidSystemProgramPubkey
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_0_OFF]

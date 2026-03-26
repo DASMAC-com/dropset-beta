@@ -22,6 +22,7 @@ test_cases! {
         InvalidMarketPubkeyChunk1,
         InvalidMarketPubkeyChunk2,
         InvalidMarketPubkeyChunk3,
+        SystemProgramIsDuplicate,
         InvalidSystemProgramPubkeyChunk0,
         InvalidSystemProgramPubkeyChunk1,
         InvalidSystemProgramPubkeyChunk2,
@@ -218,6 +219,30 @@ impl TestCase for Case {
                     metas,
                     accounts,
                     Some(ErrorCode::InvalidMarketPubkey),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            Self::SystemProgramIsDuplicate => {
+                let (mut keys, accounts) = default_accounts();
+                let (base_key, quote_key) = find_pda_seed_pair(&setup.program_id);
+                keys[RegisterMarketAccounts::BaseMint as usize] = base_key;
+                keys[RegisterMarketAccounts::QuoteMint as usize] = quote_key;
+                let (pda, _bump) = Pubkey::find_program_address(
+                    &[base_key.as_ref(), quote_key.as_ref()],
+                    &setup.program_id,
+                );
+                keys[RegisterMarketAccounts::Market as usize] = pda;
+                // SystemProgram shares key with User, causing the runtime
+                // to serialize it as a duplicate.
+                keys[RegisterMarketAccounts::SystemProgram as usize] =
+                    keys[RegisterMarketAccounts::User as usize];
+                let (metas, accounts) = into_metas_and_accounts(keys, accounts);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::SystemProgramIsDuplicate),
                 )
             }
             // Verifies: REGISTER-MARKET
