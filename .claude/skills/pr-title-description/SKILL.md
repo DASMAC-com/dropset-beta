@@ -31,7 +31,7 @@ for the pull request on the current branch.
 1. Write the PR title using the **Semantic PR /
    Conventional Commits** format:
 
-   ```
+   ```txt
    <type>(<scope>): <short summary>
    ```
 
@@ -46,6 +46,7 @@ for the pull request on the current branch.
      imperative, no trailing period.
 
    Examples:
+
    - `feat(ENG-123): Add frame offset scaffolding and SBPF config sourcing`
    - `fix(ENG-456): Correct off-by-one in order matching`
    - `docs(ENG-789): Add algorithm index page`
