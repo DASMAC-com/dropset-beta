@@ -45,8 +45,8 @@
   \STATE $frame.pda\_seeds.quote.len =$ \texttt{Address.size}
   \COMMENT{Advance pointer to next account.}
   \STATE $quote\_mint\_padded\_data\_len = input\_shifted.quote\_mint.padded\_data\_len$
-  \STATE $acct\_ptr = \&input\_shifted.quote\_mint$
-  \STATE $acct\_ptr \mathrel{{+}{=}} quote\_mint\_padded\_data\_len$ +
+  \STATE $acct = \&input\_shifted.quote\_mint$
+  \STATE $acct \mathrel{{+}{=}} quote\_mint\_padded\_data\_len$ +
   \texttt{EmptyAccount.size}
   \COMMENT{Derive market PDA, check it matches the market account pubkey.}
   \STATE \CALL{Store}{$input$}

@@ -87,9 +87,9 @@ register_market:
     ldxdw r8, [r9 + RM_MISC_QUOTE_DATA_LEN_OFF]
     add64 r8, DATA_LEN_MAX_PAD
     and64 r8, DATA_LEN_AND_MASK
-    # acct_ptr = &input_shifted.quote_mint
+    # acct = &input_shifted.quote_mint
     add64 r9, RM_MISC_QUOTE_OFF
-    # acct_ptr += quote_mint_padded_data_len + EmptyAccount.size
+    # acct += quote_mint_padded_data_len + EmptyAccount.size
     add64 r9, r8
     add64 r9, SIZE_OF_EMPTY_ACCOUNT
     # frame.pda_seeds.quote.len = Address.size
