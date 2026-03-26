@@ -47,6 +47,25 @@ pub fn immediate_meta(
     }
 }
 
+/// Emit a `const META: dropset_build::Constant = Constant::Wide { ... }`.
+pub fn wide_meta(
+    meta_ident: &Ident,
+    asm_name: &str,
+    doc: &str,
+    value: proc_macro2::TokenStream,
+) -> proc_macro2::TokenStream {
+    quote! {
+        const #meta_ident: dropset_build::Constant =
+            dropset_build::Constant::Wide {
+                header: dropset_build::Header {
+                    name: dropset_build::Name(#asm_name),
+                    comment: dropset_build::Comment(#doc),
+                },
+                value: #value,
+            };
+    }
+}
+
 /// Emit item tokens followed by a hidden group module, deriving the module
 /// name from `type_name` via snake_case.
 ///

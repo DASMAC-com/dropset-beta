@@ -48,7 +48,7 @@
   \STATE $acct = \&input\_shifted.quote\_mint$
   \STATE $acct \mathrel{{+}{=}} quote\_mint\_padded\_data\_len$ +
   \texttt{EmptyAccount.size}
-  \COMMENT{Derive market PDA, check it matches the market account pubkey.}
+  \COMMENT{Derive market PDA.}
   \STATE \CALL{Store}{$input$}
   \STATE $syscall.seeds = \&frame.pda\_seeds$
   \STATE $syscall.program\_id = \&insn.program\_id$
@@ -56,6 +56,7 @@
   \STATE $syscall.program\_address =$ \texttt{RegisterMarketFrame.pda}
   \STATE $syscall.bump\_seed =$ \texttt{RegisterMarketFrame.bump}
   \STATE \CALL{sol-try-find-program-address}{}
+  \COMMENT{Verify derived market PDA matches market account pubkey.}
   \IF{$input.market.pubkey \neq frame.market\_pda$}
     \RETURN \texttt{ErrorCode::InvalidMarketPubkey}
   \ENDIF
@@ -65,6 +66,17 @@
   \ENDIF
   \IF{$acct.pubkey \neq frame.system\_program\_pubkey$}
     \RETURN \texttt{ErrorCode::InvalidSystemProgramPubkey}
+  \ENDIF
+  \COMMENT{Advance to Rent sysvar account.}
+  \STATE $system\_program\_padded\_data\_len = acct.padded\_data\_len$
+  \STATE $acct \mathrel{{+}{=}} system\_program\_padded\_data\_len$ +
+  \texttt{EmptyAccount.size}
+  \COMMENT{Check Rent sysvar account.}
+  \IF{$acct.duplicate \neq$ \texttt{account.NON\_DUP\_MARKER}}
+    \RETURN \texttt{ErrorCode::RentSysvarIsDuplicate}
+  \ENDIF
+  \IF{$acct.pubkey \neq$ \texttt{pubkey.RENT}}
+    \RETURN \texttt{ErrorCode::InvalidRentSysvarPubkey}
   \ENDIF
 \ENDPROCEDURE
 \end{algorithmic}

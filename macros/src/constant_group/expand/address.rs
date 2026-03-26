@@ -51,6 +51,23 @@ pub fn expand_address(
     for i in 0..N_CHUNKS {
         let idx = syn::Index::from(i);
 
+        // Full 64-bit chunk (for `lddw`).
+        {
+            let asm_name = format!("{}_CHUNK_{}", asm_prefix, i);
+            let rust_name = Ident::new(&asm_name, Span::call_site());
+            let doc = format!("{} (chunk {}).", doc_base, i);
+            let meta_ident = codegen::meta_ident(&asm_name, Span::call_site());
+            let meta = codegen::wide_meta(&meta_ident, &asm_name, &doc, quote! { #rust_name });
+
+            const_defs.push(quote! {
+                #[doc = #doc]
+                pub const #rust_name: i64 = #chunks_ident[#idx] as i64;
+
+                #meta
+            });
+            meta_idents.push(meta_ident);
+        }
+
         // LO
         {
             let asm_name = format!("{}_CHUNK_{}_LO", asm_prefix, i);

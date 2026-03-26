@@ -153,4 +153,31 @@ register_market:
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_3_OFF]
     ldxdw r8, [r10 + RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_3_OFF]
     jne r7, r8, e_invalid_system_program_pubkey
+    # system_program_padded_data_len = acct.padded_data_len
+    ldxdw r7, [r9 + ACCT_DATA_LEN_OFF]
+    add64 r7, DATA_LEN_MAX_PAD
+    and64 r7, DATA_LEN_AND_MASK
+    # acct += system_program_padded_data_len + EmptyAccount.size
+    add64 r9, r7
+    add64 r9, SIZE_OF_EMPTY_ACCOUNT
+    # if acct.duplicate != account.NON_DUP_MARKER
+    #     return ErrorCode::RentSysvarIsDuplicate
+    ldxb r7, [r9 + ACCT_DUPLICATE_OFF]
+    jne r7, ACCT_NON_DUP_MARKER, e_rent_sysvar_is_duplicate
+    # if acct.pubkey != pubkey.RENT
+    #     return ErrorCode::InvalidRentSysvarPubkey
+    ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_0_OFF]
+    lddw r8, PUBKEY_RENT_CHUNK_0
+    jne r7, r8, e_invalid_rent_sysvar_pubkey
+    ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_1_OFF]
+    lddw r8, PUBKEY_RENT_CHUNK_1
+    jne r7, r8, e_invalid_rent_sysvar_pubkey
+    ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_2_OFF]
+    lddw r8, PUBKEY_RENT_CHUNK_2
+    jne r7, r8, e_invalid_rent_sysvar_pubkey
+    ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_3_OFF]
+    # Optimize: pubkey.RENT chunk 3 hi bits are zero, so mov32
+    # (1 CU) replaces lddw (2 CUs).
+    mov32 r8, PUBKEY_RENT_CHUNK_3_LO
+    jne r7, r8, e_invalid_rent_sysvar_pubkey
     exit

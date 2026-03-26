@@ -40,6 +40,10 @@ pub enum ErrorCode {
     SystemProgramIsDuplicate,
     /// The System Program account pubkey is invalid.
     InvalidSystemProgramPubkey,
+    /// The Rent sysvar account is a duplicate.
+    RentSysvarIsDuplicate,
+    /// The Rent sysvar account pubkey is invalid.
+    InvalidRentSysvarPubkey,
 }
 // endregion: error_enum
 

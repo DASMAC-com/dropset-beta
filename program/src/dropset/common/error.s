@@ -14,6 +14,10 @@
 .equ E_SYSTEM_PROGRAM_IS_DUPLICATE, 10
 # The System Program account pubkey is invalid.
 .equ E_INVALID_SYSTEM_PROGRAM_PUBKEY, 11
+# The Rent sysvar account is a duplicate.
+.equ E_RENT_SYSVAR_IS_DUPLICATE, 12
+# The Rent sysvar account pubkey is invalid.
+.equ E_INVALID_RENT_SYSVAR_PUBKEY, 13
 
 e_invalid_instruction_length:
     mov32 r0, E_INVALID_INSTRUCTION_LENGTH
@@ -53,4 +57,12 @@ e_system_program_is_duplicate:
 
 e_invalid_system_program_pubkey:
     mov32 r0, E_INVALID_SYSTEM_PROGRAM_PUBKEY
+    exit
+
+e_rent_sysvar_is_duplicate:
+    mov32 r0, E_RENT_SYSVAR_IS_DUPLICATE
+    exit
+
+e_invalid_rent_sysvar_pubkey:
+    mov32 r0, E_INVALID_RENT_SYSVAR_PUBKEY
     exit
