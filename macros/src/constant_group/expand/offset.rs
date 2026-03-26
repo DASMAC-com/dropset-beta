@@ -3,6 +3,7 @@ use quote::quote;
 use syn::Ident;
 
 use crate::codegen;
+use crate::sbpf_config::FRAME_ALIGN;
 
 use super::address::{CHUNK_SIZE, N_CHUNKS};
 
@@ -104,7 +105,7 @@ pub fn emit_frame_offset_const(
                 "frame offset must fit in i16",
             );
             const _: () = assert!(
-                VALUE % 8 == 0,
+                VALUE % #FRAME_ALIGN == 0,
                 "frame offset must be aligned to BPF_ALIGN_OF_U128",
             );
             VALUE as i16
@@ -117,15 +118,28 @@ pub fn emit_frame_offset_const(
 }
 
 /// Emit a base `_OFF` plus four `_CHUNK_{0..3}_OFF` offset constants given a
-/// value expression for the base offset.
+/// value expression for the base offset. When `require_align` is true (frame
+/// context), an alignment assertion is added to the base offset.
 fn emit_pubkey_offset_group(
     asm_prefix: &str,
     doc: &str,
     base_value_expr: proc_macro2::TokenStream,
+    require_align: bool,
     const_defs: &mut Vec<proc_macro2::TokenStream>,
     meta_idents: &mut Vec<Ident>,
 ) {
     let doc_base = doc.trim_end_matches('.');
+
+    let align_assert = if require_align {
+        quote! {
+            const _: () = assert!(
+                VALUE % #FRAME_ALIGN == 0,
+                "frame pubkey offset must be aligned to BPF_ALIGN_OF_U128",
+            );
+        }
+    } else {
+        quote! {}
+    };
 
     // Base offset (same value as chunk 0).
     {
@@ -143,6 +157,7 @@ fn emit_pubkey_offset_group(
                     VALUE >= i16::MIN as i64 && VALUE <= i16::MAX as i64,
                     "pubkey offset must fit in i16",
                 );
+                #align_assert
                 VALUE as i16
             };
 
@@ -193,7 +208,14 @@ pub fn expand_pubkey_offsets(
         quote! { #expr as i64 }
     };
 
-    emit_pubkey_offset_group(asm_prefix, doc, base_value_expr, const_defs, meta_idents);
+    emit_pubkey_offset_group(
+        asm_prefix,
+        doc,
+        base_value_expr,
+        false,
+        const_defs,
+        meta_idents,
+    );
 }
 
 /// Expand `pubkey_offsets!(field)` inside a `#[frame(Type)]` group into a base
@@ -209,7 +231,14 @@ pub fn expand_frame_pubkey_offsets(
     let field_chain = quote! { #(#fields).* };
     let base_value_expr = frame_offset_expr(frame_ty, &field_chain);
 
-    emit_pubkey_offset_group(asm_prefix, doc, base_value_expr, const_defs, meta_idents);
+    emit_pubkey_offset_group(
+        asm_prefix,
+        doc,
+        base_value_expr,
+        true,
+        const_defs,
+        meta_idents,
+    );
 }
 
 /// Expand `offset!(field)` inside a `#[frame(Type)]` group.

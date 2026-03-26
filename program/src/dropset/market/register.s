@@ -19,7 +19,6 @@
 .equ RM_FM_PDA_CHUNK_1_OFF, -64 # PDA address (chunk 1).
 .equ RM_FM_PDA_CHUNK_2_OFF, -56 # PDA address (chunk 2).
 .equ RM_FM_PDA_CHUNK_3_OFF, -48 # PDA address (chunk 3).
-.equ RM_FM_BUMP_OFF, -8 # Bump seed.
 .equ RM_FM_SYSTEM_PROGRAM_PUBKEY_OFF, -40 # System Program pubkey.
 # System Program pubkey (chunk 0).
 .equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_0_OFF, -40
@@ -29,6 +28,7 @@
 .equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_2_OFF, -24
 # System Program pubkey (chunk 3).
 .equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_3_OFF, -16
+.equ RM_FM_BUMP_OFF, -8 # Bump seed.
 # -------------------------------------------------------------------------
 
 # Miscellaneous market registration constants.

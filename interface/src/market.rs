@@ -84,6 +84,19 @@ pub enum RegisterMarketAccounts {
 
 // region: register_market_stack
 
+// region: signer_seeds_example
+signer_seeds! {
+    pub struct PDASignerSeeds {
+        /// Base mint seed.
+        base,
+        /// Quote mint seed.
+        quote,
+        /// Bump seed from `sol_try_find_program_address`.
+        bump,
+    }
+}
+// endregion: signer_seeds_example
+
 // region: frame_example
 #[frame]
 /// Stack frame for REGISTER-MARKET.
@@ -99,19 +112,6 @@ pub struct RegisterMarketFrame {
 }
 // endregion: frame_example
 
-// region: signer_seeds_example
-signer_seeds! {
-    pub struct PDASignerSeeds {
-        /// Base mint seed.
-        base,
-        /// Quote mint seed.
-        quote,
-        /// Bump seed from `sol_try_find_program_address`.
-        bump,
-    }
-}
-// endregion: signer_seeds_example
-
 constant_group! {
     #[prefix("RM")]
     #[inject("market/register")]
@@ -121,10 +121,10 @@ constant_group! {
         PDA_SEEDS = signer_seeds!(pda_seeds),
         /// PDA address.
         PDA = pubkey_offsets!(pda),
-        /// Bump seed.
-        BUMP = offset!(bump),
         /// System Program pubkey.
         SYSTEM_PROGRAM_PUBKEY = pubkey_offsets!(system_program_pubkey),
+        /// Bump seed.
+        BUMP = offset!(bump),
     }
 }
 

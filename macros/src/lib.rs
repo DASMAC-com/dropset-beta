@@ -8,6 +8,7 @@ mod enum_to_asm;
 mod frame;
 mod instruction_accounts;
 mod instruction_length;
+mod sbpf_config;
 mod shared_state;
 mod signer_seeds;
 mod size_of_group;
