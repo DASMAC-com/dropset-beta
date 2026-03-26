@@ -1,9 +1,9 @@
 \begin{algorithm}
 \caption{REGISTER-MARKET}
 \begin{algorithmic}
-  \COMMENT{Input buffer.}
+  \COMMENT{Pointer to input buffer.}
   \INPUT $r_1 = input$
-  \COMMENT{Instruction data.}
+  \COMMENT{Pointer to instruction data.}
   \INPUT $r_2 = insn$
   \COMMENT{Number of accounts.}
   \INPUT $r_3 = n\_accounts$
@@ -18,42 +18,43 @@
     \RETURN \texttt{ErrorCode::InvalidInstructionLength}
   \ENDIF
   \COMMENT{Check user, market accounts.}
-  \IF{$user.data\_len \neq 0$}
+  \IF{$input.user.data\_len \neq 0$}
     \RETURN \texttt{ErrorCode::UserHasData}
   \ENDIF
-  \IF{$market.duplicate \neq$ \texttt{input\_buffer.NON\_DUP\_MARKER}}
+  \IF{$input.market.duplicate \neq$ \texttt{input\_buffer.NON\_DUP\_MARKER}}
     \RETURN \texttt{ErrorCode::MarketAccountIsDuplicate}
   \ENDIF
-  \IF{$market.data\_len \neq 0$}
+  \IF{$input.market.data\_len \neq 0$}
     \RETURN \texttt{ErrorCode::MarketHasData}
   \ENDIF
   \COMMENT{Check base mint account, create signer seed.}
-  \IF{$base\_mint.duplicate \neq$ \texttt{input\_buffer.NON\_DUP\_MARKER}}
+  \IF{$input.base\_mint.duplicate \neq$ \texttt{input\_buffer.NON\_DUP\_MARKER}}
     \RETURN \texttt{ErrorCode::BaseMintIsDuplicate}
   \ENDIF
-  \STATE $pda\_seeds.base.addr = base\_mint.pubkey$
-  \STATE $pda\_seeds.base.len =$ \texttt{Address.size}
-  \COMMENT{Get the input buffer, incremented by the base mint padded data length.}
-  \STATE $input\_shifted = input + base\_mint.padded\_data\_len$
+  \STATE $frame.pda\_seeds.base.addr = input.base\_mint.pubkey$
+  \STATE $frame.pda\_seeds.base.len =$ \texttt{Address.size}
+  \COMMENT{Increment input buffer by base mint padded data length for quote offsets.}
+  \STATE $input\_shifted = input + input.base\_mint.padded\_data\_len$
   \COMMENT{Check quote mint account, create signer seed.}
-  \IF{$quote\_mint.duplicate \neq$ \texttt{input\_buffer.NON\_DUP\_MARKER}}
+  \IF{$input\_shifted.quote\_mint.duplicate \neq$ \texttt{input\_buffer.NON\_DUP\_MARKER}}
     \RETURN \texttt{ErrorCode::QuoteMintIsDuplicate}
   \ENDIF
-  \STATE $pda\_seeds.quote.addr = quote\_mint.pubkey$
-  \STATE $pda\_seeds.quote.len =$ \texttt{Address.size}
+  \STATE $frame.pda\_seeds.quote.addr = input\_shifted.quote\_mint.pubkey$
+  \STATE $frame.pda\_seeds.quote.len =$ \texttt{Address.size}
   \COMMENT{Advance pointer to next account.}
-  % This should actually be a different name
-  \STATE $input\_shifted = input\_shifted +  quote\_mint.padded\_data\_len$
-  \STATE $input\_shifted = input\_shifted +$ \texttt{EmptyAccount.size}
+  \STATE $quote\_mint\_padded\_data\_len = input\_shifted.quote\_mint.padded\_data\_len$
+  \STATE $acct\_ptr = \&input\_shifted.quote\_mint$
+  \STATE $acct\_ptr = acct\_ptr + quote\_mint\_padded\_data\_len$
+  \STATE $acct\_ptr = acct\_ptr$ + \texttt{EmptyAccount.size}
   \COMMENT{Derive market PDA, check it matches the market account pubkey.}
   \STATE \CALL{Store}{$input$}
-  \STATE $syscall.seeds = pda\_seeds$
-  \STATE $syscall.program\_id = program\_id$
+  \STATE $syscall.seeds = \&frame.pda\_seeds$
+  \STATE $syscall.program\_id = \&insn.program\_id$
   \STATE $syscall.seeds\_len =$ \texttt{register\_misc.TRY\_FIND\_PDA\_SEEDS\_LEN}
   \STATE $syscall.program\_address =$ \texttt{RegisterMarketFrame.pda}
   \STATE $syscall.bump\_seed =$ \texttt{RegisterMarketFrame.bump}
   \STATE \CALL{sol-try-find-program-address}{}
-  \IF{$market.pubkey \neq market\_pda$}
+  \IF{$input.market.pubkey \neq frame.market\_pda$}
     \RETURN \texttt{ErrorCode::InvalidMarketPubkey}
   \ENDIF
   \COMMENT{Check System Program account.}
