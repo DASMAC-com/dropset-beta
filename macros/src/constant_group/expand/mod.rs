@@ -73,12 +73,37 @@ pub fn expand(input: &ConstantGroupInput) -> proc_macro2::TokenStream {
                     &mut meta_idents,
                 );
             }
+            ConstantKind::UnalignedFrameOffset { fields } => {
+                let frame_ty = input
+                    .frame_type
+                    .as_ref()
+                    .expect("frame_type must be set for UnalignedFrameOffset");
+                let (def, meta) = offset::expand_unaligned_frame_offset(
+                    base_name, &asm_name, doc, frame_ty, fields,
+                );
+                const_defs.push(def);
+                meta_idents.push(meta);
+            }
             ConstantKind::FramePubkeyOffsets { fields } => {
                 let frame_ty = input
                     .frame_type
                     .as_ref()
                     .expect("frame_type must be set for FramePubkeyOffsets");
                 offset::expand_frame_pubkey_offsets(
+                    &asm_name,
+                    doc,
+                    frame_ty,
+                    fields,
+                    &mut const_defs,
+                    &mut meta_idents,
+                );
+            }
+            ConstantKind::UnalignedFramePubkeyOffsets { fields } => {
+                let frame_ty = input
+                    .frame_type
+                    .as_ref()
+                    .expect("frame_type must be set for UnalignedFramePubkeyOffsets");
+                offset::expand_unaligned_frame_pubkey_offsets(
                     &asm_name,
                     doc,
                     frame_ty,

@@ -6,29 +6,44 @@
 
 # Stack frame for REGISTER-MARKET.
 # -------------------------------------------------------------------------
-.equ RM_FM_PDA_SEEDS_OFF, -120 # Signer seeds offset.
+.equ RM_FM_PDA_SEEDS_OFF, -176 # Signer seeds offset.
 .equ RM_FM_PDA_SEEDS_N_SEEDS, 3 # Number of signer seeds.
-.equ RM_FM_PDA_SEEDS_BASE_ADDR_OFF, -120 # Base signer seed address.
-.equ RM_FM_PDA_SEEDS_BASE_LEN_OFF, -112 # Base signer seed length.
-.equ RM_FM_PDA_SEEDS_QUOTE_ADDR_OFF, -104 # Quote signer seed address.
-.equ RM_FM_PDA_SEEDS_QUOTE_LEN_OFF, -96 # Quote signer seed length.
-.equ RM_FM_PDA_SEEDS_BUMP_ADDR_OFF, -88 # Bump signer seed address.
-.equ RM_FM_PDA_SEEDS_BUMP_LEN_OFF, -80 # Bump signer seed length.
-.equ RM_FM_PDA_OFF, -72 # PDA address.
-.equ RM_FM_PDA_CHUNK_0_OFF, -72 # PDA address (chunk 0).
-.equ RM_FM_PDA_CHUNK_1_OFF, -64 # PDA address (chunk 1).
-.equ RM_FM_PDA_CHUNK_2_OFF, -56 # PDA address (chunk 2).
-.equ RM_FM_PDA_CHUNK_3_OFF, -48 # PDA address (chunk 3).
-.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_OFF, -40 # System Program pubkey.
+.equ RM_FM_PDA_SEEDS_BASE_ADDR_OFF, -176 # Base signer seed address.
+.equ RM_FM_PDA_SEEDS_BASE_LEN_OFF, -168 # Base signer seed length.
+.equ RM_FM_PDA_SEEDS_QUOTE_ADDR_OFF, -160 # Quote signer seed address.
+.equ RM_FM_PDA_SEEDS_QUOTE_LEN_OFF, -152 # Quote signer seed length.
+.equ RM_FM_PDA_SEEDS_BUMP_ADDR_OFF, -144 # Bump signer seed address.
+.equ RM_FM_PDA_SEEDS_BUMP_LEN_OFF, -136 # Bump signer seed length.
+.equ RM_FM_PDA_OFF, -128 # PDA address.
+.equ RM_FM_PDA_CHUNK_0_OFF, -128 # PDA address (chunk 0).
+.equ RM_FM_PDA_CHUNK_1_OFF, -120 # PDA address (chunk 1).
+.equ RM_FM_PDA_CHUNK_2_OFF, -112 # PDA address (chunk 2).
+.equ RM_FM_PDA_CHUNK_3_OFF, -104 # PDA address (chunk 3).
+.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_OFF, -96 # System Program pubkey.
 # System Program pubkey (chunk 0).
-.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_0_OFF, -40
+.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_0_OFF, -96
 # System Program pubkey (chunk 1).
-.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_1_OFF, -32
+.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_1_OFF, -88
 # System Program pubkey (chunk 2).
-.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_2_OFF, -24
+.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_2_OFF, -80
 # System Program pubkey (chunk 3).
-.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_3_OFF, -16
+.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_3_OFF, -72
 .equ RM_FM_BUMP_OFF, -8 # Bump seed.
+.equ RM_FM_CREATE_ACCT_DATA_OFF, -64 # CreateAccount instruction data.
+# Lamports field within CreateAccount instruction data.
+.equ RM_FM_CREATE_ACCT_LAMPORTS_UOFF, -60
+# Space field within CreateAccount instruction data.
+.equ RM_FM_CREATE_ACCT_SPACE_UOFF, -52
+# Owner field within CreateAccount instruction data.
+.equ RM_FM_CREATE_ACCT_OWNER_UOFF, -44
+# Owner field within CreateAccount instruction data (chunk 0).
+.equ RM_FM_CREATE_ACCT_OWNER_CHUNK_0_UOFF, -44
+# Owner field within CreateAccount instruction data (chunk 1).
+.equ RM_FM_CREATE_ACCT_OWNER_CHUNK_1_UOFF, -36
+# Owner field within CreateAccount instruction data (chunk 2).
+.equ RM_FM_CREATE_ACCT_OWNER_CHUNK_2_UOFF, -28
+# Owner field within CreateAccount instruction data (chunk 3).
+.equ RM_FM_CREATE_ACCT_OWNER_CHUNK_3_UOFF, -20
 # -------------------------------------------------------------------------
 
 # Miscellaneous market registration constants.

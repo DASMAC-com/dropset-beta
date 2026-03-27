@@ -94,6 +94,29 @@ impl Parse for ConstantGroupInput {
                     let expr: Expr = inner.parse()?;
                     ConstantKind::Address { expr }
                 }
+                "unaligned_offset" => {
+                    let inner;
+                    syn::parenthesized!(inner in content);
+                    let parsed = parse_offset(&inner, &frame_type)?;
+                    match parsed {
+                        ConstantKind::FrameOffset { fields } => {
+                            ConstantKind::UnalignedFrameOffset { fields }
+                        }
+                        _ => {
+                            return Err(syn::Error::new(
+                                kind_ident.span(),
+                                "unaligned_offset requires a #[frame] context with a bare field path",
+                            ));
+                        }
+                    }
+                }
+                "unaligned_pubkey_offsets" => {
+                    let inner;
+                    syn::parenthesized!(inner in content);
+                    parse_offset(&inner, &frame_type)?
+                        .into_unaligned_pubkey_offsets()
+                        .map_err(|msg| syn::Error::new(kind_ident.span(), msg))?
+                }
                 "pubkey_offsets" => {
                     let inner;
                     syn::parenthesized!(inner in content);

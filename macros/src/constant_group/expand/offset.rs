@@ -125,6 +125,7 @@ fn emit_pubkey_offset_group(
     doc: &str,
     base_value_expr: proc_macro2::TokenStream,
     require_align: bool,
+    suffix: &str,
     const_defs: &mut Vec<proc_macro2::TokenStream>,
     meta_idents: &mut Vec<Ident>,
 ) {
@@ -143,7 +144,7 @@ fn emit_pubkey_offset_group(
 
     // Base offset (same value as chunk 0).
     {
-        let asm_name = format!("{}_OFF", asm_prefix);
+        let asm_name = format!("{}_{}", asm_prefix, suffix);
         let rust_name = Ident::new(&asm_name, Span::call_site());
         let meta_ident = codegen::meta_ident(&asm_name, Span::call_site());
         let meta = codegen::offset_meta(&meta_ident, &asm_name, doc, &rust_name);
@@ -169,7 +170,7 @@ fn emit_pubkey_offset_group(
     // Per-chunk offsets.
     for i in 0..N_CHUNKS {
         let chunk_byte_offset = (i * CHUNK_SIZE) as i64;
-        let asm_name = format!("{}_CHUNK_{}_OFF", asm_prefix, i);
+        let asm_name = format!("{}_CHUNK_{}_{}", asm_prefix, i, suffix);
         let rust_name = Ident::new(&asm_name, Span::call_site());
         let doc = format!("{} (chunk {}).", doc_base, i);
         let meta_ident = codegen::meta_ident(&asm_name, Span::call_site());
@@ -213,6 +214,7 @@ pub fn expand_pubkey_offsets(
         doc,
         base_value_expr,
         false,
+        "OFF",
         const_defs,
         meta_idents,
     );
@@ -236,9 +238,70 @@ pub fn expand_frame_pubkey_offsets(
         doc,
         base_value_expr,
         true,
+        "OFF",
         const_defs,
         meta_idents,
     );
+}
+
+/// Expand `unaligned_pubkey_offsets!(field)` inside a `#[frame(Type)]` group
+/// into a base `_UOFF` plus four `_CHUNK_{0..3}_UOFF` frame-relative offset
+/// constants, without alignment assertions.
+pub fn expand_unaligned_frame_pubkey_offsets(
+    asm_prefix: &str,
+    doc: &str,
+    frame_ty: &syn::Path,
+    fields: &[syn::Member],
+    const_defs: &mut Vec<proc_macro2::TokenStream>,
+    meta_idents: &mut Vec<Ident>,
+) {
+    let field_chain = quote! { #(#fields).* };
+    let base_value_expr = frame_offset_expr(frame_ty, &field_chain);
+
+    emit_pubkey_offset_group(
+        asm_prefix,
+        doc,
+        base_value_expr,
+        false,
+        "UOFF",
+        const_defs,
+        meta_idents,
+    );
+}
+
+/// Expand `unaligned_offset!(field)` inside a `#[frame(Type)]` group.
+/// Like `expand_frame_offset` but without the alignment assertion.
+/// Name gets `_UOFF` suffix.
+pub fn expand_unaligned_frame_offset(
+    base_name: &Ident,
+    asm_name: &str,
+    doc: &str,
+    frame_ty: &syn::Path,
+    fields: &[syn::Member],
+) -> (proc_macro2::TokenStream, Ident) {
+    let rust_name = Ident::new(&format!("{}_UOFF", base_name), base_name.span());
+    let asm_name = format!("{}_UOFF", asm_name);
+    let meta_ident = codegen::meta_ident(&asm_name, rust_name.span());
+    let meta = codegen::offset_meta(&meta_ident, &asm_name, doc, &rust_name);
+    let field_chain = quote! { #(#fields).* };
+    let value_expr = frame_offset_expr(frame_ty, &field_chain);
+
+    let def = quote! {
+        #[doc = #doc]
+        pub const #rust_name: i16 = {
+            use super::*;
+            const VALUE: i64 = #value_expr;
+            const _: () = assert!(
+                VALUE >= i16::MIN as i64 && VALUE <= i16::MAX as i64,
+                "frame offset must fit in i16",
+            );
+            VALUE as i16
+        };
+
+        #meta
+    };
+
+    (def, meta_ident)
 }
 
 /// Expand `offset!(field)` inside a `#[frame(Type)]` group.

@@ -82,8 +82,17 @@ pub enum RegisterMarketAccounts {
 }
 // endregion: register_market_accounts
 
-// region: register_market_stack
+#[svm_data]
+/// CPI instruction data for CreateAccount.
+pub struct CreateAccountData {
+    /// Zero-initialized on stack.
+    pub discriminator: u32,
+    pub lamports: u64,
+    pub space: u64,
+    pub owner: Address,
+}
 
+// region: register_market_stack
 // region: signer_seeds_example
 signer_seeds! {
     pub struct PDASignerSeeds {
@@ -107,6 +116,9 @@ pub struct RegisterMarketFrame {
     pub pda: Address,
     /// System Program pubkey, zero-initialized on stack
     pub system_program_pubkey: Address,
+    /// CPI instruction data for CreateAccount.
+    pub create_account_data: CreateAccountData,
+    pad: u32,
     /// From `sol_try_find_program_address`.
     pub bump: u8,
 }
@@ -125,6 +137,14 @@ constant_group! {
         SYSTEM_PROGRAM_PUBKEY = pubkey_offsets!(system_program_pubkey),
         /// Bump seed.
         BUMP = offset!(bump),
+        /// CreateAccount instruction data.
+        CREATE_ACCT_DATA = offset!(create_account_data),
+        /// Lamports field within CreateAccount instruction data.
+        CREATE_ACCT_LAMPORTS = unaligned_offset!(create_account_data.lamports),
+        /// Space field within CreateAccount instruction data.
+        CREATE_ACCT_SPACE = unaligned_offset!(create_account_data.space),
+        /// Owner field within CreateAccount instruction data.
+        CREATE_ACCT_OWNER = unaligned_pubkey_offsets!(create_account_data.owner),
     }
 }
 
