@@ -53,8 +53,8 @@
   \STATE $syscall.seeds = \&frame.pda\_seeds$
   \STATE $syscall.program\_id = \&insn.program\_id$
   \STATE $syscall.seeds\_len =$ \texttt{register\_misc.TRY\_FIND\_PDA\_SEEDS\_LEN}
-  \STATE $syscall.program\_address =$ \texttt{RegisterMarketFrame.pda}
-  \STATE $syscall.bump\_seed =$ \texttt{RegisterMarketFrame.bump}
+  \STATE $syscall.program\_address = frame.pda$
+  \STATE $syscall.bump\_seed = frame.bump$
   \STATE \CALL{sol-try-find-program-address}{}
   \COMMENT{Verify derived market PDA matches market account pubkey.}
   \IF{$input.market.pubkey \neq frame.market\_pda$}
