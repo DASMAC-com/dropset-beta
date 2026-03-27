@@ -99,7 +99,7 @@ cpi_accounts! {
     /// CPI accounts for CreateAccount and ATA creation.
     ///
     /// CreateAccount uses the first two accounts (user, target). ATA creation requires all six.
-    pub struct CPIAccounts {
+    CPIAccounts {
         /// User account.
         user,
         /// Target account.
@@ -118,7 +118,7 @@ cpi_accounts! {
 // region: register_market_stack
 // region: signer_seeds_example
 signer_seeds! {
-    pub struct PDASignerSeeds {
+    PDASignerSeeds {
         /// Base mint seed.
         base,
         /// Quote mint seed.
@@ -161,8 +161,6 @@ constant_group! {
         PDA = pubkey_offsets!(pda),
         /// System Program pubkey.
         SYSTEM_PROGRAM_PUBKEY = pubkey_offsets!(system_program_pubkey),
-        /// Bump seed.
-        BUMP = offset!(bump),
         /// CreateAccount instruction data.
         CREATE_ACCT_DATA = offset!(create_account_data),
         /// Lamports field within CreateAccount instruction data.
@@ -175,6 +173,8 @@ constant_group! {
         CPI = cpi_accounts!(cpi_accounts),
         /// Solana instruction.
         SOL_INSN = sol_instruction!(cpi_instruction),
+        /// Bump seed.
+        BUMP = offset!(bump),
     }
 }
 

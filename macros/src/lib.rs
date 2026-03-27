@@ -51,7 +51,7 @@ pub fn constant_group(input: TokenStream) -> TokenStream {
 ///
 /// ```ignore
 /// signer_seeds! {
-///     pub struct PdaSignerSeeds {
+///     PdaSignerSeeds {
 ///         /// Base mint seed.
 ///         base,
 ///         /// Quote mint seed.
@@ -77,7 +77,7 @@ pub fn signer_seeds(input: TokenStream) -> TokenStream {
 ///
 /// ```ignore
 /// cpi_accounts! {
-///     pub struct CreateAccountCPIAccounts {
+///     CreateAccountCPIAccounts {
 ///         /// User account.
 ///         user,
 ///         /// Market account.

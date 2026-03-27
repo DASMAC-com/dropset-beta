@@ -28,7 +28,6 @@
 .equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_2_OFF, -552
 # System Program pubkey (chunk 3).
 .equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_3_OFF, -544
-.equ RM_FM_BUMP_OFF, -8 # Bump seed.
 .equ RM_FM_CREATE_ACCT_DATA_OFF, -536 # CreateAccount instruction data.
 # Lamports field within CreateAccount instruction data.
 .equ RM_FM_CREATE_ACCT_LAMPORTS_UOFF, -532
@@ -187,6 +186,7 @@
 .equ RM_FM_SOL_INSN_ACCOUNT_LEN_UOFF, -32 # SolInstruction account length.
 .equ RM_FM_SOL_INSN_DATA_UOFF, -24 # SolInstruction data pointer.
 .equ RM_FM_SOL_INSN_DATA_LEN_UOFF, -16 # SolInstruction data length.
+.equ RM_FM_BUMP_OFF, -8 # Bump seed.
 # -------------------------------------------------------------------------
 
 # Miscellaneous market registration constants.
