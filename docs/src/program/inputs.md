@@ -29,8 +29,10 @@ rent epoch:
 
 <Include rs="interface::memory#full_runtime_account" collapsible/>
 
-Because the user data length is zero, `FullRuntimeAccount` has a fixed size and
-the market account begins at a deterministic offset. This makes every account
+The type alias `EmptyAccount` specializes `FullRuntimeAccount` with zero-length
+data, which is the common case for accounts whose data is not statically known.
+Because the user data length is zero, `EmptyAccount` has a fixed size and the
+market account begins at a deterministic offset. This makes every account
 metadata field in the header addressable as an immediate offset from `r1`.
 
 [SIMD-0321]: https://github.com/solana-foundation/solana-improvement-documents/blob/main/proposals/0321-vm-r2-instruction-data-pointer.md

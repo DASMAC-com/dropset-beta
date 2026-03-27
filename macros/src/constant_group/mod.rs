@@ -32,6 +32,26 @@ pub(crate) enum ConstantKind {
     /// `pubkey_offsets!(field)` inside a `#[frame(Type)]` group: frame-relative
     /// variant that emits `_OFF` plus four `_CHUNK_{0..3}_OFF` constants.
     FramePubkeyOffsets { fields: Vec<syn::Member> },
+    /// `unaligned_offset!(field)` inside a `#[frame(Type)]` group: like
+    /// `FrameOffset` but without the alignment assertion. Name gets `_UOFF`
+    /// suffix.
+    UnalignedFrameOffset { fields: Vec<syn::Member> },
+    /// `cpi_accounts!(parent_field)` inside a `#[frame(Type)]` group: account
+    /// fields are auto-discovered via shared state from the `cpi_accounts!`
+    /// struct definition. Expands to `_SOL_ACCT_INFO_OFF` and
+    /// `_SOL_ACCT_META_OFF` per account plus an `N_ACCOUNTS` count.
+    CpiAccounts {
+        parent_field: Ident,
+        accounts: Vec<Ident>,
+    },
+    /// `sol_instruction!(field)` inside a `#[frame(Type)]` group: emits an
+    /// aligned `_OFF` for the struct base and unaligned `_UOFF` offsets for
+    /// each `SolInstruction` field.
+    SolInstruction { fields: Vec<syn::Member> },
+    /// `unaligned_pubkey_offsets!(field)` inside a `#[frame(Type)]` group:
+    /// like `FramePubkeyOffsets` but without the alignment assertion. Names
+    /// get `_UOFF` suffix.
+    UnalignedFramePubkeyOffsets { fields: Vec<syn::Member> },
 }
 
 impl ConstantKind {
@@ -46,6 +66,15 @@ impl ConstantKind {
             ConstantKind::Offset { expr, .. } => Ok(ConstantKind::PubkeyOffsets { expr }),
             ConstantKind::FrameOffset { fields } => Ok(ConstantKind::FramePubkeyOffsets { fields }),
             _ => Err("unexpected constant kind inside pubkey_offsets"),
+        }
+    }
+
+    pub fn into_unaligned_pubkey_offsets(self) -> Result<Self, &'static str> {
+        match self {
+            ConstantKind::FrameOffset { fields } => {
+                Ok(ConstantKind::UnalignedFramePubkeyOffsets { fields })
+            }
+            _ => Err("unaligned_pubkey_offsets requires a #[frame] context with a bare field path"),
         }
     }
 }

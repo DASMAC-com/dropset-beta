@@ -3,6 +3,7 @@ use syn::{
     parse::{Parse, ParseStream},
 };
 
+mod cpi_accounts;
 mod offset;
 mod signer_seeds;
 
@@ -12,6 +13,7 @@ use crate::attrs::{
     validate_comment, validate_name,
 };
 use crate::shared_state;
+use cpi_accounts::parse_cpi_accounts;
 use offset::parse_offset;
 use signer_seeds::parse_signer_seeds;
 
@@ -82,6 +84,27 @@ impl Parse for ConstantGroupInput {
                     syn::parenthesized!(inner in content);
                     parse_signer_seeds(&inner, &frame_type, kind_ident.span())?
                 }
+                "sol_instruction" => {
+                    let inner;
+                    syn::parenthesized!(inner in content);
+                    let parsed = parse_offset(&inner, &frame_type)?;
+                    match parsed {
+                        ConstantKind::FrameOffset { fields } => {
+                            ConstantKind::SolInstruction { fields }
+                        }
+                        _ => {
+                            return Err(syn::Error::new(
+                                kind_ident.span(),
+                                "sol_instruction requires a #[frame] context with a bare field path",
+                            ));
+                        }
+                    }
+                }
+                "cpi_accounts" => {
+                    let inner;
+                    syn::parenthesized!(inner in content);
+                    parse_cpi_accounts(&inner, &frame_type, kind_ident.span())?
+                }
                 "immediate" => {
                     let inner;
                     syn::parenthesized!(inner in content);
@@ -93,6 +116,29 @@ impl Parse for ConstantGroupInput {
                     syn::parenthesized!(inner in content);
                     let expr: Expr = inner.parse()?;
                     ConstantKind::Address { expr }
+                }
+                "unaligned_offset" => {
+                    let inner;
+                    syn::parenthesized!(inner in content);
+                    let parsed = parse_offset(&inner, &frame_type)?;
+                    match parsed {
+                        ConstantKind::FrameOffset { fields } => {
+                            ConstantKind::UnalignedFrameOffset { fields }
+                        }
+                        _ => {
+                            return Err(syn::Error::new(
+                                kind_ident.span(),
+                                "unaligned_offset requires a #[frame] context with a bare field path",
+                            ));
+                        }
+                    }
+                }
+                "unaligned_pubkey_offsets" => {
+                    let inner;
+                    syn::parenthesized!(inner in content);
+                    parse_offset(&inner, &frame_type)?
+                        .into_unaligned_pubkey_offsets()
+                        .map_err(|msg| syn::Error::new(kind_ident.span(), msg))?
                 }
                 "pubkey_offsets" => {
                     let inner;

@@ -72,16 +72,20 @@ address immediates injected via [`constant_group!`][bs-constant-group].
 Each 32-byte pubkey is accessed as four 8-byte (`u64`) chunks at offsets 0, 8,
 16, and 24. These are emitted as `PUBKEY_CHUNK_{0..3}_OFF` immediates.
 
-Known addresses (such as the rent sysvar ID) are split into `_CHUNK_{0..3}_LO`
-and `_CHUNK_{0..3}_HI` `i32` immediates using [`address!`][bs-constant-group]
-so they can be loaded with `mov32` / `lsh64` pairs without runtime memory
-access.
+Known addresses (such as the rent sysvar ID) are split into full 64-bit
+`_CHUNK_{0..3}` constants (loadable with a single `lddw`) and `_CHUNK_{0..3}_LO`
+/ `_CHUNK_{0..3}_HI` `i32` immediates (loadable with `mov32` / `lsh64` pairs)
+using [`address!`][bs-constant-group]. The `lddw` form costs 2 CUs but uses one
+instruction; the `mov32` / `lsh64` pair also costs 2 CUs but can be optimized
+to 1 CU with `mov32` alone when the high bits are zero.
 
 When a struct field holds a 32-byte pubkey that needs per-chunk access,
 [`pubkey_offsets!`][bs-constant-group] generates a base `_OFF` plus four
 `_CHUNK_{0..3}_OFF` constants. This is used for input buffer fields
 (e.g. `IB_MARKET_PUBKEY_CHUNK_{0..3}_OFF`) and frame-relative fields
-(e.g. `RM_FM_PDA_CHUNK_{0..3}_OFF`).
+(e.g. `RM_FM_PDA_CHUNK_{0..3}_OFF`). For frame fields that are not aligned
+to `BPF_ALIGN_OF_U128`, [`unaligned_pubkey_offsets!`][bs-constant-group]
+emits the same set of constants with a `_UOFF` suffix instead of `_OFF`.
 
 <Include rs="interface::pubkey#pubkey_constants" collapsible/>
 <Include asm="common/pubkey" collapsible/>

@@ -14,14 +14,14 @@ constant_group! {
     /// Common data-related constants.
     data {
         /// Data length of zero.
-        DATA_LEN_ZERO = immediate!(0),
+        LEN_ZERO = immediate!(0),
         /// Data alignment during runtime.
         // pinocchio constant is private.
         BPF_ALIGN_OF_U128 = immediate!(8),
         /// Maximum possible data length padding for a runtime account.
-        MAX_DATA_PAD = immediate!(7),
+        LEN_MAX_PAD = immediate!(7),
         /// And mask for data length alignment.
-        DATA_LEN_AND_MASK = immediate!(-8),
+        LEN_AND_MASK = immediate!(-8),
     }
 }
 
@@ -35,12 +35,41 @@ pub struct FullRuntimeAccount<const DATA_SIZE: usize> {
 }
 // endregion: full_runtime_account
 
+/// Type alias for offset computation with zero-length data.
+pub type EmptyAccount = FullRuntimeAccount<{ runtime_data_size(data::LEN_ZERO) }>;
+
+constant_group! {
+    #[prefix("ACCT")]
+    #[inject("common/memory")]
+    /// Field offsets within a runtime account.
+    account {
+        /// Borrow state / duplicate marker.
+        DUPLICATE = offset!(EmptyAccount.header.borrow_state),
+        /// Whether the account is a signer.
+        IS_SIGNER = offset!(EmptyAccount.header.is_signer),
+        /// Whether the account is writable.
+        IS_WRITABLE = offset!(EmptyAccount.header.is_writable),
+        /// Whether the account is executable.
+        EXECUTABLE = offset!(EmptyAccount.header.executable),
+        /// Resize delta.
+        RESIZE_DELTA = offset!(EmptyAccount.header.resize_delta),
+        /// Account address.
+        ADDRESS = pubkey_offsets!(EmptyAccount.header.address),
+        /// Account owner.
+        OWNER = pubkey_offsets!(EmptyAccount.header.owner),
+        /// Account data length.
+        DATA_LEN = offset!(EmptyAccount.header.data_len),
+        /// Non-dup marker for accounts.
+        NON_DUP_MARKER = immediate!(NON_DUP_MARKER as i32),
+    }
+}
+
 // region: input_buffer_header
 #[svm_data]
 /// Empty user data is required to ensure absolute addressing.
 pub struct InputBufferHeader {
     pub n_accounts: u64,
-    pub user: FullRuntimeAccount<{ runtime_data_size(data::DATA_LEN_ZERO) }>,
+    pub user: EmptyAccount,
     pub market: RuntimeAccount,
 }
 // endregion: input_buffer_header
@@ -51,8 +80,6 @@ constant_group! {
     #[inject("common/memory")]
     /// Input buffer constants for static header.
     input_buffer {
-        /// Non-dup marker for accounts.
-        NON_DUP_MARKER = immediate!(NON_DUP_MARKER as i32),
         /// From input buffer to user data length.
         USER_DATA_LEN = offset!(InputBufferHeader.user.header.data_len),
         /// From input buffer to market duplicate flag.
@@ -68,7 +95,7 @@ constant_group! {
 // region: size_of_group_example
 size_of_group! {
     #[inject("common/memory")]
-    [Address]
+    [Address, EmptyAccount]
 }
 // endregion: size_of_group_example
 

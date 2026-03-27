@@ -1,7 +1,9 @@
 mod address;
+mod cpi_accounts;
 mod immediate;
 mod offset;
 mod signer_seeds;
+mod sol_instruction;
 
 use super::ConstantKind;
 use super::parse::ConstantGroupInput;
@@ -56,6 +58,36 @@ pub fn expand(input: &ConstantGroupInput) -> proc_macro2::TokenStream {
                     &mut meta_idents,
                 );
             }
+            ConstantKind::SolInstruction { fields } => {
+                let frame_ty = input
+                    .frame_type
+                    .as_ref()
+                    .expect("frame_type must be set for SolInstruction");
+                sol_instruction::expand_sol_instruction(
+                    &asm_name,
+                    frame_ty,
+                    fields,
+                    &mut const_defs,
+                    &mut meta_idents,
+                );
+            }
+            ConstantKind::CpiAccounts {
+                parent_field,
+                accounts,
+            } => {
+                let frame_ty = input
+                    .frame_type
+                    .as_ref()
+                    .expect("frame_type must be set for CpiAccounts");
+                cpi_accounts::expand_cpi_accounts(
+                    &asm_name,
+                    frame_ty,
+                    parent_field,
+                    accounts,
+                    &mut const_defs,
+                    &mut meta_idents,
+                );
+            }
             ConstantKind::Immediate { expr } => {
                 let (def, meta) = immediate::expand_immediate(base_name, &asm_name, doc, expr);
                 const_defs.push(def);
@@ -73,12 +105,37 @@ pub fn expand(input: &ConstantGroupInput) -> proc_macro2::TokenStream {
                     &mut meta_idents,
                 );
             }
+            ConstantKind::UnalignedFrameOffset { fields } => {
+                let frame_ty = input
+                    .frame_type
+                    .as_ref()
+                    .expect("frame_type must be set for UnalignedFrameOffset");
+                let (def, meta) = offset::expand_unaligned_frame_offset(
+                    base_name, &asm_name, doc, frame_ty, fields,
+                );
+                const_defs.push(def);
+                meta_idents.push(meta);
+            }
             ConstantKind::FramePubkeyOffsets { fields } => {
                 let frame_ty = input
                     .frame_type
                     .as_ref()
                     .expect("frame_type must be set for FramePubkeyOffsets");
                 offset::expand_frame_pubkey_offsets(
+                    &asm_name,
+                    doc,
+                    frame_ty,
+                    fields,
+                    &mut const_defs,
+                    &mut meta_idents,
+                );
+            }
+            ConstantKind::UnalignedFramePubkeyOffsets { fields } => {
+                let frame_ty = input
+                    .frame_type
+                    .as_ref()
+                    .expect("frame_type must be set for UnalignedFramePubkeyOffsets");
+                offset::expand_unaligned_frame_pubkey_offsets(
                     &asm_name,
                     doc,
                     frame_ty,

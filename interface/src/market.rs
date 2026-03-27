@@ -1,10 +1,11 @@
+use crate::cpi_bindings::{SolAccountInfo, SolAccountMeta, SolInstruction, SolSignerSeed};
+use crate::memory::EmptyAccount;
 use crate::memory::StackNode;
-use crate::memory::{data, runtime_data_size};
 use crate::order::Order;
 use crate::seat::Seat;
-use crate::{cpi_bindings::SolSignerSeed, memory::FullRuntimeAccount};
 use dropset_macros::{
-    constant_group, frame, instruction_accounts, instruction_data, signer_seeds, svm_data,
+    constant_group, cpi_accounts, frame, instruction_accounts, instruction_data, signer_seeds,
+    svm_data,
 };
 use pinocchio::Address;
 
@@ -35,28 +36,32 @@ pub struct RegisterMarketData {
 #[svm_data]
 pub struct InputBufferHeader {
     pub n_accounts: u64,
-    pub user: FullRuntimeAccount<{ runtime_data_size(data::DATA_LEN_ZERO) }>,
-    pub market: FullRuntimeAccount<{ runtime_data_size(data::DATA_LEN_ZERO) }>,
+    pub user: EmptyAccount,
+    pub market: EmptyAccount,
     /// Zero account data statically assumed in order to dynamically check quote offset at runtime.
-    pub base_mint: FullRuntimeAccount<{ runtime_data_size(data::DATA_LEN_ZERO) }>,
-    pub quote_mint: FullRuntimeAccount<{ runtime_data_size(data::DATA_LEN_ZERO) }>,
+    pub base_mint: EmptyAccount,
+    pub quote_mint: EmptyAccount,
 }
 
 constant_group! {
     #[prefix("RM_MISC")]
     #[inject("market/register")]
-    /// Assorted register market constants.
+    /// Miscellaneous market registration constants.
     register_misc {
         /// From input buffer to base mint duplicate flag.
-        BASE_MINT_DUPLICATE = offset!(InputBufferHeader.base_mint.header.borrow_state),
+        BASE_DUPLICATE = offset!(InputBufferHeader.base_mint.header.borrow_state),
         /// From input buffer to base mint data length.
         BASE_DATA_LEN = offset!(InputBufferHeader.base_mint.header.data_len),
         /// From input buffer to base mint address.
         BASE_ADDR = offset!(InputBufferHeader.base_mint.header.address),
+        /// From input buffer to quote mint.
+        QUOTE = offset!(InputBufferHeader.quote_mint),
         /// From input buffer to quote mint duplicate flag.
-        QUOTE_MINT_DUPLICATE = offset!(InputBufferHeader.quote_mint.header.borrow_state),
+        QUOTE_DUPLICATE = offset!(InputBufferHeader.quote_mint.header.borrow_state),
         /// From input buffer to quote mint address.
         QUOTE_ADDR = offset!(InputBufferHeader.quote_mint.header.address),
+        /// From input buffer to quote mint data length.
+        QUOTE_DATA_LEN = offset!(InputBufferHeader.quote_mint.header.data_len),
         /// Number of seeds for market PDA derivation (base, quote).
         TRY_FIND_PDA_SEEDS_LEN = immediate!(2),
     }
@@ -78,21 +83,39 @@ pub enum RegisterMarketAccounts {
 }
 // endregion: register_market_accounts
 
-// region: register_market_stack
-
-// region: frame_example
-#[frame]
-/// Stack frame for REGISTER-MARKET.
-pub struct RegisterMarketFrame {
-    /// For CreateAccount CPI.
-    pub pda_seeds: PDASignerSeeds,
-    /// From `sol_try_find_program_address`.
-    pub pda: Address,
-    /// From `sol_try_find_program_address`.
-    pub bump: u8,
+#[svm_data]
+/// CPI instruction data for CreateAccount.
+pub struct CreateAccountData {
+    /// Zero-initialized on stack.
+    pub discriminator: u32,
+    pub lamports: u64,
+    pub space: u64,
+    pub owner: Address,
+    /// Included for alignment on stack.
+    _pad: u32,
 }
-// endregion: frame_example
 
+cpi_accounts! {
+    /// CPI accounts for CreateAccount and ATA creation.
+    ///
+    /// CreateAccount uses the first two accounts (user, target). ATA creation requires all six.
+    pub struct CPIAccounts {
+        /// User account.
+        user,
+        /// Target account.
+        target,
+        /// Proprietor account.
+        proprietor,
+        /// Mint account.
+        mint,
+        /// System Program account.
+        system_program,
+        /// Token Program account.
+        token_program,
+    }
+}
+
+// region: register_market_stack
 // region: signer_seeds_example
 signer_seeds! {
     pub struct PDASignerSeeds {
@@ -106,6 +129,27 @@ signer_seeds! {
 }
 // endregion: signer_seeds_example
 
+// region: frame_example
+#[frame]
+/// Stack frame for REGISTER-MARKET.
+pub struct RegisterMarketFrame {
+    /// For CreateAccount CPI.
+    pub pda_seeds: PDASignerSeeds,
+    /// From `sol_try_find_program_address`.
+    pub pda: Address,
+    /// System Program pubkey, zero-initialized on stack
+    pub system_program_pubkey: Address,
+    /// CPI instruction data for CreateAccount.
+    pub create_account_data: CreateAccountData,
+    /// CPI accounts for CreateAccount and ATA creation.
+    pub cpi_accounts: CPIAccounts,
+    /// Re-used across CPIs, zero-initialized on stack.
+    pub cpi_instruction: SolInstruction,
+    /// From `sol_try_find_program_address`.
+    pub bump: u8,
+}
+// endregion: frame_example
+
 constant_group! {
     #[prefix("RM")]
     #[inject("market/register")]
@@ -115,8 +159,22 @@ constant_group! {
         PDA_SEEDS = signer_seeds!(pda_seeds),
         /// PDA address.
         PDA = pubkey_offsets!(pda),
+        /// System Program pubkey.
+        SYSTEM_PROGRAM_PUBKEY = pubkey_offsets!(system_program_pubkey),
         /// Bump seed.
         BUMP = offset!(bump),
+        /// CreateAccount instruction data.
+        CREATE_ACCT_DATA = offset!(create_account_data),
+        /// Lamports field within CreateAccount instruction data.
+        CREATE_ACCT_LAMPORTS = unaligned_offset!(create_account_data.lamports),
+        /// Space field within CreateAccount instruction data.
+        CREATE_ACCT_SPACE = unaligned_offset!(create_account_data.space),
+        /// Owner field within CreateAccount instruction data.
+        CREATE_ACCT_OWNER = unaligned_pubkey_offsets!(create_account_data.owner),
+        /// CPI accounts.
+        CPI = cpi_accounts!(cpi_accounts),
+        /// Solana instruction.
+        SOL_INSN = sol_instruction!(cpi_instruction),
     }
 }
 

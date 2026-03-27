@@ -23,6 +23,8 @@ pub enum Constant {
     Offset { header: Header, value: i16 },
     /// An immediate value that must fit in an i32.
     Immediate { header: Header, value: i32 },
+    /// A wide immediate value (i64), used with `lddw`.
+    Wide { header: Header, value: i64 },
 }
 
 /// A named group of constants to be injected into an assembly file.
@@ -40,7 +42,9 @@ impl Constant {
     /// The constant's name.
     fn name(&self) -> &'static str {
         match self {
-            Constant::Offset { header, .. } | Constant::Immediate { header, .. } => header.name.0,
+            Constant::Offset { header, .. }
+            | Constant::Immediate { header, .. }
+            | Constant::Wide { header, .. } => header.name.0,
         }
     }
 
@@ -54,6 +58,9 @@ impl Constant {
                 (header.name.0, header.comment.0, format!("{}", value))
             }
             Constant::Immediate { header, value } => {
+                (header.name.0, header.comment.0, format!("{}", value))
+            }
+            Constant::Wide { header, value } => {
                 (header.name.0, header.comment.0, format!("{}", value))
             }
         };

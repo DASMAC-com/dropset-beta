@@ -1,12 +1,8 @@
 use quote::quote;
 
 use crate::attrs::extract_doc_comment;
+use crate::sbpf_config;
 use crate::shared_state;
-
-/// Maximum size of a single SBPF stack frame, sourced from the VM config default.
-fn stack_frame_size() -> usize {
-    solana_sbpf::vm::Config::default().stack_frame_size
-}
 
 /// Extract the last path segment from a type (e.g. `crate::Foo` → `Foo`).
 fn type_name(ty: &syn::Type) -> String {
@@ -31,7 +27,7 @@ pub fn expand(input: &syn::ItemStruct) -> proc_macro2::TokenStream {
     let generics = &input.generics;
     let fields = &input.fields;
     let semi = &input.semi_token;
-    let max = stack_frame_size();
+    let max = sbpf_config::stack_frame_size();
 
     // Register frame metadata for constant_group! lookup.
     let field_types: Vec<(String, String)> = input

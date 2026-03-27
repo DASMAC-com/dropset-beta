@@ -3,6 +3,7 @@ use quote::quote;
 use syn::Ident;
 
 use crate::codegen;
+use crate::sbpf_config::FRAME_ALIGN;
 
 use super::address::{CHUNK_SIZE, N_CHUNKS};
 
@@ -104,7 +105,7 @@ pub fn emit_frame_offset_const(
                 "frame offset must fit in i16",
             );
             const _: () = assert!(
-                VALUE % 8 == 0,
+                VALUE % #FRAME_ALIGN == 0,
                 "frame offset must be aligned to BPF_ALIGN_OF_U128",
             );
             VALUE as i16
@@ -116,20 +117,64 @@ pub fn emit_frame_offset_const(
     (def, meta_ident)
 }
 
+/// Like [`emit_frame_offset_const`] but without the alignment assertion.
+pub fn emit_unaligned_frame_offset_const(
+    rust_name: &Ident,
+    asm_name: &str,
+    doc: &str,
+    frame_ty: &syn::Path,
+    field_chain: proc_macro2::TokenStream,
+) -> (proc_macro2::TokenStream, Ident) {
+    let meta_ident = codegen::meta_ident(asm_name, rust_name.span());
+    let meta = codegen::offset_meta(&meta_ident, asm_name, doc, rust_name);
+    let value_expr = frame_offset_expr(frame_ty, &field_chain);
+
+    let def = quote! {
+        #[doc = #doc]
+        pub const #rust_name: i16 = {
+            use super::*;
+            const VALUE: i64 = #value_expr;
+            const _: () = assert!(
+                VALUE >= i16::MIN as i64 && VALUE <= i16::MAX as i64,
+                "frame offset must fit in i16",
+            );
+            VALUE as i16
+        };
+
+        #meta
+    };
+
+    (def, meta_ident)
+}
+
 /// Emit a base `_OFF` plus four `_CHUNK_{0..3}_OFF` offset constants given a
-/// value expression for the base offset.
+/// value expression for the base offset. When `require_align` is true (frame
+/// context), an alignment assertion is added to the base offset.
 fn emit_pubkey_offset_group(
     asm_prefix: &str,
     doc: &str,
     base_value_expr: proc_macro2::TokenStream,
+    require_align: bool,
+    suffix: &str,
     const_defs: &mut Vec<proc_macro2::TokenStream>,
     meta_idents: &mut Vec<Ident>,
 ) {
     let doc_base = doc.trim_end_matches('.');
 
+    let align_assert = if require_align {
+        quote! {
+            const _: () = assert!(
+                VALUE % #FRAME_ALIGN == 0,
+                "frame pubkey offset must be aligned to BPF_ALIGN_OF_U128",
+            );
+        }
+    } else {
+        quote! {}
+    };
+
     // Base offset (same value as chunk 0).
     {
-        let asm_name = format!("{}_OFF", asm_prefix);
+        let asm_name = format!("{}_{}", asm_prefix, suffix);
         let rust_name = Ident::new(&asm_name, Span::call_site());
         let meta_ident = codegen::meta_ident(&asm_name, Span::call_site());
         let meta = codegen::offset_meta(&meta_ident, &asm_name, doc, &rust_name);
@@ -143,6 +188,7 @@ fn emit_pubkey_offset_group(
                     VALUE >= i16::MIN as i64 && VALUE <= i16::MAX as i64,
                     "pubkey offset must fit in i16",
                 );
+                #align_assert
                 VALUE as i16
             };
 
@@ -154,7 +200,7 @@ fn emit_pubkey_offset_group(
     // Per-chunk offsets.
     for i in 0..N_CHUNKS {
         let chunk_byte_offset = (i * CHUNK_SIZE) as i64;
-        let asm_name = format!("{}_CHUNK_{}_OFF", asm_prefix, i);
+        let asm_name = format!("{}_CHUNK_{}_{}", asm_prefix, i, suffix);
         let rust_name = Ident::new(&asm_name, Span::call_site());
         let doc = format!("{} (chunk {}).", doc_base, i);
         let meta_ident = codegen::meta_ident(&asm_name, Span::call_site());
@@ -193,7 +239,15 @@ pub fn expand_pubkey_offsets(
         quote! { #expr as i64 }
     };
 
-    emit_pubkey_offset_group(asm_prefix, doc, base_value_expr, const_defs, meta_idents);
+    emit_pubkey_offset_group(
+        asm_prefix,
+        doc,
+        base_value_expr,
+        false,
+        "OFF",
+        const_defs,
+        meta_idents,
+    );
 }
 
 /// Expand `pubkey_offsets!(field)` inside a `#[frame(Type)]` group into a base
@@ -209,7 +263,75 @@ pub fn expand_frame_pubkey_offsets(
     let field_chain = quote! { #(#fields).* };
     let base_value_expr = frame_offset_expr(frame_ty, &field_chain);
 
-    emit_pubkey_offset_group(asm_prefix, doc, base_value_expr, const_defs, meta_idents);
+    emit_pubkey_offset_group(
+        asm_prefix,
+        doc,
+        base_value_expr,
+        true,
+        "OFF",
+        const_defs,
+        meta_idents,
+    );
+}
+
+/// Expand `unaligned_pubkey_offsets!(field)` inside a `#[frame(Type)]` group
+/// into a base `_UOFF` plus four `_CHUNK_{0..3}_UOFF` frame-relative offset
+/// constants, without alignment assertions.
+pub fn expand_unaligned_frame_pubkey_offsets(
+    asm_prefix: &str,
+    doc: &str,
+    frame_ty: &syn::Path,
+    fields: &[syn::Member],
+    const_defs: &mut Vec<proc_macro2::TokenStream>,
+    meta_idents: &mut Vec<Ident>,
+) {
+    let field_chain = quote! { #(#fields).* };
+    let base_value_expr = frame_offset_expr(frame_ty, &field_chain);
+
+    emit_pubkey_offset_group(
+        asm_prefix,
+        doc,
+        base_value_expr,
+        false,
+        "UOFF",
+        const_defs,
+        meta_idents,
+    );
+}
+
+/// Expand `unaligned_offset!(field)` inside a `#[frame(Type)]` group.
+/// Like `expand_frame_offset` but without the alignment assertion.
+/// Name gets `_UOFF` suffix.
+pub fn expand_unaligned_frame_offset(
+    base_name: &Ident,
+    asm_name: &str,
+    doc: &str,
+    frame_ty: &syn::Path,
+    fields: &[syn::Member],
+) -> (proc_macro2::TokenStream, Ident) {
+    let rust_name = Ident::new(&format!("{}_UOFF", base_name), base_name.span());
+    let asm_name = format!("{}_UOFF", asm_name);
+    let meta_ident = codegen::meta_ident(&asm_name, rust_name.span());
+    let meta = codegen::offset_meta(&meta_ident, &asm_name, doc, &rust_name);
+    let field_chain = quote! { #(#fields).* };
+    let value_expr = frame_offset_expr(frame_ty, &field_chain);
+
+    let def = quote! {
+        #[doc = #doc]
+        pub const #rust_name: i16 = {
+            use super::*;
+            const VALUE: i64 = #value_expr;
+            const _: () = assert!(
+                VALUE >= i16::MIN as i64 && VALUE <= i16::MAX as i64,
+                "frame offset must fit in i16",
+            );
+            VALUE as i16
+        };
+
+        #meta
+    };
+
+    (def, meta_ident)
 }
 
 /// Expand `offset!(field)` inside a `#[frame(Type)]` group.

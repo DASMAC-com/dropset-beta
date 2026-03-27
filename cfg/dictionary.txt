@@ -12,6 +12,7 @@ insn
 katex
 keypair
 lamports
+lddw
 ldxb
 ldxdw
 metaprogramming
@@ -32,6 +33,7 @@ syscall
 syscalls
 sysvar
 sysvars
+uoff
 ureq
 vite
 vitepress
