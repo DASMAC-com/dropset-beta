@@ -1,4 +1,4 @@
-# Field offsets within a runtime account.
+# Assorted runtime account constants.
 # -------------------------------------------------------------------------
 .equ ACCT_DUPLICATE_OFF, 0 # Borrow state / duplicate marker.
 .equ ACCT_IS_SIGNER_OFF, 1 # Whether the account is a signer.
@@ -20,6 +20,12 @@
 .equ ACCT_NON_DUP_MARKER, 255 # Non-dup marker for accounts.
 # Account storage overhead for rent calculation.
 .equ ACCT_STORAGE_OVERHEAD, 128
+# -------------------------------------------------------------------------
+
+# CPI-related constants.
+# -------------------------------------------------------------------------
+# Mask for writable signer (is_writable | is_signer).
+.equ CPI_WRITABLE_SIGNER, 257
 # -------------------------------------------------------------------------
 
 # Common data-related constants.

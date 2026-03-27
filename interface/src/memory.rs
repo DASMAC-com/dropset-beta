@@ -43,7 +43,7 @@ pub type EmptyAccount = FullRuntimeAccount<{ runtime_data_size(data::LEN_ZERO) }
 constant_group! {
     #[prefix("ACCT")]
     #[inject("common/memory")]
-    /// Field offsets within a runtime account.
+    /// Assorted runtime account constants.
     account {
         /// Borrow state / duplicate marker.
         DUPLICATE = offset!(EmptyAccount.header.borrow_state),
@@ -67,6 +67,16 @@ constant_group! {
         NON_DUP_MARKER = immediate!(NON_DUP_MARKER as i32),
         /// Account storage overhead for rent calculation.
         STORAGE_OVERHEAD = immediate!(ACCOUNT_STORAGE_OVERHEAD as i32),
+    }
+}
+
+constant_group! {
+    #[prefix("CPI")]
+    #[inject("common/memory")]
+    /// CPI-related constants.
+    cpi {
+        /// Mask for writable signer (is_writable | is_signer).
+        WRITABLE_SIGNER = immediate!(0x0101),
     }
 }
 

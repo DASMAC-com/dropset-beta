@@ -27,8 +27,6 @@
   \IF{$input.market.data\_len \neq 0$}
     \RETURN \texttt{ErrorCode::MarketHasData}
   \ENDIF
-  \COMMENT{Populate CreateAccount CPI instruction data owner field before advancing.}
-  \STATE $frame.create\_account\_data.owner = input.market.address$
   \COMMENT{Check base mint account, create signer seed.}
   \IF{$input.base\_mint.duplicate \neq$ \texttt{account.NON\_DUP\_MARKER}}
     \RETURN \texttt{ErrorCode::BaseMintIsDuplicate}
@@ -49,22 +47,24 @@
   \STATE $quote\_mint\_padded\_data\_len = input\_shifted.quote\_mint.padded\_data\_len$
   \STATE $acct = \&input\_shifted.quote\_mint$
   \STATE $acct \mathrel{{+}{=}} quote\_mint\_padded\_data\_len$ +
-  \texttt{EmptyAccount.size}
+    \texttt{EmptyAccount.size}
   \COMMENT{Derive market PDA.}
   \STATE \CALL{Store}{$input$}
   \STATE $syscall.seeds = \&frame.pda\_seeds$
   \STATE $syscall.program\_id = \&insn.program\_id$
   \STATE $syscall.seeds\_len =$ \texttt{register\_misc.TRY\_FIND\_PDA\_SEEDS\_LEN}
-  \STATE $syscall.program\_address = frame.pda$
-  \STATE $syscall.bump\_seed = frame.bump$
+  \STATE $syscall.program\_address = \&frame.pda$
+  \STATE $syscall.bump\_seed = \&frame.bump$
   \STATE \CALL{sol-try-find-program-address}{}
   \COMMENT{Verify derived market PDA matches market account pubkey.}
   \IF{$input.market.pubkey \neq frame.market\_pda$}
     \RETURN \texttt{ErrorCode::InvalidMarketPubkey}
   \ENDIF
   \COMMENT{Populate bump signer seed from derived bump.}
-  \STATE $frame.pda\_seeds.bump.addr = \&frame.bump$
+  \STATE $frame.pda\_seeds.bump.addr = \&syscall.bump\_seed$
   \STATE $frame.pda\_seeds.bump.len = $ \texttt{u8.size}
+  \COMMENT{Populate CreateAccount CPI instruction data owner field.}
+  \STATE $frame.create\_account\_data.owner = syscall.program\_id$
   \COMMENT{Check System Program account.}
   \IF{$acct.duplicate \neq$ \texttt{account.NON\_DUP\_MARKER}}
     \RETURN \texttt{ErrorCode::SystemProgramIsDuplicate}
@@ -72,6 +72,8 @@
   \IF{$acct.pubkey \neq frame.system\_program\_pubkey$}
     \RETURN \texttt{ErrorCode::InvalidSystemProgramPubkey}
   \ENDIF
+  \COMMENT{Populate CPI program ID field.}
+  \STATE $frame.sol\_instruction.program\_id = \&acct.address$
   \COMMENT{Advance to Rent sysvar account.}
   \STATE $system\_program\_padded\_data\_len = acct.padded\_data\_len$
   \STATE $acct \mathrel{{+}{=}} system\_program\_padded\_data\_len$ +

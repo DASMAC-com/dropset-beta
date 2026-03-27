@@ -226,15 +226,6 @@ register_market:
     #     return ErrorCode::MarketHasData
     ldxdw r9, [r1 + IB_MARKET_DATA_LEN_OFF]
     jne r9, DATA_LEN_ZERO, e_market_has_data
-    # frame.create_account_data.owner = input.market.address
-    ldxdw r9, [r1 + IB_MARKET_PUBKEY_CHUNK_0_OFF]
-    stxdw [r10 + RM_FM_CREATE_ACCT_OWNER_CHUNK_0_UOFF], r9
-    ldxdw r9, [r1 + IB_MARKET_PUBKEY_CHUNK_1_OFF]
-    stxdw [r10 + RM_FM_CREATE_ACCT_OWNER_CHUNK_1_UOFF], r9
-    ldxdw r9, [r1 + IB_MARKET_PUBKEY_CHUNK_2_OFF]
-    stxdw [r10 + RM_FM_CREATE_ACCT_OWNER_CHUNK_2_UOFF], r9
-    ldxdw r9, [r1 + IB_MARKET_PUBKEY_CHUNK_3_OFF]
-    stxdw [r10 + RM_FM_CREATE_ACCT_OWNER_CHUNK_3_UOFF], r9
     # if input.base_mint.duplicate != account.NON_DUP_MARKER
     #     return ErrorCode::BaseMintIsDuplicate
     ldxb r9, [r1 + RM_MISC_BASE_DUPLICATE_OFF]
@@ -281,10 +272,10 @@ register_market:
     add64 r3, REGISTER_MARKET_DATA_LEN
     # syscall.seeds_len = register_misc.TRY_FIND_PDA_SEEDS_LEN
     mov64 r2, RM_MISC_TRY_FIND_PDA_SEEDS_LEN
-    # syscall.program_address = RegisterMarketFrame.pda
+    # syscall.program_address = &frame.pda
     mov64 r4, r10
     add64 r4, RM_FM_PDA_OFF
-    # syscall.bump_seed = RegisterMarketFrame.bump
+    # syscall.bump_seed = &frame.bump
     mov64 r5, r10
     add64 r5, RM_FM_BUMP_OFF
     call sol_try_find_program_address
@@ -303,12 +294,19 @@ register_market:
     ldxdw r8, [r10 + RM_FM_PDA_CHUNK_3_OFF]
     jne r7, r8, e_invalid_market_pubkey
     # frame.pda_seeds.bump.addr = &frame.bump
-    mov64 r7, r10
-    add64 r7, RM_FM_BUMP_OFF
-    stxdw [r10 + RM_FM_PDA_SEEDS_BUMP_ADDR_OFF], r7
+    stxdw [r10 + RM_FM_PDA_SEEDS_BUMP_ADDR_OFF], r5
     # frame.pda_seeds.bump.len = u8.size
     mov64 r7, SIZE_OF_U8
     stxdw [r10 + RM_FM_PDA_SEEDS_BUMP_LEN_OFF], r7
+    # frame.create_account_data.owner = syscall.program_id
+    ldxdw r7, [r3 + PUBKEY_CHUNK_0_OFF]
+    stxdw [r10 + RM_FM_CREATE_ACCT_OWNER_CHUNK_0_UOFF], r7
+    ldxdw r7, [r3 + PUBKEY_CHUNK_1_OFF]
+    stxdw [r10 + RM_FM_CREATE_ACCT_OWNER_CHUNK_1_UOFF], r7
+    ldxdw r7, [r3 + PUBKEY_CHUNK_2_OFF]
+    stxdw [r10 + RM_FM_CREATE_ACCT_OWNER_CHUNK_2_UOFF], r7
+    ldxdw r7, [r3 + PUBKEY_CHUNK_3_OFF]
+    stxdw [r10 + RM_FM_CREATE_ACCT_OWNER_CHUNK_3_UOFF], r7
     # if acct.duplicate != account.NON_DUP_MARKER
     #     return ErrorCode::SystemProgramIsDuplicate
     ldxb r7, [r9 + ACCT_DUPLICATE_OFF]
@@ -327,6 +325,10 @@ register_market:
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_3_OFF]
     ldxdw r8, [r10 + RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_3_OFF]
     jne r7, r8, e_invalid_system_program_pubkey
+    # frame.sol_instruction.program_id = &acct.address
+    mov64 r7, r9
+    add64 r7, ACCT_ADDRESS_OFF
+    stxdw [r10 + RM_FM_SOL_INSN_PROGRAM_ID_UOFF], r7
     # system_program_padded_data_len = acct.padded_data_len
     ldxdw r7, [r9 + ACCT_DATA_LEN_OFF]
     add64 r7, DATA_LEN_MAX_PAD
