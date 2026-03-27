@@ -90,6 +90,15 @@
   \STATE $acct\_size = $ \texttt{MarketHeader.size} + \texttt{account.STORAGE\_OVERHEAD}
   \STATE $lamports\_per\_byte = acct.data.lamports\_per\_byte$
   \STATE $frame.create\_account\_data.lamports = acct\_size \times lamports\_per\_byte$
+  \COMMENT{Set CPI account static fields.}
+  \STATE $frame.cpi.user\_info.is\_signer = $ \texttt{true}
+  \STATE $frame.cpi.user\_info.is\_writable = $ \texttt{true}
+  \STATE $frame.cpi.user\_meta.is\_signer = $ \texttt{true}
+  \STATE $frame.cpi.user\_meta.is\_writable = $ \texttt{true}
+  \STATE $frame.cpi.target\_info.is\_signer = $ \texttt{true}
+  \STATE $frame.cpi.target\_info.is\_writable = $ \texttt{true}
+  \STATE $frame.cpi.target\_meta.is\_signer = $ \texttt{true}
+  \STATE $frame.cpi.target\_meta.is\_writable = $ \texttt{true}
 \ENDPROCEDURE
 \end{algorithmic}
 \end{algorithm}

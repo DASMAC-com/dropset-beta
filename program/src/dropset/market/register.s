@@ -366,4 +366,9 @@ register_market:
     # frame.create_account_data.lamports = acct_size * lamports_per_byte
     mul64 r7, r8
     stxdw [r10 + RM_FM_CREATE_ACCT_LAMPORTS_UOFF], r7
+    # Set CPI account static fields.
+    sth [r10 + RM_FM_CPI_USER_ACCT_INFO_IS_SIGNER_UOFF], CPI_WRITABLE_SIGNER
+    sth [r10 + RM_FM_CPI_USER_ACCT_META_IS_WRITABLE_UOFF], CPI_WRITABLE_SIGNER
+    sth [r10 + RM_FM_CPI_TARGET_ACCT_INFO_IS_SIGNER_UOFF], CPI_WRITABLE_SIGNER
+    sth [r10 + RM_FM_CPI_TARGET_ACCT_META_IS_WRITABLE_UOFF], CPI_WRITABLE_SIGNER
     exit
