@@ -151,10 +151,12 @@ and proceed to the **Resolve** section below.
 
 ### Output
 
-1. Do NOT make any changes. Compile all findings
-   into `.audit/findings.md` (create the directory
-   if needed). Use a checklist format with one item
-   per finding. Each item should include:
+1. Enter plan mode. Do NOT make any changes.
+
+1. Compile all findings into `.audit/findings.md`
+   (create the directory if needed). Use a checklist
+   format with one item per finding. Each item
+   should include:
 
    - The file path and line number.
    - Which category it falls under (DRY,
@@ -166,10 +168,18 @@ and proceed to the **Resolve** section below.
    Mark every item with `- [ ]` (unchecked).
 
 1. If nothing needed fixing, confirm the audit
-   passed. Otherwise, present the checklist and
-   proceed to the **Resolve** section.
+   passed and exit plan mode.
+
+1. If there are findings, present the checklist
+   to the user and ask for approval to proceed
+   with fixes. Do NOT exit plan mode or make any
+   changes until the user approves.
 
 ### Resolve
+
+Only proceed here after the user approves.
+
+1. Exit plan mode.
 
 1. Read `.audit/findings.md`. Identify the first
    unchecked (`- [ ]`) item.
