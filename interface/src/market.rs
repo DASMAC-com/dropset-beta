@@ -90,6 +90,7 @@ pub struct CreateAccountData {
     pub discriminator: u32,
     pub lamports: u64,
     pub space: u64,
+    /// Zero-initialized on stack.
     pub owner: Address,
     /// Included for alignment on stack.
     _pad: u32,
@@ -144,7 +145,7 @@ pub struct RegisterMarketFrame {
     /// CPI accounts for CreateAccount and ATA creation.
     pub cpi_accounts: CPIAccounts,
     /// Re-used across CPIs, zero-initialized on stack.
-    pub cpi_instruction: SolInstruction,
+    pub sol_instruction: SolInstruction,
     /// From `sol_try_find_program_address`.
     pub bump: u8,
 }
@@ -172,7 +173,7 @@ constant_group! {
         /// CPI accounts.
         CPI = cpi_accounts!(cpi_accounts),
         /// Solana instruction.
-        SOL_INSN = sol_instruction!(cpi_instruction),
+        SOL_INSN = sol_instruction!(sol_instruction),
         /// Bump seed.
         BUMP = offset!(bump),
     }
