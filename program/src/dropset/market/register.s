@@ -302,6 +302,13 @@ register_market:
     ldxdw r7, [r6 + IB_MARKET_PUBKEY_CHUNK_3_OFF]
     ldxdw r8, [r10 + RM_FM_PDA_CHUNK_3_OFF]
     jne r7, r8, e_invalid_market_pubkey
+    # frame.pda_seeds.bump.addr = &frame.bump
+    mov64 r7, r10
+    add64 r7, RM_FM_BUMP_OFF
+    stxdw [r10 + RM_FM_PDA_SEEDS_BUMP_ADDR_OFF], r7
+    # frame.pda_seeds.bump.len = u8.size
+    mov64 r7, SIZE_OF_U8
+    stxdw [r10 + RM_FM_PDA_SEEDS_BUMP_LEN_OFF], r7
     # if acct.duplicate != account.NON_DUP_MARKER
     #     return ErrorCode::SystemProgramIsDuplicate
     ldxb r7, [r9 + ACCT_DUPLICATE_OFF]

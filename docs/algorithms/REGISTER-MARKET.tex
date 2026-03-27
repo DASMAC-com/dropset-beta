@@ -62,6 +62,9 @@
   \IF{$input.market.pubkey \neq frame.market\_pda$}
     \RETURN \texttt{ErrorCode::InvalidMarketPubkey}
   \ENDIF
+  \COMMENT{Populate bump signer seed from derived bump.}
+  \STATE $frame.pda\_seeds.bump.addr = \&frame.bump$
+  \STATE $frame.pda\_seeds.bump.len = $ \texttt{u8.size}
   \COMMENT{Check System Program account.}
   \IF{$acct.duplicate \neq$ \texttt{account.NON\_DUP\_MARKER}}
     \RETURN \texttt{ErrorCode::SystemProgramIsDuplicate}

@@ -101,7 +101,7 @@ constant_group! {
 // region: size_of_group_example
 size_of_group! {
     #[inject("common/memory")]
-    [Address, EmptyAccount, MarketHeader]
+    [u8, Address, EmptyAccount, MarketHeader]
 }
 // endregion: size_of_group_example
 

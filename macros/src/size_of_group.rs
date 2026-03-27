@@ -44,11 +44,24 @@ pub fn expand(input: &SizeOfGroupInput) -> proc_macro2::TokenStream {
         let doc = format!("Size of {} in bytes.", type_str);
         let meta_ident = codegen::meta_ident(&asm_name, Span::call_site());
 
+        // Primitives (e.g. u8, u64) live in the prelude, not in `super`.
+        let is_primitive = matches!(
+            type_str.as_str(),
+            "u8" | "u16" | "u32" | "u64" | "u128"
+                | "i8" | "i16" | "i32" | "i64" | "i128"
+                | "usize" | "isize" | "bool"
+        );
+        let qualified_ty = if is_primitive {
+            quote! { #ty }
+        } else {
+            quote! { super::#ty }
+        };
+
         let meta = codegen::immediate_meta(&meta_ident, &asm_name, &doc, quote! { #rust_name });
 
         let def = quote! {
             #[doc = #doc]
-            pub const #rust_name: i32 = std::mem::size_of::<super::#ty>() as i32;
+            pub const #rust_name: i32 = std::mem::size_of::<#qualified_ty>() as i32;
 
             #meta
         };

@@ -49,6 +49,7 @@
 .equ IB_MARKET_PUBKEY_CHUNK_3_OFF, 10376
 # -------------------------------------------------------------------------
 
+.equ SIZE_OF_U8, 1 # Size of u8 in bytes.
 .equ SIZE_OF_ADDRESS, 32 # Size of Address in bytes.
 .equ SIZE_OF_EMPTY_ACCOUNT, 10336 # Size of EmptyAccount in bytes.
 .equ SIZE_OF_MARKET_HEADER, 40 # Size of MarketHeader in bytes.
