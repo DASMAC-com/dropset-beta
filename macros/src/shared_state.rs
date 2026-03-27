@@ -5,6 +5,10 @@ use std::sync::{LazyLock, Mutex};
 static SIGNER_SEEDS: LazyLock<Mutex<HashMap<String, Vec<String>>>> =
     LazyLock::new(|| Mutex::new(HashMap::new()));
 
+/// Field names registered by `cpi_accounts!`, keyed by struct name.
+static CPI_ACCOUNTS: LazyLock<Mutex<HashMap<String, Vec<String>>>> =
+    LazyLock::new(|| Mutex::new(HashMap::new()));
+
 /// Metadata registered by `#[frame]`, keyed by struct name.
 struct FrameInfo {
     /// Field name → type name mappings (e.g. `("pda_seeds", "PdaSignerSeeds")`).
@@ -19,6 +23,14 @@ static FRAME_INFO: LazyLock<Mutex<HashMap<String, FrameInfo>>> =
 /// Store the field names of a `#[signer_seeds]` struct.
 pub fn register_signer_seeds(struct_name: &str, fields: Vec<String>) {
     SIGNER_SEEDS
+        .lock()
+        .unwrap()
+        .insert(struct_name.to_string(), fields);
+}
+
+/// Store the field names of a `cpi_accounts!` struct.
+pub fn register_cpi_accounts(struct_name: &str, fields: Vec<String>) {
+    CPI_ACCOUNTS
         .lock()
         .unwrap()
         .insert(struct_name.to_string(), fields);
@@ -74,6 +86,47 @@ pub fn lookup_signer_seed_fields(
         format!(
             "type `{t}` (field `{f}`) is not annotated with `signer_seeds!`. \
              The `signer_seeds!` invocation must appear before the \
+             `constant_group!` that references it.",
+            t = type_name,
+            f = parent_field,
+        )
+    })
+}
+
+/// Look up the CPI account field names for a parent field on a frame struct.
+///
+/// Resolves `frame_name.parent_field` → type name → CPI account fields.
+pub fn lookup_cpi_account_fields(
+    frame_name: &str,
+    parent_field: &str,
+) -> Result<Vec<String>, String> {
+    let frame_info = FRAME_INFO.lock().unwrap();
+    let info = frame_info.get(frame_name).ok_or_else(|| {
+        format!(
+            "frame struct `{f}` not found. `#[frame]` structs must be defined \
+             before the `constant_group!` that references them (proc macros \
+             execute in source order within a file, and in dependency order \
+             across crates).",
+            f = frame_name,
+        )
+    })?;
+
+    let (_, type_name) = info
+        .fields
+        .iter()
+        .find(|(name, _)| name == parent_field)
+        .ok_or_else(|| {
+            format!(
+                "field `{}` not found on frame struct `{}`",
+                parent_field, frame_name,
+            )
+        })?;
+
+    let cpi_accounts = CPI_ACCOUNTS.lock().unwrap();
+    cpi_accounts.get(type_name).cloned().ok_or_else(|| {
+        format!(
+            "type `{t}` (field `{f}`) is not annotated with `cpi_accounts!`. \
+             The `cpi_accounts!` invocation must appear before the \
              `constant_group!` that references it.",
             t = type_name,
             f = parent_field,

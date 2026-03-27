@@ -6,44 +6,181 @@
 
 # Stack frame for REGISTER-MARKET.
 # -------------------------------------------------------------------------
-.equ RM_FM_PDA_SEEDS_OFF, -176 # Signer seeds offset.
+.equ RM_FM_PDA_SEEDS_OFF, -608 # Signer seeds offset.
 .equ RM_FM_PDA_SEEDS_N_SEEDS, 3 # Number of signer seeds.
-.equ RM_FM_PDA_SEEDS_BASE_ADDR_OFF, -176 # Base signer seed address.
-.equ RM_FM_PDA_SEEDS_BASE_LEN_OFF, -168 # Base signer seed length.
-.equ RM_FM_PDA_SEEDS_QUOTE_ADDR_OFF, -160 # Quote signer seed address.
-.equ RM_FM_PDA_SEEDS_QUOTE_LEN_OFF, -152 # Quote signer seed length.
-.equ RM_FM_PDA_SEEDS_BUMP_ADDR_OFF, -144 # Bump signer seed address.
-.equ RM_FM_PDA_SEEDS_BUMP_LEN_OFF, -136 # Bump signer seed length.
-.equ RM_FM_PDA_OFF, -128 # PDA address.
-.equ RM_FM_PDA_CHUNK_0_OFF, -128 # PDA address (chunk 0).
-.equ RM_FM_PDA_CHUNK_1_OFF, -120 # PDA address (chunk 1).
-.equ RM_FM_PDA_CHUNK_2_OFF, -112 # PDA address (chunk 2).
-.equ RM_FM_PDA_CHUNK_3_OFF, -104 # PDA address (chunk 3).
-.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_OFF, -96 # System Program pubkey.
+.equ RM_FM_PDA_SEEDS_BASE_ADDR_OFF, -608 # Base signer seed address.
+.equ RM_FM_PDA_SEEDS_BASE_LEN_OFF, -600 # Base signer seed length.
+.equ RM_FM_PDA_SEEDS_QUOTE_ADDR_OFF, -592 # Quote signer seed address.
+.equ RM_FM_PDA_SEEDS_QUOTE_LEN_OFF, -584 # Quote signer seed length.
+.equ RM_FM_PDA_SEEDS_BUMP_ADDR_OFF, -576 # Bump signer seed address.
+.equ RM_FM_PDA_SEEDS_BUMP_LEN_OFF, -568 # Bump signer seed length.
+.equ RM_FM_PDA_OFF, -560 # PDA address.
+.equ RM_FM_PDA_CHUNK_0_OFF, -560 # PDA address (chunk 0).
+.equ RM_FM_PDA_CHUNK_1_OFF, -552 # PDA address (chunk 1).
+.equ RM_FM_PDA_CHUNK_2_OFF, -544 # PDA address (chunk 2).
+.equ RM_FM_PDA_CHUNK_3_OFF, -536 # PDA address (chunk 3).
+.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_OFF, -528 # System Program pubkey.
 # System Program pubkey (chunk 0).
-.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_0_OFF, -96
+.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_0_OFF, -528
 # System Program pubkey (chunk 1).
-.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_1_OFF, -88
+.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_1_OFF, -520
 # System Program pubkey (chunk 2).
-.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_2_OFF, -80
+.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_2_OFF, -512
 # System Program pubkey (chunk 3).
-.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_3_OFF, -72
+.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_3_OFF, -504
 .equ RM_FM_BUMP_OFF, -8 # Bump seed.
-.equ RM_FM_CREATE_ACCT_DATA_OFF, -64 # CreateAccount instruction data.
+.equ RM_FM_CREATE_ACCT_DATA_OFF, -496 # CreateAccount instruction data.
 # Lamports field within CreateAccount instruction data.
-.equ RM_FM_CREATE_ACCT_LAMPORTS_UOFF, -60
+.equ RM_FM_CREATE_ACCT_LAMPORTS_UOFF, -492
 # Space field within CreateAccount instruction data.
-.equ RM_FM_CREATE_ACCT_SPACE_UOFF, -52
+.equ RM_FM_CREATE_ACCT_SPACE_UOFF, -484
 # Owner field within CreateAccount instruction data.
-.equ RM_FM_CREATE_ACCT_OWNER_UOFF, -44
+.equ RM_FM_CREATE_ACCT_OWNER_UOFF, -476
 # Owner field within CreateAccount instruction data (chunk 0).
-.equ RM_FM_CREATE_ACCT_OWNER_CHUNK_0_UOFF, -44
+.equ RM_FM_CREATE_ACCT_OWNER_CHUNK_0_UOFF, -476
 # Owner field within CreateAccount instruction data (chunk 1).
-.equ RM_FM_CREATE_ACCT_OWNER_CHUNK_1_UOFF, -36
+.equ RM_FM_CREATE_ACCT_OWNER_CHUNK_1_UOFF, -468
 # Owner field within CreateAccount instruction data (chunk 2).
-.equ RM_FM_CREATE_ACCT_OWNER_CHUNK_2_UOFF, -28
+.equ RM_FM_CREATE_ACCT_OWNER_CHUNK_2_UOFF, -460
 # Owner field within CreateAccount instruction data (chunk 3).
-.equ RM_FM_CREATE_ACCT_OWNER_CHUNK_3_UOFF, -20
+.equ RM_FM_CREATE_ACCT_OWNER_CHUNK_3_UOFF, -452
+.equ RM_FM_CPI_N_ACCOUNTS, 6 # Number of CPI accounts.
+.equ RM_FM_CPI_SOL_ACCT_INFO_OFF, -440 # Start of SolAccountInfo vector.
+.equ RM_FM_CPI_SOL_ACCT_META_OFF, -104 # Start of SolAccountMeta vector.
+.equ RM_FM_CPI_USER_ACCT_INFO_KEY_UOFF, -440 # User account info key.
+# User account info lamports.
+.equ RM_FM_CPI_USER_ACCT_INFO_LAMPORTS_UOFF, -432
+# User account info data length.
+.equ RM_FM_CPI_USER_ACCT_INFO_DATA_LEN_UOFF, -424
+.equ RM_FM_CPI_USER_ACCT_INFO_DATA_UOFF, -416 # User account info data.
+.equ RM_FM_CPI_USER_ACCT_INFO_OWNER_UOFF, -408 # User account info owner.
+# User account info rent epoch.
+.equ RM_FM_CPI_USER_ACCT_INFO_RENT_EPOCH_UOFF, -400
+# User account info is signer.
+.equ RM_FM_CPI_USER_ACCT_INFO_IS_SIGNER_UOFF, -392
+# User account info is writable.
+.equ RM_FM_CPI_USER_ACCT_INFO_IS_WRITABLE_UOFF, -391
+# User account info executable.
+.equ RM_FM_CPI_USER_ACCT_INFO_EXECUTABLE_UOFF, -390
+.equ RM_FM_CPI_USER_ACCT_META_PUBKEY_UOFF, -104 # User account meta pubkey.
+# User account meta is writable.
+.equ RM_FM_CPI_USER_ACCT_META_IS_WRITABLE_UOFF, -96
+# User account meta is signer.
+.equ RM_FM_CPI_USER_ACCT_META_IS_SIGNER_UOFF, -95
+.equ RM_FM_CPI_TARGET_ACCT_INFO_KEY_UOFF, -384 # Target account info key.
+# Target account info lamports.
+.equ RM_FM_CPI_TARGET_ACCT_INFO_LAMPORTS_UOFF, -376
+# Target account info data length.
+.equ RM_FM_CPI_TARGET_ACCT_INFO_DATA_LEN_UOFF, -368
+.equ RM_FM_CPI_TARGET_ACCT_INFO_DATA_UOFF, -360 # Target account info data.
+# Target account info owner.
+.equ RM_FM_CPI_TARGET_ACCT_INFO_OWNER_UOFF, -352
+# Target account info rent epoch.
+.equ RM_FM_CPI_TARGET_ACCT_INFO_RENT_EPOCH_UOFF, -344
+# Target account info is signer.
+.equ RM_FM_CPI_TARGET_ACCT_INFO_IS_SIGNER_UOFF, -336
+# Target account info is writable.
+.equ RM_FM_CPI_TARGET_ACCT_INFO_IS_WRITABLE_UOFF, -335
+# Target account info executable.
+.equ RM_FM_CPI_TARGET_ACCT_INFO_EXECUTABLE_UOFF, -334
+# Target account meta pubkey.
+.equ RM_FM_CPI_TARGET_ACCT_META_PUBKEY_UOFF, -88
+# Target account meta is writable.
+.equ RM_FM_CPI_TARGET_ACCT_META_IS_WRITABLE_UOFF, -80
+# Target account meta is signer.
+.equ RM_FM_CPI_TARGET_ACCT_META_IS_SIGNER_UOFF, -79
+# Proprietor account info key.
+.equ RM_FM_CPI_PROPRIETOR_ACCT_INFO_KEY_UOFF, -328
+# Proprietor account info lamports.
+.equ RM_FM_CPI_PROPRIETOR_ACCT_INFO_LAMPORTS_UOFF, -320
+# Proprietor account info data length.
+.equ RM_FM_CPI_PROPRIETOR_ACCT_INFO_DATA_LEN_UOFF, -312
+# Proprietor account info data.
+.equ RM_FM_CPI_PROPRIETOR_ACCT_INFO_DATA_UOFF, -304
+# Proprietor account info owner.
+.equ RM_FM_CPI_PROPRIETOR_ACCT_INFO_OWNER_UOFF, -296
+# Proprietor account info rent epoch.
+.equ RM_FM_CPI_PROPRIETOR_ACCT_INFO_RENT_EPOCH_UOFF, -288
+# Proprietor account info is signer.
+.equ RM_FM_CPI_PROPRIETOR_ACCT_INFO_IS_SIGNER_UOFF, -280
+# Proprietor account info is writable.
+.equ RM_FM_CPI_PROPRIETOR_ACCT_INFO_IS_WRITABLE_UOFF, -279
+# Proprietor account info executable.
+.equ RM_FM_CPI_PROPRIETOR_ACCT_INFO_EXECUTABLE_UOFF, -278
+# Proprietor account meta pubkey.
+.equ RM_FM_CPI_PROPRIETOR_ACCT_META_PUBKEY_UOFF, -72
+# Proprietor account meta is writable.
+.equ RM_FM_CPI_PROPRIETOR_ACCT_META_IS_WRITABLE_UOFF, -64
+# Proprietor account meta is signer.
+.equ RM_FM_CPI_PROPRIETOR_ACCT_META_IS_SIGNER_UOFF, -63
+.equ RM_FM_CPI_MINT_ACCT_INFO_KEY_UOFF, -272 # Mint account info key.
+# Mint account info lamports.
+.equ RM_FM_CPI_MINT_ACCT_INFO_LAMPORTS_UOFF, -264
+# Mint account info data length.
+.equ RM_FM_CPI_MINT_ACCT_INFO_DATA_LEN_UOFF, -256
+.equ RM_FM_CPI_MINT_ACCT_INFO_DATA_UOFF, -248 # Mint account info data.
+.equ RM_FM_CPI_MINT_ACCT_INFO_OWNER_UOFF, -240 # Mint account info owner.
+# Mint account info rent epoch.
+.equ RM_FM_CPI_MINT_ACCT_INFO_RENT_EPOCH_UOFF, -232
+# Mint account info is signer.
+.equ RM_FM_CPI_MINT_ACCT_INFO_IS_SIGNER_UOFF, -224
+# Mint account info is writable.
+.equ RM_FM_CPI_MINT_ACCT_INFO_IS_WRITABLE_UOFF, -223
+# Mint account info executable.
+.equ RM_FM_CPI_MINT_ACCT_INFO_EXECUTABLE_UOFF, -222
+.equ RM_FM_CPI_MINT_ACCT_META_PUBKEY_UOFF, -56 # Mint account meta pubkey.
+# Mint account meta is writable.
+.equ RM_FM_CPI_MINT_ACCT_META_IS_WRITABLE_UOFF, -48
+# Mint account meta is signer.
+.equ RM_FM_CPI_MINT_ACCT_META_IS_SIGNER_UOFF, -47
+# System Program account info key.
+.equ RM_FM_CPI_SYSTEM_PROGRAM_ACCT_INFO_KEY_UOFF, -216
+# System Program account info lamports.
+.equ RM_FM_CPI_SYSTEM_PROGRAM_ACCT_INFO_LAMPORTS_UOFF, -208
+# System Program account info data length.
+.equ RM_FM_CPI_SYSTEM_PROGRAM_ACCT_INFO_DATA_LEN_UOFF, -200
+# System Program account info data.
+.equ RM_FM_CPI_SYSTEM_PROGRAM_ACCT_INFO_DATA_UOFF, -192
+# System Program account info owner.
+.equ RM_FM_CPI_SYSTEM_PROGRAM_ACCT_INFO_OWNER_UOFF, -184
+# System Program account info rent epoch.
+.equ RM_FM_CPI_SYSTEM_PROGRAM_ACCT_INFO_RENT_EPOCH_UOFF, -176
+# System Program account info is signer.
+.equ RM_FM_CPI_SYSTEM_PROGRAM_ACCT_INFO_IS_SIGNER_UOFF, -168
+# System Program account info is writable.
+.equ RM_FM_CPI_SYSTEM_PROGRAM_ACCT_INFO_IS_WRITABLE_UOFF, -167
+# System Program account info executable.
+.equ RM_FM_CPI_SYSTEM_PROGRAM_ACCT_INFO_EXECUTABLE_UOFF, -166
+# System Program account meta pubkey.
+.equ RM_FM_CPI_SYSTEM_PROGRAM_ACCT_META_PUBKEY_UOFF, -40
+# System Program account meta is writable.
+.equ RM_FM_CPI_SYSTEM_PROGRAM_ACCT_META_IS_WRITABLE_UOFF, -32
+# System Program account meta is signer.
+.equ RM_FM_CPI_SYSTEM_PROGRAM_ACCT_META_IS_SIGNER_UOFF, -31
+# Token Program account info key.
+.equ RM_FM_CPI_TOKEN_PROGRAM_ACCT_INFO_KEY_UOFF, -160
+# Token Program account info lamports.
+.equ RM_FM_CPI_TOKEN_PROGRAM_ACCT_INFO_LAMPORTS_UOFF, -152
+# Token Program account info data length.
+.equ RM_FM_CPI_TOKEN_PROGRAM_ACCT_INFO_DATA_LEN_UOFF, -144
+# Token Program account info data.
+.equ RM_FM_CPI_TOKEN_PROGRAM_ACCT_INFO_DATA_UOFF, -136
+# Token Program account info owner.
+.equ RM_FM_CPI_TOKEN_PROGRAM_ACCT_INFO_OWNER_UOFF, -128
+# Token Program account info rent epoch.
+.equ RM_FM_CPI_TOKEN_PROGRAM_ACCT_INFO_RENT_EPOCH_UOFF, -120
+# Token Program account info is signer.
+.equ RM_FM_CPI_TOKEN_PROGRAM_ACCT_INFO_IS_SIGNER_UOFF, -112
+# Token Program account info is writable.
+.equ RM_FM_CPI_TOKEN_PROGRAM_ACCT_INFO_IS_WRITABLE_UOFF, -111
+# Token Program account info executable.
+.equ RM_FM_CPI_TOKEN_PROGRAM_ACCT_INFO_EXECUTABLE_UOFF, -110
+# Token Program account meta pubkey.
+.equ RM_FM_CPI_TOKEN_PROGRAM_ACCT_META_PUBKEY_UOFF, -24
+# Token Program account meta is writable.
+.equ RM_FM_CPI_TOKEN_PROGRAM_ACCT_META_IS_WRITABLE_UOFF, -16
+# Token Program account meta is signer.
+.equ RM_FM_CPI_TOKEN_PROGRAM_ACCT_META_IS_SIGNER_UOFF, -15
 # -------------------------------------------------------------------------
 
 # Miscellaneous market registration constants.

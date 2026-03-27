@@ -1,4 +1,5 @@
 mod address;
+mod cpi_accounts;
 mod immediate;
 mod offset;
 mod signer_seeds;
@@ -52,6 +53,23 @@ pub fn expand(input: &ConstantGroupInput) -> proc_macro2::TokenStream {
                     frame_ty,
                     parent_field,
                     seeds,
+                    &mut const_defs,
+                    &mut meta_idents,
+                );
+            }
+            ConstantKind::CpiAccounts {
+                parent_field,
+                accounts,
+            } => {
+                let frame_ty = input
+                    .frame_type
+                    .as_ref()
+                    .expect("frame_type must be set for CpiAccounts");
+                cpi_accounts::expand_cpi_accounts(
+                    &asm_name,
+                    frame_ty,
+                    parent_field,
+                    accounts,
                     &mut const_defs,
                     &mut meta_idents,
                 );

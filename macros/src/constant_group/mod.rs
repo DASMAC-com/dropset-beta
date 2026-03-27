@@ -36,6 +36,14 @@ pub(crate) enum ConstantKind {
     /// `FrameOffset` but without the alignment assertion. Name gets `_UOFF`
     /// suffix.
     UnalignedFrameOffset { fields: Vec<syn::Member> },
+    /// `cpi_accounts!(parent_field)` inside a `#[frame(Type)]` group: account
+    /// fields are auto-discovered via shared state from the `cpi_accounts!`
+    /// struct definition. Expands to `_SOL_ACCT_INFO_OFF` and
+    /// `_SOL_ACCT_META_OFF` per account plus an `N_ACCOUNTS` count.
+    CpiAccounts {
+        parent_field: Ident,
+        accounts: Vec<Ident>,
+    },
     /// `unaligned_pubkey_offsets!(field)` inside a `#[frame(Type)]` group:
     /// like `FramePubkeyOffsets` but without the alignment assertion. Names
     /// get `_UOFF` suffix.

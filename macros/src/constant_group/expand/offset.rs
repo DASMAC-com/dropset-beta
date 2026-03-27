@@ -117,6 +117,36 @@ pub fn emit_frame_offset_const(
     (def, meta_ident)
 }
 
+/// Like [`emit_frame_offset_const`] but without the alignment assertion.
+pub fn emit_unaligned_frame_offset_const(
+    rust_name: &Ident,
+    asm_name: &str,
+    doc: &str,
+    frame_ty: &syn::Path,
+    field_chain: proc_macro2::TokenStream,
+) -> (proc_macro2::TokenStream, Ident) {
+    let meta_ident = codegen::meta_ident(asm_name, rust_name.span());
+    let meta = codegen::offset_meta(&meta_ident, asm_name, doc, rust_name);
+    let value_expr = frame_offset_expr(frame_ty, &field_chain);
+
+    let def = quote! {
+        #[doc = #doc]
+        pub const #rust_name: i16 = {
+            use super::*;
+            const VALUE: i64 = #value_expr;
+            const _: () = assert!(
+                VALUE >= i16::MIN as i64 && VALUE <= i16::MAX as i64,
+                "frame offset must fit in i16",
+            );
+            VALUE as i16
+        };
+
+        #meta
+    };
+
+    (def, meta_ident)
+}
+
 /// Emit a base `_OFF` plus four `_CHUNK_{0..3}_OFF` offset constants given a
 /// value expression for the base offset. When `require_align` is true (frame
 /// context), an alignment assertion is added to the base offset.

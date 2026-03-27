@@ -1,10 +1,11 @@
-use crate::cpi_bindings::SolSignerSeed;
+use crate::cpi_bindings::{SolAccountInfo, SolAccountMeta, SolSignerSeed};
 use crate::memory::EmptyAccount;
 use crate::memory::StackNode;
 use crate::order::Order;
 use crate::seat::Seat;
 use dropset_macros::{
-    constant_group, frame, instruction_accounts, instruction_data, signer_seeds, svm_data,
+    constant_group, cpi_accounts, frame, instruction_accounts, instruction_data, signer_seeds,
+    svm_data,
 };
 use pinocchio::Address;
 
@@ -90,6 +91,28 @@ pub struct CreateAccountData {
     pub lamports: u64,
     pub space: u64,
     pub owner: Address,
+    /// Included for alignment on stack.
+    _pad: u32,
+}
+
+cpi_accounts! {
+    /// CPI accounts for CreateAccount and ATA creation.
+    ///
+    /// CreateAccount uses the first two accounts (user, target). ATA creation requires all six.
+    pub struct CPIAccounts {
+        /// User account.
+        user,
+        /// Target account.
+        target,
+        /// Proprietor account.
+        proprietor,
+        /// Mint account.
+        mint,
+        /// System Program account.
+        system_program,
+        /// Token Program account.
+        token_program,
+    }
 }
 
 // region: register_market_stack
@@ -118,7 +141,8 @@ pub struct RegisterMarketFrame {
     pub system_program_pubkey: Address,
     /// CPI instruction data for CreateAccount.
     pub create_account_data: CreateAccountData,
-    pad: u32,
+    /// CPI accounts for CreateAccount and ATA creation.
+    pub cpi_accounts: CPIAccounts,
     /// From `sol_try_find_program_address`.
     pub bump: u8,
 }
@@ -145,6 +169,8 @@ constant_group! {
         CREATE_ACCT_SPACE = unaligned_offset!(create_account_data.space),
         /// Owner field within CreateAccount instruction data.
         CREATE_ACCT_OWNER = unaligned_pubkey_offsets!(create_account_data.owner),
+        /// CPI accounts.
+        CPI = cpi_accounts!(cpi_accounts),
     }
 }
 

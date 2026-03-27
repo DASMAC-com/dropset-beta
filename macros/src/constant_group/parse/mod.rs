@@ -3,6 +3,7 @@ use syn::{
     parse::{Parse, ParseStream},
 };
 
+mod cpi_accounts;
 mod offset;
 mod signer_seeds;
 
@@ -12,6 +13,7 @@ use crate::attrs::{
     validate_comment, validate_name,
 };
 use crate::shared_state;
+use cpi_accounts::parse_cpi_accounts;
 use offset::parse_offset;
 use signer_seeds::parse_signer_seeds;
 
@@ -81,6 +83,11 @@ impl Parse for ConstantGroupInput {
                     let inner;
                     syn::parenthesized!(inner in content);
                     parse_signer_seeds(&inner, &frame_type, kind_ident.span())?
+                }
+                "cpi_accounts" => {
+                    let inner;
+                    syn::parenthesized!(inner in content);
+                    parse_cpi_accounts(&inner, &frame_type, kind_ident.span())?
                 }
                 "immediate" => {
                     let inner;

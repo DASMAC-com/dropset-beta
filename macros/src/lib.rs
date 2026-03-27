@@ -4,6 +4,7 @@ use syn::{LitStr, parse_macro_input};
 mod attrs;
 mod codegen;
 mod constant_group;
+mod cpi_accounts;
 mod enum_to_asm;
 mod frame;
 mod instruction_accounts;
@@ -64,6 +65,30 @@ pub fn constant_group(input: TokenStream) -> TokenStream {
 pub fn signer_seeds(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as signer_seeds::SignerSeedsInput);
     TokenStream::from(signer_seeds::expand(&input))
+}
+
+/// Defines a CPI accounts struct with `SolAccountInfo` and `SolAccountMeta`
+/// fields for each account.
+///
+/// Generates a `#[repr(C)]` struct with all `SolAccountInfo` fields first
+/// (contiguous), then all `SolAccountMeta` fields (contiguous), and registers
+/// field names in shared state so that `cpi_accounts!(field)` inside
+/// `constant_group!` can auto-discover all account fields.
+///
+/// ```ignore
+/// cpi_accounts! {
+///     pub struct CreateAccountCPIAccounts {
+///         /// User account.
+///         user,
+///         /// Market account.
+///         market,
+///     }
+/// }
+/// ```
+#[proc_macro]
+pub fn cpi_accounts(input: TokenStream) -> TokenStream {
+    let input = parse_macro_input!(input as cpi_accounts::CpiAccountsInput);
+    TokenStream::from(cpi_accounts::expand(&input))
 }
 
 /// Attribute macro for instruction discriminant enums.
