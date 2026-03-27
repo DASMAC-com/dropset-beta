@@ -2,103 +2,99 @@
 \caption{REGISTER-MARKET}
 \begin{algorithmic}
   \COMMENT{Pointer to input buffer.}
-  \INPUT $r_1 = input$
+  \INPUT $r_1$ = input
   \COMMENT{Pointer to instruction data.}
-  \INPUT $r_2 = insn$
+  \INPUT $r_2$ = insn
   \COMMENT{Number of accounts.}
-  \INPUT $r_3 = n\_accounts$
+  \INPUT $r_3$ = n\_accounts
   \COMMENT{Instruction data length.}
-  \INPUT $r_4 = insn\_len$
-  \REQUIRE $insn.discriminant ==$ \texttt{Discriminant::RegisterMarket}
-\PROCEDURE{REGISTER-MARKET}{$input, insn, n\_accounts, insn\_len$}
-  \IF{$n\_accounts <$ \texttt{RegisterMarketAccounts.LEN}}
+  \INPUT $r_4$ = insn\_len
+  \REQUIRE insn.discriminant == \texttt{Discriminant::RegisterMarket}
+\PROCEDURE{REGISTER-MARKET}{input, insn, n\_accounts, insn\_len}
+  \IF{n\_accounts $<$ \texttt{RegisterMarketAccounts.LEN}}
     \RETURN \texttt{ErrorCode::InvalidNumberOfAccounts}
   \ENDIF
-  \IF{$insn\_len \neq$ \texttt{RegisterMarketData.LEN}}
+  \IF{insn\_len $\neq$ \texttt{RegisterMarketData.LEN}}
     \RETURN \texttt{ErrorCode::InvalidInstructionLength}
   \ENDIF
   \COMMENT{Check user, market accounts.}
-  \IF{$input.user.data\_len \neq 0$}
+  \IF{input.user.data\_len $\neq$ 0}
     \RETURN \texttt{ErrorCode::UserHasData}
   \ENDIF
-  \IF{$input.market.duplicate \neq$ \texttt{account.NON\_DUP\_MARKER}}
+  \IF{input.market.duplicate $\neq$ \texttt{account.NON\_DUP\_MARKER}}
     \RETURN \texttt{ErrorCode::MarketAccountIsDuplicate}
   \ENDIF
-  \IF{$input.market.data\_len \neq 0$}
+  \IF{input.market.data\_len $\neq$ 0}
     \RETURN \texttt{ErrorCode::MarketHasData}
   \ENDIF
   \COMMENT{Check base mint account, create signer seed.}
-  \IF{$input.base\_mint.duplicate \neq$ \texttt{account.NON\_DUP\_MARKER}}
+  \IF{input.base\_mint.duplicate $\neq$ \texttt{account.NON\_DUP\_MARKER}}
     \RETURN \texttt{ErrorCode::BaseMintIsDuplicate}
   \ENDIF
-  \STATE $frame.pda\_seeds.base.addr = input.base\_mint.pubkey$
-  \STATE $frame.pda\_seeds.base.len =$ \texttt{Address.size}
+  \STATE frame.pda\_seeds.base.addr = input.base\_mint.pubkey
+  \STATE frame.pda\_seeds.base.len = \texttt{Address.size}
   \COMMENT{Increment input buffer by base mint padded data length for quote offsets.}
-  \STATE $input\_shifted = input + input.base\_mint.padded\_data\_len$
+  \STATE input\_shifted = input + input.base\_mint.padded\_data\_len
   \COMMENT{Check quote mint account, create signer seed.}
-  \IF{$input\_shifted.quote\_mint.duplicate \neq$
-    \texttt{account.NON\_DUP\_MARKER}
-  }
+  \IF{input\_shifted.quote\_mint.duplicate $\neq$ \texttt{account.NON\_DUP\_MARKER}}
     \RETURN \texttt{ErrorCode::QuoteMintIsDuplicate}
   \ENDIF
-  \STATE $frame.pda\_seeds.quote.addr = input\_shifted.quote\_mint.pubkey$
-  \STATE $frame.pda\_seeds.quote.len =$ \texttt{Address.size}
+  \STATE frame.pda\_seeds.quote.addr = input\_shifted.quote\_mint.pubkey
+  \STATE frame.pda\_seeds.quote.len = \texttt{Address.size}
   \COMMENT{Advance to System Program account.}
-  \STATE $quote\_mint\_padded\_data\_len = input\_shifted.quote\_mint.padded\_data\_len$
-  \STATE $acct = \&input\_shifted.quote\_mint$
-  \STATE $acct \mathrel{{+}{=}} quote\_mint\_padded\_data\_len$ +
-    \texttt{EmptyAccount.size}
+  \STATE quote\_mint\_padded\_data\_len = input\_shifted.quote\_mint.padded\_data\_len
+  \STATE acct = \&input\_shifted.quote\_mint
+  \STATE acct += quote\_mint\_padded\_data\_len + \texttt{EmptyAccount.size}
   \COMMENT{Derive market PDA.}
-  \STATE \CALL{Store}{$input$}
-  \STATE $syscall.seeds = \&frame.pda\_seeds$
-  \STATE $syscall.program\_id = \&insn.program\_id$
-  \STATE $syscall.seeds\_len =$ \texttt{register\_misc.TRY\_FIND\_PDA\_SEEDS\_LEN}
-  \STATE $syscall.program\_address = \&frame.pda$
-  \STATE $syscall.bump\_seed = \&frame.bump$
+  \STATE \CALL{Store}{input}
+  \STATE syscall.seeds = \&frame.pda\_seeds
+  \STATE syscall.program\_id = \&insn.program\_id
+  \STATE syscall.seeds\_len = \texttt{register\_misc.TRY\_FIND\_PDA\_SEEDS\_LEN}
+  \STATE syscall.program\_address = \&frame.pda
+  \STATE syscall.bump\_seed = \&frame.bump
   \STATE \CALL{sol-try-find-program-address}{}
   \COMMENT{Verify derived market PDA matches market account pubkey.}
-  \IF{$input.market.pubkey \neq frame.market\_pda$}
+  \IF{input.market.pubkey $\neq$ frame.market\_pda}
     \RETURN \texttt{ErrorCode::InvalidMarketPubkey}
   \ENDIF
   \COMMENT{Populate bump signer seed from derived bump.}
-  \STATE $frame.pda\_seeds.bump.addr = \&syscall.bump\_seed$
-  \STATE $frame.pda\_seeds.bump.len = $ \texttt{u8.size}
+  \STATE frame.pda\_seeds.bump.addr = \&syscall.bump\_seed
+  \STATE frame.pda\_seeds.bump.len = \texttt{u8.size}
   \COMMENT{Populate CreateAccount CPI instruction data owner field.}
-  \STATE $frame.create\_account\_data.owner = syscall.program\_id$
+  \STATE frame.create\_account\_data.owner = syscall.program\_id
   \COMMENT{Check System Program account.}
-  \IF{$acct.duplicate \neq$ \texttt{account.NON\_DUP\_MARKER}}
+  \IF{acct.duplicate $\neq$ \texttt{account.NON\_DUP\_MARKER}}
     \RETURN \texttt{ErrorCode::SystemProgramIsDuplicate}
   \ENDIF
-  \IF{$acct.pubkey \neq frame.system\_program\_pubkey$}
+  \IF{acct.pubkey $\neq$ frame.system\_program\_pubkey}
     \RETURN \texttt{ErrorCode::InvalidSystemProgramPubkey}
   \ENDIF
   \COMMENT{Populate CPI program ID field.}
-  \STATE $frame.sol\_instruction.program\_id = \&acct.address$
+  \STATE frame.sol\_instruction.program\_id = \&acct.address
   \COMMENT{Advance to Rent sysvar account.}
-  \STATE $system\_program\_padded\_data\_len = acct.padded\_data\_len$
-  \STATE $acct \mathrel{{+}{=}} system\_program\_padded\_data\_len$ +
-  \texttt{EmptyAccount.size}
+  \STATE system\_program\_padded\_data\_len = acct.padded\_data\_len
+  \STATE acct += system\_program\_padded\_data\_len + \texttt{EmptyAccount.size}
   \COMMENT{Check Rent sysvar account.}
-  \IF{$acct.duplicate \neq$ \texttt{account.NON\_DUP\_MARKER}}
+  \IF{acct.duplicate $\neq$ \texttt{account.NON\_DUP\_MARKER}}
     \RETURN \texttt{ErrorCode::RentSysvarIsDuplicate}
   \ENDIF
-  \IF{$acct.pubkey \neq$ \texttt{pubkey.RENT}}
+  \IF{acct.pubkey $\neq$ \texttt{pubkey.RENT}}
     \RETURN \texttt{ErrorCode::InvalidRentSysvarPubkey}
   \ENDIF
   \COMMENT{Prepare CreateAccount instruction lamports, space fields.}
-  \STATE $frame.create\_account\_data.space = $ \texttt{MarketHeader.size}
-  \STATE $acct\_size = $ \texttt{MarketHeader.size} + \texttt{account.STORAGE\_OVERHEAD}
-  \STATE $lamports\_per\_byte = acct.data.lamports\_per\_byte$
-  \STATE $frame.create\_account\_data.lamports = acct\_size \times lamports\_per\_byte$
+  \STATE frame.create\_account\_data.space = \texttt{MarketHeader.size}
+  \STATE acct\_size = \texttt{MarketHeader.size} + \texttt{account.STORAGE\_OVERHEAD}
+  \STATE lamports\_per\_byte = acct.data.lamports\_per\_byte
+  \STATE frame.create\_account\_data.lamports = acct\_size $\times$ lamports\_per\_byte
   \COMMENT{Set CPI account static fields.}
-  \STATE $frame.cpi.user\_info.is\_signer = $ \texttt{true}
-  \STATE $frame.cpi.user\_info.is\_writable = $ \texttt{true}
-  \STATE $frame.cpi.user\_meta.is\_signer = $ \texttt{true}
-  \STATE $frame.cpi.user\_meta.is\_writable = $ \texttt{true}
-  \STATE $frame.cpi.target\_info.is\_signer = $ \texttt{true}
-  \STATE $frame.cpi.target\_info.is\_writable = $ \texttt{true}
-  \STATE $frame.cpi.target\_meta.is\_signer = $ \texttt{true}
-  \STATE $frame.cpi.target\_meta.is\_writable = $ \texttt{true}
+  \STATE frame.cpi.user\_info.is\_signer = \texttt{true}
+  \STATE frame.cpi.user\_info.is\_writable = \texttt{true}
+  \STATE frame.cpi.user\_meta.is\_signer = \texttt{true}
+  \STATE frame.cpi.user\_meta.is\_writable = \texttt{true}
+  \STATE frame.cpi.target\_info.is\_signer = \texttt{true}
+  \STATE frame.cpi.target\_info.is\_writable = \texttt{true}
+  \STATE frame.cpi.target\_meta.is\_signer = \texttt{true}
+  \STATE frame.cpi.target\_meta.is\_writable = \texttt{true}
 \ENDPROCEDURE
 \end{algorithmic}
 \end{algorithm}
