@@ -44,6 +44,10 @@ pub(crate) enum ConstantKind {
         parent_field: Ident,
         accounts: Vec<Ident>,
     },
+    /// `sol_instruction!(field)` inside a `#[frame(Type)]` group: emits an
+    /// aligned `_OFF` for the struct base and unaligned `_UOFF` offsets for
+    /// each `SolInstruction` field.
+    SolInstruction { fields: Vec<syn::Member> },
     /// `unaligned_pubkey_offsets!(field)` inside a `#[frame(Type)]` group:
     /// like `FramePubkeyOffsets` but without the alignment assertion. Names
     /// get `_UOFF` suffix.

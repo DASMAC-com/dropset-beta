@@ -84,6 +84,22 @@ impl Parse for ConstantGroupInput {
                     syn::parenthesized!(inner in content);
                     parse_signer_seeds(&inner, &frame_type, kind_ident.span())?
                 }
+                "sol_instruction" => {
+                    let inner;
+                    syn::parenthesized!(inner in content);
+                    let parsed = parse_offset(&inner, &frame_type)?;
+                    match parsed {
+                        ConstantKind::FrameOffset { fields } => {
+                            ConstantKind::SolInstruction { fields }
+                        }
+                        _ => {
+                            return Err(syn::Error::new(
+                                kind_ident.span(),
+                                "sol_instruction requires a #[frame] context with a bare field path",
+                            ));
+                        }
+                    }
+                }
                 "cpi_accounts" => {
                     let inner;
                     syn::parenthesized!(inner in content);

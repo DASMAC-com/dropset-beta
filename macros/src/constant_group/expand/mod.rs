@@ -3,6 +3,7 @@ mod cpi_accounts;
 mod immediate;
 mod offset;
 mod signer_seeds;
+mod sol_instruction;
 
 use super::ConstantKind;
 use super::parse::ConstantGroupInput;
@@ -53,6 +54,19 @@ pub fn expand(input: &ConstantGroupInput) -> proc_macro2::TokenStream {
                     frame_ty,
                     parent_field,
                     seeds,
+                    &mut const_defs,
+                    &mut meta_idents,
+                );
+            }
+            ConstantKind::SolInstruction { fields } => {
+                let frame_ty = input
+                    .frame_type
+                    .as_ref()
+                    .expect("frame_type must be set for SolInstruction");
+                sol_instruction::expand_sol_instruction(
+                    &asm_name,
+                    frame_ty,
+                    fields,
                     &mut const_defs,
                     &mut meta_idents,
                 );

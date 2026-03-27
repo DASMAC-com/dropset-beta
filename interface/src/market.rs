@@ -1,4 +1,4 @@
-use crate::cpi_bindings::{SolAccountInfo, SolAccountMeta, SolSignerSeed};
+use crate::cpi_bindings::{SolAccountInfo, SolAccountMeta, SolInstruction, SolSignerSeed};
 use crate::memory::EmptyAccount;
 use crate::memory::StackNode;
 use crate::order::Order;
@@ -143,6 +143,8 @@ pub struct RegisterMarketFrame {
     pub create_account_data: CreateAccountData,
     /// CPI accounts for CreateAccount and ATA creation.
     pub cpi_accounts: CPIAccounts,
+    /// Re-used across CPIs, zero-initialized on stack.
+    pub cpi_instruction: SolInstruction,
     /// From `sol_try_find_program_address`.
     pub bump: u8,
 }
@@ -171,6 +173,8 @@ constant_group! {
         CREATE_ACCT_OWNER = unaligned_pubkey_offsets!(create_account_data.owner),
         /// CPI accounts.
         CPI = cpi_accounts!(cpi_accounts),
+        /// Solana instruction.
+        SOL_INSN = sol_instruction!(cpi_instruction),
     }
 }
 
