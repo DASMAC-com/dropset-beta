@@ -13,7 +13,7 @@ progress. This site serves as an official reference for the underlying
 technology, namely SBPF assembly programming techniques that combine [CU]
 optimizations with [formal verification] techniques.
 
-If you want to more background information about programming in SBPF assembly,
+If you want more background information about programming in SBPF assembly,
 check out the [Solana Opcode Guide].
 
 ## About this site

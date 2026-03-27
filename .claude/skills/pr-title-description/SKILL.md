@@ -60,6 +60,8 @@ for the pull request on the current branch.
 
 1. If a PR already exists for the branch, update
    it with `gh pr edit <number> --body "..."`.
+   If the PR is in draft mode, also mark it ready
+   for review with `gh pr ready <number>`.
    Otherwise, report the description so the user
    can create the PR.
 

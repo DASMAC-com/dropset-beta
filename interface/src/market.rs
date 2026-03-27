@@ -34,7 +34,7 @@ pub struct RegisterMarketData {
 // endregion: register_market_data
 
 #[svm_data]
-pub struct InputBufferHeader {
+pub struct RegisterMarketInputBuffer {
     pub n_accounts: u64,
     pub user: EmptyAccount,
     pub market: EmptyAccount,
@@ -49,19 +49,19 @@ constant_group! {
     /// Miscellaneous market registration constants.
     register_misc {
         /// From input buffer to base mint duplicate flag.
-        BASE_DUPLICATE = offset!(InputBufferHeader.base_mint.header.borrow_state),
+        BASE_DUPLICATE = offset!(RegisterMarketInputBuffer.base_mint.header.borrow_state),
         /// From input buffer to base mint data length.
-        BASE_DATA_LEN = offset!(InputBufferHeader.base_mint.header.data_len),
+        BASE_DATA_LEN = offset!(RegisterMarketInputBuffer.base_mint.header.data_len),
         /// From input buffer to base mint address.
-        BASE_ADDR = offset!(InputBufferHeader.base_mint.header.address),
+        BASE_ADDR = offset!(RegisterMarketInputBuffer.base_mint.header.address),
         /// From input buffer to quote mint.
-        QUOTE = offset!(InputBufferHeader.quote_mint),
+        QUOTE = offset!(RegisterMarketInputBuffer.quote_mint),
         /// From input buffer to quote mint duplicate flag.
-        QUOTE_DUPLICATE = offset!(InputBufferHeader.quote_mint.header.borrow_state),
+        QUOTE_DUPLICATE = offset!(RegisterMarketInputBuffer.quote_mint.header.borrow_state),
         /// From input buffer to quote mint address.
-        QUOTE_ADDR = offset!(InputBufferHeader.quote_mint.header.address),
+        QUOTE_ADDR = offset!(RegisterMarketInputBuffer.quote_mint.header.address),
         /// From input buffer to quote mint data length.
-        QUOTE_DATA_LEN = offset!(InputBufferHeader.quote_mint.header.data_len),
+        QUOTE_DATA_LEN = offset!(RegisterMarketInputBuffer.quote_mint.header.data_len),
         /// Number of seeds for market PDA derivation (base, quote).
         TRY_FIND_PDA_SEEDS_LEN = immediate!(2),
     }

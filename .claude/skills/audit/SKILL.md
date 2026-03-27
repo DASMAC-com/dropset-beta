@@ -11,6 +11,12 @@ Full codebase audit covering code quality, structure,
 algorithm parity, documentation freshness, and
 documentation structure.
 
+## Resume
+
+Before starting the audit, check whether `.audit/findings.md`
+already exists. If it does, skip the audit steps entirely
+and proceed to the **Resolve** section below.
+
 ## Steps
 
 1. Read every source file across the workspace:
@@ -145,9 +151,12 @@ documentation structure.
 
 ### Output
 
-1. Do NOT make any changes. Compile all findings
-   into a checklist using the TodoWrite tool.
-   Each item should include:
+1. Enter plan mode. Do NOT make any changes.
+
+1. Compile all findings into `.audit/findings.md`
+   (create the directory if needed). Use a checklist
+   format with one item per finding. Each item
+   should include:
 
    - The file path and line number.
    - Which category it falls under (DRY,
@@ -156,6 +165,32 @@ documentation structure.
      or CLAUDE.md).
    - A brief description of the issue.
 
+   Mark every item with `- [ ]` (unchecked).
+
 1. If nothing needed fixing, confirm the audit
-   passed. Otherwise, present the checklist and
-   wait for the user to decide what to work on.
+   passed and exit plan mode.
+
+1. If there are findings, present the checklist
+   to the user and ask for approval to proceed
+   with fixes. Do NOT exit plan mode or make any
+   changes until the user approves.
+
+### Resolve
+
+Only proceed here after the user approves.
+
+1. Exit plan mode.
+
+1. Read `.audit/findings.md`. Identify the first
+   unchecked (`- [ ]`) item.
+
+1. Fix the issue described in that item.
+
+1. Mark it as checked (`- [x]`) in the file.
+
+1. Repeat until all items are checked or the user
+   asks to stop.
+
+1. Once all items are checked, delete the
+   `.audit/` directory and confirm the audit
+   is complete.
