@@ -16,7 +16,10 @@
 .equ ACCT_OWNER_CHUNK_2_OFF, 56 # Account owner (chunk 2).
 .equ ACCT_OWNER_CHUNK_3_OFF, 64 # Account owner (chunk 3).
 .equ ACCT_DATA_LEN_OFF, 80 # Account data length.
+.equ ACCT_DATA_OFF, 88 # Account data start.
 .equ ACCT_NON_DUP_MARKER, 255 # Non-dup marker for accounts.
+# Account storage overhead for rent calculation.
+.equ ACCT_STORAGE_OVERHEAD, 128
 # -------------------------------------------------------------------------
 
 # Common data-related constants.
@@ -48,3 +51,4 @@
 
 .equ SIZE_OF_ADDRESS, 32 # Size of Address in bytes.
 .equ SIZE_OF_EMPTY_ACCOUNT, 10336 # Size of EmptyAccount in bytes.
+.equ SIZE_OF_MARKET_HEADER, 40 # Size of MarketHeader in bytes.

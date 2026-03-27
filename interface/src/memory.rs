@@ -1,7 +1,9 @@
+use crate::market::MarketHeader;
 use dropset_macros::{constant_group, size_of_group, svm_data};
 use pinocchio::Address;
 use pinocchio::account::{MAX_PERMITTED_DATA_INCREASE, RuntimeAccount};
 use pinocchio::entrypoint::NON_DUP_MARKER;
+use pinocchio::sysvars::rent::ACCOUNT_STORAGE_OVERHEAD;
 
 #[svm_data]
 pub struct StackNode {
@@ -59,8 +61,12 @@ constant_group! {
         OWNER = pubkey_offsets!(EmptyAccount.header.owner),
         /// Account data length.
         DATA_LEN = offset!(EmptyAccount.header.data_len),
+        /// Account data start.
+        DATA = offset!(EmptyAccount.data),
         /// Non-dup marker for accounts.
         NON_DUP_MARKER = immediate!(NON_DUP_MARKER as i32),
+        /// Account storage overhead for rent calculation.
+        STORAGE_OVERHEAD = immediate!(ACCOUNT_STORAGE_OVERHEAD as i32),
     }
 }
 
@@ -95,7 +101,7 @@ constant_group! {
 // region: size_of_group_example
 size_of_group! {
     #[inject("common/memory")]
-    [Address, EmptyAccount]
+    [Address, EmptyAccount, MarketHeader]
 }
 // endregion: size_of_group_example
 

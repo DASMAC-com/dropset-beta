@@ -226,6 +226,15 @@ register_market:
     #     return ErrorCode::MarketHasData
     ldxdw r9, [r1 + IB_MARKET_DATA_LEN_OFF]
     jne r9, DATA_LEN_ZERO, e_market_has_data
+    # frame.create_account_data.owner = input.market.address
+    ldxdw r9, [r1 + IB_MARKET_PUBKEY_CHUNK_0_OFF]
+    stxdw [r10 + RM_FM_CREATE_ACCT_OWNER_CHUNK_0_UOFF], r9
+    ldxdw r9, [r1 + IB_MARKET_PUBKEY_CHUNK_1_OFF]
+    stxdw [r10 + RM_FM_CREATE_ACCT_OWNER_CHUNK_1_UOFF], r9
+    ldxdw r9, [r1 + IB_MARKET_PUBKEY_CHUNK_2_OFF]
+    stxdw [r10 + RM_FM_CREATE_ACCT_OWNER_CHUNK_2_UOFF], r9
+    ldxdw r9, [r1 + IB_MARKET_PUBKEY_CHUNK_3_OFF]
+    stxdw [r10 + RM_FM_CREATE_ACCT_OWNER_CHUNK_3_UOFF], r9
     # if input.base_mint.duplicate != account.NON_DUP_MARKER
     #     return ErrorCode::BaseMintIsDuplicate
     ldxb r9, [r1 + RM_MISC_BASE_DUPLICATE_OFF]
@@ -338,4 +347,14 @@ register_market:
     # (1 CU) replaces lddw (2 CUs).
     mov32 r8, PUBKEY_RENT_CHUNK_3_LO
     jne r7, r8, e_invalid_rent_sysvar_pubkey
+    # frame.create_account_data.space = MarketHeader.size
+    mov64 r7, SIZE_OF_MARKET_HEADER
+    stxdw [r10 + RM_FM_CREATE_ACCT_SPACE_UOFF], r7
+    # acct_size = MarketHeader.size + account.STORAGE_OVERHEAD
+    add64 r7, ACCT_STORAGE_OVERHEAD
+    # lamports_per_byte = acct.data.lamports_per_byte
+    ldxdw r8, [r9 + ACCT_DATA_OFF]
+    # frame.create_account_data.lamports = acct_size * lamports_per_byte
+    mul64 r7, r8
+    stxdw [r10 + RM_FM_CREATE_ACCT_LAMPORTS_UOFF], r7
     exit

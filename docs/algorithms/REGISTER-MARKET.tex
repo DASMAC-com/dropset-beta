@@ -27,6 +27,8 @@
   \IF{$input.market.data\_len \neq 0$}
     \RETURN \texttt{ErrorCode::MarketHasData}
   \ENDIF
+  \COMMENT{Populate CreateAccount CPI instruction data owner field before advancing.}
+  \STATE $frame.create\_account\_data.owner = input.market.address$
   \COMMENT{Check base mint account, create signer seed.}
   \IF{$input.base\_mint.duplicate \neq$ \texttt{account.NON\_DUP\_MARKER}}
     \RETURN \texttt{ErrorCode::BaseMintIsDuplicate}
@@ -78,6 +80,11 @@
   \IF{$acct.pubkey \neq$ \texttt{pubkey.RENT}}
     \RETURN \texttt{ErrorCode::InvalidRentSysvarPubkey}
   \ENDIF
+  \COMMENT{Prepare CreateAccount instruction lamports, space fields.}
+  \STATE $frame.create\_account\_data.space = $ \texttt{MarketHeader.size}
+  \STATE $acct\_size = $ \texttt{MarketHeader.size} + \texttt{account.STORAGE\_OVERHEAD}
+  \STATE $lamports\_per\_byte = acct.data.lamports\_per\_byte$
+  \STATE $frame.create\_account\_data.lamports = acct\_size \times lamports\_per\_byte$
 \ENDPROCEDURE
 \end{algorithmic}
 \end{algorithm}
