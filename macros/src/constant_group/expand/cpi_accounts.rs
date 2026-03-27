@@ -109,7 +109,11 @@ pub fn expand_cpi_accounts(
             let field_chain = quote! { #parent_field . #info_field . #sub_ident };
 
             let (def, meta_ident) = emit_unaligned_frame_offset_const(
-                &rust_name, &asm_name, &doc, frame_ty, field_chain,
+                &rust_name,
+                &asm_name,
+                &doc,
+                frame_ty,
+                field_chain,
             );
             const_defs.push(def);
             meta_idents.push(meta_ident);
@@ -129,7 +133,11 @@ pub fn expand_cpi_accounts(
             let field_chain = quote! { #parent_field . #meta_field . #sub_ident };
 
             let (def, meta_ident) = emit_unaligned_frame_offset_const(
-                &rust_name, &asm_name, &doc, frame_ty, field_chain,
+                &rust_name,
+                &asm_name,
+                &doc,
+                frame_ty,
+                field_chain,
             );
             const_defs.push(def);
             meta_idents.push(meta_ident);

@@ -41,7 +41,7 @@ Defines a group of named assembly constants with an injection target. The
 constants. An optional `#[prefix("...")]` attribute prepends a prefix to all
 generated constant names. An optional `///` doc comment on the group itself
 adds a header comment and separator lines around the group in the output
-assembly file. Each constant is assigned a value using one of five custom
+assembly file. Each constant is assigned a value using one of nine custom
 syntax forms (parsed within the proc macro, not standalone macros):
 
 - `offset!(expr)`: an `i16` memory offset, the generated name is suffixed with
@@ -51,10 +51,24 @@ syntax forms (parsed within the proc macro, not standalone macros):
   an `_OFF` offset to the struct, an `N_SEEDS` count, and per-seed `_ADDR_OFF`
   and `_LEN_OFF` constants (requires `#[frame(Type)]`, see below)
 - `address!(expr)`: splits a 32-byte address into four 8-byte chunks, emitting
-  `_CHUNK_{0..3}_LO` and `_CHUNK_{0..3}_HI` `i32` immediates (eight constants
+  full 64-bit `_CHUNK_{0..3}` `i64` constants (for `lddw`) plus
+  `_CHUNK_{0..3}_LO` and `_CHUNK_{0..3}_HI` `i32` immediates (twelve constants
   total)
 - `pubkey_offsets!(expr)`: emits a base `_OFF` offset plus four
   `_CHUNK_{0..3}_OFF` offsets for each 8-byte chunk of a 32-byte pubkey field
+- `unaligned_offset!(field)`: like `offset!` in frame-relative mode but without
+  the alignment assertion, suffixed with `_UOFF` (requires `#[frame(Type)]`)
+- `unaligned_pubkey_offsets!(field)`: like `pubkey_offsets!` in frame-relative
+  mode but without the alignment assertion, suffixed with `_UOFF` (requires
+  `#[frame(Type)]`)
+- `sol_instruction!(field)`: emits an aligned `_OFF` for the `SolInstruction`
+  struct base and unaligned `_UOFF` offsets for each field (`program_id`,
+  `accounts`, `account_len`, `data`, `data_len`) (requires `#[frame(Type)]`)
+- `cpi_accounts!(field)`: emits an `N_ACCOUNTS` count, `_SOL_ACCT_INFO_OFF`
+  and `_SOL_ACCT_META_OFF` vector start offsets, and per-account unaligned
+  offsets for each `SolAccountInfo` and `SolAccountMeta` field (requires
+  `#[frame(Type)]`, field type must be defined with
+  [`cpi_accounts!`](#cpi_accounts))
 
 <Include rs="interface::memory#constant_group_example" collapsible/>
 
@@ -153,6 +167,15 @@ state so that `signer_seeds!(field)` inside a
 looking up the parent field's type on the frame struct.
 
 <Include rs="interface::market#signer_seeds_example" collapsible/>
+
+### `cpi_accounts!` {#cpi_accounts}
+
+Function-like macro that defines a `#[repr(C)]` struct with `SolAccountInfo`
+fields first (contiguous), then `SolAccountMeta` fields (contiguous), for each
+named account. Field names are registered in proc-macro shared state so that
+`cpi_accounts!(field)` inside a [`constant_group!`](#constant_group) can
+auto-discover all account fields by looking up the parent field's type on the
+frame struct.
 
 ### `size_of_group!`
 
