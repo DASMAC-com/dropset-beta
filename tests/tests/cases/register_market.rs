@@ -1,4 +1,4 @@
-use dropset_interface::market::RegisterMarketAccounts;
+use dropset_interface::market::{MarketHeader, RegisterMarketAccounts};
 use dropset_interface::{Discriminant, ErrorCode};
 use dropset_tests::{
     CaseResult, TestCase, TestSetup, check, check_custom, check_with_accounts, find_pda_seed_pair,
@@ -61,7 +61,7 @@ fn into_metas_and_accounts(
 }
 
 const USER_LAMPORTS: u64 = 1_000_000;
-const MARKET_HEADER_SIZE: usize = std::mem::size_of::<dropset_interface::market::MarketHeader>();
+const MARKET_HEADER_SIZE: usize = size_of::<MarketHeader>();
 
 /// Build valid accounts that pass all checks for a successful CreateAccount CPI.
 fn happy_path_accounts(setup: &TestSetup) -> (Vec<AccountMeta>, Vec<(Pubkey, Account)>) {
