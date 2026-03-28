@@ -1,7 +1,9 @@
+use crate::market::{CreateAccountData, MarketHeader};
 use dropset_macros::{constant_group, size_of_group, svm_data};
 use pinocchio::Address;
 use pinocchio::account::{MAX_PERMITTED_DATA_INCREASE, RuntimeAccount};
 use pinocchio::entrypoint::NON_DUP_MARKER;
+use pinocchio::sysvars::rent::ACCOUNT_STORAGE_OVERHEAD;
 
 #[svm_data]
 pub struct StackNode {
@@ -41,7 +43,7 @@ pub type EmptyAccount = FullRuntimeAccount<{ runtime_data_size(data::LEN_ZERO) }
 constant_group! {
     #[prefix("ACCT")]
     #[inject("common/memory")]
-    /// Field offsets within a runtime account.
+    /// Assorted runtime account constants.
     account {
         /// Borrow state / duplicate marker.
         DUPLICATE = offset!(EmptyAccount.header.borrow_state),
@@ -59,8 +61,22 @@ constant_group! {
         OWNER = pubkey_offsets!(EmptyAccount.header.owner),
         /// Account data length.
         DATA_LEN = offset!(EmptyAccount.header.data_len),
+        /// Account data start.
+        DATA = offset!(EmptyAccount.data),
         /// Non-dup marker for accounts.
         NON_DUP_MARKER = immediate!(NON_DUP_MARKER as i32),
+        /// Account storage overhead for rent calculation.
+        STORAGE_OVERHEAD = immediate!(ACCOUNT_STORAGE_OVERHEAD as i32),
+    }
+}
+
+constant_group! {
+    #[prefix("CPI")]
+    #[inject("common/memory")]
+    /// CPI-related constants.
+    cpi {
+        /// Mask for writable signer (is_writable | is_signer).
+        WRITABLE_SIGNER = immediate!(0x0101),
     }
 }
 
@@ -82,12 +98,24 @@ constant_group! {
     input_buffer {
         /// From input buffer to user data length.
         USER_DATA_LEN = offset!(InputBufferHeader.user.header.data_len),
+        /// From input buffer to user pubkey.
+        USER_PUBKEY = pubkey_offsets!(InputBufferHeader.user.header.address),
         /// From input buffer to market duplicate flag.
         MARKET_DUPLICATE = offset!(InputBufferHeader.market.borrow_state),
         /// From input buffer to market data length.
         MARKET_DATA_LEN = offset!(InputBufferHeader.market.data_len),
         /// From input buffer to market address.
         MARKET_PUBKEY = pubkey_offsets!(InputBufferHeader.market.address),
+        /// From address to owner in a runtime account.
+        ADDRESS_TO_OWNER = relative_offset!(RuntimeAccount, address, owner),
+        /// From owner to lamports in a runtime account.
+        OWNER_TO_LAMPORTS = relative_offset!(RuntimeAccount, owner, lamports),
+        /// From lamports to data start in a runtime account.
+        LAMPORTS_TO_DATA = relative_offset!(EmptyAccount, header.lamports, data),
+        /// From user data to market address in the input buffer.
+        USER_DATA_TO_MARKET_ADDRESS = relative_offset!(
+            InputBufferHeader, user.data, market.address
+        ),
     }
 }
 // endregion: constant_group_example
@@ -95,7 +123,7 @@ constant_group! {
 // region: size_of_group_example
 size_of_group! {
     #[inject("common/memory")]
-    [Address, EmptyAccount]
+    [u8, Address, EmptyAccount, MarketHeader, CreateAccountData]
 }
 // endregion: size_of_group_example
 

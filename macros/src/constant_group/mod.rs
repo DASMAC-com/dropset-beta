@@ -52,6 +52,18 @@ pub(crate) enum ConstantKind {
     /// like `FramePubkeyOffsets` but without the alignment assertion. Names
     /// get `_UOFF` suffix.
     UnalignedFramePubkeyOffsets { fields: Vec<syn::Member> },
+    /// `relative_offset!(Struct, from_field, to_field)`: difference between
+    /// two field offsets within the same struct, emitted as an i32 immediate
+    /// with `_REL_OFF_IMM` suffix. In `#[frame(Type)]` context the struct
+    /// is inferred and both paths are bare field chains.
+    RelativeOffset {
+        /// Explicit struct type (non-frame context).
+        ty: Option<syn::Path>,
+        /// Field chain for the "from" position.
+        from_fields: Vec<syn::Member>,
+        /// Field chain for the "to" position.
+        to_fields: Vec<syn::Member>,
+    },
 }
 
 impl ConstantKind {

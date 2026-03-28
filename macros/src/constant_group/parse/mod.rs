@@ -140,6 +140,11 @@ impl Parse for ConstantGroupInput {
                         .into_unaligned_pubkey_offsets()
                         .map_err(|msg| syn::Error::new(kind_ident.span(), msg))?
                 }
+                "relative_offset" => {
+                    let inner;
+                    syn::parenthesized!(inner in content);
+                    offset::parse_relative_offset(&inner, &frame_type, kind_ident.span())?
+                }
                 "pubkey_offsets" => {
                     let inner;
                     syn::parenthesized!(inner in content);

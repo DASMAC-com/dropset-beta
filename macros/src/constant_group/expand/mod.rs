@@ -130,6 +130,28 @@ pub fn expand(input: &ConstantGroupInput) -> proc_macro2::TokenStream {
                     &mut meta_idents,
                 );
             }
+            ConstantKind::RelativeOffset {
+                ty,
+                from_fields,
+                to_fields,
+            } => {
+                let resolved_ty = ty.as_ref().unwrap_or_else(|| {
+                    input
+                        .frame_type
+                        .as_ref()
+                        .expect("frame_type must be set for RelativeOffset without explicit type")
+                });
+                let (def, meta) = offset::expand_relative_offset(
+                    base_name,
+                    &asm_name,
+                    doc,
+                    resolved_ty,
+                    from_fields,
+                    to_fields,
+                );
+                const_defs.push(def);
+                meta_idents.push(meta);
+            }
             ConstantKind::UnalignedFramePubkeyOffsets { fields } => {
                 let frame_ty = input
                     .frame_type

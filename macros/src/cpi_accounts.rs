@@ -1,7 +1,7 @@
 use proc_macro2::TokenStream;
 use quote::quote;
 use syn::{
-    Ident, Token, Visibility, braced,
+    Ident, Token, braced,
     parse::{Parse, ParseStream},
 };
 
@@ -16,17 +16,14 @@ struct CpiAccountField {
 
 /// Parsed input for the `cpi_accounts!` macro.
 pub struct CpiAccountsInput {
-    vis: Visibility,
     name: Ident,
     fields: Vec<CpiAccountField>,
 }
 
 impl Parse for CpiAccountsInput {
     fn parse(input: ParseStream) -> syn::Result<Self> {
-        // Consume any outer attributes (e.g. doc comments) before the struct.
+        // Consume any outer attributes (e.g. doc comments) before the name.
         let _attrs = input.call(syn::Attribute::parse_outer)?;
-        let vis: Visibility = input.parse()?;
-        input.parse::<Token![struct]>()?;
         let name: Ident = input.parse()?;
 
         let content;
@@ -48,7 +45,7 @@ impl Parse for CpiAccountsInput {
             return Err(input.error("cpi_accounts! must have at least one field"));
         }
 
-        Ok(CpiAccountsInput { vis, name, fields })
+        Ok(CpiAccountsInput { name, fields })
     }
 }
 
@@ -56,7 +53,6 @@ impl Parse for CpiAccountsInput {
 /// `SolAccountInfo` fields first (contiguous), then `SolAccountMeta` fields
 /// (contiguous). Registers field names in shared state.
 pub fn expand(input: &CpiAccountsInput) -> TokenStream {
-    let vis = &input.vis;
     let name = &input.name;
 
     // SolAccountInfo fields first, then SolAccountMeta fields.
@@ -102,7 +98,7 @@ pub fn expand(input: &CpiAccountsInput) -> TokenStream {
 
     quote! {
         #[repr(C)]
-        #vis struct #name {
+        pub struct #name {
             #(#info_fields),*,
             #(#meta_fields),*
         }

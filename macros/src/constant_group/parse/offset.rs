@@ -2,6 +2,52 @@ use syn::{Expr, Ident, Token, parse::ParseStream};
 
 use super::super::ConstantKind;
 
+/// Parse a bare field chain: `field.subfield.nested`.
+fn parse_field_chain(input: ParseStream) -> syn::Result<Vec<syn::Member>> {
+    let mut fields = Vec::new();
+    let ident: Ident = input.parse()?;
+    fields.push(syn::Member::Named(ident));
+    while input.peek(Token![.]) {
+        input.parse::<Token![.]>()?;
+        let member: Ident = input.parse()?;
+        fields.push(syn::Member::Named(member));
+    }
+    Ok(fields)
+}
+
+/// Parse `relative_offset!(Struct, from, to)` or `relative_offset!(from, to)`
+/// (frame context).
+pub fn parse_relative_offset(
+    inner: ParseStream,
+    frame_type: &Option<syn::Path>,
+    _span: proc_macro2::Span,
+) -> syn::Result<ConstantKind> {
+    if let Some(frame_path) = frame_type {
+        // Frame context: relative_offset!(from_field.sub, to_field.sub)
+        let _ = frame_path; // struct inferred from frame
+        let from_fields = parse_field_chain(inner)?;
+        inner.parse::<Token![,]>()?;
+        let to_fields = parse_field_chain(inner)?;
+        Ok(ConstantKind::RelativeOffset {
+            ty: None,
+            from_fields,
+            to_fields,
+        })
+    } else {
+        // Non-frame: relative_offset!(Struct, from_field.sub, to_field.sub)
+        let ty: syn::Path = inner.parse()?;
+        inner.parse::<Token![,]>()?;
+        let from_fields = parse_field_chain(inner)?;
+        inner.parse::<Token![,]>()?;
+        let to_fields = parse_field_chain(inner)?;
+        Ok(ConstantKind::RelativeOffset {
+            ty: Some(ty),
+            from_fields,
+            to_fields,
+        })
+    }
+}
+
 /// Parse the inside of `offset!(...)`.
 ///
 /// When a `#[frame(Type)]` is present, a bare identifier like `offset!(bump)`

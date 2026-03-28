@@ -1,7 +1,7 @@
 use proc_macro2::TokenStream;
 use quote::quote;
 use syn::{
-    Ident, Token, Visibility, braced,
+    Ident, Token, braced,
     parse::{Parse, ParseStream},
 };
 
@@ -16,15 +16,12 @@ struct SignerSeedField {
 
 /// Parsed input for the `signer_seeds!` macro.
 pub struct SignerSeedsInput {
-    vis: Visibility,
     name: Ident,
     fields: Vec<SignerSeedField>,
 }
 
 impl Parse for SignerSeedsInput {
     fn parse(input: ParseStream) -> syn::Result<Self> {
-        let vis: Visibility = input.parse()?;
-        input.parse::<Token![struct]>()?;
         let name: Ident = input.parse()?;
 
         let content;
@@ -46,14 +43,13 @@ impl Parse for SignerSeedsInput {
             return Err(input.error("signer_seeds! must have at least one field"));
         }
 
-        Ok(SignerSeedsInput { vis, name, fields })
+        Ok(SignerSeedsInput { name, fields })
     }
 }
 
 /// Expand a `signer_seeds!` invocation into a `#[repr(C)]` struct with all
 /// fields typed as `SolSignerSeed`, and register field names in shared state.
 pub fn expand(input: &SignerSeedsInput) -> TokenStream {
-    let vis = &input.vis;
     let name = &input.name;
 
     let field_defs: Vec<_> = input
@@ -79,7 +75,7 @@ pub fn expand(input: &SignerSeedsInput) -> TokenStream {
 
     quote! {
         #[repr(C)]
-        #vis struct #name {
+        pub struct #name {
             #(#field_defs),*
         }
     }

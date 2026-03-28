@@ -45,8 +45,13 @@ pub struct TestSetup {
 }
 
 /// Creates a test environment for the default `dropset` program.
+///
+/// Sets `exemption_threshold = 1.0` (SIMD-0194) so the rent calculation
+/// in the program (`acct_size * lamports_per_byte`) matches the sysvar.
 pub fn setup() -> TestSetup {
-    setup_program(DEFAULT_PROGRAM)
+    let mut setup = setup_program(DEFAULT_PROGRAM);
+    setup.mollusk.sysvars.rent.exemption_threshold = 1.0;
+    setup
 }
 
 /// Creates a test environment for a named program binary under `target/asm/`.
