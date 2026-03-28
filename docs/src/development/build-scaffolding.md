@@ -41,7 +41,7 @@ Defines a group of named assembly constants with an injection target. The
 constants. An optional `#[prefix("...")]` attribute prepends a prefix to all
 generated constant names. An optional `///` doc comment on the group itself
 adds a header comment and separator lines around the group in the output
-assembly file. Each constant is assigned a value using one of nine custom
+assembly file. Each constant is assigned a value using one of the following
 syntax forms (parsed within the proc macro, not standalone macros):
 
 - `offset!(expr)`: an `i16` memory offset, the generated name is suffixed with
@@ -69,6 +69,10 @@ syntax forms (parsed within the proc macro, not standalone macros):
   offsets for each `SolAccountInfo` and `SolAccountMeta` field (requires
   `#[frame(Type)]`, field type must be defined with
   [`cpi_accounts!`](#cpi_accounts))
+- `relative_offset!(Struct, from_field, to_field)`: computes the difference
+  between two field offsets within the same struct, emitted as an `i32`
+  immediate with `_REL_OFF_IMM` suffix. In `#[frame(Type)]` context the
+  struct is inferred and only the two field paths are required
 
 <Include rs="interface::memory#constant_group_example" collapsible/>
 
