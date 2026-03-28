@@ -207,6 +207,9 @@
 .equ RM_MISC_QUOTE_DATA_LEN_OFF, 31096
 # Number of seeds for market PDA derivation (base, quote).
 .equ RM_MISC_TRY_FIND_PDA_SEEDS_LEN, 2
+# Number of accounts for CreateAccount CPI (user, target).
+.equ RM_MISC_CREATE_ACCOUNT_N_ACCOUNTS, 2
+.equ RM_MISC_N_PDA_SIGNERS, 1 # Number of PDA signers for CPI.
 # -------------------------------------------------------------------------
 
 register_market:
@@ -408,7 +411,7 @@ register_market:
     # frame.cpi.target_info.data = &input.market.data
     add64 r6, IB_LAMPORTS_TO_DATA_REL_OFF_IMM
     stxdw [r10 + RM_FM_CPI_TARGET_ACCT_INFO_DATA_UOFF], r6
-    # frame.signers_seeds.addr = &frame.pda_seeds (r1 from syscall setup)
+    # frame.signers_seeds.addr = &frame.pda_seeds
     stxdw [r10 + RM_FM_SIGNERS_SEEDS_ADDR_UOFF], r1
     # frame.signers_seeds.len = frame.PDA_SEEDS_N_SEEDS
     mov64 r7, RM_FM_PDA_SEEDS_N_SEEDS

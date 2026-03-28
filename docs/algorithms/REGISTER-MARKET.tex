@@ -109,6 +109,20 @@
   \COMMENT{Populate signers seeds for CPI.}
   \STATE frame.signers\_seeds.addr = \&frame.pda\_seeds
   \STATE frame.signers\_seeds.len = \texttt{RegisterMarketFrame.PDA\_SEEDS\_N\_SEEDS}
+  \COMMENT{Populate SolInstruction for CreateAccount CPI.}
+  \STATE frame.sol\_instruction.accounts = \&frame.cpi.account\_metas
+  \STATE frame.sol\_instruction.account\_len =
+    \texttt{register\_misc.CREATE\_ACCOUNT\_N\_ACCOUNTS}
+  \STATE frame.sol\_instruction.data = \&frame.create\_account\_data
+  \STATE frame.sol\_instruction.data\_len = \texttt{CreateAccountData.size}
+  \COMMENT{Invoke CreateAccount CPI.}
+  \STATE syscall.instruction = \&frame.sol\_instruction
+  \STATE syscall.account\_infos = \&frame.cpi.account\_infos
+  \STATE syscall.account\_infos\_len =
+    \texttt{register\_misc.CREATE\_ACCOUNT\_N\_ACCOUNTS}
+  \STATE syscall.seeds = \&frame.signers\_seeds
+  \STATE syscall.seeds\_len = \texttt{register\_misc.N\_PDA\_SIGNERS}
+  \STATE \CALL{sol-invoke-signed-c}{}
 \ENDPROCEDURE
 \end{algorithmic}
 \end{algorithm}
