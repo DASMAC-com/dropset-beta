@@ -378,4 +378,32 @@ register_market:
     # frame.cpi.target_meta.is_writable = true
     # frame.cpi.target_meta.is_signer = true
     sth [r10 + RM_FM_CPI_TARGET_ACCT_META_IS_WRITABLE_UOFF], CPI_WRITABLE_SIGNER
+    # frame.cpi.user_meta.pubkey = &input.user.address
+    # frame.cpi.user_info.key = &input.user.address
+    add64 r6, IB_USER_PUBKEY_OFF
+    stxdw [r10 + RM_FM_CPI_USER_ACCT_META_PUBKEY_UOFF], r6
+    stxdw [r10 + RM_FM_CPI_USER_ACCT_INFO_KEY_UOFF], r6
+    # frame.cpi.user_info.owner = &input.user.owner
+    add64 r6, IB_ADDRESS_TO_OWNER_REL_OFF_IMM
+    stxdw [r10 + RM_FM_CPI_USER_ACCT_INFO_OWNER_UOFF], r6
+    # frame.cpi.user_info.lamports = &input.user.lamports
+    add64 r6, IB_OWNER_TO_LAMPORTS_REL_OFF_IMM
+    stxdw [r10 + RM_FM_CPI_USER_ACCT_INFO_LAMPORTS_UOFF], r6
+    # frame.cpi.user_info.data = &input.user.data
+    add64 r6, IB_LAMPORTS_TO_DATA_REL_OFF_IMM
+    stxdw [r10 + RM_FM_CPI_USER_ACCT_INFO_DATA_UOFF], r6
+    # frame.cpi.target_meta.pubkey = &input.market.address
+    # frame.cpi.target_info.key = &input.market.address
+    add64 r6, IB_USER_DATA_TO_MARKET_ADDRESS_REL_OFF_IMM
+    stxdw [r10 + RM_FM_CPI_TARGET_ACCT_META_PUBKEY_UOFF], r6
+    stxdw [r10 + RM_FM_CPI_TARGET_ACCT_INFO_KEY_UOFF], r6
+    # frame.cpi.target_info.owner = &input.market.owner
+    add64 r6, IB_ADDRESS_TO_OWNER_REL_OFF_IMM
+    stxdw [r10 + RM_FM_CPI_TARGET_ACCT_INFO_OWNER_UOFF], r6
+    # frame.cpi.target_info.lamports = &input.market.lamports
+    add64 r6, IB_OWNER_TO_LAMPORTS_REL_OFF_IMM
+    stxdw [r10 + RM_FM_CPI_TARGET_ACCT_INFO_LAMPORTS_UOFF], r6
+    # frame.cpi.target_info.data = &input.market.data
+    add64 r6, IB_LAMPORTS_TO_DATA_REL_OFF_IMM
+    stxdw [r10 + RM_FM_CPI_TARGET_ACCT_INFO_DATA_UOFF], r6
     exit

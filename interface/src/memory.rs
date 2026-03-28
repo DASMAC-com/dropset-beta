@@ -98,6 +98,8 @@ constant_group! {
     input_buffer {
         /// From input buffer to user data length.
         USER_DATA_LEN = offset!(InputBufferHeader.user.header.data_len),
+        /// From input buffer to user pubkey.
+        USER_PUBKEY = pubkey_offsets!(InputBufferHeader.user.header.address),
         /// From input buffer to market duplicate flag.
         MARKET_DUPLICATE = offset!(InputBufferHeader.market.borrow_state),
         /// From input buffer to market data length.

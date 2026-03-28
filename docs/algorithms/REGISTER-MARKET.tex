@@ -95,7 +95,17 @@
   \STATE frame.cpi.target\_info.is\_writable = \texttt{true}
   \STATE frame.cpi.target\_meta.is\_signer = \texttt{true}
   \STATE frame.cpi.target\_meta.is\_writable = \texttt{true}
-  \COMMENT{Assign CPI account fields via pointer operations.}
+  \COMMENT{Assign CPI account fields via pointers.}
+  \STATE frame.cpi.user\_meta.pubkey = \&input.user.address
+  \STATE frame.cpi.user\_info.key = \&input.user.address
+  \STATE frame.cpi.user\_info.owner = \&input.user.owner
+  \STATE frame.cpi.user\_info.lamports = \&input.user.lamports
+  \STATE frame.cpi.user\_info.data = \&input.user.data
+  \STATE frame.cpi.target\_meta.pubkey = \&input.market.address
+  \STATE frame.cpi.target\_info.key = \&input.market.address
+  \STATE frame.cpi.target\_info.owner = \&input.market.owner
+  \STATE frame.cpi.target\_info.lamports = \&input.market.lamports
+  \STATE frame.cpi.target\_info.data = \&input.market.data
 \ENDPROCEDURE
 \end{algorithmic}
 \end{algorithm}

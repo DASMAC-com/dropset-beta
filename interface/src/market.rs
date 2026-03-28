@@ -103,7 +103,7 @@ cpi_accounts! {
     CPIAccounts {
         /// User account.
         user,
-        /// Target account.
+        /// Target account (the account to create, either market account or ATA).
         target,
         /// Proprietor account.
         proprietor,

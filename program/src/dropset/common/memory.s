@@ -40,6 +40,15 @@
 # Input buffer constants for static header.
 # -------------------------------------------------------------------------
 .equ IB_USER_DATA_LEN_OFF, 88 # From input buffer to user data length.
+.equ IB_USER_PUBKEY_OFF, 16 # From input buffer to user pubkey.
+# From input buffer to user pubkey (chunk 0).
+.equ IB_USER_PUBKEY_CHUNK_0_OFF, 16
+# From input buffer to user pubkey (chunk 1).
+.equ IB_USER_PUBKEY_CHUNK_1_OFF, 24
+# From input buffer to user pubkey (chunk 2).
+.equ IB_USER_PUBKEY_CHUNK_2_OFF, 32
+# From input buffer to user pubkey (chunk 3).
+.equ IB_USER_PUBKEY_CHUNK_3_OFF, 40
 # From input buffer to market duplicate flag.
 .equ IB_MARKET_DUPLICATE_OFF, 10344
 # From input buffer to market data length.
