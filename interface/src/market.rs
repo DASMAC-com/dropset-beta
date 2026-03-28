@@ -188,6 +188,14 @@ constant_group! {
         SOL_INSN = sol_instruction!(sol_instruction),
         /// Bump seed.
         BUMP = offset!(bump),
+        /// From pda_seeds to sol_instruction.
+        PDA_SEEDS_TO_SOL_INSN = relative_offset!(pda_seeds, sol_instruction),
+        /// From pda to signers_seeds.
+        PDA_TO_SIGNERS_SEEDS = relative_offset!(pda, signers_seeds),
+        /// From create_account_data to cpi account metas.
+        CREATE_ACCT_DATA_TO_CPI_ACCT_METAS = relative_offset!(
+            create_account_data, cpi_accounts.user_meta
+        ),
     }
 }
 

@@ -189,6 +189,12 @@
 .equ RM_FM_SOL_INSN_DATA_UOFF, -24 # SolInstruction data pointer.
 .equ RM_FM_SOL_INSN_DATA_LEN_UOFF, -16 # SolInstruction data length.
 .equ RM_FM_BUMP_OFF, -8 # Bump seed.
+# From pda_seeds to sol_instruction.
+.equ RM_FM_PDA_SEEDS_TO_SOL_INSN_REL_OFF_IMM, 616
+# From pda to signers_seeds.
+.equ RM_FM_PDA_TO_SIGNERS_SEEDS_REL_OFF_IMM, 552
+# From create_account_data to cpi account metas.
+.equ RM_FM_CREATE_ACCT_DATA_TO_CPI_ACCT_METAS_REL_OFF_IMM, 392
 # -------------------------------------------------------------------------
 
 # Miscellaneous market registration constants.
@@ -416,4 +422,29 @@ register_market:
     # frame.signers_seeds.len = frame.PDA_SEEDS_N_SEEDS
     mov64 r7, RM_FM_PDA_SEEDS_N_SEEDS
     stxdw [r10 + RM_FM_SIGNERS_SEEDS_LEN_UOFF], r7
+    # frame.sol_instruction.data = &frame.create_account_data
+    mov64 r7, r10
+    add64 r7, RM_FM_CREATE_ACCT_DATA_OFF
+    stxdw [r10 + RM_FM_SOL_INSN_DATA_UOFF], r7
+    # frame.sol_instruction.accounts = &frame.cpi.account_metas
+    add64 r7, RM_FM_CREATE_ACCT_DATA_TO_CPI_ACCT_METAS_REL_OFF_IMM
+    stxdw [r10 + RM_FM_SOL_INSN_ACCOUNTS_UOFF], r7
+    # frame.sol_instruction.account_len = register_misc.CREATE_ACCOUNT_N_ACCOUNTS
+    mov64 r7, RM_MISC_CREATE_ACCOUNT_N_ACCOUNTS
+    stxdw [r10 + RM_FM_SOL_INSN_ACCOUNT_LEN_UOFF], r7
+    # frame.sol_instruction.data_len = CreateAccountData.size
+    mov64 r7, SIZE_OF_CREATE_ACCOUNT_DATA
+    stxdw [r10 + RM_FM_SOL_INSN_DATA_LEN_UOFF], r7
+    # syscall.instruction = &frame.sol_instruction (r1 from pda_seeds)
+    add64 r1, RM_FM_PDA_SEEDS_TO_SOL_INSN_REL_OFF_IMM
+    # syscall.account_infos = &frame.cpi.account_infos
+    mov64 r2, r10
+    add64 r2, RM_FM_CPI_SOL_ACCT_INFO_OFF
+    # syscall.account_infos_len = register_misc.CREATE_ACCOUNT_N_ACCOUNTS
+    mov64 r3, RM_MISC_CREATE_ACCOUNT_N_ACCOUNTS
+    # syscall.seeds = &frame.signers_seeds (r4 from pda)
+    add64 r4, RM_FM_PDA_TO_SIGNERS_SEEDS_REL_OFF_IMM
+    # syscall.seeds_len = register_misc.N_PDA_SIGNERS
+    mov64 r5, RM_MISC_N_PDA_SIGNERS
+    call sol_invoke_signed_c
     exit
