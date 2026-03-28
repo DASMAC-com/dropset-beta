@@ -20,7 +20,7 @@ fn parse_field_chain(input: ParseStream) -> syn::Result<Vec<syn::Member>> {
 pub fn parse_relative_offset(
     inner: ParseStream,
     frame_type: &Option<syn::Path>,
-    span: proc_macro2::Span,
+    _span: proc_macro2::Span,
 ) -> syn::Result<ConstantKind> {
     if let Some(frame_path) = frame_type {
         // Frame context: relative_offset!(from_field.sub, to_field.sub)

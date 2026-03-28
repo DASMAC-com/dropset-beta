@@ -4,8 +4,10 @@ use dropset_tests::{
     CaseResult, TestCase, TestSetup, check, check_custom, check_with_accounts, find_pda_seed_pair,
     test_cases,
 };
+use mollusk_svm::program;
+use mollusk_svm::result::ProgramResult as MolluskResult;
 use solana_account::Account;
-use solana_sdk::instruction::AccountMeta;
+use solana_sdk::instruction::{AccountMeta, Instruction};
 use solana_sdk::pubkey::Pubkey;
 
 test_cases! {
@@ -33,6 +35,7 @@ test_cases! {
         InvalidRentSysvarPubkeyChunk2,
         InvalidRentSysvarPubkeyChunk3,
         InvalidRentSysvarPubkeyChunk3Hi,
+        CreateAccountHappyPath,
     }
 }
 
@@ -52,6 +55,54 @@ fn into_metas_and_accounts(
     let metas = keys
         .iter()
         .map(|k| AccountMeta::new_readonly(*k, false))
+        .collect();
+    let paired = keys.into_iter().zip(accounts).collect();
+    (metas, paired)
+}
+
+const USER_LAMPORTS: u64 = 1_000_000;
+const MARKET_HEADER_SIZE: usize = std::mem::size_of::<dropset_interface::market::MarketHeader>();
+
+/// Build valid accounts that pass all checks for a successful CreateAccount CPI.
+fn happy_path_accounts(setup: &TestSetup) -> (Vec<AccountMeta>, Vec<(Pubkey, Account)>) {
+    let (mut keys, mut accounts) = default_accounts();
+    let (base_key, quote_key) = find_pda_seed_pair(&setup.program_id);
+    keys[RegisterMarketAccounts::BaseMint as usize] = base_key;
+    keys[RegisterMarketAccounts::QuoteMint as usize] = quote_key;
+    let (pda, _bump) =
+        Pubkey::find_program_address(&[base_key.as_ref(), quote_key.as_ref()], &setup.program_id);
+    keys[RegisterMarketAccounts::Market as usize] = pda;
+
+    let (system_program_pubkey, system_program_account) =
+        program::keyed_account_for_system_program();
+    keys[RegisterMarketAccounts::SystemProgram as usize] = system_program_pubkey;
+    accounts[RegisterMarketAccounts::SystemProgram as usize] = system_program_account;
+
+    let (rent_sysvar_pubkey, rent_sysvar_account) =
+        setup.mollusk.sysvars.keyed_account_for_rent_sysvar();
+    keys[RegisterMarketAccounts::RentSysvar as usize] = rent_sysvar_pubkey;
+    accounts[RegisterMarketAccounts::RentSysvar as usize] = rent_sysvar_account;
+
+    // Fund the user account so it can pay for the CreateAccount CPI.
+    accounts[RegisterMarketAccounts::User as usize] =
+        Account::new(USER_LAMPORTS, 0, &system_program_pubkey);
+
+    let metas: Vec<AccountMeta> = keys
+        .iter()
+        .enumerate()
+        .map(|(i, k)| {
+            let writable = matches!(
+                i,
+                i if i == RegisterMarketAccounts::User as usize
+                    || i == RegisterMarketAccounts::Market as usize
+            );
+            let signer = i == RegisterMarketAccounts::User as usize;
+            if writable {
+                AccountMeta::new(*k, signer)
+            } else {
+                AccountMeta::new_readonly(*k, signer)
+            }
+        })
         .collect();
     let paired = keys.into_iter().zip(accounts).collect();
     (metas, paired)
@@ -401,6 +452,54 @@ impl TestCase for Case {
                     accounts,
                     Some(ErrorCode::InvalidRentSysvarPubkey),
                 )
+            }
+            // Verifies: REGISTER-MARKET (CreateAccount CPI happy path)
+            Self::CreateAccountHappyPath => {
+                let (metas, accounts) = happy_path_accounts(setup);
+                let instruction = Instruction::new_with_bytes(setup.program_id, insn, metas);
+                let result = setup.mollusk.process_instruction(&instruction, &accounts);
+
+                let mut errors = Vec::new();
+                match &result.program_result {
+                    MolluskResult::Success => {
+                        let market =
+                            &result.resulting_accounts[RegisterMarketAccounts::Market as usize].1;
+
+                        if market.owner != setup.program_id {
+                            errors.push(format!(
+                                "owner: expected {:?}, got {:?}",
+                                setup.program_id, market.owner
+                            ));
+                        }
+                        if market.data.len() != MARKET_HEADER_SIZE {
+                            errors.push(format!(
+                                "data len: expected {}, got {}",
+                                MARKET_HEADER_SIZE,
+                                market.data.len()
+                            ));
+                        }
+                        let rent = &setup.mollusk.sysvars.rent;
+                        if !rent.is_exempt(market.lamports, market.data.len()) {
+                            errors.push(format!(
+                                "market not rent exempt: {} lamports for {} bytes",
+                                market.lamports,
+                                market.data.len()
+                            ));
+                        }
+                    }
+                    other => {
+                        errors.push(format!("expected success, got {:?}", other));
+                    }
+                }
+
+                CaseResult {
+                    cu: result.compute_units_consumed,
+                    error: if errors.is_empty() {
+                        None
+                    } else {
+                        Some(errors.join("; "))
+                    },
+                }
             }
         }
     }

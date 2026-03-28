@@ -47,9 +47,18 @@ pub fn expand(input: &SizeOfGroupInput) -> proc_macro2::TokenStream {
         // Primitives (e.g. u8, u64) live in the prelude, not in `super`.
         let is_primitive = matches!(
             type_str.as_str(),
-            "u8" | "u16" | "u32" | "u64" | "u128"
-                | "i8" | "i16" | "i32" | "i64" | "i128"
-                | "usize" | "isize" | "bool"
+            "u8" | "u16"
+                | "u32"
+                | "u64"
+                | "u128"
+                | "i8"
+                | "i16"
+                | "i32"
+                | "i64"
+                | "i128"
+                | "usize"
+                | "isize"
+                | "bool"
         );
         let qualified_ty = if is_primitive {
             quote! { #ty }
