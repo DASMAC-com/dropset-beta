@@ -334,6 +334,35 @@ pub fn expand_unaligned_frame_offset(
     (def, meta_ident)
 }
 
+/// Expand `relative_offset!(...)` into an i32 immediate with `_REL_OFF_IMM`
+/// suffix. Computes `offset_of!(Struct, to) - offset_of!(Struct, from)`.
+pub fn expand_relative_offset(
+    base_name: &Ident,
+    asm_name: &str,
+    doc: &str,
+    ty: &syn::Path,
+    from_fields: &[syn::Member],
+    to_fields: &[syn::Member],
+) -> (proc_macro2::TokenStream, Ident) {
+    let rust_name = Ident::new(&format!("{}_REL_OFF_IMM", base_name), base_name.span());
+    let asm_name = format!("{}_REL_OFF_IMM", asm_name);
+    let meta_ident = codegen::meta_ident(&asm_name, base_name.span());
+    let meta = codegen::immediate_meta(&meta_ident, &asm_name, doc, quote! { #rust_name });
+
+    let def = quote! {
+        #[doc = #doc]
+        pub const #rust_name: i32 = {
+            use super::*;
+            (core::mem::offset_of!(#ty, #(#to_fields).*)
+                - core::mem::offset_of!(#ty, #(#from_fields).*)) as i32
+        };
+
+        #meta
+    };
+
+    (def, meta_ident)
+}
+
 /// Expand `offset!(field)` inside a `#[frame(Type)]` group.
 pub fn expand_frame_offset(
     base_name: &Ident,

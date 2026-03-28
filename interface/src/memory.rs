@@ -104,6 +104,16 @@ constant_group! {
         MARKET_DATA_LEN = offset!(InputBufferHeader.market.data_len),
         /// From input buffer to market address.
         MARKET_PUBKEY = pubkey_offsets!(InputBufferHeader.market.address),
+        /// From address to owner in a runtime account.
+        ADDRESS_TO_OWNER = relative_offset!(RuntimeAccount, address, owner),
+        /// From owner to lamports in a runtime account.
+        OWNER_TO_LAMPORTS = relative_offset!(RuntimeAccount, owner, lamports),
+        /// From lamports to data start in a runtime account.
+        LAMPORTS_TO_DATA = relative_offset!(EmptyAccount, header.lamports, data),
+        /// From user data to market address in the input buffer.
+        USER_DATA_TO_MARKET_ADDRESS = relative_offset!(
+            InputBufferHeader, user.data, market.address
+        ),
     }
 }
 // endregion: constant_group_example

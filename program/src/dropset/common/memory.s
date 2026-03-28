@@ -53,6 +53,14 @@
 .equ IB_MARKET_PUBKEY_CHUNK_2_OFF, 10368
 # From input buffer to market address (chunk 3).
 .equ IB_MARKET_PUBKEY_CHUNK_3_OFF, 10376
+# From address to owner in a runtime account.
+.equ IB_ADDRESS_TO_OWNER_REL_OFF_IMM, 32
+# From owner to lamports in a runtime account.
+.equ IB_OWNER_TO_LAMPORTS_REL_OFF_IMM, 32
+# From lamports to data start in a runtime account.
+.equ IB_LAMPORTS_TO_DATA_REL_OFF_IMM, 16
+# From user data to market address in the input buffer.
+.equ IB_USER_DATA_TO_MARKET_ADDRESS_REL_OFF_IMM, 10256
 # -------------------------------------------------------------------------
 
 .equ SIZE_OF_U8, 1 # Size of u8 in bytes.
