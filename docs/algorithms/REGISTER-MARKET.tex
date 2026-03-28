@@ -106,6 +106,9 @@
   \STATE frame.cpi.target\_info.owner = \&input.market.owner
   \STATE frame.cpi.target\_info.lamports = \&input.market.lamports
   \STATE frame.cpi.target\_info.data = \&input.market.data
+  \COMMENT{Populate signers seeds for CPI.}
+  \STATE frame.signers\_seeds.addr = \&frame.pda\_seeds
+  \STATE frame.signers\_seeds.len = \texttt{RegisterMarketFrame.PDA\_SEEDS\_N\_SEEDS}
 \ENDPROCEDURE
 \end{algorithmic}
 \end{algorithm}

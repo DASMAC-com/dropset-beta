@@ -1,4 +1,6 @@
-use crate::cpi_bindings::{SolAccountInfo, SolAccountMeta, SolInstruction, SolSignerSeed};
+use crate::cpi_bindings::{
+    SolAccountInfo, SolAccountMeta, SolInstruction, SolSignerSeed, SolSignerSeeds,
+};
 use crate::memory::EmptyAccount;
 use crate::memory::StackNode;
 use crate::order::Order;
@@ -144,6 +146,8 @@ pub struct RegisterMarketFrame {
     pub create_account_data: CreateAccountData,
     /// CPI accounts for CreateAccount and ATA creation.
     pub cpi_accounts: CPIAccounts,
+    /// Signers seeds for CPI.
+    pub signers_seeds: SolSignerSeeds,
     /// Re-used across CPIs, zero-initialized on stack.
     pub sol_instruction: SolInstruction,
     /// From `sol_try_find_program_address`.
@@ -155,7 +159,7 @@ constant_group! {
     #[prefix("RM")]
     #[inject("market/register")]
     #[frame(RegisterMarketFrame)]
-    register_market_frame {
+    frame {
         /// PDA signer seeds.
         PDA_SEEDS = signer_seeds!(pda_seeds),
         /// PDA address.
@@ -172,6 +176,10 @@ constant_group! {
         CREATE_ACCT_OWNER = unaligned_pubkey_offsets!(create_account_data.owner),
         /// CPI accounts.
         CPI = cpi_accounts!(cpi_accounts),
+        /// Signers seeds address.
+        SIGNERS_SEEDS_ADDR = unaligned_offset!(signers_seeds.addr),
+        /// Signers seeds length.
+        SIGNERS_SEEDS_LEN = unaligned_offset!(signers_seeds.len),
         /// Solana instruction.
         SOL_INSN = sol_instruction!(sol_instruction),
         /// Bump seed.

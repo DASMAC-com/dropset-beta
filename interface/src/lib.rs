@@ -65,7 +65,7 @@ pub const INJECTION_GROUPS: &[&dropset_build::ConstantGroup] = &[
     &error_code::GROUP,
     &market::register_market_data::GROUP,
     &market::register_market_accounts::GROUP,
-    &market::register_market_frame::GROUP,
+    &market::frame::GROUP,
     &market::register_misc::GROUP,
     &memory::account::GROUP,
     &memory::cpi::GROUP,
