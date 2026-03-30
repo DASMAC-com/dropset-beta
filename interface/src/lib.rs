@@ -44,6 +44,20 @@ pub enum ErrorCode {
     RentSysvarIsDuplicate,
     /// The Rent sysvar account pubkey is invalid.
     InvalidRentSysvarPubkey,
+    /// The base token program account is a duplicate.
+    BaseTokenProgramIsDuplicate,
+    /// The base token program does not own the base mint.
+    BaseTokenProgramNotBaseMintOwner,
+    /// The base token program is not Token Program or Token 2022.
+    BaseTokenProgramNotTokenProgram,
+    /// The quote token program duplicate position is invalid.
+    InvalidQuoteTokenProgramDuplicate,
+    /// The duplicate quote token program does not own the quote mint.
+    DupQuoteTokenProgramNotQuoteMintOwner,
+    /// The non-duplicate quote token program does not own the quote mint.
+    NonDupQuoteTokenProgramNotQuoteMintOwner,
+    /// The quote token program is not Token Program or Token 2022.
+    QuoteTokenProgramNotTokenProgram,
 }
 // endregion: error_enum
 

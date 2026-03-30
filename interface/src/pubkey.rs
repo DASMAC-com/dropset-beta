@@ -1,7 +1,7 @@
 use dropset_macros::constant_group;
 use pinocchio::sysvars::rent::RENT_ID;
-use pinocchio_token::ID as TOKEN_PROGRAM_ID;
-use pinocchio_token_2022::ID as TOKEN_2022_PROGRAM_ID;
+pub use pinocchio_token::ID as TOKEN_PROGRAM_ID;
+pub use pinocchio_token_2022::ID as TOKEN_2022_PROGRAM_ID;
 
 // region: pubkey_constants
 constant_group! {

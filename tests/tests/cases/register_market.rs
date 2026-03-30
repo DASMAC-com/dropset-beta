@@ -1,4 +1,5 @@
 use dropset_interface::market::{MarketHeader, RegisterMarketAccounts};
+use dropset_interface::pubkey::TOKEN_PROGRAM_ID;
 use dropset_interface::{Discriminant, ErrorCode};
 use dropset_tests::{
     CaseResult, TestCase, TestSetup, check, check_custom, check_with_accounts, find_pda_seed_pair,
@@ -82,6 +83,15 @@ fn happy_path_accounts(setup: &TestSetup) -> (Vec<AccountMeta>, Vec<(Pubkey, Acc
         setup.mollusk.sysvars.keyed_account_for_rent_sysvar();
     keys[RegisterMarketAccounts::RentSysvar as usize] = rent_sysvar_pubkey;
     accounts[RegisterMarketAccounts::RentSysvar as usize] = rent_sysvar_account;
+
+    // Set mint account owners to the Token Program.
+    let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
+    accounts[RegisterMarketAccounts::BaseMint as usize].owner = token_program_id;
+    accounts[RegisterMarketAccounts::QuoteMint as usize].owner = token_program_id;
+
+    // Set up token program accounts (both use Token Program, so quote is a duplicate).
+    keys[RegisterMarketAccounts::BaseTokenProgram as usize] = token_program_id;
+    keys[RegisterMarketAccounts::QuoteTokenProgram as usize] = token_program_id;
 
     // Fund the user account so it can pay for the CreateAccount CPI.
     accounts[RegisterMarketAccounts::User as usize] =
