@@ -11,6 +11,7 @@
   \INPUT $r_4$ = insn\_len
   \REQUIRE insn.discriminant == \texttt{Discriminant::RegisterMarket}
 \PROCEDURE{REGISTER-MARKET}{input, insn, n\_accounts, insn\_len}
+  \COMMENT{Check number of accounts and instruction data length.}
   \IF{n\_accounts $<$ \texttt{RegisterMarketAccounts.LEN}}
     \RETURN \texttt{ErrorCode::InvalidNumberOfAccounts}
   \ENDIF
@@ -123,6 +124,48 @@
   \STATE syscall.seeds = \&frame.signers\_seeds
   \STATE syscall.seeds\_len = \texttt{register\_misc.N\_PDA\_SIGNERS}
   \STATE \CALL{sol-invoke-signed-c}{}
+  \COMMENT{Advance to base token program account.}
+  \STATE rent\_sysvar\_padded\_data\_len = acct.padded\_data\_len
+  \STATE acct += rent\_sysvar\_padded\_data\_len + \texttt{EmptyAccount.size}
+  \COMMENT{Check base token program account.}
+  \IF{acct.duplicate $\neq$ \texttt{account.NON\_DUP\_MARKER}}
+    \RETURN \texttt{ErrorCode::BaseTokenProgramIsDuplicate}
+  \ENDIF
+  \COMMENT{Verify base token program owns the base mint.}
+  \IF{acct.pubkey $\neq$ input.base\_mint.owner}
+    \RETURN \texttt{ErrorCode::InvalidBaseTokenProgramPubkey}
+  \ENDIF
+  \COMMENT{Verify base token program is token program or Token 2022.}
+  \IF{acct.pubkey $\neq$ \texttt{pubkey.TOKEN\_PROGRAM}}
+    \IF{acct.pubkey $\neq$ \texttt{pubkey.TOKEN\_2022\_PROGRAM}}
+      \RETURN \texttt{ErrorCode::InvalidBaseTokenProgramPubkey}
+    \ENDIF
+  \ENDIF
+  \COMMENT{Advance to quote token program account.}
+  \STATE base\_token\_program\_padded\_data\_len = acct.padded\_data\_len
+  \STATE acct += base\_token\_program\_padded\_data\_len + \texttt{EmptyAccount.size}
+  \COMMENT{Check quote token program account.}
+  \IF{acct.duplicate $=$ \texttt{account.NON\_DUP\_MARKER}}
+    \COMMENT{Non-duplicate; verify quote token program owns the quote mint.}
+    \IF{acct.pubkey $\neq$ input\_shifted.quote\_mint.owner}
+      \RETURN \texttt{ErrorCode::InvalidQuoteTokenProgramPubkey}
+    \ENDIF
+    \COMMENT{Verify quote token program is token program or Token 2022.}
+    \IF{acct.pubkey $\neq$ \texttt{pubkey.TOKEN\_PROGRAM}}
+      \IF{acct.pubkey $\neq$ \texttt{pubkey.TOKEN\_2022\_PROGRAM}}
+        \RETURN \texttt{ErrorCode::InvalidQuoteTokenProgramPubkey}
+      \ENDIF
+    \ENDIF
+  \ELSE
+    \COMMENT{Duplicate; verify position is base token program.}
+    \IF{acct.duplicate $\neq$ \texttt{RegisterMarketAccounts::BaseTokenProgram}}
+      \RETURN \texttt{ErrorCode::InvalidQuoteTokenProgramDuplicate}
+    \ENDIF
+    \COMMENT{Duplicate of base token program; verify it owns the quote mint.}
+    \IF{input.base\_mint.owner $\neq$ input\_shifted.quote\_mint.owner}
+      \RETURN \texttt{ErrorCode::InvalidQuoteTokenProgramPubkey}
+    \ENDIF
+  \ENDIF
 \ENDPROCEDURE
 \end{algorithmic}
 \end{algorithm}

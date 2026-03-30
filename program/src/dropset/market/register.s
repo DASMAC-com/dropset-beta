@@ -3,6 +3,24 @@
 
 # RegisterMarketAccounts number of accounts.
 .equ REGISTER_MARKET_ACCOUNTS_LEN, 10
+.equ REGISTER_MARKET_ACCOUNTS_USER_POS, 0 # User account position.
+.equ REGISTER_MARKET_ACCOUNTS_MARKET_POS, 1 # Market account position.
+# Base Mint account position.
+.equ REGISTER_MARKET_ACCOUNTS_BASE_MINT_POS, 2
+# Quote Mint account position.
+.equ REGISTER_MARKET_ACCOUNTS_QUOTE_MINT_POS, 3
+# System Program account position.
+.equ REGISTER_MARKET_ACCOUNTS_SYSTEM_PROGRAM_POS, 4
+# Rent Sysvar account position.
+.equ REGISTER_MARKET_ACCOUNTS_RENT_SYSVAR_POS, 5
+# Base Token Program account position.
+.equ REGISTER_MARKET_ACCOUNTS_BASE_TOKEN_PROGRAM_POS, 6
+# Quote Token Program account position.
+.equ REGISTER_MARKET_ACCOUNTS_QUOTE_TOKEN_PROGRAM_POS, 7
+# Base Vault account position.
+.equ REGISTER_MARKET_ACCOUNTS_BASE_VAULT_POS, 8
+# Quote Vault account position.
+.equ REGISTER_MARKET_ACCOUNTS_QUOTE_VAULT_POS, 9
 
 # Stack frame for REGISTER-MARKET.
 # -------------------------------------------------------------------------

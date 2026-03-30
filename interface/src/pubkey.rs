@@ -1,5 +1,7 @@
 use dropset_macros::constant_group;
 use pinocchio::sysvars::rent::RENT_ID;
+use pinocchio_token::ID as TOKEN_PROGRAM_ID;
+use pinocchio_token_2022::ID as TOKEN_2022_PROGRAM_ID;
 
 // region: pubkey_constants
 constant_group! {
@@ -17,6 +19,10 @@ constant_group! {
         CHUNK_3_OFF = immediate!(24),
         /// Rent sysvar ID.
         RENT = address!(RENT_ID),
+        /// SPL Token Program ID.
+        TOKEN_PROGRAM = address!(TOKEN_PROGRAM_ID),
+        /// SPL Token 2022 Program ID.
+        TOKEN_2022_PROGRAM = address!(TOKEN_2022_PROGRAM_ID),
     }
 }
 // endregion: pubkey_constants

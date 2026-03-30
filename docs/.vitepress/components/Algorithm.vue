@@ -131,6 +131,17 @@ onMounted(async () => {
     );
     container.value.insertBefore(rendered, container.value.firstChild);
 
+    // Indent comments that precede a block so they align with the
+    // block's first line rather than the parent control keyword.
+    rendered.querySelectorAll(".ps-comment").forEach((span) => {
+      const line = span.closest(".ps-line");
+      if (!line) return;
+      const block = line.nextElementSibling;
+      if (block?.classList.contains("ps-block")) {
+        span.style.paddingLeft = block.style.marginLeft;
+      }
+    });
+
     // Add a class to \texttt{} spans for styling.
     rendered
       .querySelectorAll('span[style*="KaTeX_Typewriter"]')
@@ -392,6 +403,7 @@ onMounted(async () => {
 .pseudocode-container :deep(.ps-linenum) {
   color: var(--vp-c-text-3);
   user-select: none;
+  width: 2.4em;
 }
 
 /* Dependency links above/below the algorithm. */
