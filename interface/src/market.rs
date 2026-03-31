@@ -91,8 +91,8 @@ pub enum RegisterMarketAccounts {
     SystemProgram,
     RentSysvar,
     BaseTokenProgram,
-    QuoteTokenProgram,
     BaseVault,
+    QuoteTokenProgram,
     QuoteVault,
 }
 // endregion: register_market_accounts
@@ -151,7 +151,7 @@ pub struct RegisterMarketFrame {
     pub system_program_pubkey: Address,
     /// CPI instruction data for CreateAccount.
     pub create_account_data: CreateAccountData,
-    /// CPI accounts for CreateAccount and ATA creation.
+    /// CPI accounts for CreateAccount and InitializeAccount2.
     pub cpi_accounts: CPIAccounts,
     /// Signers seeds for CPI.
     pub signers_seeds: SolSignerSeeds,

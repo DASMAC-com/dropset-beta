@@ -15,10 +15,10 @@
 .equ REGISTER_MARKET_ACCOUNTS_RENT_SYSVAR_POS, 5
 # Base Token Program account position.
 .equ REGISTER_MARKET_ACCOUNTS_BASE_TOKEN_PROGRAM_POS, 6
-# Quote Token Program account position.
-.equ REGISTER_MARKET_ACCOUNTS_QUOTE_TOKEN_PROGRAM_POS, 7
 # Base Vault account position.
-.equ REGISTER_MARKET_ACCOUNTS_BASE_VAULT_POS, 8
+.equ REGISTER_MARKET_ACCOUNTS_BASE_VAULT_POS, 7
+# Quote Token Program account position.
+.equ REGISTER_MARKET_ACCOUNTS_QUOTE_TOKEN_PROGRAM_POS, 8
 # Quote Vault account position.
 .equ REGISTER_MARKET_ACCOUNTS_QUOTE_VAULT_POS, 9
 
@@ -486,6 +486,13 @@ register_market_quote_token_program:
     add64 r7, DATA_LEN_MAX_PAD
     and64 r7, DATA_LEN_AND_MASK
     # acct += base_token_program_padded_data_len + EmptyAccount.size
+    add64 r9, r7
+    add64 r9, SIZE_OF_EMPTY_ACCOUNT
+    # base_vault_padded_data_len = acct.padded_data_len
+    ldxdw r7, [r9 + ACCT_DATA_LEN_OFF]
+    add64 r7, DATA_LEN_MAX_PAD
+    and64 r7, DATA_LEN_AND_MASK
+    # acct += base_vault_padded_data_len + EmptyAccount.size
     add64 r9, r7
     add64 r9, SIZE_OF_EMPTY_ACCOUNT
     # if acct.duplicate == account.NON_DUP_MARKER

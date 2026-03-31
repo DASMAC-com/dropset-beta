@@ -146,9 +146,12 @@
       \RETURN \texttt{ErrorCode::BaseTokenProgramNotTokenProgram}
     \ENDIF
   \ENDIF
-  \COMMENT{Advance to quote token program account.}
+  \COMMENT{Advance to base vault account.}
   \STATE base\_token\_program\_padded\_data\_len = acct.padded\_data\_len
   \STATE acct += base\_token\_program\_padded\_data\_len + \texttt{EmptyAccount.size}
+  \COMMENT{Advance to quote token program account.}
+  \STATE base\_vault\_padded\_data\_len = acct.padded\_data\_len
+  \STATE acct += base\_vault\_padded\_data\_len + \texttt{EmptyAccount.size}
   \COMMENT{Check quote token program account.}
   \IF{acct.duplicate == \texttt{account.NON\_DUP\_MARKER}}
     \COMMENT{Non-duplicate; verify quote token program owns the quote mint.}
