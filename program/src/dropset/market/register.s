@@ -316,7 +316,6 @@ register_market:
     stxdw [r10 + RM_FM_PDA_SEEDS_QUOTE_LEN_OFF], r8
     # frame.input = input
     stxdw [r10 + RM_FM_INPUT_OFF], r1
-    mov64 r6, r1
     # syscall.seeds = &frame.pda_seeds
     mov64 r1, r10
     add64 r1, RM_FM_PDA_SEEDS_OFF
@@ -332,6 +331,8 @@ register_market:
     mov64 r5, r10
     add64 r5, RM_FM_BUMP_OFF
     call sol_try_find_program_address
+    # input = frame.input
+    ldxdw r6, [r10 + RM_FM_INPUT_OFF]
     # if input.market.pubkey != frame.market_pda
     #     return ErrorCode::InvalidMarketPubkey
     ldxdw r7, [r6 + IB_MARKET_PUBKEY_CHUNK_0_OFF]

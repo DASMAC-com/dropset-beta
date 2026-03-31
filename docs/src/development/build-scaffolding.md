@@ -133,10 +133,11 @@ The length is accessible in Rust as `RegisterMarketData::LEN`.
 
 ### `#[instruction_accounts("target")]`
 
-Attribute macro for instruction accounts enums. Automatically generates a
-`LEN` associated constant (`u64`) from the number of enum variants, and a hidden
-module with a `_LEN` suffixed assembly constant and `GROUP` for build-time
-injection.
+Attribute macro for instruction accounts enums. Generates a `LEN` associated
+constant (`u64`) from the number of enum variants, plus a per-variant `_POS`
+position constant (`i32`) for each variant. A hidden module with assembly
+constants and `GROUP` is emitted for build-time injection. Assembly comments
+are auto-generated from the variant names.
 
 The count is accessible in Rust as `RegisterMarketAccounts::LEN`.
 
