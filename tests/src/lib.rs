@@ -206,18 +206,19 @@ pub fn find_pda_seed_pair(program_id: &Pubkey) -> (Pubkey, Pubkey) {
 /// Runs all cases, prints a CU table, and panics if any case failed.
 pub fn run_and_report<T: TestCase>(heading: &str, cases: &[T], setup: &TestSetup) {
     let mut failures = Vec::new();
+    let col = cases.iter().map(|c| c.name().len()).max().unwrap_or(4);
 
     println!();
     println!("  {heading}");
     println!("  {}", "-".repeat(heading.len()));
-    println!("  {:<40} {:>8}", "Case", "CUs");
-    println!("  {:<40} {:>8}", "----", "---");
+    println!("  {:<col$} {:>8}", "Case", "CUs");
+    println!("  {:<col$} {:>8}", "----", "---");
 
     for case in cases {
         let name = case.name();
         let result = case.run(setup);
         let status = if result.error.is_some() { "FAIL" } else { "ok" };
-        println!("  {:<40} {:>8}  {status}", name, result.cu);
+        println!("  {:<col$} {:>8}  {status}", name, result.cu);
         if let Some(msg) = result.error {
             failures.push((name, msg));
         }
