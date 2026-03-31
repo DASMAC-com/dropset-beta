@@ -523,17 +523,17 @@ register_market:
     #         return ErrorCode::BaseTokenProgramNotTokenProgram
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_0_OFF]
     lddw r1, PUBKEY_TOKEN_PROGRAM_CHUNK_0
-    jne r7, r1, check_base_token_2022
+    jne r7, r1, register_market_check_base_token_2022
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_1_OFF]
     lddw r1, PUBKEY_TOKEN_PROGRAM_CHUNK_1
-    jne r7, r1, check_base_token_2022
+    jne r7, r1, register_market_check_base_token_2022
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_2_OFF]
     lddw r1, PUBKEY_TOKEN_PROGRAM_CHUNK_2
-    jne r7, r1, check_base_token_2022
+    jne r7, r1, register_market_check_base_token_2022
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_3_OFF]
     lddw r1, PUBKEY_TOKEN_PROGRAM_CHUNK_3
-    jeq r7, r1, quote_token_program
-check_base_token_2022:
+    jeq r7, r1, register_market_quote_token_program
+register_market_check_base_token_2022:
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_0_OFF]
     lddw r1, PUBKEY_TOKEN_2022_PROGRAM_CHUNK_0
     jne r7, r1, e_base_token_program_not_token_program
@@ -546,7 +546,7 @@ check_base_token_2022:
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_3_OFF]
     lddw r1, PUBKEY_TOKEN_2022_PROGRAM_CHUNK_3
     jne r7, r1, e_base_token_program_not_token_program
-quote_token_program:
+register_market_quote_token_program:
     # base_token_program_padded_data_len = acct.padded_data_len
     ldxdw r7, [r9 + ACCT_DATA_LEN_OFF]
     add64 r7, DATA_LEN_MAX_PAD
@@ -556,7 +556,7 @@ quote_token_program:
     add64 r9, SIZE_OF_EMPTY_ACCOUNT
     # if acct.duplicate == account.NON_DUP_MARKER
     ldxb r7, [r9 + ACCT_DUPLICATE_OFF]
-    jne r7, ACCT_NON_DUP_MARKER, quote_token_program_dup
+    jne r7, ACCT_NON_DUP_MARKER, register_market_quote_token_program_dup
     # if acct.pubkey != input_shifted.quote_mint.owner
     #     return ErrorCode::NonDupQuoteTokenProgramNotQuoteMintOwner
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_0_OFF]
@@ -576,17 +576,17 @@ quote_token_program:
     #         return ErrorCode::QuoteTokenProgramNotTokenProgram
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_0_OFF]
     lddw r1, PUBKEY_TOKEN_PROGRAM_CHUNK_0
-    jne r7, r1, check_quote_token_2022
+    jne r7, r1, register_market_check_quote_token_2022
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_1_OFF]
     lddw r1, PUBKEY_TOKEN_PROGRAM_CHUNK_1
-    jne r7, r1, check_quote_token_2022
+    jne r7, r1, register_market_check_quote_token_2022
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_2_OFF]
     lddw r1, PUBKEY_TOKEN_PROGRAM_CHUNK_2
-    jne r7, r1, check_quote_token_2022
+    jne r7, r1, register_market_check_quote_token_2022
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_3_OFF]
     lddw r1, PUBKEY_TOKEN_PROGRAM_CHUNK_3
-    jeq r7, r1, done_token_programs
-check_quote_token_2022:
+    jeq r7, r1, register_market_done_token_programs
+register_market_check_quote_token_2022:
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_0_OFF]
     lddw r1, PUBKEY_TOKEN_2022_PROGRAM_CHUNK_0
     jne r7, r1, e_quote_token_program_not_token_program
@@ -599,8 +599,8 @@ check_quote_token_2022:
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_3_OFF]
     lddw r1, PUBKEY_TOKEN_2022_PROGRAM_CHUNK_3
     jne r7, r1, e_quote_token_program_not_token_program
-    ja done_token_programs
-quote_token_program_dup:
+    ja register_market_done_token_programs
+register_market_quote_token_program_dup:
     # if acct.duplicate != RegisterMarketAccounts::BaseTokenProgram
     #     return ErrorCode::InvalidQuoteTokenProgramDuplicate
     jne r7, REGISTER_MARKET_ACCOUNTS_BASE_TOKEN_PROGRAM_POS, e_invalid_quote_token_program_duplicate
@@ -618,5 +618,5 @@ quote_token_program_dup:
     ldxdw r7, [r8 + RM_MISC_BASE_OWNER_CHUNK_3_OFF]
     ldxdw r1, [r6 + RM_MISC_QUOTE_OWNER_CHUNK_3_OFF]
     jne r7, r1, e_dup_quote_token_program_not_quote_mint_owner
-done_token_programs:
+register_market_done_token_programs:
     exit

@@ -1,4 +1,5 @@
 use dropset_interface::market::{MarketHeader, RegisterMarketAccounts};
+use dropset_interface::pubkey::pubkey::{CHUNK_0_OFF, CHUNK_1_OFF, CHUNK_2_OFF, CHUNK_3_OFF};
 use dropset_interface::pubkey::{TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID};
 use dropset_interface::{Discriminant, ErrorCode};
 use dropset_tests::{
@@ -66,7 +67,6 @@ test_cases! {
 }
 
 const N_ACCOUNTS: usize = RegisterMarketAccounts::LEN as usize;
-const PUBKEY_CHUNK_OFFSETS: [usize; 4] = [0, 8, 16, 24];
 
 /// Build unique accounts with default (empty) data.
 fn default_accounts() -> (Vec<Pubkey>, Vec<Account>) {
@@ -572,7 +572,7 @@ impl TestCase for Case {
                 let (mut keys, accounts) =
                     token_program_base_accounts(setup, token_program_id, token_program_id);
                 let mut bad_key = token_program_id;
-                bad_key.as_mut()[PUBKEY_CHUNK_OFFSETS[0]] ^= 0xFF;
+                bad_key.as_mut()[CHUNK_0_OFF as usize] ^= 0xFF;
                 keys[RegisterMarketAccounts::BaseTokenProgram as usize] = bad_key;
                 let (metas, accounts) = token_program_metas_and_accounts(keys, accounts);
                 check_custom(
@@ -589,7 +589,7 @@ impl TestCase for Case {
                 let (mut keys, accounts) =
                     token_program_base_accounts(setup, token_program_id, token_program_id);
                 let mut bad_key = token_program_id;
-                bad_key.as_mut()[PUBKEY_CHUNK_OFFSETS[1]] ^= 0xFF;
+                bad_key.as_mut()[CHUNK_1_OFF as usize] ^= 0xFF;
                 keys[RegisterMarketAccounts::BaseTokenProgram as usize] = bad_key;
                 let (metas, accounts) = token_program_metas_and_accounts(keys, accounts);
                 check_custom(
@@ -606,7 +606,7 @@ impl TestCase for Case {
                 let (mut keys, accounts) =
                     token_program_base_accounts(setup, token_program_id, token_program_id);
                 let mut bad_key = token_program_id;
-                bad_key.as_mut()[PUBKEY_CHUNK_OFFSETS[2]] ^= 0xFF;
+                bad_key.as_mut()[CHUNK_2_OFF as usize] ^= 0xFF;
                 keys[RegisterMarketAccounts::BaseTokenProgram as usize] = bad_key;
                 let (metas, accounts) = token_program_metas_and_accounts(keys, accounts);
                 check_custom(
@@ -623,7 +623,7 @@ impl TestCase for Case {
                 let (mut keys, accounts) =
                     token_program_base_accounts(setup, token_program_id, token_program_id);
                 let mut bad_key = token_program_id;
-                bad_key.as_mut()[PUBKEY_CHUNK_OFFSETS[3]] ^= 0xFF;
+                bad_key.as_mut()[CHUNK_3_OFF as usize] ^= 0xFF;
                 keys[RegisterMarketAccounts::BaseTokenProgram as usize] = bad_key;
                 let (metas, accounts) = token_program_metas_and_accounts(keys, accounts);
                 check_custom(
@@ -637,7 +637,7 @@ impl TestCase for Case {
             // Verifies: REGISTER-MARKET
             Self::BaseTokenProgramNotTokenProgramChunk0 => {
                 let mut bad_program = Pubkey::from(TOKEN_PROGRAM_ID);
-                bad_program.as_mut()[PUBKEY_CHUNK_OFFSETS[0]] ^= 0xFF;
+                bad_program.as_mut()[CHUNK_0_OFF as usize] ^= 0xFF;
                 let (keys, accounts) =
                     token_program_base_accounts(setup, bad_program, bad_program);
                 let (metas, accounts) = token_program_metas_and_accounts(keys, accounts);
@@ -652,7 +652,7 @@ impl TestCase for Case {
             // Verifies: REGISTER-MARKET
             Self::BaseTokenProgramNotTokenProgramChunk1 => {
                 let mut bad_program = Pubkey::from(TOKEN_PROGRAM_ID);
-                bad_program.as_mut()[PUBKEY_CHUNK_OFFSETS[1]] ^= 0xFF;
+                bad_program.as_mut()[CHUNK_1_OFF as usize] ^= 0xFF;
                 let (keys, accounts) =
                     token_program_base_accounts(setup, bad_program, bad_program);
                 let (metas, accounts) = token_program_metas_and_accounts(keys, accounts);
@@ -667,7 +667,7 @@ impl TestCase for Case {
             // Verifies: REGISTER-MARKET
             Self::BaseTokenProgramNotTokenProgramChunk2 => {
                 let mut bad_program = Pubkey::from(TOKEN_PROGRAM_ID);
-                bad_program.as_mut()[PUBKEY_CHUNK_OFFSETS[2]] ^= 0xFF;
+                bad_program.as_mut()[CHUNK_2_OFF as usize] ^= 0xFF;
                 let (keys, accounts) =
                     token_program_base_accounts(setup, bad_program, bad_program);
                 let (metas, accounts) = token_program_metas_and_accounts(keys, accounts);
@@ -682,7 +682,7 @@ impl TestCase for Case {
             // Verifies: REGISTER-MARKET
             Self::BaseTokenProgramNotTokenProgramChunk3 => {
                 let mut bad_program = Pubkey::from(TOKEN_PROGRAM_ID);
-                bad_program.as_mut()[PUBKEY_CHUNK_OFFSETS[3]] ^= 0xFF;
+                bad_program.as_mut()[CHUNK_3_OFF as usize] ^= 0xFF;
                 let (keys, accounts) =
                     token_program_base_accounts(setup, bad_program, bad_program);
                 let (metas, accounts) = token_program_metas_and_accounts(keys, accounts);
@@ -702,7 +702,7 @@ impl TestCase for Case {
                     token_program_base_accounts(setup, token_program_id, token_2022_id);
                 // Quote token program key doesn't match quote mint owner.
                 let mut bad_key = token_2022_id;
-                bad_key.as_mut()[PUBKEY_CHUNK_OFFSETS[0]] ^= 0xFF;
+                bad_key.as_mut()[CHUNK_0_OFF as usize] ^= 0xFF;
                 keys[RegisterMarketAccounts::QuoteTokenProgram as usize] = bad_key;
                 let (metas, accounts) = token_program_metas_and_accounts(keys, accounts);
                 check_custom(
@@ -720,7 +720,7 @@ impl TestCase for Case {
                 let (mut keys, accounts) =
                     token_program_base_accounts(setup, token_program_id, token_2022_id);
                 let mut bad_key = token_2022_id;
-                bad_key.as_mut()[PUBKEY_CHUNK_OFFSETS[1]] ^= 0xFF;
+                bad_key.as_mut()[CHUNK_1_OFF as usize] ^= 0xFF;
                 keys[RegisterMarketAccounts::QuoteTokenProgram as usize] = bad_key;
                 let (metas, accounts) = token_program_metas_and_accounts(keys, accounts);
                 check_custom(
@@ -738,7 +738,7 @@ impl TestCase for Case {
                 let (mut keys, accounts) =
                     token_program_base_accounts(setup, token_program_id, token_2022_id);
                 let mut bad_key = token_2022_id;
-                bad_key.as_mut()[PUBKEY_CHUNK_OFFSETS[2]] ^= 0xFF;
+                bad_key.as_mut()[CHUNK_2_OFF as usize] ^= 0xFF;
                 keys[RegisterMarketAccounts::QuoteTokenProgram as usize] = bad_key;
                 let (metas, accounts) = token_program_metas_and_accounts(keys, accounts);
                 check_custom(
@@ -756,7 +756,7 @@ impl TestCase for Case {
                 let (mut keys, accounts) =
                     token_program_base_accounts(setup, token_program_id, token_2022_id);
                 let mut bad_key = token_2022_id;
-                bad_key.as_mut()[PUBKEY_CHUNK_OFFSETS[3]] ^= 0xFF;
+                bad_key.as_mut()[CHUNK_3_OFF as usize] ^= 0xFF;
                 keys[RegisterMarketAccounts::QuoteTokenProgram as usize] = bad_key;
                 let (metas, accounts) = token_program_metas_and_accounts(keys, accounts);
                 check_custom(
@@ -771,7 +771,7 @@ impl TestCase for Case {
             Self::QuoteTokenProgramNotTokenProgramChunk0 => {
                 let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
                 let mut bad_program = Pubkey::from(TOKEN_PROGRAM_ID);
-                bad_program.as_mut()[PUBKEY_CHUNK_OFFSETS[0]] ^= 0xFF;
+                bad_program.as_mut()[CHUNK_0_OFF as usize] ^= 0xFF;
                 let (keys, accounts) =
                     token_program_base_accounts(setup, token_program_id, bad_program);
                 let (metas, accounts) = token_program_metas_and_accounts(keys, accounts);
@@ -787,7 +787,7 @@ impl TestCase for Case {
             Self::QuoteTokenProgramNotTokenProgramChunk1 => {
                 let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
                 let mut bad_program = Pubkey::from(TOKEN_PROGRAM_ID);
-                bad_program.as_mut()[PUBKEY_CHUNK_OFFSETS[1]] ^= 0xFF;
+                bad_program.as_mut()[CHUNK_1_OFF as usize] ^= 0xFF;
                 let (keys, accounts) =
                     token_program_base_accounts(setup, token_program_id, bad_program);
                 let (metas, accounts) = token_program_metas_and_accounts(keys, accounts);
@@ -803,7 +803,7 @@ impl TestCase for Case {
             Self::QuoteTokenProgramNotTokenProgramChunk2 => {
                 let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
                 let mut bad_program = Pubkey::from(TOKEN_PROGRAM_ID);
-                bad_program.as_mut()[PUBKEY_CHUNK_OFFSETS[2]] ^= 0xFF;
+                bad_program.as_mut()[CHUNK_2_OFF as usize] ^= 0xFF;
                 let (keys, accounts) =
                     token_program_base_accounts(setup, token_program_id, bad_program);
                 let (metas, accounts) = token_program_metas_and_accounts(keys, accounts);
@@ -819,7 +819,7 @@ impl TestCase for Case {
             Self::QuoteTokenProgramNotTokenProgramChunk3 => {
                 let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
                 let mut bad_program = Pubkey::from(TOKEN_PROGRAM_ID);
-                bad_program.as_mut()[PUBKEY_CHUNK_OFFSETS[3]] ^= 0xFF;
+                bad_program.as_mut()[CHUNK_3_OFF as usize] ^= 0xFF;
                 let (keys, accounts) =
                     token_program_base_accounts(setup, token_program_id, bad_program);
                 let (metas, accounts) = token_program_metas_and_accounts(keys, accounts);
@@ -919,7 +919,7 @@ impl TestCase for Case {
             Self::DupQuoteTokenProgramNotQuoteMintOwnerChunk1 => {
                 let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
                 let mut bad_owner = token_program_id;
-                bad_owner.as_mut()[PUBKEY_CHUNK_OFFSETS[1]] ^= 0xFF;
+                bad_owner.as_mut()[CHUNK_1_OFF as usize] ^= 0xFF;
                 let (mut keys, mut accounts) =
                     token_program_base_accounts(setup, token_program_id, token_program_id);
                 accounts[RegisterMarketAccounts::QuoteMint as usize].owner = bad_owner;
@@ -937,7 +937,7 @@ impl TestCase for Case {
             Self::DupQuoteTokenProgramNotQuoteMintOwnerChunk2 => {
                 let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
                 let mut bad_owner = token_program_id;
-                bad_owner.as_mut()[PUBKEY_CHUNK_OFFSETS[2]] ^= 0xFF;
+                bad_owner.as_mut()[CHUNK_2_OFF as usize] ^= 0xFF;
                 let (mut keys, mut accounts) =
                     token_program_base_accounts(setup, token_program_id, token_program_id);
                 accounts[RegisterMarketAccounts::QuoteMint as usize].owner = bad_owner;
@@ -955,7 +955,7 @@ impl TestCase for Case {
             Self::DupQuoteTokenProgramNotQuoteMintOwnerChunk3 => {
                 let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
                 let mut bad_owner = token_program_id;
-                bad_owner.as_mut()[PUBKEY_CHUNK_OFFSETS[3]] ^= 0xFF;
+                bad_owner.as_mut()[CHUNK_3_OFF as usize] ^= 0xFF;
                 let (mut keys, mut accounts) =
                     token_program_base_accounts(setup, token_program_id, token_program_id);
                 accounts[RegisterMarketAccounts::QuoteMint as usize].owner = bad_owner;
