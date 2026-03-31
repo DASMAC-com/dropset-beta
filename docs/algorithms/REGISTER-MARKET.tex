@@ -181,7 +181,7 @@
     \ENDIF
     \COMMENT{Update syscall program ID from non-duplicate quote token program.}
     \STATE syscall.program\_id = \&acct.address
-    \COMMENT{Advance past non-duplicate quote token program account.}
+    \COMMENT{Advance to quote vault account.}
     \STATE quote\_token\_program\_padded\_data\_len = acct.padded\_data\_len
     \STATE acct += quote\_token\_program\_padded\_data\_len + \texttt{EmptyAccount.size}
   \ELSE
@@ -193,7 +193,7 @@
     \IF{input.base\_mint.owner $\neq$ input\_shifted.quote\_mint.owner}
       \RETURN \texttt{ErrorCode::DupQuoteTokenProgramNotQuoteMintOwner}
     \ENDIF
-    \COMMENT{Advance past duplicate quote token program account.}
+    \COMMENT{Advance to quote vault account.}
     \STATE acct += \texttt{u64.size}
   \ENDIF
   \COMMENT{Derive quote vault PDA.}
