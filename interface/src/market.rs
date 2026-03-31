@@ -204,7 +204,7 @@ constant_group! {
         PDA_SEEDS_TO_SOL_INSN = relative_offset!(pda_seeds, sol_instruction),
         /// From pda to signers_seeds.
         PDA_TO_SIGNERS_SEEDS = relative_offset!(pda, signers_seeds),
-        /// From create_account_data to cpi account metas.
+        /// From create_account_data to CPI account metas.
         CREATE_ACCT_DATA_TO_CPI_ACCT_METAS = relative_offset!(
             create_account_data, cpi_accounts.user_meta
         ),

@@ -18,11 +18,11 @@ constant_group! {
         /// Offset for the fourth 8 bytes.
         CHUNK_3_OFF = immediate!(3 * size_of::<u64>()),
         /// Rent sysvar ID.
-        RENT = address!(RENT_ID),
+        RENT = pubkey!(RENT_ID),
         /// SPL Token Program ID.
-        TOKEN_PROGRAM = address!(TOKEN_PROGRAM_ID),
+        TOKEN_PROGRAM = pubkey!(TOKEN_PROGRAM_ID),
         /// SPL Token 2022 Program ID.
-        TOKEN_2022_PROGRAM = address!(TOKEN_2022_PROGRAM_ID),
+        TOKEN_2022_PROGRAM = pubkey!(TOKEN_2022_PROGRAM_ID),
     }
 }
 // endregion: pubkey_constants

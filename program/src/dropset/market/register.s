@@ -213,7 +213,7 @@
 .equ RM_FM_PDA_SEEDS_TO_SOL_INSN_REL_OFF_IMM, 616
 # From pda to signers_seeds.
 .equ RM_FM_PDA_TO_SIGNERS_SEEDS_REL_OFF_IMM, 552
-# From create_account_data to cpi account metas.
+# From create_account_data to CPI account metas.
 .equ RM_FM_CREATE_ACCT_DATA_TO_CPI_ACCT_METAS_REL_OFF_IMM, 392
 # -------------------------------------------------------------------------
 
