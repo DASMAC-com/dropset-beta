@@ -638,8 +638,7 @@ impl TestCase for Case {
             Self::BaseTokenProgramNotTokenProgramChunk0 => {
                 let mut bad_program = Pubkey::from(TOKEN_PROGRAM_ID);
                 bad_program.as_mut()[CHUNK_0_OFF as usize] ^= 0xFF;
-                let (keys, accounts) =
-                    token_program_base_accounts(setup, bad_program, bad_program);
+                let (keys, accounts) = token_program_base_accounts(setup, bad_program, bad_program);
                 let (metas, accounts) = token_program_metas_and_accounts(keys, accounts);
                 check_custom(
                     setup,
@@ -653,8 +652,7 @@ impl TestCase for Case {
             Self::BaseTokenProgramNotTokenProgramChunk1 => {
                 let mut bad_program = Pubkey::from(TOKEN_PROGRAM_ID);
                 bad_program.as_mut()[CHUNK_1_OFF as usize] ^= 0xFF;
-                let (keys, accounts) =
-                    token_program_base_accounts(setup, bad_program, bad_program);
+                let (keys, accounts) = token_program_base_accounts(setup, bad_program, bad_program);
                 let (metas, accounts) = token_program_metas_and_accounts(keys, accounts);
                 check_custom(
                     setup,
@@ -668,8 +666,7 @@ impl TestCase for Case {
             Self::BaseTokenProgramNotTokenProgramChunk2 => {
                 let mut bad_program = Pubkey::from(TOKEN_PROGRAM_ID);
                 bad_program.as_mut()[CHUNK_2_OFF as usize] ^= 0xFF;
-                let (keys, accounts) =
-                    token_program_base_accounts(setup, bad_program, bad_program);
+                let (keys, accounts) = token_program_base_accounts(setup, bad_program, bad_program);
                 let (metas, accounts) = token_program_metas_and_accounts(keys, accounts);
                 check_custom(
                     setup,
@@ -683,8 +680,7 @@ impl TestCase for Case {
             Self::BaseTokenProgramNotTokenProgramChunk3 => {
                 let mut bad_program = Pubkey::from(TOKEN_PROGRAM_ID);
                 bad_program.as_mut()[CHUNK_3_OFF as usize] ^= 0xFF;
-                let (keys, accounts) =
-                    token_program_base_accounts(setup, bad_program, bad_program);
+                let (keys, accounts) = token_program_base_accounts(setup, bad_program, bad_program);
                 let (metas, accounts) = token_program_metas_and_accounts(keys, accounts);
                 check_custom(
                     setup,
