@@ -125,6 +125,11 @@ fn happy_path_accounts(
     keys[RegisterMarketAccounts::BaseTokenProgram as usize] = base_token_program;
     keys[RegisterMarketAccounts::QuoteTokenProgram as usize] = quote_token_program;
 
+    // Derive base vault PDA from market address and vault index.
+    let (base_vault_pda, _) =
+        Pubkey::find_program_address(&[pda.as_ref(), &[0u8]], &base_token_program);
+    keys[RegisterMarketAccounts::BaseVault as usize] = base_vault_pda;
+
     // Fund the user account so it can pay for the CreateAccount CPI.
     accounts[RegisterMarketAccounts::User as usize] =
         Account::new(USER_LAMPORTS, 0, &system_program_pubkey);
@@ -255,6 +260,11 @@ fn token_program_base_accounts(
 
     keys[RegisterMarketAccounts::BaseTokenProgram as usize] = base_token_program;
     keys[RegisterMarketAccounts::QuoteTokenProgram as usize] = quote_token_program;
+
+    // Derive base vault PDA from market address and vault index.
+    let (base_vault_pda, _) =
+        Pubkey::find_program_address(&[pda.as_ref(), &[0u8]], &base_token_program);
+    keys[RegisterMarketAccounts::BaseVault as usize] = base_vault_pda;
 
     accounts[RegisterMarketAccounts::User as usize] =
         Account::new(USER_LAMPORTS, 0, &system_program_pubkey);
@@ -1025,8 +1035,7 @@ impl TestCase for Case {
             Self::CreateAccountHappyPathQuoteNonDup => {
                 let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
                 let token_2022_id = Pubkey::from(TOKEN_2022_PROGRAM_ID);
-                let (metas, accounts) =
-                    happy_path_accounts(setup, token_program_id, token_2022_id);
+                let (metas, accounts) = happy_path_accounts(setup, token_program_id, token_2022_id);
                 let instruction = Instruction::new_with_bytes(setup.program_id, insn, metas);
                 let result = setup.mollusk.process_instruction(&instruction, &accounts);
 

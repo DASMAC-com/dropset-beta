@@ -138,6 +138,7 @@
 .equ RM_FM_SOL_INSN_DATA_UOFF, -24 # SolInstruction data pointer.
 .equ RM_FM_SOL_INSN_DATA_LEN_UOFF, -16 # SolInstruction data length.
 .equ RM_FM_BUMP_OFF, -8 # Bump seed.
+.equ RM_FM_VAULT_INDEX_UOFF, -7 # Vault index for PDA derivation.
 # From pda_seeds to sol_instruction.
 .equ RM_FM_PDA_SEEDS_TO_SOL_INSN_REL_OFF_IMM, 400
 # From pda to signers_seeds.
@@ -468,7 +469,7 @@ register_market:
     jne r7, r1, register_market_check_base_token_2022
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_3_OFF]
     lddw r1, PUBKEY_TOKEN_PROGRAM_CHUNK_3
-    jeq r7, r1, register_market_quote_token_program
+    jeq r7, r1, register_market_base_vault
 register_market_check_base_token_2022:
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_0_OFF]
     lddw r1, PUBKEY_TOKEN_2022_PROGRAM_CHUNK_0
@@ -482,7 +483,35 @@ register_market_check_base_token_2022:
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_3_OFF]
     lddw r1, PUBKEY_TOKEN_2022_PROGRAM_CHUNK_3
     jne r7, r1, e_base_token_program_not_token_program
-register_market_quote_token_program:
+register_market_base_vault:
+    # frame.pda_seeds[0].addr = &input.market.address
+    mov64 r7, r8
+    add64 r7, IB_MARKET_PUBKEY_OFF
+    stxdw [r10 + RM_FM_PDA_SEEDS_IDX_0_ADDR_OFF], r7
+    # frame.vault_index = register_misc.VAULT_INDEX_BASE
+    stb [r10 + RM_FM_VAULT_INDEX_UOFF], RM_MISC_VAULT_INDEX_BASE
+    # frame.pda_seeds[1].addr = &frame.vault_index
+    mov64 r7, r10
+    add64 r7, RM_FM_VAULT_INDEX_UOFF
+    stxdw [r10 + RM_FM_PDA_SEEDS_IDX_1_ADDR_OFF], r7
+    # frame.pda_seeds[1].len = u8.size
+    mov64 r7, SIZE_OF_U8
+    stxdw [r10 + RM_FM_PDA_SEEDS_IDX_1_LEN_OFF], r7
+    # syscall.seeds = &frame.pda_seeds
+    mov64 r1, r10
+    add64 r1, RM_FM_PDA_SEEDS_OFF
+    # syscall.seeds_len = register_misc.TRY_FIND_VAULT_PDA_SEEDS_LEN
+    mov64 r2, RM_MISC_TRY_FIND_VAULT_PDA_SEEDS_LEN
+    # syscall.program_id = &acct.address
+    mov64 r3, r9
+    add64 r3, ACCT_ADDRESS_OFF
+    # syscall.program_address = &frame.pda
+    mov64 r4, r10
+    add64 r4, RM_FM_PDA_OFF
+    # syscall.bump_seed = &frame.bump
+    mov64 r5, r10
+    add64 r5, RM_FM_BUMP_OFF
+    call sol_try_find_program_address
     # base_token_program_padded_data_len = acct.padded_data_len
     ldxdw r7, [r9 + ACCT_DATA_LEN_OFF]
     add64 r7, DATA_LEN_MAX_PAD
@@ -490,6 +519,20 @@ register_market_quote_token_program:
     # acct += base_token_program_padded_data_len + EmptyAccount.size
     add64 r9, r7
     add64 r9, SIZE_OF_EMPTY_ACCOUNT
+    # if acct.pubkey != frame.pda
+    #     return ErrorCode::InvalidBaseVaultPubkey
+    ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_0_OFF]
+    ldxdw r1, [r10 + RM_FM_PDA_CHUNK_0_OFF]
+    jne r7, r1, e_invalid_base_vault_pubkey
+    ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_1_OFF]
+    ldxdw r1, [r10 + RM_FM_PDA_CHUNK_1_OFF]
+    jne r7, r1, e_invalid_base_vault_pubkey
+    ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_2_OFF]
+    ldxdw r1, [r10 + RM_FM_PDA_CHUNK_2_OFF]
+    jne r7, r1, e_invalid_base_vault_pubkey
+    ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_3_OFF]
+    ldxdw r1, [r10 + RM_FM_PDA_CHUNK_3_OFF]
+    jne r7, r1, e_invalid_base_vault_pubkey
     # base_vault_padded_data_len = acct.padded_data_len
     ldxdw r7, [r9 + ACCT_DATA_LEN_OFF]
     add64 r7, DATA_LEN_MAX_PAD
@@ -499,7 +542,7 @@ register_market_quote_token_program:
     add64 r9, SIZE_OF_EMPTY_ACCOUNT
     # if acct.duplicate == account.NON_DUP_MARKER
     ldxb r7, [r9 + ACCT_DUPLICATE_OFF]
-    jne r7, ACCT_NON_DUP_MARKER, register_market_quote_token_program_dup
+    jne r7, ACCT_NON_DUP_MARKER, register_market_base_vault_dup
     # if acct.pubkey != input_shifted.quote_mint.owner
     #     return ErrorCode::NonDupQuoteTokenProgramNotQuoteMintOwner
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_0_OFF]
@@ -551,7 +594,7 @@ register_market_advance_quote_non_dup:
     add64 r9, r7
     add64 r9, SIZE_OF_EMPTY_ACCOUNT
     ja register_market_done_token_programs
-register_market_quote_token_program_dup:
+register_market_base_vault_dup:
     # if acct.duplicate != RegisterMarketAccounts::BaseTokenProgram
     #     return ErrorCode::InvalidQuoteTokenProgramDuplicate
     jne r7, REGISTER_MARKET_ACCOUNTS_BASE_TOKEN_PROGRAM_POS, e_invalid_quote_token_program_duplicate

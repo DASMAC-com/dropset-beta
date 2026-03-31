@@ -32,6 +32,8 @@
 .equ E_NON_DUP_QUOTE_TOKEN_PROGRAM_NOT_QUOTE_MINT_OWNER, 19
 # The quote token program is not Token Program or Token 2022.
 .equ E_QUOTE_TOKEN_PROGRAM_NOT_TOKEN_PROGRAM, 20
+# The base vault account pubkey is invalid.
+.equ E_INVALID_BASE_VAULT_PUBKEY, 21
 
 e_invalid_instruction_length:
     mov32 r0, E_INVALID_INSTRUCTION_LENGTH
@@ -107,4 +109,8 @@ e_non_dup_quote_token_program_not_quote_mint_owner:
 
 e_quote_token_program_not_token_program:
     mov32 r0, E_QUOTE_TOKEN_PROGRAM_NOT_TOKEN_PROGRAM
+    exit
+
+e_invalid_base_vault_pubkey:
+    mov32 r0, E_INVALID_BASE_VAULT_PUBKEY
     exit

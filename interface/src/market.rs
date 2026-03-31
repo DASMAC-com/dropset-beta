@@ -161,6 +161,8 @@ pub struct RegisterMarketFrame {
     pub sol_instruction: SolInstruction,
     /// From `sol_try_find_program_address`.
     pub bump: u8,
+    /// Vault index for PDA derivation.
+    pub vault_index: u8,
 }
 // endregion: frame_example
 
@@ -197,6 +199,8 @@ constant_group! {
         SOL_INSN = sol_instruction!(sol_instruction),
         /// Bump seed.
         BUMP = offset!(bump),
+        /// Vault index for PDA derivation.
+        VAULT_INDEX = unaligned_offset!(vault_index),
         /// From pda_seeds to sol_instruction.
         PDA_SEEDS_TO_SOL_INSN = relative_offset!(pda_seeds, sol_instruction),
         /// From pda to signers_seeds.
