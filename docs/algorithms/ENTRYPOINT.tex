@@ -5,12 +5,14 @@
   \INPUT $r_1$ = input
   \COMMENT{Pointer to instruction data.}
   \INPUT $r_2$ = insn
+  \COMMENT{Pointer to stack frame.}
+  \INPUT $r_{10}$ = frame
 \PROCEDURE{ENTRYPOINT}{input, insn}
   \STATE n\_accounts = input.n\_accounts
   \STATE insn\_len = insn.length
   \STATE insn\_disc = insn.discriminant
     \IF{insn\_disc == \texttt{Discriminant::RegisterMarket}}
-      \RETURN \CALL{REGISTER-MARKET}{input, insn, n\_accounts, insn\_len}
+      \RETURN \CALL{REGISTER-MARKET}{input, insn, n\_accounts, insn\_len, frame}
     \ENDIF
   \RETURN \texttt{ErrorCode::InvalidDiscriminant}
 \ENDPROCEDURE
