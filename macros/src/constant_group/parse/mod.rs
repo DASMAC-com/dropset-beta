@@ -111,11 +111,11 @@ impl Parse for ConstantGroupInput {
                     let expr: Expr = inner.parse()?;
                     ConstantKind::Immediate { expr }
                 }
-                "address" => {
+                "pubkey" => {
                     let inner;
                     syn::parenthesized!(inner in content);
                     let expr: Expr = inner.parse()?;
-                    ConstantKind::Address { expr }
+                    ConstantKind::Pubkey { expr }
                 }
                 "unaligned_offset" => {
                     let inner;

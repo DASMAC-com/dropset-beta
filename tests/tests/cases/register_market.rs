@@ -1,4 +1,6 @@
 use dropset_interface::market::{MarketHeader, RegisterMarketAccounts};
+use dropset_interface::pubkey::pubkey::{CHUNK_0_OFF, CHUNK_1_OFF, CHUNK_2_OFF, CHUNK_3_OFF};
+use dropset_interface::pubkey::{TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID};
 use dropset_interface::{Discriminant, ErrorCode};
 use dropset_tests::{
     CaseResult, TestCase, TestSetup, check, check_custom, check_with_accounts, find_pda_seed_pair,
@@ -35,6 +37,31 @@ test_cases! {
         InvalidRentSysvarPubkeyChunk2,
         InvalidRentSysvarPubkeyChunk3,
         InvalidRentSysvarPubkeyChunk3Hi,
+        BaseTokenProgramIsDuplicate,
+        BaseTokenProgramNotBaseMintOwnerChunk0,
+        BaseTokenProgramNotBaseMintOwnerChunk1,
+        BaseTokenProgramNotBaseMintOwnerChunk2,
+        BaseTokenProgramNotBaseMintOwnerChunk3,
+        BaseTokenProgramNotTokenProgramChunk0,
+        BaseTokenProgramNotTokenProgramChunk1,
+        BaseTokenProgramNotTokenProgramChunk2,
+        BaseTokenProgramNotTokenProgramChunk3,
+        NonDupQuoteTokenProgramNotQuoteMintOwnerChunk0,
+        NonDupQuoteTokenProgramNotQuoteMintOwnerChunk1,
+        NonDupQuoteTokenProgramNotQuoteMintOwnerChunk2,
+        NonDupQuoteTokenProgramNotQuoteMintOwnerChunk3,
+        QuoteTokenProgramNotTokenProgramChunk0,
+        QuoteTokenProgramNotTokenProgramChunk1,
+        QuoteTokenProgramNotTokenProgramChunk2,
+        QuoteTokenProgramNotTokenProgramChunk3,
+        InvalidQuoteTokenProgramDuplicateChunk0,
+        InvalidQuoteTokenProgramDuplicateChunk1,
+        InvalidQuoteTokenProgramDuplicateChunk2,
+        InvalidQuoteTokenProgramDuplicateChunk3,
+        DupQuoteTokenProgramNotQuoteMintOwnerChunk0,
+        DupQuoteTokenProgramNotQuoteMintOwnerChunk1,
+        DupQuoteTokenProgramNotQuoteMintOwnerChunk2,
+        DupQuoteTokenProgramNotQuoteMintOwnerChunk3,
         CreateAccountHappyPath,
     }
 }
@@ -82,6 +109,15 @@ fn happy_path_accounts(setup: &TestSetup) -> (Vec<AccountMeta>, Vec<(Pubkey, Acc
         setup.mollusk.sysvars.keyed_account_for_rent_sysvar();
     keys[RegisterMarketAccounts::RentSysvar as usize] = rent_sysvar_pubkey;
     accounts[RegisterMarketAccounts::RentSysvar as usize] = rent_sysvar_account;
+
+    // Set mint account owners to the Token Program.
+    let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
+    accounts[RegisterMarketAccounts::BaseMint as usize].owner = token_program_id;
+    accounts[RegisterMarketAccounts::QuoteMint as usize].owner = token_program_id;
+
+    // Set up token program accounts (both use Token Program, so quote is a duplicate).
+    keys[RegisterMarketAccounts::BaseTokenProgram as usize] = token_program_id;
+    keys[RegisterMarketAccounts::QuoteTokenProgram as usize] = token_program_id;
 
     // Fund the user account so it can pay for the CreateAccount CPI.
     accounts[RegisterMarketAccounts::User as usize] =
@@ -180,6 +216,66 @@ fn rent_sysvar_mismatch_accounts(
     rent_key.as_mut()[corrupt_byte] ^= 0xFF;
     keys[RegisterMarketAccounts::RentSysvar as usize] = rent_key;
     into_metas_and_accounts(keys, accounts)
+}
+
+/// Build accounts that pass all checks through the CPI, with the given
+/// token programs as owners of the respective mints. Returns keys and
+/// accounts that can be further modified for specific error cases.
+fn token_program_base_accounts(
+    setup: &TestSetup,
+    base_token_program: Pubkey,
+    quote_token_program: Pubkey,
+) -> (Vec<Pubkey>, Vec<Account>) {
+    let (mut keys, mut accounts) = default_accounts();
+    let (base_key, quote_key) = find_pda_seed_pair(&setup.program_id);
+    keys[RegisterMarketAccounts::BaseMint as usize] = base_key;
+    keys[RegisterMarketAccounts::QuoteMint as usize] = quote_key;
+    let (pda, _bump) =
+        Pubkey::find_program_address(&[base_key.as_ref(), quote_key.as_ref()], &setup.program_id);
+    keys[RegisterMarketAccounts::Market as usize] = pda;
+
+    let (system_program_pubkey, system_program_account) =
+        program::keyed_account_for_system_program();
+    keys[RegisterMarketAccounts::SystemProgram as usize] = system_program_pubkey;
+    accounts[RegisterMarketAccounts::SystemProgram as usize] = system_program_account;
+
+    let (rent_sysvar_pubkey, rent_sysvar_account) =
+        setup.mollusk.sysvars.keyed_account_for_rent_sysvar();
+    keys[RegisterMarketAccounts::RentSysvar as usize] = rent_sysvar_pubkey;
+    accounts[RegisterMarketAccounts::RentSysvar as usize] = rent_sysvar_account;
+
+    accounts[RegisterMarketAccounts::BaseMint as usize].owner = base_token_program;
+    accounts[RegisterMarketAccounts::QuoteMint as usize].owner = quote_token_program;
+
+    keys[RegisterMarketAccounts::BaseTokenProgram as usize] = base_token_program;
+    keys[RegisterMarketAccounts::QuoteTokenProgram as usize] = quote_token_program;
+
+    accounts[RegisterMarketAccounts::User as usize] =
+        Account::new(USER_LAMPORTS, 0, &system_program_pubkey);
+
+    (keys, accounts)
+}
+
+fn token_program_metas_and_accounts(
+    keys: Vec<Pubkey>,
+    accounts: Vec<Account>,
+) -> (Vec<AccountMeta>, Vec<(Pubkey, Account)>) {
+    let metas: Vec<AccountMeta> = keys
+        .iter()
+        .enumerate()
+        .map(|(i, k)| {
+            let writable = i == RegisterMarketAccounts::User as usize
+                || i == RegisterMarketAccounts::Market as usize;
+            let signer = i == RegisterMarketAccounts::User as usize;
+            if writable {
+                AccountMeta::new(*k, signer)
+            } else {
+                AccountMeta::new_readonly(*k, signer)
+            }
+        })
+        .collect();
+    let paired = keys.into_iter().zip(accounts).collect();
+    (metas, paired)
 }
 
 impl TestCase for Case {
@@ -451,6 +547,422 @@ impl TestCase for Case {
                     metas,
                     accounts,
                     Some(ErrorCode::InvalidRentSysvarPubkey),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            Self::BaseTokenProgramIsDuplicate => {
+                let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
+                let (mut keys, accounts) =
+                    token_program_base_accounts(setup, token_program_id, token_program_id);
+                // BaseTokenProgram shares key with User, causing duplicate.
+                keys[RegisterMarketAccounts::BaseTokenProgram as usize] =
+                    keys[RegisterMarketAccounts::User as usize];
+                let (metas, accounts) = token_program_metas_and_accounts(keys, accounts);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::BaseTokenProgramIsDuplicate),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            Self::BaseTokenProgramNotBaseMintOwnerChunk0 => {
+                let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
+                let (mut keys, accounts) =
+                    token_program_base_accounts(setup, token_program_id, token_program_id);
+                let mut bad_key = token_program_id;
+                bad_key.as_mut()[CHUNK_0_OFF as usize] ^= 0xFF;
+                keys[RegisterMarketAccounts::BaseTokenProgram as usize] = bad_key;
+                let (metas, accounts) = token_program_metas_and_accounts(keys, accounts);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::BaseTokenProgramNotBaseMintOwner),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            Self::BaseTokenProgramNotBaseMintOwnerChunk1 => {
+                let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
+                let (mut keys, accounts) =
+                    token_program_base_accounts(setup, token_program_id, token_program_id);
+                let mut bad_key = token_program_id;
+                bad_key.as_mut()[CHUNK_1_OFF as usize] ^= 0xFF;
+                keys[RegisterMarketAccounts::BaseTokenProgram as usize] = bad_key;
+                let (metas, accounts) = token_program_metas_and_accounts(keys, accounts);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::BaseTokenProgramNotBaseMintOwner),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            Self::BaseTokenProgramNotBaseMintOwnerChunk2 => {
+                let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
+                let (mut keys, accounts) =
+                    token_program_base_accounts(setup, token_program_id, token_program_id);
+                let mut bad_key = token_program_id;
+                bad_key.as_mut()[CHUNK_2_OFF as usize] ^= 0xFF;
+                keys[RegisterMarketAccounts::BaseTokenProgram as usize] = bad_key;
+                let (metas, accounts) = token_program_metas_and_accounts(keys, accounts);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::BaseTokenProgramNotBaseMintOwner),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            Self::BaseTokenProgramNotBaseMintOwnerChunk3 => {
+                let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
+                let (mut keys, accounts) =
+                    token_program_base_accounts(setup, token_program_id, token_program_id);
+                let mut bad_key = token_program_id;
+                bad_key.as_mut()[CHUNK_3_OFF as usize] ^= 0xFF;
+                keys[RegisterMarketAccounts::BaseTokenProgram as usize] = bad_key;
+                let (metas, accounts) = token_program_metas_and_accounts(keys, accounts);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::BaseTokenProgramNotBaseMintOwner),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            Self::BaseTokenProgramNotTokenProgramChunk0 => {
+                let mut bad_program = Pubkey::from(TOKEN_PROGRAM_ID);
+                bad_program.as_mut()[CHUNK_0_OFF as usize] ^= 0xFF;
+                let (keys, accounts) = token_program_base_accounts(setup, bad_program, bad_program);
+                let (metas, accounts) = token_program_metas_and_accounts(keys, accounts);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::BaseTokenProgramNotTokenProgram),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            Self::BaseTokenProgramNotTokenProgramChunk1 => {
+                let mut bad_program = Pubkey::from(TOKEN_PROGRAM_ID);
+                bad_program.as_mut()[CHUNK_1_OFF as usize] ^= 0xFF;
+                let (keys, accounts) = token_program_base_accounts(setup, bad_program, bad_program);
+                let (metas, accounts) = token_program_metas_and_accounts(keys, accounts);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::BaseTokenProgramNotTokenProgram),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            Self::BaseTokenProgramNotTokenProgramChunk2 => {
+                let mut bad_program = Pubkey::from(TOKEN_PROGRAM_ID);
+                bad_program.as_mut()[CHUNK_2_OFF as usize] ^= 0xFF;
+                let (keys, accounts) = token_program_base_accounts(setup, bad_program, bad_program);
+                let (metas, accounts) = token_program_metas_and_accounts(keys, accounts);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::BaseTokenProgramNotTokenProgram),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            Self::BaseTokenProgramNotTokenProgramChunk3 => {
+                let mut bad_program = Pubkey::from(TOKEN_PROGRAM_ID);
+                bad_program.as_mut()[CHUNK_3_OFF as usize] ^= 0xFF;
+                let (keys, accounts) = token_program_base_accounts(setup, bad_program, bad_program);
+                let (metas, accounts) = token_program_metas_and_accounts(keys, accounts);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::BaseTokenProgramNotTokenProgram),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            Self::NonDupQuoteTokenProgramNotQuoteMintOwnerChunk0 => {
+                let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
+                let token_2022_id = Pubkey::from(TOKEN_2022_PROGRAM_ID);
+                let (mut keys, accounts) =
+                    token_program_base_accounts(setup, token_program_id, token_2022_id);
+                // Quote token program key doesn't match quote mint owner.
+                let mut bad_key = token_2022_id;
+                bad_key.as_mut()[CHUNK_0_OFF as usize] ^= 0xFF;
+                keys[RegisterMarketAccounts::QuoteTokenProgram as usize] = bad_key;
+                let (metas, accounts) = token_program_metas_and_accounts(keys, accounts);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::NonDupQuoteTokenProgramNotQuoteMintOwner),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            Self::NonDupQuoteTokenProgramNotQuoteMintOwnerChunk1 => {
+                let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
+                let token_2022_id = Pubkey::from(TOKEN_2022_PROGRAM_ID);
+                let (mut keys, accounts) =
+                    token_program_base_accounts(setup, token_program_id, token_2022_id);
+                let mut bad_key = token_2022_id;
+                bad_key.as_mut()[CHUNK_1_OFF as usize] ^= 0xFF;
+                keys[RegisterMarketAccounts::QuoteTokenProgram as usize] = bad_key;
+                let (metas, accounts) = token_program_metas_and_accounts(keys, accounts);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::NonDupQuoteTokenProgramNotQuoteMintOwner),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            Self::NonDupQuoteTokenProgramNotQuoteMintOwnerChunk2 => {
+                let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
+                let token_2022_id = Pubkey::from(TOKEN_2022_PROGRAM_ID);
+                let (mut keys, accounts) =
+                    token_program_base_accounts(setup, token_program_id, token_2022_id);
+                let mut bad_key = token_2022_id;
+                bad_key.as_mut()[CHUNK_2_OFF as usize] ^= 0xFF;
+                keys[RegisterMarketAccounts::QuoteTokenProgram as usize] = bad_key;
+                let (metas, accounts) = token_program_metas_and_accounts(keys, accounts);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::NonDupQuoteTokenProgramNotQuoteMintOwner),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            Self::NonDupQuoteTokenProgramNotQuoteMintOwnerChunk3 => {
+                let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
+                let token_2022_id = Pubkey::from(TOKEN_2022_PROGRAM_ID);
+                let (mut keys, accounts) =
+                    token_program_base_accounts(setup, token_program_id, token_2022_id);
+                let mut bad_key = token_2022_id;
+                bad_key.as_mut()[CHUNK_3_OFF as usize] ^= 0xFF;
+                keys[RegisterMarketAccounts::QuoteTokenProgram as usize] = bad_key;
+                let (metas, accounts) = token_program_metas_and_accounts(keys, accounts);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::NonDupQuoteTokenProgramNotQuoteMintOwner),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            Self::QuoteTokenProgramNotTokenProgramChunk0 => {
+                let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
+                let mut bad_program = Pubkey::from(TOKEN_PROGRAM_ID);
+                bad_program.as_mut()[CHUNK_0_OFF as usize] ^= 0xFF;
+                let (keys, accounts) =
+                    token_program_base_accounts(setup, token_program_id, bad_program);
+                let (metas, accounts) = token_program_metas_and_accounts(keys, accounts);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::QuoteTokenProgramNotTokenProgram),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            Self::QuoteTokenProgramNotTokenProgramChunk1 => {
+                let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
+                let mut bad_program = Pubkey::from(TOKEN_PROGRAM_ID);
+                bad_program.as_mut()[CHUNK_1_OFF as usize] ^= 0xFF;
+                let (keys, accounts) =
+                    token_program_base_accounts(setup, token_program_id, bad_program);
+                let (metas, accounts) = token_program_metas_and_accounts(keys, accounts);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::QuoteTokenProgramNotTokenProgram),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            Self::QuoteTokenProgramNotTokenProgramChunk2 => {
+                let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
+                let mut bad_program = Pubkey::from(TOKEN_PROGRAM_ID);
+                bad_program.as_mut()[CHUNK_2_OFF as usize] ^= 0xFF;
+                let (keys, accounts) =
+                    token_program_base_accounts(setup, token_program_id, bad_program);
+                let (metas, accounts) = token_program_metas_and_accounts(keys, accounts);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::QuoteTokenProgramNotTokenProgram),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            Self::QuoteTokenProgramNotTokenProgramChunk3 => {
+                let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
+                let mut bad_program = Pubkey::from(TOKEN_PROGRAM_ID);
+                bad_program.as_mut()[CHUNK_3_OFF as usize] ^= 0xFF;
+                let (keys, accounts) =
+                    token_program_base_accounts(setup, token_program_id, bad_program);
+                let (metas, accounts) = token_program_metas_and_accounts(keys, accounts);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::QuoteTokenProgramNotTokenProgram),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            Self::InvalidQuoteTokenProgramDuplicateChunk0 => {
+                let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
+                let (mut keys, accounts) =
+                    token_program_base_accounts(setup, token_program_id, token_program_id);
+                keys[RegisterMarketAccounts::QuoteTokenProgram as usize] =
+                    keys[RegisterMarketAccounts::User as usize];
+                let (metas, accounts) = token_program_metas_and_accounts(keys, accounts);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::InvalidQuoteTokenProgramDuplicate),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            Self::InvalidQuoteTokenProgramDuplicateChunk1 => {
+                let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
+                let (mut keys, accounts) =
+                    token_program_base_accounts(setup, token_program_id, token_program_id);
+                keys[RegisterMarketAccounts::QuoteTokenProgram as usize] =
+                    keys[RegisterMarketAccounts::Market as usize];
+                let (metas, accounts) = token_program_metas_and_accounts(keys, accounts);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::InvalidQuoteTokenProgramDuplicate),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            Self::InvalidQuoteTokenProgramDuplicateChunk2 => {
+                let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
+                let (mut keys, accounts) =
+                    token_program_base_accounts(setup, token_program_id, token_program_id);
+                keys[RegisterMarketAccounts::QuoteTokenProgram as usize] =
+                    keys[RegisterMarketAccounts::BaseMint as usize];
+                let (metas, accounts) = token_program_metas_and_accounts(keys, accounts);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::InvalidQuoteTokenProgramDuplicate),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            Self::InvalidQuoteTokenProgramDuplicateChunk3 => {
+                let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
+                let (mut keys, accounts) =
+                    token_program_base_accounts(setup, token_program_id, token_program_id);
+                keys[RegisterMarketAccounts::QuoteTokenProgram as usize] =
+                    keys[RegisterMarketAccounts::QuoteMint as usize];
+                let (metas, accounts) = token_program_metas_and_accounts(keys, accounts);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::InvalidQuoteTokenProgramDuplicate),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            Self::DupQuoteTokenProgramNotQuoteMintOwnerChunk0 => {
+                let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
+                let token_2022_id = Pubkey::from(TOKEN_2022_PROGRAM_ID);
+                // Base uses Token Program, quote uses Token 2022 (different owners),
+                // but quote key duplicates base key (Token Program).
+                let (mut keys, mut accounts) =
+                    token_program_base_accounts(setup, token_program_id, token_program_id);
+                accounts[RegisterMarketAccounts::QuoteMint as usize].owner = token_2022_id;
+                // Force duplicate by sharing key.
+                keys[RegisterMarketAccounts::QuoteTokenProgram as usize] = token_program_id;
+                let (metas, accounts) = token_program_metas_and_accounts(keys, accounts);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::DupQuoteTokenProgramNotQuoteMintOwner),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            Self::DupQuoteTokenProgramNotQuoteMintOwnerChunk1 => {
+                let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
+                let mut bad_owner = token_program_id;
+                bad_owner.as_mut()[CHUNK_1_OFF as usize] ^= 0xFF;
+                let (mut keys, mut accounts) =
+                    token_program_base_accounts(setup, token_program_id, token_program_id);
+                accounts[RegisterMarketAccounts::QuoteMint as usize].owner = bad_owner;
+                keys[RegisterMarketAccounts::QuoteTokenProgram as usize] = token_program_id;
+                let (metas, accounts) = token_program_metas_and_accounts(keys, accounts);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::DupQuoteTokenProgramNotQuoteMintOwner),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            Self::DupQuoteTokenProgramNotQuoteMintOwnerChunk2 => {
+                let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
+                let mut bad_owner = token_program_id;
+                bad_owner.as_mut()[CHUNK_2_OFF as usize] ^= 0xFF;
+                let (mut keys, mut accounts) =
+                    token_program_base_accounts(setup, token_program_id, token_program_id);
+                accounts[RegisterMarketAccounts::QuoteMint as usize].owner = bad_owner;
+                keys[RegisterMarketAccounts::QuoteTokenProgram as usize] = token_program_id;
+                let (metas, accounts) = token_program_metas_and_accounts(keys, accounts);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::DupQuoteTokenProgramNotQuoteMintOwner),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            Self::DupQuoteTokenProgramNotQuoteMintOwnerChunk3 => {
+                let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
+                let mut bad_owner = token_program_id;
+                bad_owner.as_mut()[CHUNK_3_OFF as usize] ^= 0xFF;
+                let (mut keys, mut accounts) =
+                    token_program_base_accounts(setup, token_program_id, token_program_id);
+                accounts[RegisterMarketAccounts::QuoteMint as usize].owner = bad_owner;
+                keys[RegisterMarketAccounts::QuoteTokenProgram as usize] = token_program_id;
+                let (metas, accounts) = token_program_metas_and_accounts(keys, accounts);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::DupQuoteTokenProgramNotQuoteMintOwner),
                 )
             }
             // Verifies: REGISTER-MARKET (CreateAccount CPI happy path)

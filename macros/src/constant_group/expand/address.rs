@@ -20,7 +20,7 @@ fn chunk_expr(chunk: usize) -> proc_macro2::TokenStream {
     }
 }
 
-/// Expand `address!(expr)` into eight i32 constants: four chunk lo/hi pairs.
+/// Expand `pubkey!(expr)` into eight i32 constants: four chunk lo/hi pairs.
 ///
 /// For a pubkey named `RENT` with prefix `PUBKEY`, this emits:
 ///   - `PUBKEY_RENT_CHUNK_0_LO` / `PUBKEY_RENT_CHUNK_0_HI`

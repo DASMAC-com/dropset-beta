@@ -17,10 +17,18 @@ runs:
       path: '~/.cargo/bin/sbpf'
   - if: 'steps.cache-sbpf.outputs.cache-hit != ''true'''
     name: 'Install sbpf CLI'
-    run: >-
-      cargo install
-      --git https://github.com/blueshift-gg/sbpf.git
-      --rev ${{ inputs.sbpf-cli-revision }}
+    # Clone, generate a lock file with blake3 <1.8.4 to avoid
+    # digest 0.10/0.11 conflict, then install from the local path.
+    run: |
+      git init /tmp/sbpf
+      cd /tmp/sbpf
+      git remote add origin https://github.com/blueshift-gg/sbpf.git
+      git fetch --depth 1 origin ${{ inputs.sbpf-cli-revision }}
+      git checkout FETCH_HEAD
+      cargo generate-lockfile
+      cargo update blake3 --precise 1.8.3
+      cargo install --path . --locked
+      rm -rf /tmp/sbpf
     shell: 'sh'
   - if: 'steps.cache-sbpf.outputs.cache-hit != ''true'''
     name: 'Save sbpf CLI cache'

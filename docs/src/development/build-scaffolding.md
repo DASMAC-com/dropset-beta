@@ -50,7 +50,7 @@ syntax forms (parsed within the proc macro, not standalone macros):
 - `signer_seeds!(field)`: expands a [`signer_seeds!`](#signer_seeds) field into
   an `_OFF` offset to the struct, an `N_SEEDS` count, and per-seed `_ADDR_OFF`
   and `_LEN_OFF` constants (requires `#[frame(Type)]`, see below)
-- `address!(expr)`: splits a 32-byte address into four 8-byte chunks, emitting
+- `pubkey!(expr)`: splits a 32-byte pubkey into four 8-byte chunks, emitting
   full 64-bit `_CHUNK_{0..3}` `i64` constants (for `lddw`) plus
   `_CHUNK_{0..3}_LO` and `_CHUNK_{0..3}_HI` `i32` immediates (twelve constants
   total)
@@ -133,10 +133,11 @@ The length is accessible in Rust as `RegisterMarketData::LEN`.
 
 ### `#[instruction_accounts("target")]`
 
-Attribute macro for instruction accounts enums. Automatically generates a
-`LEN` associated constant (`u64`) from the number of enum variants, and a hidden
-module with a `_LEN` suffixed assembly constant and `GROUP` for build-time
-injection.
+Attribute macro for instruction accounts enums. Generates a `LEN` associated
+constant (`u64`) from the number of enum variants, plus a per-variant `_POS`
+position constant (`i32`) for each variant. A hidden module with assembly
+constants and `GROUP` is emitted for build-time injection. Assembly comments
+are auto-generated from the variant names.
 
 The count is accessible in Rust as `RegisterMarketAccounts::LEN`.
 

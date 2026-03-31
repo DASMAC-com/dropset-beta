@@ -11,6 +11,7 @@
   \INPUT $r_4$ = insn\_len
   \REQUIRE insn.discriminant == \texttt{Discriminant::RegisterMarket}
 \PROCEDURE{REGISTER-MARKET}{input, insn, n\_accounts, insn\_len}
+  \COMMENT{Check number of accounts and instruction data length.}
   \IF{n\_accounts $<$ \texttt{RegisterMarketAccounts.LEN}}
     \RETURN \texttt{ErrorCode::InvalidNumberOfAccounts}
   \ENDIF
@@ -35,6 +36,7 @@
   \STATE frame.pda\_seeds.base.len = \texttt{Address.size}
   \COMMENT{Increment input buffer by base mint padded data length for quote offsets.}
   \STATE input\_shifted = input + input.base\_mint.padded\_data\_len
+  \STATE frame.input\_shifted = input\_shifted
   \COMMENT{Check quote mint account, create signer seed.}
   \IF{input\_shifted.quote\_mint.duplicate $\neq$ \texttt{account.NON\_DUP\_MARKER}}
     \RETURN \texttt{ErrorCode::QuoteMintIsDuplicate}
@@ -46,7 +48,7 @@
   \STATE acct = \&input\_shifted.quote\_mint
   \STATE acct += quote\_mint\_padded\_data\_len + \texttt{EmptyAccount.size}
   \COMMENT{Derive market PDA.}
-  \STATE \CALL{Store}{input}
+  \STATE frame.input = input
   \STATE syscall.seeds = \&frame.pda\_seeds
   \STATE syscall.program\_id = \&insn.program\_id
   \STATE syscall.seeds\_len = \texttt{register\_misc.TRY\_FIND\_PDA\_SEEDS\_LEN}
@@ -54,6 +56,7 @@
   \STATE syscall.bump\_seed = \&frame.bump
   \STATE \CALL{sol-try-find-program-address}{}
   \COMMENT{Verify derived market PDA matches market account pubkey.}
+  \STATE input = frame.input
   \IF{input.market.pubkey $\neq$ frame.market\_pda}
     \RETURN \texttt{ErrorCode::InvalidMarketPubkey}
   \ENDIF
@@ -86,6 +89,9 @@
   \STATE acct\_size = \texttt{MarketHeader.size} + \texttt{account.STORAGE\_OVERHEAD}
   \STATE lamports\_per\_byte = acct.data.lamports\_per\_byte
   \STATE frame.create\_account\_data.lamports = acct\_size $\times$ lamports\_per\_byte
+  \COMMENT{Advance to base token program account.}
+  \STATE rent\_sysvar\_padded\_data\_len = acct.padded\_data\_len
+  \STATE acct += rent\_sysvar\_padded\_data\_len + \texttt{EmptyAccount.size}
   \COMMENT{Assign CPI account fields via immediates.}
   \STATE frame.cpi.user\_info.is\_signer = \texttt{true}
   \STATE frame.cpi.user\_info.is\_writable = \texttt{true}
@@ -123,6 +129,48 @@
   \STATE syscall.seeds = \&frame.signers\_seeds
   \STATE syscall.seeds\_len = \texttt{register\_misc.N\_PDA\_SIGNERS}
   \STATE \CALL{sol-invoke-signed-c}{}
+  \COMMENT{Retrieve input buffer pointers.}
+  \STATE input = frame.input
+  \STATE input\_shifted = frame.input\_shifted
+  \COMMENT{Check base token program account.}
+  \IF{acct.duplicate $\neq$ \texttt{account.NON\_DUP\_MARKER}}
+    \RETURN \texttt{ErrorCode::BaseTokenProgramIsDuplicate}
+  \ENDIF
+  \COMMENT{Verify base token program owns the base mint.}
+  \IF{acct.pubkey $\neq$ input.base\_mint.owner}
+    \RETURN \texttt{ErrorCode::BaseTokenProgramNotBaseMintOwner}
+  \ENDIF
+  \COMMENT{Verify base token program is Token Program or Token 2022.}
+  \IF{acct.pubkey $\neq$ \texttt{pubkey.TOKEN\_PROGRAM}}
+    \IF{acct.pubkey $\neq$ \texttt{pubkey.TOKEN\_2022\_PROGRAM}}
+      \RETURN \texttt{ErrorCode::BaseTokenProgramNotTokenProgram}
+    \ENDIF
+  \ENDIF
+  \COMMENT{Advance to quote token program account.}
+  \STATE base\_token\_program\_padded\_data\_len = acct.padded\_data\_len
+  \STATE acct += base\_token\_program\_padded\_data\_len + \texttt{EmptyAccount.size}
+  \COMMENT{Check quote token program account.}
+  \IF{acct.duplicate == \texttt{account.NON\_DUP\_MARKER}}
+    \COMMENT{Non-duplicate; verify quote token program owns the quote mint.}
+    \IF{acct.pubkey $\neq$ input\_shifted.quote\_mint.owner}
+      \RETURN \texttt{ErrorCode::NonDupQuoteTokenProgramNotQuoteMintOwner}
+    \ENDIF
+    \COMMENT{Verify quote token program is Token Program or Token 2022.}
+    \IF{acct.pubkey $\neq$ \texttt{pubkey.TOKEN\_PROGRAM}}
+      \IF{acct.pubkey $\neq$ \texttt{pubkey.TOKEN\_2022\_PROGRAM}}
+        \RETURN \texttt{ErrorCode::QuoteTokenProgramNotTokenProgram}
+      \ENDIF
+    \ENDIF
+  \ELSE
+    \COMMENT{Duplicate; verify position is base token program.}
+    \IF{acct.duplicate $\neq$ \texttt{RegisterMarketAccounts::BaseTokenProgram}}
+      \RETURN \texttt{ErrorCode::InvalidQuoteTokenProgramDuplicate}
+    \ENDIF
+    \COMMENT{Verify duplicate owns the quote mint.}
+    \IF{input.base\_mint.owner $\neq$ input\_shifted.quote\_mint.owner}
+      \RETURN \texttt{ErrorCode::DupQuoteTokenProgramNotQuoteMintOwner}
+    \ENDIF
+  \ENDIF
 \ENDPROCEDURE
 \end{algorithmic}
 \end{algorithm}

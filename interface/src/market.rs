@@ -56,12 +56,16 @@ constant_group! {
         BASE_DATA_LEN = offset!(RegisterMarketInputBuffer.base_mint.header.data_len),
         /// From input buffer to base mint address.
         BASE_ADDR = offset!(RegisterMarketInputBuffer.base_mint.header.address),
+        /// From input buffer to base mint owner.
+        BASE_OWNER = pubkey_offsets!(RegisterMarketInputBuffer.base_mint.header.owner),
         /// From input buffer to quote mint.
         QUOTE = offset!(RegisterMarketInputBuffer.quote_mint),
         /// From input buffer to quote mint duplicate flag.
         QUOTE_DUPLICATE = offset!(RegisterMarketInputBuffer.quote_mint.header.borrow_state),
         /// From input buffer to quote mint address.
         QUOTE_ADDR = offset!(RegisterMarketInputBuffer.quote_mint.header.address),
+        /// From input buffer to quote mint owner.
+        QUOTE_OWNER = pubkey_offsets!(RegisterMarketInputBuffer.quote_mint.header.owner),
         /// From input buffer to quote mint data length.
         QUOTE_DATA_LEN = offset!(RegisterMarketInputBuffer.quote_mint.header.data_len),
         /// Number of seeds for market PDA derivation (base, quote).
@@ -140,6 +144,10 @@ signer_seeds! {
 #[frame]
 /// Stack frame for REGISTER-MARKET.
 pub struct RegisterMarketFrame {
+    /// Saved input buffer pointer.
+    pub input: u64,
+    /// Saved input_shifted pointer.
+    pub input_shifted: u64,
     /// For CreateAccount CPI.
     pub pda_seeds: PDASignerSeeds,
     /// From `sol_try_find_program_address`.
@@ -164,6 +172,10 @@ constant_group! {
     #[inject("market/register")]
     #[frame(RegisterMarketFrame)]
     frame {
+        /// Saved input buffer pointer.
+        INPUT = offset!(input),
+        /// Saved input_shifted pointer.
+        INPUT_SHIFTED = offset!(input_shifted),
         /// PDA signer seeds.
         PDA_SEEDS = signer_seeds!(pda_seeds),
         /// PDA address.
@@ -192,7 +204,7 @@ constant_group! {
         PDA_SEEDS_TO_SOL_INSN = relative_offset!(pda_seeds, sol_instruction),
         /// From pda to signers_seeds.
         PDA_TO_SIGNERS_SEEDS = relative_offset!(pda, signers_seeds),
-        /// From create_account_data to cpi account metas.
+        /// From create_account_data to CPI account metas.
         CREATE_ACCT_DATA_TO_CPI_ACCT_METAS = relative_offset!(
             create_account_data, cpi_accounts.user_meta
         ),

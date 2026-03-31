@@ -75,7 +75,7 @@ Each 32-byte pubkey is accessed as four 8-byte (`u64`) chunks at offsets 0, 8,
 Known addresses (such as the rent sysvar ID) are split into full 64-bit
 `_CHUNK_{0..3}` constants (loadable with a single `lddw`) and `_CHUNK_{0..3}_LO`
 / `_CHUNK_{0..3}_HI` `i32` immediates (loadable with `mov32` / `lsh64` pairs)
-using [`address!`][bs-constant-group]. The `lddw` form costs 2 CUs but uses one
+using [`pubkey!`][bs-constant-group]. The `lddw` form costs 2 CUs but uses one
 instruction; the `mov32` / `lsh64` pair also costs 2 CUs but can be optimized
 to 1 CU with `mov32` alone when the high bits are zero.
 

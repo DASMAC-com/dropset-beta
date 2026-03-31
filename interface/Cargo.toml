@@ -2,6 +2,8 @@
 dropset-build = {path = "../build"}
 dropset-macros = {path = "../macros"}
 pinocchio = {workspace = true}
+pinocchio-token = {workspace = true}
+pinocchio-token-2022 = {workspace = true}
 
 [package]
 name = "dropset-interface"

@@ -59,7 +59,7 @@ make test       # Assemble + run Mollusk tests
 make asm        # Assemble program to SBPF binary
 make lint       # Run all lints (pre-commit + prettier)
 make clean      # Clean all build artifacts
-make docs-dev   # Serve docs locally
+make docs       # Serve docs locally
 make docs-build # Production docs build
 make docs-links # Check for broken links
 ```
