@@ -52,10 +52,11 @@ pub fn lookup_frame_doc(frame_name: &str) -> Option<String> {
         .filter(|d| !d.is_empty())
 }
 
-/// Look up the signer seed field names for a parent field on a frame struct.
-///
-/// Resolves `frame_name.parent_field` → type name → signer seed fields.
-pub fn lookup_signer_seed_fields(
+/// Resolve a parent field on a frame struct to its type name, then look up
+/// that type in the given registry map.
+fn lookup_frame_field_in(
+    registry: &LazyLock<Mutex<HashMap<String, Vec<String>>>>,
+    registry_name: &str,
     frame_name: &str,
     parent_field: &str,
 ) -> Result<Vec<String>, String> {
@@ -81,16 +82,27 @@ pub fn lookup_signer_seed_fields(
             )
         })?;
 
-    let signer_seeds = SIGNER_SEEDS.lock().unwrap();
-    signer_seeds.get(type_name).cloned().ok_or_else(|| {
+    let map = registry.lock().unwrap();
+    map.get(type_name).cloned().ok_or_else(|| {
         format!(
-            "type `{t}` (field `{f}`) is not annotated with `signer_seeds!`. \
-             The `signer_seeds!` invocation must appear before the \
+            "type `{t}` (field `{f}`) is not annotated with `{r}!`. \
+             The `{r}!` invocation must appear before the \
              `constant_group!` that references it.",
             t = type_name,
             f = parent_field,
+            r = registry_name,
         )
     })
+}
+
+/// Look up the signer seed field names for a parent field on a frame struct.
+///
+/// Resolves `frame_name.parent_field` → type name → signer seed fields.
+pub fn lookup_signer_seed_fields(
+    frame_name: &str,
+    parent_field: &str,
+) -> Result<Vec<String>, String> {
+    lookup_frame_field_in(&SIGNER_SEEDS, "signer_seeds", frame_name, parent_field)
 }
 
 /// Look up the CPI account field names for a parent field on a frame struct.
@@ -100,36 +112,5 @@ pub fn lookup_cpi_account_fields(
     frame_name: &str,
     parent_field: &str,
 ) -> Result<Vec<String>, String> {
-    let frame_info = FRAME_INFO.lock().unwrap();
-    let info = frame_info.get(frame_name).ok_or_else(|| {
-        format!(
-            "frame struct `{f}` not found. `#[frame]` structs must be defined \
-             before the `constant_group!` that references them (proc macros \
-             execute in source order within a file, and in dependency order \
-             across crates).",
-            f = frame_name,
-        )
-    })?;
-
-    let (_, type_name) = info
-        .fields
-        .iter()
-        .find(|(name, _)| name == parent_field)
-        .ok_or_else(|| {
-            format!(
-                "field `{}` not found on frame struct `{}`",
-                parent_field, frame_name,
-            )
-        })?;
-
-    let cpi_accounts = CPI_ACCOUNTS.lock().unwrap();
-    cpi_accounts.get(type_name).cloned().ok_or_else(|| {
-        format!(
-            "type `{t}` (field `{f}`) is not annotated with `cpi_accounts!`. \
-             The `cpi_accounts!` invocation must appear before the \
-             `constant_group!` that references it.",
-            t = type_name,
-            f = parent_field,
-        )
-    })
+    lookup_frame_field_in(&CPI_ACCOUNTS, "cpi_accounts", frame_name, parent_field)
 }

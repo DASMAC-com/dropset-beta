@@ -42,8 +42,9 @@ for the pull request on the current branch.
      branch name (e.g. `ENG-254`). If the branch
      has no ticket ID, use the most relevant
      module or area instead.
-   - **short summary**: capitalize the first word,
-     imperative, no trailing period.
+   - **short summary**: imperative voice (as if
+     telling the repo what to do), capitalize the
+     first word, no trailing period.
 
    Examples:
 
