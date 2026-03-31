@@ -179,6 +179,8 @@
         \RETURN \texttt{ErrorCode::QuoteTokenProgramNotTokenProgram}
       \ENDIF
     \ENDIF
+    \COMMENT{Update syscall program ID from non-duplicate quote token program.}
+    \STATE syscall.program\_id = \&acct.address
     \COMMENT{Advance past non-duplicate quote token program account.}
     \STATE quote\_token\_program\_padded\_data\_len = acct.padded\_data\_len
     \STATE acct += quote\_token\_program\_padded\_data\_len + \texttt{EmptyAccount.size}
@@ -193,6 +195,13 @@
     \ENDIF
     \COMMENT{Advance past duplicate quote token program account.}
     \STATE acct += \texttt{u64.size}
+  \ENDIF
+  \COMMENT{Derive quote vault PDA.}
+  \STATE frame.vault\_index = \texttt{register\_misc.VAULT\_INDEX\_QUOTE}
+  \STATE \CALL{sol-try-find-program-address}{}
+  \COMMENT{Verify quote vault address matches derived PDA.}
+  \IF{acct.pubkey $\neq$ frame.pda}
+    \RETURN \texttt{ErrorCode::InvalidQuoteVaultPubkey}
   \ENDIF
 \ENDPROCEDURE
 \end{algorithmic}

@@ -1,3 +1,4 @@
+use dropset_interface::market::register_misc::VAULT_INDEX_BASE;
 use dropset_interface::market::{MarketHeader, RegisterMarketAccounts};
 use dropset_interface::pubkey::pubkey::{CHUNK_0_OFF, CHUNK_1_OFF, CHUNK_2_OFF, CHUNK_3_OFF};
 use dropset_interface::pubkey::{TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID};
@@ -62,6 +63,10 @@ test_cases! {
         DupQuoteTokenProgramNotQuoteMintOwnerChunk1,
         DupQuoteTokenProgramNotQuoteMintOwnerChunk2,
         DupQuoteTokenProgramNotQuoteMintOwnerChunk3,
+        InvalidBaseVaultPubkeyChunk0,
+        InvalidBaseVaultPubkeyChunk1,
+        InvalidBaseVaultPubkeyChunk2,
+        InvalidBaseVaultPubkeyChunk3,
         CreateAccountHappyPathQuoteDup,
         CreateAccountHappyPathQuoteNonDup,
     }
@@ -72,7 +77,9 @@ const N_ACCOUNTS: usize = RegisterMarketAccounts::LEN as usize;
 /// Build unique accounts with default (empty) data.
 fn default_accounts() -> (Vec<Pubkey>, Vec<Account>) {
     let keys: Vec<Pubkey> = (0..N_ACCOUNTS).map(|_| Pubkey::new_unique()).collect();
-    let accounts: Vec<Account> = (0..N_ACCOUNTS).map(|_| Account::default()).collect();
+    let mut accounts: Vec<Account> = (0..N_ACCOUNTS).map(|_| Account::default()).collect();
+    accounts[RegisterMarketAccounts::User as usize] =
+        Account::new(USER_LAMPORTS, 0, &Pubkey::default());
     (keys, accounts)
 }
 
@@ -126,13 +133,11 @@ fn happy_path_accounts(
     keys[RegisterMarketAccounts::QuoteTokenProgram as usize] = quote_token_program;
 
     // Derive base vault PDA from market address and vault index.
-    let (base_vault_pda, _) =
-        Pubkey::find_program_address(&[pda.as_ref(), &[0u8]], &base_token_program);
+    let (base_vault_pda, _) = Pubkey::find_program_address(
+        &[pda.as_ref(), &[VAULT_INDEX_BASE as u8]],
+        &base_token_program,
+    );
     keys[RegisterMarketAccounts::BaseVault as usize] = base_vault_pda;
-
-    // Fund the user account so it can pay for the CreateAccount CPI.
-    accounts[RegisterMarketAccounts::User as usize] =
-        Account::new(USER_LAMPORTS, 0, &system_program_pubkey);
 
     let metas: Vec<AccountMeta> = keys
         .iter()
@@ -262,12 +267,11 @@ fn token_program_base_accounts(
     keys[RegisterMarketAccounts::QuoteTokenProgram as usize] = quote_token_program;
 
     // Derive base vault PDA from market address and vault index.
-    let (base_vault_pda, _) =
-        Pubkey::find_program_address(&[pda.as_ref(), &[0u8]], &base_token_program);
+    let (base_vault_pda, _) = Pubkey::find_program_address(
+        &[pda.as_ref(), &[VAULT_INDEX_BASE as u8]],
+        &base_token_program,
+    );
     keys[RegisterMarketAccounts::BaseVault as usize] = base_vault_pda;
-
-    accounts[RegisterMarketAccounts::User as usize] =
-        Account::new(USER_LAMPORTS, 0, &system_program_pubkey);
 
     (keys, accounts)
 }
@@ -292,6 +296,64 @@ fn token_program_metas_and_accounts(
         .collect();
     let paired = keys.into_iter().zip(accounts).collect();
     (metas, paired)
+}
+
+/// Build accounts that pass all checks through the base token program,
+/// then corrupt one 8-byte chunk of the base vault PDA so the comparison
+/// fails at exactly that chunk. Both the market PDA and the vault PDA
+/// use the first bump (255) to minimize CU overhead.
+fn base_vault_mismatch_accounts(
+    setup: &TestSetup,
+    corrupt_byte: usize,
+) -> (Vec<AccountMeta>, Vec<(Pubkey, Account)>) {
+    let base_token_program = Pubkey::from(TOKEN_PROGRAM_ID);
+    // Find a seed pair where both the market PDA and the base vault PDA
+    // derive on the first bump (255).
+    let (base_key, quote_key, pda) = loop {
+        let (base_key, quote_key) = find_pda_seed_pair(&setup.program_id);
+        let (pda, _) = Pubkey::find_program_address(
+            &[base_key.as_ref(), quote_key.as_ref()],
+            &setup.program_id,
+        );
+        let (_vault_pda, vault_bump) = Pubkey::find_program_address(
+            &[pda.as_ref(), &[VAULT_INDEX_BASE as u8]],
+            &base_token_program,
+        );
+        if vault_bump == u8::MAX {
+            break (base_key, quote_key, pda);
+        }
+    };
+
+    let (mut keys, mut accounts) = default_accounts();
+    keys[RegisterMarketAccounts::BaseMint as usize] = base_key;
+    keys[RegisterMarketAccounts::QuoteMint as usize] = quote_key;
+    keys[RegisterMarketAccounts::Market as usize] = pda;
+
+    let (system_program_pubkey, system_program_account) =
+        program::keyed_account_for_system_program();
+    keys[RegisterMarketAccounts::SystemProgram as usize] = system_program_pubkey;
+    accounts[RegisterMarketAccounts::SystemProgram as usize] = system_program_account;
+
+    let (rent_sysvar_pubkey, rent_sysvar_account) =
+        setup.mollusk.sysvars.keyed_account_for_rent_sysvar();
+    keys[RegisterMarketAccounts::RentSysvar as usize] = rent_sysvar_pubkey;
+    accounts[RegisterMarketAccounts::RentSysvar as usize] = rent_sysvar_account;
+
+    accounts[RegisterMarketAccounts::BaseMint as usize].owner = base_token_program;
+    accounts[RegisterMarketAccounts::QuoteMint as usize].owner = base_token_program;
+
+    keys[RegisterMarketAccounts::BaseTokenProgram as usize] = base_token_program;
+    keys[RegisterMarketAccounts::QuoteTokenProgram as usize] = base_token_program;
+
+    // Derive correct base vault PDA, then corrupt the target chunk.
+    let (mut base_vault_pda, _) = Pubkey::find_program_address(
+        &[pda.as_ref(), &[VAULT_INDEX_BASE as u8]],
+        &base_token_program,
+    );
+    base_vault_pda.as_mut()[corrupt_byte] ^= 0xFF;
+    keys[RegisterMarketAccounts::BaseVault as usize] = base_vault_pda;
+
+    token_program_metas_and_accounts(keys, accounts)
 }
 
 impl TestCase for Case {
@@ -979,6 +1041,50 @@ impl TestCase for Case {
                     metas,
                     accounts,
                     Some(ErrorCode::DupQuoteTokenProgramNotQuoteMintOwner),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            Self::InvalidBaseVaultPubkeyChunk0 => {
+                let (metas, accounts) = base_vault_mismatch_accounts(setup, CHUNK_0_OFF as usize);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::InvalidBaseVaultPubkey),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            Self::InvalidBaseVaultPubkeyChunk1 => {
+                let (metas, accounts) = base_vault_mismatch_accounts(setup, CHUNK_1_OFF as usize);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::InvalidBaseVaultPubkey),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            Self::InvalidBaseVaultPubkeyChunk2 => {
+                let (metas, accounts) = base_vault_mismatch_accounts(setup, CHUNK_2_OFF as usize);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::InvalidBaseVaultPubkey),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            Self::InvalidBaseVaultPubkeyChunk3 => {
+                let (metas, accounts) = base_vault_mismatch_accounts(setup, CHUNK_3_OFF as usize);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::InvalidBaseVaultPubkey),
                 )
             }
             // Verifies: REGISTER-MARKET (happy path, quote token program is duplicate)
