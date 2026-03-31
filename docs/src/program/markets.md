@@ -24,6 +24,6 @@ The instruction requires the following accounts:
 
 ## Vault initialization
 
-<Algorithm tex="INIT-VAULT" asm="market/init_vault/>
+<Algorithm tex="INIT-VAULT" asm="market/init_vault"/>
 
 [input buffer]: inputs#input-buffer

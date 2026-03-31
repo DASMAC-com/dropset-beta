@@ -116,7 +116,3 @@ e_quote_token_program_not_token_program:
 e_invalid_base_vault_pubkey:
     mov32 r0, E_INVALID_BASE_VAULT_PUBKEY
     exit
-
-e_invalid_quote_vault_pubkey:
-    mov32 r0, E_INVALID_QUOTE_VAULT_PUBKEY
-    exit

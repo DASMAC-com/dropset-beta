@@ -74,23 +74,12 @@ constant_group! {
         INSN_LEN = offset!(-size_of::<u64>()),
         /// Offset from instruction data to discriminant, in input buffer.
         INSN_DISC = offset!(0),
-    }
-}
-
-constant_group! {
-    #[prefix("FLOW")]
-    #[inject("entrypoint")]
-    /// Control flow constants.
-    flow {
-        /// Successful result code.
-        RESULT_OK = immediate!(0),
-        /// Success with continue; for use with conditional branch after call.
-        SUCCESS_CONTINUE = immediate!(1),
+        /// Successful return code.
+        RETURN_SUCCESS = immediate!(0),
     }
 }
 
 pub const INJECTION_GROUPS: &[&dropset_build::ConstantGroup] = &[
-    &flow::GROUP,
     &entrypoint::GROUP,
     &discriminant::GROUP,
     &error_code::GROUP,

@@ -156,7 +156,7 @@
   \COMMENT{Initialize base vault account.}
   \STATE frame.vault\_index = \texttt{register\_misc.VAULT\_INDEX\_BASE}
   \STATE result = \CALL{INIT-VAULT}{acct, frame}
-  \IF{result $\neq$ \texttt{flow.RESULT\_OK}}
+  \IF{result $\neq$ \texttt{entrypoint.RETURN\_SUCCESS}}
     \RETURN result
   \ENDIF
   \COMMENT{Advance to quote token program account.}
@@ -195,10 +195,7 @@
   \ENDIF
   \COMMENT{Initialize quote vault account.}
   \STATE frame.vault\_index = \texttt{register\_misc.VAULT\_INDEX\_QUOTE}
-  \STATE result = \CALL{INIT-VAULT}{acct, frame}
-  \IF{result $\neq$ \texttt{flow.RESULT\_OK}}
-    \RETURN result
-  \ENDIF
+  \STATE \CALL{INIT-VAULT}{acct, frame}
 \ENDPROCEDURE
 \end{algorithmic}
 \end{algorithm}

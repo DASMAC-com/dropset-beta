@@ -1,16 +1,10 @@
-# Control flow constants.
-# -------------------------------------------------------------------------
-.equ FLOW_RESULT_OK, 0 # Successful result code.
-# Success with continue; for use with conditional branch after call.
-.equ FLOW_SUCCESS_CONTINUE, 1
-# -------------------------------------------------------------------------
-
 # Offset from input buffer to number of accounts, in input buffer.
 .equ IB_N_ACCTS_OFF, 0
 # Offset from instruction data to instruction data length, in input buffer.
 .equ INSN_LEN_OFF, -8
 # Offset from instruction data to discriminant, in input buffer.
 .equ INSN_DISC_OFF, 0
+.equ RETURN_SUCCESS, 0 # Successful return code.
 
 entrypoint:
     # n_accounts = input.n_accounts
