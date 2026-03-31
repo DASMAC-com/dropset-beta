@@ -32,8 +32,8 @@
   \IF{input.base\_mint.duplicate $\neq$ \texttt{account.NON\_DUP\_MARKER}}
     \RETURN \texttt{ErrorCode::BaseMintIsDuplicate}
   \ENDIF
-  \STATE frame.pda\_seeds.base.addr = input.base\_mint.pubkey
-  \STATE frame.pda\_seeds.base.len = \texttt{Address.size}
+  \STATE frame.pda\_seeds[0].addr = input.base\_mint.pubkey
+  \STATE frame.pda\_seeds[0].len = \texttt{Address.size}
   \COMMENT{Increment input buffer by base mint padded data length for quote offsets.}
   \STATE input\_shifted = input + input.base\_mint.padded\_data\_len
   \STATE frame.input\_shifted = input\_shifted
@@ -41,8 +41,8 @@
   \IF{input\_shifted.quote\_mint.duplicate $\neq$ \texttt{account.NON\_DUP\_MARKER}}
     \RETURN \texttt{ErrorCode::QuoteMintIsDuplicate}
   \ENDIF
-  \STATE frame.pda\_seeds.quote.addr = input\_shifted.quote\_mint.pubkey
-  \STATE frame.pda\_seeds.quote.len = \texttt{Address.size}
+  \STATE frame.pda\_seeds[1].addr = input\_shifted.quote\_mint.pubkey
+  \STATE frame.pda\_seeds[1].len = \texttt{Address.size}
   \COMMENT{Advance to System Program account.}
   \STATE quote\_mint\_padded\_data\_len = input\_shifted.quote\_mint.padded\_data\_len
   \STATE acct = \&input\_shifted.quote\_mint
@@ -61,8 +61,8 @@
     \RETURN \texttt{ErrorCode::InvalidMarketPubkey}
   \ENDIF
   \COMMENT{Populate bump signer seed from derived bump.}
-  \STATE frame.pda\_seeds.bump.addr = \&syscall.bump\_seed
-  \STATE frame.pda\_seeds.bump.len = \texttt{u8.size}
+  \STATE frame.pda\_seeds[2].addr = \&syscall.bump\_seed
+  \STATE frame.pda\_seeds[2].len = \texttt{u8.size}
   \COMMENT{Populate CreateAccount CPI instruction data owner field.}
   \STATE frame.create\_account\_data.owner = syscall.program\_id
   \COMMENT{Check System Program account.}

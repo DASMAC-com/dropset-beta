@@ -115,14 +115,8 @@ cpi_accounts! {
         user,
         /// Target account (the account to create, either market account or ATA).
         target,
-        /// Proprietor account.
-        proprietor,
-        /// Mint account.
-        mint,
-        /// System Program account.
-        system_program,
-        /// Token Program account.
-        token_program,
+        /// Rent sysvar.
+        rent,
     }
 }
 
@@ -130,12 +124,12 @@ cpi_accounts! {
 // region: signer_seeds_example
 signer_seeds! {
     PDASignerSeeds {
-        /// Base mint seed.
-        base,
-        /// Quote mint seed.
-        quote,
+        /// Market PDA: base mint address. Vault: market PDA address.
+        idx_0,
+        /// Market PDA: quote mint address. Vault: vault index (0 = base, 1 = quote).
+        idx_1,
         /// Bump seed from `sol_try_find_program_address`.
-        bump,
+        idx_2,
     }
 }
 // endregion: signer_seeds_example
@@ -148,7 +142,7 @@ pub struct RegisterMarketFrame {
     pub input: u64,
     /// Saved input_shifted pointer.
     pub input_shifted: u64,
-    /// For CreateAccount CPI.
+    /// Signer seeds for PDA derivation and CPI signing.
     pub pda_seeds: PDASignerSeeds,
     /// From `sol_try_find_program_address`.
     pub pda: Address,
