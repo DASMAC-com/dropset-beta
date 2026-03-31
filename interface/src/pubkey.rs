@@ -10,13 +10,13 @@ constant_group! {
     /// Pubkey constants.
     pubkey {
         /// Offset for the first 8 bytes.
-        CHUNK_0_OFF = immediate!(0),
+        CHUNK_0_OFF = immediate!(0 * size_of::<u64>()),
         /// Offset for the second 8 bytes.
-        CHUNK_1_OFF = immediate!(8),
+        CHUNK_1_OFF = immediate!(1 * size_of::<u64>()),
         /// Offset for the third 8 bytes.
-        CHUNK_2_OFF = immediate!(16),
+        CHUNK_2_OFF = immediate!(2 * size_of::<u64>()),
         /// Offset for the fourth 8 bytes.
-        CHUNK_3_OFF = immediate!(24),
+        CHUNK_3_OFF = immediate!(3 * size_of::<u64>()),
         /// Rent sysvar ID.
         RENT = address!(RENT_ID),
         /// SPL Token Program ID.
