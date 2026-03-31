@@ -24,6 +24,9 @@
 
 # Stack frame for REGISTER-MARKET.
 # -------------------------------------------------------------------------
+.equ RM_FM_ACCT_OFF, -480 # Saved acct pointer across INIT-VAULT syscall.
+# Pointer to owning token program address.
+.equ RM_FM_TOKEN_PROGRAM_ID_OFF, -472
 .equ RM_FM_INPUT_OFF, -464 # Saved input buffer pointer.
 .equ RM_FM_INPUT_SHIFTED_OFF, -456 # Saved input_shifted pointer.
 .equ RM_FM_PDA_SEEDS_OFF, -448 # Signer seeds offset.
@@ -139,6 +142,8 @@
 .equ RM_FM_SOL_INSN_DATA_LEN_UOFF, -16 # SolInstruction data length.
 .equ RM_FM_BUMP_OFF, -8 # Bump seed.
 .equ RM_FM_VAULT_INDEX_UOFF, -7 # Vault index for PDA derivation.
+# Whether the current token program is Token 2022.
+.equ RM_FM_TOKEN_PROGRAM_IS_2022_UOFF, -6
 # From pda_seeds to sol_instruction.
 .equ RM_FM_PDA_SEEDS_TO_SOL_INSN_REL_OFF_IMM, 400
 # From pda to signers_seeds.

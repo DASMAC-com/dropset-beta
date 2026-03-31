@@ -147,6 +147,10 @@ signer_seeds! {
 #[frame]
 /// Stack frame for REGISTER-MARKET.
 pub struct RegisterMarketFrame {
+    /// Saved acct pointer across INIT-VAULT syscall.
+    pub acct: u64,
+    /// Pointer to owning token program address.
+    pub token_program_id: u64,
     /// Saved input buffer pointer.
     pub input: u64,
     /// Saved input_shifted pointer.
@@ -169,6 +173,8 @@ pub struct RegisterMarketFrame {
     pub bump: u8,
     /// Vault index for PDA derivation.
     pub vault_index: u8,
+    /// Whether the current token program is Token 2022.
+    pub token_program_is_2022: u8,
 }
 // endregion: frame_example
 
@@ -177,6 +183,10 @@ constant_group! {
     #[inject("market/register")]
     #[frame(RegisterMarketFrame)]
     frame {
+        /// Saved acct pointer across INIT-VAULT syscall.
+        ACCT = offset!(acct),
+        /// Pointer to owning token program address.
+        TOKEN_PROGRAM_ID = offset!(token_program_id),
         /// Saved input buffer pointer.
         INPUT = offset!(input),
         /// Saved input_shifted pointer.
@@ -207,6 +217,8 @@ constant_group! {
         BUMP = offset!(bump),
         /// Vault index for PDA derivation.
         VAULT_INDEX = unaligned_offset!(vault_index),
+        /// Whether the current token program is Token 2022.
+        TOKEN_PROGRAM_IS_2022 = unaligned_offset!(token_program_is_2022),
         /// From pda_seeds to sol_instruction.
         PDA_SEEDS_TO_SOL_INSN = relative_offset!(pda_seeds, sol_instruction),
         /// From pda to signers_seeds.

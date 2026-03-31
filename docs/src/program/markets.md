@@ -22,4 +22,8 @@ The instruction requires the following accounts:
 
 <Algorithm tex="REGISTER-MARKET" asm="market/register"/>
 
+## Vault initialization
+
+<Algorithm tex="INIT-VAULT" asm="market/init_vault/>
+
 [input buffer]: inputs#input-buffer

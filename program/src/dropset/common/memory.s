@@ -35,6 +35,8 @@
 # Maximum possible data length padding for a runtime account.
 .equ DATA_LEN_MAX_PAD, 7
 .equ DATA_LEN_AND_MASK, -8 # And mask for data length alignment.
+.equ DATA_BOOL_FALSE, 0 # Boolean false value.
+.equ DATA_BOOL_TRUE, 1 # Boolean true value.
 # -------------------------------------------------------------------------
 
 # Input buffer constants for static header.
