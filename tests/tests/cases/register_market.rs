@@ -62,7 +62,8 @@ test_cases! {
         DupQuoteTokenProgramNotQuoteMintOwnerChunk1,
         DupQuoteTokenProgramNotQuoteMintOwnerChunk2,
         DupQuoteTokenProgramNotQuoteMintOwnerChunk3,
-        CreateAccountHappyPath,
+        CreateAccountHappyPathQuoteDup,
+        CreateAccountHappyPathQuoteNonDup,
     }
 }
 
@@ -91,7 +92,13 @@ const USER_LAMPORTS: u64 = 1_000_000;
 const MARKET_HEADER_SIZE: usize = size_of::<MarketHeader>();
 
 /// Build valid accounts that pass all checks for a successful CreateAccount CPI.
-fn happy_path_accounts(setup: &TestSetup) -> (Vec<AccountMeta>, Vec<(Pubkey, Account)>) {
+/// When `base_token_program` and `quote_token_program` share the same key,
+/// the runtime serializes the quote token program as a duplicate account.
+fn happy_path_accounts(
+    setup: &TestSetup,
+    base_token_program: Pubkey,
+    quote_token_program: Pubkey,
+) -> (Vec<AccountMeta>, Vec<(Pubkey, Account)>) {
     let (mut keys, mut accounts) = default_accounts();
     let (base_key, quote_key) = find_pda_seed_pair(&setup.program_id);
     keys[RegisterMarketAccounts::BaseMint as usize] = base_key;
@@ -110,14 +117,13 @@ fn happy_path_accounts(setup: &TestSetup) -> (Vec<AccountMeta>, Vec<(Pubkey, Acc
     keys[RegisterMarketAccounts::RentSysvar as usize] = rent_sysvar_pubkey;
     accounts[RegisterMarketAccounts::RentSysvar as usize] = rent_sysvar_account;
 
-    // Set mint account owners to the Token Program.
-    let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
-    accounts[RegisterMarketAccounts::BaseMint as usize].owner = token_program_id;
-    accounts[RegisterMarketAccounts::QuoteMint as usize].owner = token_program_id;
+    // Set mint account owners to their respective token programs.
+    accounts[RegisterMarketAccounts::BaseMint as usize].owner = base_token_program;
+    accounts[RegisterMarketAccounts::QuoteMint as usize].owner = quote_token_program;
 
-    // Set up token program accounts (both use Token Program, so quote is a duplicate).
-    keys[RegisterMarketAccounts::BaseTokenProgram as usize] = token_program_id;
-    keys[RegisterMarketAccounts::QuoteTokenProgram as usize] = token_program_id;
+    // Set up token program accounts.
+    keys[RegisterMarketAccounts::BaseTokenProgram as usize] = base_token_program;
+    keys[RegisterMarketAccounts::QuoteTokenProgram as usize] = quote_token_program;
 
     // Fund the user account so it can pay for the CreateAccount CPI.
     accounts[RegisterMarketAccounts::User as usize] =
@@ -965,9 +971,62 @@ impl TestCase for Case {
                     Some(ErrorCode::DupQuoteTokenProgramNotQuoteMintOwner),
                 )
             }
-            // Verifies: REGISTER-MARKET (CreateAccount CPI happy path)
-            Self::CreateAccountHappyPath => {
-                let (metas, accounts) = happy_path_accounts(setup);
+            // Verifies: REGISTER-MARKET (happy path, quote token program is duplicate)
+            Self::CreateAccountHappyPathQuoteDup => {
+                let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
+                let (metas, accounts) =
+                    happy_path_accounts(setup, token_program_id, token_program_id);
+                let instruction = Instruction::new_with_bytes(setup.program_id, insn, metas);
+                let result = setup.mollusk.process_instruction(&instruction, &accounts);
+
+                let mut errors = Vec::new();
+                match &result.program_result {
+                    MolluskResult::Success => {
+                        let market =
+                            &result.resulting_accounts[RegisterMarketAccounts::Market as usize].1;
+
+                        if market.owner != setup.program_id {
+                            errors.push(format!(
+                                "owner: expected {:?}, got {:?}",
+                                setup.program_id, market.owner
+                            ));
+                        }
+                        if market.data.len() != MARKET_HEADER_SIZE {
+                            errors.push(format!(
+                                "data len: expected {}, got {}",
+                                MARKET_HEADER_SIZE,
+                                market.data.len()
+                            ));
+                        }
+                        let rent = &setup.mollusk.sysvars.rent;
+                        if !rent.is_exempt(market.lamports, market.data.len()) {
+                            errors.push(format!(
+                                "market not rent exempt: {} lamports for {} bytes",
+                                market.lamports,
+                                market.data.len()
+                            ));
+                        }
+                    }
+                    other => {
+                        errors.push(format!("expected success, got {:?}", other));
+                    }
+                }
+
+                CaseResult {
+                    cu: result.compute_units_consumed,
+                    error: if errors.is_empty() {
+                        None
+                    } else {
+                        Some(errors.join("; "))
+                    },
+                }
+            }
+            // Verifies: REGISTER-MARKET (happy path, quote token program is non-duplicate)
+            Self::CreateAccountHappyPathQuoteNonDup => {
+                let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
+                let token_2022_id = Pubkey::from(TOKEN_2022_PROGRAM_ID);
+                let (metas, accounts) =
+                    happy_path_accounts(setup, token_program_id, token_2022_id);
                 let instruction = Instruction::new_with_bytes(setup.program_id, insn, metas);
                 let result = setup.mollusk.process_instruction(&instruction, &accounts);
 

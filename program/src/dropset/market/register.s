@@ -586,7 +586,7 @@ register_market_quote_token_program:
     jne r7, r1, register_market_check_quote_token_2022
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_3_OFF]
     lddw r1, PUBKEY_TOKEN_PROGRAM_CHUNK_3
-    jeq r7, r1, register_market_done_token_programs
+    jeq r7, r1, register_market_advance_quote_non_dup
 register_market_check_quote_token_2022:
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_0_OFF]
     lddw r1, PUBKEY_TOKEN_2022_PROGRAM_CHUNK_0
@@ -600,6 +600,14 @@ register_market_check_quote_token_2022:
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_3_OFF]
     lddw r1, PUBKEY_TOKEN_2022_PROGRAM_CHUNK_3
     jne r7, r1, e_quote_token_program_not_token_program
+register_market_advance_quote_non_dup:
+    # quote_token_program_padded_data_len = acct.padded_data_len
+    ldxdw r7, [r9 + ACCT_DATA_LEN_OFF]
+    add64 r7, DATA_LEN_MAX_PAD
+    and64 r7, DATA_LEN_AND_MASK
+    # acct += quote_token_program_padded_data_len + EmptyAccount.size
+    add64 r9, r7
+    add64 r9, SIZE_OF_EMPTY_ACCOUNT
     ja register_market_done_token_programs
 register_market_quote_token_program_dup:
     # if acct.duplicate != RegisterMarketAccounts::BaseTokenProgram
@@ -619,5 +627,7 @@ register_market_quote_token_program_dup:
     ldxdw r7, [r8 + RM_MISC_BASE_OWNER_CHUNK_3_OFF]
     ldxdw r1, [r6 + RM_MISC_QUOTE_OWNER_CHUNK_3_OFF]
     jne r7, r1, e_dup_quote_token_program_not_quote_mint_owner
+    # acct += u64.size
+    add64 r9, SIZE_OF_U64
 register_market_done_token_programs:
     exit

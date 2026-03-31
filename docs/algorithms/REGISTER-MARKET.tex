@@ -161,6 +161,9 @@
         \RETURN \texttt{ErrorCode::QuoteTokenProgramNotTokenProgram}
       \ENDIF
     \ENDIF
+    \COMMENT{Advance past non-duplicate quote token program account.}
+    \STATE quote\_token\_program\_padded\_data\_len = acct.padded\_data\_len
+    \STATE acct += quote\_token\_program\_padded\_data\_len + \texttt{EmptyAccount.size}
   \ELSE
     \COMMENT{Duplicate; verify position is base token program.}
     \IF{acct.duplicate $\neq$ \texttt{RegisterMarketAccounts::BaseTokenProgram}}
@@ -170,6 +173,8 @@
     \IF{input.base\_mint.owner $\neq$ input\_shifted.quote\_mint.owner}
       \RETURN \texttt{ErrorCode::DupQuoteTokenProgramNotQuoteMintOwner}
     \ENDIF
+    \COMMENT{Advance past duplicate quote token program account.}
+    \STATE acct += \texttt{u64.size}
   \ENDIF
 \ENDPROCEDURE
 \end{algorithmic}
