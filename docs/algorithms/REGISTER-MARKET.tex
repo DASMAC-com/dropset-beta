@@ -149,7 +149,7 @@
   \STATE base\_token\_program\_padded\_data\_len = acct.padded\_data\_len
   \STATE acct += base\_token\_program\_padded\_data\_len + \texttt{EmptyAccount.size}
   \COMMENT{Check quote token program account.}
-  \IF{acct.duplicate $==$ \texttt{account.NON\_DUP\_MARKER}}
+  \IF{acct.duplicate == \texttt{account.NON\_DUP\_MARKER}}
     \COMMENT{Non-duplicate; verify quote token program owns the quote mint.}
     \IF{acct.pubkey $\neq$ input\_shifted.quote\_mint.owner}
       \RETURN \texttt{ErrorCode::NonDupQuoteTokenProgramNotQuoteMintOwner}
