@@ -114,12 +114,30 @@ fn happy_path_accounts(
     base_token_program: Pubkey,
     quote_token_program: Pubkey,
 ) -> (Vec<AccountMeta>, Vec<(Pubkey, Account)>) {
+    // Find a seed pair where the market PDA, base vault PDA, and quote
+    // vault PDA all derive on the first bump (255).
+    let (base_key, quote_key, pda) = loop {
+        let (base_key, quote_key) = find_pda_seed_pair(&setup.program_id);
+        let (pda, _) = Pubkey::find_program_address(
+            &[base_key.as_ref(), quote_key.as_ref()],
+            &setup.program_id,
+        );
+        let (_base_vault, base_bump) = Pubkey::find_program_address(
+            &[pda.as_ref(), &[VAULT_INDEX_BASE as u8]],
+            &base_token_program,
+        );
+        let (_quote_vault, quote_bump) = Pubkey::find_program_address(
+            &[pda.as_ref(), &[VAULT_INDEX_QUOTE as u8]],
+            &quote_token_program,
+        );
+        if base_bump == u8::MAX && quote_bump == u8::MAX {
+            break (base_key, quote_key, pda);
+        }
+    };
+
     let (mut keys, mut accounts) = default_accounts();
-    let (base_key, quote_key) = find_pda_seed_pair(&setup.program_id);
     keys[RegisterMarketAccounts::BaseMint as usize] = base_key;
     keys[RegisterMarketAccounts::QuoteMint as usize] = quote_key;
-    let (pda, _bump) =
-        Pubkey::find_program_address(&[base_key.as_ref(), quote_key.as_ref()], &setup.program_id);
     keys[RegisterMarketAccounts::Market as usize] = pda;
 
     let (system_program_pubkey, system_program_account) =
@@ -257,12 +275,26 @@ fn token_program_base_accounts(
     base_token_program: Pubkey,
     quote_token_program: Pubkey,
 ) -> (Vec<Pubkey>, Vec<Account>) {
+    // Find a seed pair where both the market PDA and the base vault PDA
+    // derive on the first bump (255).
+    let (base_key, quote_key, pda) = loop {
+        let (base_key, quote_key) = find_pda_seed_pair(&setup.program_id);
+        let (pda, _) = Pubkey::find_program_address(
+            &[base_key.as_ref(), quote_key.as_ref()],
+            &setup.program_id,
+        );
+        let (_vault_pda, vault_bump) = Pubkey::find_program_address(
+            &[pda.as_ref(), &[VAULT_INDEX_BASE as u8]],
+            &base_token_program,
+        );
+        if vault_bump == u8::MAX {
+            break (base_key, quote_key, pda);
+        }
+    };
+
     let (mut keys, mut accounts) = default_accounts();
-    let (base_key, quote_key) = find_pda_seed_pair(&setup.program_id);
     keys[RegisterMarketAccounts::BaseMint as usize] = base_key;
     keys[RegisterMarketAccounts::QuoteMint as usize] = quote_key;
-    let (pda, _bump) =
-        Pubkey::find_program_address(&[base_key.as_ref(), quote_key.as_ref()], &setup.program_id);
     keys[RegisterMarketAccounts::Market as usize] = pda;
 
     let (system_program_pubkey, system_program_account) =

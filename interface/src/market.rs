@@ -24,6 +24,12 @@ pub struct MarketHeader {
     pub top: *mut StackNode,
     /// Absolute pointer to where the next node should be allocated in memory map.
     pub next: *mut StackNode,
+    /// Bump seed for market PDA.
+    pub bump: u8,
+    /// Bump seed for base vault PDA.
+    pub base_vault_bump: u8,
+    /// Bump seed for quote vault PDA.
+    pub quote_vault_bump: u8,
 }
 // endregion: market_header
 
