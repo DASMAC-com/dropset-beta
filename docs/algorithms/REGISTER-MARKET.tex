@@ -146,9 +146,24 @@
       \RETURN \texttt{ErrorCode::BaseTokenProgramNotTokenProgram}
     \ENDIF
   \ENDIF
+  \COMMENT{Derive base vault PDA from base token program.}
+  \STATE frame.pda\_seeds[0].addr = \&input.market.address
+  \STATE frame.vault\_index = \texttt{register\_misc.VAULT\_INDEX\_BASE}
+  \STATE frame.pda\_seeds[1].addr = \&frame.vault\_index
+  \STATE frame.pda\_seeds[1].len = \texttt{u8.size}
+  \STATE syscall.seeds = \&frame.pda\_seeds
+  \STATE syscall.seeds\_len = \texttt{register\_misc.TRY\_FIND\_VAULT\_PDA\_SEEDS\_LEN}
+  \STATE syscall.program\_id = \&acct.address
+  \STATE syscall.program\_address = \&frame.pda
+  \STATE syscall.bump\_seed = \&frame.bump
+  \STATE \CALL{sol-try-find-program-address}{}
   \COMMENT{Advance to base vault account.}
   \STATE base\_token\_program\_padded\_data\_len = acct.padded\_data\_len
   \STATE acct += base\_token\_program\_padded\_data\_len + \texttt{EmptyAccount.size}
+  \COMMENT{Verify base vault address matches derived PDA.}
+  \IF{acct.pubkey $\neq$ frame.pda}
+    \RETURN \texttt{ErrorCode::InvalidBaseVaultPubkey}
+  \ENDIF
   \COMMENT{Advance to quote token program account.}
   \STATE base\_vault\_padded\_data\_len = acct.padded\_data\_len
   \STATE acct += base\_vault\_padded\_data\_len + \texttt{EmptyAccount.size}

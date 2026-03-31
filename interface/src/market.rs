@@ -70,6 +70,8 @@ constant_group! {
         QUOTE_DATA_LEN = offset!(RegisterMarketInputBuffer.quote_mint.header.data_len),
         /// Number of seeds for market PDA derivation (base mint, quote mint).
         TRY_FIND_MARKET_PDA_SEEDS_LEN = immediate!(2),
+        /// Number of seeds for vault PDA derivation (market address, vault index).
+        TRY_FIND_VAULT_PDA_SEEDS_LEN = immediate!(2),
         /// Number of accounts for CreateAccount CPI (user, new account).
         CREATE_ACCOUNT_N_ACCOUNTS = immediate!(2),
         /// Number of PDA signers for CPI.

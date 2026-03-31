@@ -181,6 +181,8 @@
 .equ RM_MISC_QUOTE_DATA_LEN_OFF, 31096
 # Number of seeds for market PDA derivation (base mint, quote mint).
 .equ RM_MISC_TRY_FIND_MARKET_PDA_SEEDS_LEN, 2
+# Number of seeds for vault PDA derivation (market address, vault index).
+.equ RM_MISC_TRY_FIND_VAULT_PDA_SEEDS_LEN, 2
 # Number of accounts for CreateAccount CPI (user, new account).
 .equ RM_MISC_CREATE_ACCOUNT_N_ACCOUNTS, 2
 .equ RM_MISC_N_PDA_SIGNERS, 1 # Number of PDA signers for CPI.
