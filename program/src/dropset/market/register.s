@@ -66,68 +66,69 @@
 .equ RM_FM_CPI_N_ACCOUNTS, 3 # Number of CPI accounts.
 .equ RM_FM_CPI_SOL_ACCT_INFO_OFF, -280 # Start of SolAccountInfo vector.
 .equ RM_FM_CPI_SOL_ACCT_META_OFF, -112 # Start of SolAccountMeta vector.
-.equ RM_FM_CPI_USER_ACCT_INFO_KEY_UOFF, -280 # User account info key.
-# User account info lamports.
-.equ RM_FM_CPI_USER_ACCT_INFO_LAMPORTS_UOFF, -272
-# User account info data length.
-.equ RM_FM_CPI_USER_ACCT_INFO_DATA_LEN_UOFF, -264
-.equ RM_FM_CPI_USER_ACCT_INFO_DATA_UOFF, -256 # User account info data.
-.equ RM_FM_CPI_USER_ACCT_INFO_OWNER_UOFF, -248 # User account info owner.
-# User account info rent epoch.
-.equ RM_FM_CPI_USER_ACCT_INFO_RENT_EPOCH_UOFF, -240
-# User account info is signer.
-.equ RM_FM_CPI_USER_ACCT_INFO_IS_SIGNER_UOFF, -232
-# User account info is writable.
-.equ RM_FM_CPI_USER_ACCT_INFO_IS_WRITABLE_UOFF, -231
-# User account info executable.
-.equ RM_FM_CPI_USER_ACCT_INFO_EXECUTABLE_UOFF, -230
-.equ RM_FM_CPI_USER_ACCT_META_PUBKEY_UOFF, -112 # User account meta pubkey.
-# User account meta is writable.
-.equ RM_FM_CPI_USER_ACCT_META_IS_WRITABLE_UOFF, -104
-# User account meta is signer.
-.equ RM_FM_CPI_USER_ACCT_META_IS_SIGNER_UOFF, -103
-.equ RM_FM_CPI_TARGET_ACCT_INFO_KEY_UOFF, -224 # Target account info key.
-# Target account info lamports.
-.equ RM_FM_CPI_TARGET_ACCT_INFO_LAMPORTS_UOFF, -216
-# Target account info data length.
-.equ RM_FM_CPI_TARGET_ACCT_INFO_DATA_LEN_UOFF, -208
-.equ RM_FM_CPI_TARGET_ACCT_INFO_DATA_UOFF, -200 # Target account info data.
-# Target account info owner.
-.equ RM_FM_CPI_TARGET_ACCT_INFO_OWNER_UOFF, -192
-# Target account info rent epoch.
-.equ RM_FM_CPI_TARGET_ACCT_INFO_RENT_EPOCH_UOFF, -184
-# Target account info is signer.
-.equ RM_FM_CPI_TARGET_ACCT_INFO_IS_SIGNER_UOFF, -176
-# Target account info is writable.
-.equ RM_FM_CPI_TARGET_ACCT_INFO_IS_WRITABLE_UOFF, -175
-# Target account info executable.
-.equ RM_FM_CPI_TARGET_ACCT_INFO_EXECUTABLE_UOFF, -174
-# Target account meta pubkey.
-.equ RM_FM_CPI_TARGET_ACCT_META_PUBKEY_UOFF, -96
-# Target account meta is writable.
-.equ RM_FM_CPI_TARGET_ACCT_META_IS_WRITABLE_UOFF, -88
-# Target account meta is signer.
-.equ RM_FM_CPI_TARGET_ACCT_META_IS_SIGNER_UOFF, -87
-.equ RM_FM_CPI_RENT_ACCT_INFO_KEY_UOFF, -168 # Rent account info key.
-# Rent account info lamports.
-.equ RM_FM_CPI_RENT_ACCT_INFO_LAMPORTS_UOFF, -160
-# Rent account info data length.
-.equ RM_FM_CPI_RENT_ACCT_INFO_DATA_LEN_UOFF, -152
-.equ RM_FM_CPI_RENT_ACCT_INFO_DATA_UOFF, -144 # Rent account info data.
-.equ RM_FM_CPI_RENT_ACCT_INFO_OWNER_UOFF, -136 # Rent account info owner.
-# Rent account info rent epoch.
-.equ RM_FM_CPI_RENT_ACCT_INFO_RENT_EPOCH_UOFF, -128
-# Rent account info is signer.
-.equ RM_FM_CPI_RENT_ACCT_INFO_IS_SIGNER_UOFF, -120
-# Rent account info is writable.
-.equ RM_FM_CPI_RENT_ACCT_INFO_IS_WRITABLE_UOFF, -119
-# Rent account info executable.
-.equ RM_FM_CPI_RENT_ACCT_INFO_EXECUTABLE_UOFF, -118
-.equ RM_FM_CPI_RENT_ACCT_META_PUBKEY_UOFF, -80 # Rent account meta pubkey.
-# Rent account meta is writable.
-.equ RM_FM_CPI_RENT_ACCT_META_IS_WRITABLE_UOFF, -72
-# Rent account meta is signer.
-.equ RM_FM_CPI_RENT_ACCT_META_IS_SIGNER_UOFF, -71
+.equ RM_FM_CPI_IDX_0_ACCT_INFO_KEY_UOFF, -280 # Idx 0 account info key.
+# Idx 0 account info lamports.
+.equ RM_FM_CPI_IDX_0_ACCT_INFO_LAMPORTS_UOFF, -272
+# Idx 0 account info data length.
+.equ RM_FM_CPI_IDX_0_ACCT_INFO_DATA_LEN_UOFF, -264
+.equ RM_FM_CPI_IDX_0_ACCT_INFO_DATA_UOFF, -256 # Idx 0 account info data.
+.equ RM_FM_CPI_IDX_0_ACCT_INFO_OWNER_UOFF, -248 # Idx 0 account info owner.
+# Idx 0 account info rent epoch.
+.equ RM_FM_CPI_IDX_0_ACCT_INFO_RENT_EPOCH_UOFF, -240
+# Idx 0 account info is signer.
+.equ RM_FM_CPI_IDX_0_ACCT_INFO_IS_SIGNER_UOFF, -232
+# Idx 0 account info is writable.
+.equ RM_FM_CPI_IDX_0_ACCT_INFO_IS_WRITABLE_UOFF, -231
+# Idx 0 account info executable.
+.equ RM_FM_CPI_IDX_0_ACCT_INFO_EXECUTABLE_UOFF, -230
+# Idx 0 account meta pubkey.
+.equ RM_FM_CPI_IDX_0_ACCT_META_PUBKEY_UOFF, -112
+# Idx 0 account meta is writable.
+.equ RM_FM_CPI_IDX_0_ACCT_META_IS_WRITABLE_UOFF, -104
+# Idx 0 account meta is signer.
+.equ RM_FM_CPI_IDX_0_ACCT_META_IS_SIGNER_UOFF, -103
+.equ RM_FM_CPI_IDX_1_ACCT_INFO_KEY_UOFF, -224 # Idx 1 account info key.
+# Idx 1 account info lamports.
+.equ RM_FM_CPI_IDX_1_ACCT_INFO_LAMPORTS_UOFF, -216
+# Idx 1 account info data length.
+.equ RM_FM_CPI_IDX_1_ACCT_INFO_DATA_LEN_UOFF, -208
+.equ RM_FM_CPI_IDX_1_ACCT_INFO_DATA_UOFF, -200 # Idx 1 account info data.
+.equ RM_FM_CPI_IDX_1_ACCT_INFO_OWNER_UOFF, -192 # Idx 1 account info owner.
+# Idx 1 account info rent epoch.
+.equ RM_FM_CPI_IDX_1_ACCT_INFO_RENT_EPOCH_UOFF, -184
+# Idx 1 account info is signer.
+.equ RM_FM_CPI_IDX_1_ACCT_INFO_IS_SIGNER_UOFF, -176
+# Idx 1 account info is writable.
+.equ RM_FM_CPI_IDX_1_ACCT_INFO_IS_WRITABLE_UOFF, -175
+# Idx 1 account info executable.
+.equ RM_FM_CPI_IDX_1_ACCT_INFO_EXECUTABLE_UOFF, -174
+# Idx 1 account meta pubkey.
+.equ RM_FM_CPI_IDX_1_ACCT_META_PUBKEY_UOFF, -96
+# Idx 1 account meta is writable.
+.equ RM_FM_CPI_IDX_1_ACCT_META_IS_WRITABLE_UOFF, -88
+# Idx 1 account meta is signer.
+.equ RM_FM_CPI_IDX_1_ACCT_META_IS_SIGNER_UOFF, -87
+.equ RM_FM_CPI_IDX_2_ACCT_INFO_KEY_UOFF, -168 # Idx 2 account info key.
+# Idx 2 account info lamports.
+.equ RM_FM_CPI_IDX_2_ACCT_INFO_LAMPORTS_UOFF, -160
+# Idx 2 account info data length.
+.equ RM_FM_CPI_IDX_2_ACCT_INFO_DATA_LEN_UOFF, -152
+.equ RM_FM_CPI_IDX_2_ACCT_INFO_DATA_UOFF, -144 # Idx 2 account info data.
+.equ RM_FM_CPI_IDX_2_ACCT_INFO_OWNER_UOFF, -136 # Idx 2 account info owner.
+# Idx 2 account info rent epoch.
+.equ RM_FM_CPI_IDX_2_ACCT_INFO_RENT_EPOCH_UOFF, -128
+# Idx 2 account info is signer.
+.equ RM_FM_CPI_IDX_2_ACCT_INFO_IS_SIGNER_UOFF, -120
+# Idx 2 account info is writable.
+.equ RM_FM_CPI_IDX_2_ACCT_INFO_IS_WRITABLE_UOFF, -119
+# Idx 2 account info executable.
+.equ RM_FM_CPI_IDX_2_ACCT_INFO_EXECUTABLE_UOFF, -118
+# Idx 2 account meta pubkey.
+.equ RM_FM_CPI_IDX_2_ACCT_META_PUBKEY_UOFF, -80
+# Idx 2 account meta is writable.
+.equ RM_FM_CPI_IDX_2_ACCT_META_IS_WRITABLE_UOFF, -72
+# Idx 2 account meta is signer.
+.equ RM_FM_CPI_IDX_2_ACCT_META_IS_SIGNER_UOFF, -71
 .equ RM_FM_SIGNERS_SEEDS_ADDR_UOFF, -64 # Signers seeds address.
 .equ RM_FM_SIGNERS_SEEDS_LEN_UOFF, -56 # Signers seeds length.
 .equ RM_FM_SOL_INSN_OFF, -48 # SolInstruction offset.
@@ -178,11 +179,15 @@
 .equ RM_MISC_QUOTE_OWNER_CHUNK_3_OFF, 31080
 # From input buffer to quote mint data length.
 .equ RM_MISC_QUOTE_DATA_LEN_OFF, 31096
-# Number of seeds for market PDA derivation (base, quote).
-.equ RM_MISC_TRY_FIND_PDA_SEEDS_LEN, 2
-# Number of accounts for CreateAccount CPI (user, target).
+# Number of seeds for market PDA derivation (base mint, quote mint).
+.equ RM_MISC_TRY_FIND_MARKET_PDA_SEEDS_LEN, 2
+# Number of accounts for CreateAccount CPI (user, new account).
 .equ RM_MISC_CREATE_ACCOUNT_N_ACCOUNTS, 2
 .equ RM_MISC_N_PDA_SIGNERS, 1 # Number of PDA signers for CPI.
+# Vault index for base mint in PDA derivation and vault creation.
+.equ RM_MISC_VAULT_INDEX_BASE, 0
+# Vault index for quote mint in PDA derivation and vault creation.
+.equ RM_MISC_VAULT_INDEX_QUOTE, 1
 # -------------------------------------------------------------------------
 
 register_market:
@@ -250,8 +255,8 @@ register_market:
     # syscall.program_id = &insn.program_id
     mov64 r3, r2
     add64 r3, REGISTER_MARKET_DATA_LEN
-    # syscall.seeds_len = register_misc.TRY_FIND_PDA_SEEDS_LEN
-    mov64 r2, RM_MISC_TRY_FIND_PDA_SEEDS_LEN
+    # syscall.seeds_len = register_misc.TRY_FIND_MARKET_PDA_SEEDS_LEN
+    mov64 r2, RM_MISC_TRY_FIND_MARKET_PDA_SEEDS_LEN
     # syscall.program_address = &frame.pda
     mov64 r4, r10
     add64 r4, RM_FM_PDA_OFF
@@ -355,46 +360,46 @@ register_market:
     # acct += rent_sysvar_padded_data_len + EmptyAccount.size
     add64 r9, r7
     add64 r9, SIZE_OF_EMPTY_ACCOUNT
-    # frame.cpi.user_info.is_signer = true
-    # frame.cpi.user_info.is_writable = true
-    sth [r10 + RM_FM_CPI_USER_ACCT_INFO_IS_SIGNER_UOFF], CPI_WRITABLE_SIGNER
-    # frame.cpi.user_meta.is_writable = true
-    # frame.cpi.user_meta.is_signer = true
-    sth [r10 + RM_FM_CPI_USER_ACCT_META_IS_WRITABLE_UOFF], CPI_WRITABLE_SIGNER
-    # frame.cpi.target_info.is_signer = true
-    # frame.cpi.target_info.is_writable = true
-    sth [r10 + RM_FM_CPI_TARGET_ACCT_INFO_IS_SIGNER_UOFF], CPI_WRITABLE_SIGNER
-    # frame.cpi.target_meta.is_writable = true
-    # frame.cpi.target_meta.is_signer = true
-    sth [r10 + RM_FM_CPI_TARGET_ACCT_META_IS_WRITABLE_UOFF], CPI_WRITABLE_SIGNER
-    # frame.cpi.user_meta.pubkey = &input.user.address
-    # frame.cpi.user_info.key = &input.user.address
+    # frame.cpi[0].info.is_signer = true
+    # frame.cpi[0].info.is_writable = true
+    sth [r10 + RM_FM_CPI_IDX_0_ACCT_INFO_IS_SIGNER_UOFF], CPI_WRITABLE_SIGNER
+    # frame.cpi[0].meta.is_writable = true
+    # frame.cpi[0].meta.is_signer = true
+    sth [r10 + RM_FM_CPI_IDX_0_ACCT_META_IS_WRITABLE_UOFF], CPI_WRITABLE_SIGNER
+    # frame.cpi[1].info.is_signer = true
+    # frame.cpi[1].info.is_writable = true
+    sth [r10 + RM_FM_CPI_IDX_1_ACCT_INFO_IS_SIGNER_UOFF], CPI_WRITABLE_SIGNER
+    # frame.cpi[1].meta.is_writable = true
+    # frame.cpi[1].meta.is_signer = true
+    sth [r10 + RM_FM_CPI_IDX_1_ACCT_META_IS_WRITABLE_UOFF], CPI_WRITABLE_SIGNER
+    # frame.cpi[0].meta.pubkey = &input.user.address
+    # frame.cpi[0].info.key = &input.user.address
     add64 r6, IB_USER_PUBKEY_OFF
-    stxdw [r10 + RM_FM_CPI_USER_ACCT_META_PUBKEY_UOFF], r6
-    stxdw [r10 + RM_FM_CPI_USER_ACCT_INFO_KEY_UOFF], r6
-    # frame.cpi.user_info.owner = &input.user.owner
+    stxdw [r10 + RM_FM_CPI_IDX_0_ACCT_META_PUBKEY_UOFF], r6
+    stxdw [r10 + RM_FM_CPI_IDX_0_ACCT_INFO_KEY_UOFF], r6
+    # frame.cpi[0].info.owner = &input.user.owner
     add64 r6, IB_ADDRESS_TO_OWNER_REL_OFF_IMM
-    stxdw [r10 + RM_FM_CPI_USER_ACCT_INFO_OWNER_UOFF], r6
-    # frame.cpi.user_info.lamports = &input.user.lamports
+    stxdw [r10 + RM_FM_CPI_IDX_0_ACCT_INFO_OWNER_UOFF], r6
+    # frame.cpi[0].info.lamports = &input.user.lamports
     add64 r6, IB_OWNER_TO_LAMPORTS_REL_OFF_IMM
-    stxdw [r10 + RM_FM_CPI_USER_ACCT_INFO_LAMPORTS_UOFF], r6
-    # frame.cpi.user_info.data = &input.user.data
+    stxdw [r10 + RM_FM_CPI_IDX_0_ACCT_INFO_LAMPORTS_UOFF], r6
+    # frame.cpi[0].info.data = &input.user.data
     add64 r6, IB_LAMPORTS_TO_DATA_REL_OFF_IMM
-    stxdw [r10 + RM_FM_CPI_USER_ACCT_INFO_DATA_UOFF], r6
-    # frame.cpi.target_meta.pubkey = &input.market.address
-    # frame.cpi.target_info.key = &input.market.address
+    stxdw [r10 + RM_FM_CPI_IDX_0_ACCT_INFO_DATA_UOFF], r6
+    # frame.cpi[1].meta.pubkey = &input.market.address
+    # frame.cpi[1].info.key = &input.market.address
     add64 r6, IB_USER_DATA_TO_MARKET_ADDRESS_REL_OFF_IMM
-    stxdw [r10 + RM_FM_CPI_TARGET_ACCT_META_PUBKEY_UOFF], r6
-    stxdw [r10 + RM_FM_CPI_TARGET_ACCT_INFO_KEY_UOFF], r6
-    # frame.cpi.target_info.owner = &input.market.owner
+    stxdw [r10 + RM_FM_CPI_IDX_1_ACCT_META_PUBKEY_UOFF], r6
+    stxdw [r10 + RM_FM_CPI_IDX_1_ACCT_INFO_KEY_UOFF], r6
+    # frame.cpi[1].info.owner = &input.market.owner
     add64 r6, IB_ADDRESS_TO_OWNER_REL_OFF_IMM
-    stxdw [r10 + RM_FM_CPI_TARGET_ACCT_INFO_OWNER_UOFF], r6
-    # frame.cpi.target_info.lamports = &input.market.lamports
+    stxdw [r10 + RM_FM_CPI_IDX_1_ACCT_INFO_OWNER_UOFF], r6
+    # frame.cpi[1].info.lamports = &input.market.lamports
     add64 r6, IB_OWNER_TO_LAMPORTS_REL_OFF_IMM
-    stxdw [r10 + RM_FM_CPI_TARGET_ACCT_INFO_LAMPORTS_UOFF], r6
-    # frame.cpi.target_info.data = &input.market.data
+    stxdw [r10 + RM_FM_CPI_IDX_1_ACCT_INFO_LAMPORTS_UOFF], r6
+    # frame.cpi[1].info.data = &input.market.data
     add64 r6, IB_LAMPORTS_TO_DATA_REL_OFF_IMM
-    stxdw [r10 + RM_FM_CPI_TARGET_ACCT_INFO_DATA_UOFF], r6
+    stxdw [r10 + RM_FM_CPI_IDX_1_ACCT_INFO_DATA_UOFF], r6
     # frame.signers_seeds.addr = &frame.pda_seeds
     stxdw [r10 + RM_FM_SIGNERS_SEEDS_ADDR_UOFF], r1
     # frame.signers_seeds.len = frame.PDA_SEEDS_N_SEEDS

@@ -51,7 +51,7 @@
   \STATE frame.input = input
   \STATE syscall.seeds = \&frame.pda\_seeds
   \STATE syscall.program\_id = \&insn.program\_id
-  \STATE syscall.seeds\_len = \texttt{register\_misc.TRY\_FIND\_PDA\_SEEDS\_LEN}
+  \STATE syscall.seeds\_len = \texttt{register\_misc.TRY\_FIND\_MARKET\_PDA\_SEEDS\_LEN}
   \STATE syscall.program\_address = \&frame.pda
   \STATE syscall.bump\_seed = \&frame.bump
   \STATE \CALL{sol-try-find-program-address}{}
@@ -93,25 +93,25 @@
   \STATE rent\_sysvar\_padded\_data\_len = acct.padded\_data\_len
   \STATE acct += rent\_sysvar\_padded\_data\_len + \texttt{EmptyAccount.size}
   \COMMENT{Assign CPI account fields via immediates.}
-  \STATE frame.cpi.user\_info.is\_signer = \texttt{true}
-  \STATE frame.cpi.user\_info.is\_writable = \texttt{true}
-  \STATE frame.cpi.user\_meta.is\_signer = \texttt{true}
-  \STATE frame.cpi.user\_meta.is\_writable = \texttt{true}
-  \STATE frame.cpi.target\_info.is\_signer = \texttt{true}
-  \STATE frame.cpi.target\_info.is\_writable = \texttt{true}
-  \STATE frame.cpi.target\_meta.is\_signer = \texttt{true}
-  \STATE frame.cpi.target\_meta.is\_writable = \texttt{true}
+  \STATE frame.cpi[0].info.is\_signer = \texttt{true}
+  \STATE frame.cpi[0].info.is\_writable = \texttt{true}
+  \STATE frame.cpi[0].meta.is\_signer = \texttt{true}
+  \STATE frame.cpi[0].meta.is\_writable = \texttt{true}
+  \STATE frame.cpi[1].info.is\_signer = \texttt{true}
+  \STATE frame.cpi[1].info.is\_writable = \texttt{true}
+  \STATE frame.cpi[1].meta.is\_signer = \texttt{true}
+  \STATE frame.cpi[1].meta.is\_writable = \texttt{true}
   \COMMENT{Assign CPI account fields via pointers.}
-  \STATE frame.cpi.user\_meta.pubkey = \&input.user.address
-  \STATE frame.cpi.user\_info.key = \&input.user.address
-  \STATE frame.cpi.user\_info.owner = \&input.user.owner
-  \STATE frame.cpi.user\_info.lamports = \&input.user.lamports
-  \STATE frame.cpi.user\_info.data = \&input.user.data
-  \STATE frame.cpi.target\_meta.pubkey = \&input.market.address
-  \STATE frame.cpi.target\_info.key = \&input.market.address
-  \STATE frame.cpi.target\_info.owner = \&input.market.owner
-  \STATE frame.cpi.target\_info.lamports = \&input.market.lamports
-  \STATE frame.cpi.target\_info.data = \&input.market.data
+  \STATE frame.cpi[0].meta.pubkey = \&input.user.address
+  \STATE frame.cpi[0].info.key = \&input.user.address
+  \STATE frame.cpi[0].info.owner = \&input.user.owner
+  \STATE frame.cpi[0].info.lamports = \&input.user.lamports
+  \STATE frame.cpi[0].info.data = \&input.user.data
+  \STATE frame.cpi[1].meta.pubkey = \&input.market.address
+  \STATE frame.cpi[1].info.key = \&input.market.address
+  \STATE frame.cpi[1].info.owner = \&input.market.owner
+  \STATE frame.cpi[1].info.lamports = \&input.market.lamports
+  \STATE frame.cpi[1].info.data = \&input.market.data
   \COMMENT{Populate signers seeds for CPI.}
   \STATE frame.signers\_seeds.addr = \&frame.pda\_seeds
   \STATE frame.signers\_seeds.len = \texttt{RegisterMarketFrame.PDA\_SEEDS\_N\_SEEDS}

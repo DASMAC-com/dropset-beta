@@ -68,12 +68,16 @@ constant_group! {
         QUOTE_OWNER = pubkey_offsets!(RegisterMarketInputBuffer.quote_mint.header.owner),
         /// From input buffer to quote mint data length.
         QUOTE_DATA_LEN = offset!(RegisterMarketInputBuffer.quote_mint.header.data_len),
-        /// Number of seeds for market PDA derivation (base, quote).
-        TRY_FIND_PDA_SEEDS_LEN = immediate!(2),
-        /// Number of accounts for CreateAccount CPI (user, target).
+        /// Number of seeds for market PDA derivation (base mint, quote mint).
+        TRY_FIND_MARKET_PDA_SEEDS_LEN = immediate!(2),
+        /// Number of accounts for CreateAccount CPI (user, new account).
         CREATE_ACCOUNT_N_ACCOUNTS = immediate!(2),
         /// Number of PDA signers for CPI.
         N_PDA_SIGNERS = immediate!(1),
+        /// Vault index for base mint in PDA derivation and vault creation.
+        VAULT_INDEX_BASE = immediate!(0),
+        /// Vault index for quote mint in PDA derivation and vault creation.
+        VAULT_INDEX_QUOTE = immediate!(1),
     }
 }
 
@@ -107,16 +111,13 @@ pub struct CreateAccountData {
 }
 
 cpi_accounts! {
-    /// CPI accounts for CreateAccount and ATA creation.
-    ///
-    /// CreateAccount uses the first two accounts (user, target). ATA creation requires all six.
     CPIAccounts {
-        /// User account.
-        user,
-        /// Target account (the account to create, either market account or ATA).
-        target,
-        /// Rent sysvar.
-        rent,
+        /// CreateAccount: funding account. InitializeAccount2: account to initialize.
+        idx_0,
+        /// CreateAccount: new account. InitializeAccount2: mint.
+        idx_1,
+        /// InitializeAccount2: Rent sysvar. Unused by CreateAccount.
+        idx_2,
     }
 }
 
@@ -200,7 +201,7 @@ constant_group! {
         PDA_TO_SIGNERS_SEEDS = relative_offset!(pda, signers_seeds),
         /// From create_account_data to CPI account metas.
         CREATE_ACCT_DATA_TO_CPI_ACCT_METAS = relative_offset!(
-            create_account_data, cpi_accounts.user_meta
+            create_account_data, cpi_accounts.idx_0_meta
         ),
     }
 }
