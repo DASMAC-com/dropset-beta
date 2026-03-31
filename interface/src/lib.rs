@@ -58,6 +58,10 @@ pub enum ErrorCode {
     NonDupQuoteTokenProgramNotQuoteMintOwner,
     /// The quote token program is not Token Program or Token 2022.
     QuoteTokenProgramNotTokenProgram,
+    /// The base vault account pubkey is invalid.
+    InvalidBaseVaultPubkey,
+    /// The quote vault account pubkey is invalid.
+    InvalidQuoteVaultPubkey,
 }
 // endregion: error_enum
 

@@ -24,6 +24,12 @@ pub struct MarketHeader {
     pub top: *mut StackNode,
     /// Absolute pointer to where the next node should be allocated in memory map.
     pub next: *mut StackNode,
+    /// Bump seed for market PDA.
+    pub bump: u8,
+    /// Bump seed for base vault PDA.
+    pub base_vault_bump: u8,
+    /// Bump seed for quote vault PDA.
+    pub quote_vault_bump: u8,
 }
 // endregion: market_header
 
@@ -68,12 +74,18 @@ constant_group! {
         QUOTE_OWNER = pubkey_offsets!(RegisterMarketInputBuffer.quote_mint.header.owner),
         /// From input buffer to quote mint data length.
         QUOTE_DATA_LEN = offset!(RegisterMarketInputBuffer.quote_mint.header.data_len),
-        /// Number of seeds for market PDA derivation (base, quote).
-        TRY_FIND_PDA_SEEDS_LEN = immediate!(2),
-        /// Number of accounts for CreateAccount CPI (user, target).
+        /// Number of seeds for market PDA derivation (base mint, quote mint).
+        TRY_FIND_MARKET_PDA_SEEDS_LEN = immediate!(2),
+        /// Number of seeds for vault PDA derivation (market address, vault index).
+        TRY_FIND_VAULT_PDA_SEEDS_LEN = immediate!(2),
+        /// Number of accounts for CreateAccount CPI (user, new account).
         CREATE_ACCOUNT_N_ACCOUNTS = immediate!(2),
         /// Number of PDA signers for CPI.
         N_PDA_SIGNERS = immediate!(1),
+        /// Vault index for base mint in PDA derivation and vault creation.
+        VAULT_INDEX_BASE = immediate!(0),
+        /// Vault index for quote mint in PDA derivation and vault creation.
+        VAULT_INDEX_QUOTE = immediate!(1),
     }
 }
 
@@ -87,8 +99,8 @@ pub enum RegisterMarketAccounts {
     SystemProgram,
     RentSysvar,
     BaseTokenProgram,
-    QuoteTokenProgram,
     BaseVault,
+    QuoteTokenProgram,
     QuoteVault,
 }
 // endregion: register_market_accounts
@@ -107,22 +119,13 @@ pub struct CreateAccountData {
 }
 
 cpi_accounts! {
-    /// CPI accounts for CreateAccount and ATA creation.
-    ///
-    /// CreateAccount uses the first two accounts (user, target). ATA creation requires all six.
     CPIAccounts {
-        /// User account.
-        user,
-        /// Target account (the account to create, either market account or ATA).
-        target,
-        /// Proprietor account.
-        proprietor,
-        /// Mint account.
-        mint,
-        /// System Program account.
-        system_program,
-        /// Token Program account.
-        token_program,
+        /// CreateAccount: funding account. InitializeAccount2: account to initialize.
+        idx_0,
+        /// CreateAccount: new account. InitializeAccount2: mint.
+        idx_1,
+        /// InitializeAccount2: Rent sysvar. Unused by CreateAccount.
+        idx_2,
     }
 }
 
@@ -130,12 +133,12 @@ cpi_accounts! {
 // region: signer_seeds_example
 signer_seeds! {
     PDASignerSeeds {
-        /// Base mint seed.
-        base,
-        /// Quote mint seed.
-        quote,
+        /// Market PDA: base mint address. Vault: market PDA address.
+        idx_0,
+        /// Market PDA: quote mint address. Vault: vault index (0 = base, 1 = quote).
+        idx_1,
         /// Bump seed from `sol_try_find_program_address`.
-        bump,
+        idx_2,
     }
 }
 // endregion: signer_seeds_example
@@ -148,7 +151,7 @@ pub struct RegisterMarketFrame {
     pub input: u64,
     /// Saved input_shifted pointer.
     pub input_shifted: u64,
-    /// For CreateAccount CPI.
+    /// Signer seeds for PDA derivation and CPI signing.
     pub pda_seeds: PDASignerSeeds,
     /// From `sol_try_find_program_address`.
     pub pda: Address,
@@ -156,7 +159,7 @@ pub struct RegisterMarketFrame {
     pub system_program_pubkey: Address,
     /// CPI instruction data for CreateAccount.
     pub create_account_data: CreateAccountData,
-    /// CPI accounts for CreateAccount and ATA creation.
+    /// CPI accounts for CreateAccount and InitializeAccount2.
     pub cpi_accounts: CPIAccounts,
     /// Signers seeds for CPI.
     pub signers_seeds: SolSignerSeeds,
@@ -164,6 +167,8 @@ pub struct RegisterMarketFrame {
     pub sol_instruction: SolInstruction,
     /// From `sol_try_find_program_address`.
     pub bump: u8,
+    /// Vault index for PDA derivation.
+    pub vault_index: u8,
 }
 // endregion: frame_example
 
@@ -200,13 +205,15 @@ constant_group! {
         SOL_INSN = sol_instruction!(sol_instruction),
         /// Bump seed.
         BUMP = offset!(bump),
+        /// Vault index for PDA derivation.
+        VAULT_INDEX = unaligned_offset!(vault_index),
         /// From pda_seeds to sol_instruction.
         PDA_SEEDS_TO_SOL_INSN = relative_offset!(pda_seeds, sol_instruction),
         /// From pda to signers_seeds.
         PDA_TO_SIGNERS_SEEDS = relative_offset!(pda, signers_seeds),
         /// From create_account_data to CPI account metas.
         CREATE_ACCT_DATA_TO_CPI_ACCT_METAS = relative_offset!(
-            create_account_data, cpi_accounts.user_meta
+            create_account_data, cpi_accounts.idx_0_meta
         ),
     }
 }

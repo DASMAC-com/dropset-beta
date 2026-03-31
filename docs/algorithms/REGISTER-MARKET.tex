@@ -32,8 +32,8 @@
   \IF{input.base\_mint.duplicate $\neq$ \texttt{account.NON\_DUP\_MARKER}}
     \RETURN \texttt{ErrorCode::BaseMintIsDuplicate}
   \ENDIF
-  \STATE frame.pda\_seeds.base.addr = input.base\_mint.pubkey
-  \STATE frame.pda\_seeds.base.len = \texttt{Address.size}
+  \STATE frame.pda\_seeds[0].addr = input.base\_mint.pubkey
+  \STATE frame.pda\_seeds[0].len = \texttt{Address.size}
   \COMMENT{Increment input buffer by base mint padded data length for quote offsets.}
   \STATE input\_shifted = input + input.base\_mint.padded\_data\_len
   \STATE frame.input\_shifted = input\_shifted
@@ -41,8 +41,8 @@
   \IF{input\_shifted.quote\_mint.duplicate $\neq$ \texttt{account.NON\_DUP\_MARKER}}
     \RETURN \texttt{ErrorCode::QuoteMintIsDuplicate}
   \ENDIF
-  \STATE frame.pda\_seeds.quote.addr = input\_shifted.quote\_mint.pubkey
-  \STATE frame.pda\_seeds.quote.len = \texttt{Address.size}
+  \STATE frame.pda\_seeds[1].addr = input\_shifted.quote\_mint.pubkey
+  \STATE frame.pda\_seeds[1].len = \texttt{Address.size}
   \COMMENT{Advance to System Program account.}
   \STATE quote\_mint\_padded\_data\_len = input\_shifted.quote\_mint.padded\_data\_len
   \STATE acct = \&input\_shifted.quote\_mint
@@ -51,7 +51,7 @@
   \STATE frame.input = input
   \STATE syscall.seeds = \&frame.pda\_seeds
   \STATE syscall.program\_id = \&insn.program\_id
-  \STATE syscall.seeds\_len = \texttt{register\_misc.TRY\_FIND\_PDA\_SEEDS\_LEN}
+  \STATE syscall.seeds\_len = \texttt{register\_misc.TRY\_FIND\_MARKET\_PDA\_SEEDS\_LEN}
   \STATE syscall.program\_address = \&frame.pda
   \STATE syscall.bump\_seed = \&frame.bump
   \STATE \CALL{sol-try-find-program-address}{}
@@ -61,8 +61,8 @@
     \RETURN \texttt{ErrorCode::InvalidMarketPubkey}
   \ENDIF
   \COMMENT{Populate bump signer seed from derived bump.}
-  \STATE frame.pda\_seeds.bump.addr = \&syscall.bump\_seed
-  \STATE frame.pda\_seeds.bump.len = \texttt{u8.size}
+  \STATE frame.pda\_seeds[2].addr = \&syscall.bump\_seed
+  \STATE frame.pda\_seeds[2].len = \texttt{u8.size}
   \COMMENT{Populate CreateAccount CPI instruction data owner field.}
   \STATE frame.create\_account\_data.owner = syscall.program\_id
   \COMMENT{Check System Program account.}
@@ -93,25 +93,25 @@
   \STATE rent\_sysvar\_padded\_data\_len = acct.padded\_data\_len
   \STATE acct += rent\_sysvar\_padded\_data\_len + \texttt{EmptyAccount.size}
   \COMMENT{Assign CPI account fields via immediates.}
-  \STATE frame.cpi.user\_info.is\_signer = \texttt{true}
-  \STATE frame.cpi.user\_info.is\_writable = \texttt{true}
-  \STATE frame.cpi.user\_meta.is\_signer = \texttt{true}
-  \STATE frame.cpi.user\_meta.is\_writable = \texttt{true}
-  \STATE frame.cpi.target\_info.is\_signer = \texttt{true}
-  \STATE frame.cpi.target\_info.is\_writable = \texttt{true}
-  \STATE frame.cpi.target\_meta.is\_signer = \texttt{true}
-  \STATE frame.cpi.target\_meta.is\_writable = \texttt{true}
+  \STATE frame.cpi[0].info.is\_signer = \texttt{true}
+  \STATE frame.cpi[0].info.is\_writable = \texttt{true}
+  \STATE frame.cpi[0].meta.is\_signer = \texttt{true}
+  \STATE frame.cpi[0].meta.is\_writable = \texttt{true}
+  \STATE frame.cpi[1].info.is\_signer = \texttt{true}
+  \STATE frame.cpi[1].info.is\_writable = \texttt{true}
+  \STATE frame.cpi[1].meta.is\_signer = \texttt{true}
+  \STATE frame.cpi[1].meta.is\_writable = \texttt{true}
   \COMMENT{Assign CPI account fields via pointers.}
-  \STATE frame.cpi.user\_meta.pubkey = \&input.user.address
-  \STATE frame.cpi.user\_info.key = \&input.user.address
-  \STATE frame.cpi.user\_info.owner = \&input.user.owner
-  \STATE frame.cpi.user\_info.lamports = \&input.user.lamports
-  \STATE frame.cpi.user\_info.data = \&input.user.data
-  \STATE frame.cpi.target\_meta.pubkey = \&input.market.address
-  \STATE frame.cpi.target\_info.key = \&input.market.address
-  \STATE frame.cpi.target\_info.owner = \&input.market.owner
-  \STATE frame.cpi.target\_info.lamports = \&input.market.lamports
-  \STATE frame.cpi.target\_info.data = \&input.market.data
+  \STATE frame.cpi[0].meta.pubkey = \&input.user.address
+  \STATE frame.cpi[0].info.key = \&input.user.address
+  \STATE frame.cpi[0].info.owner = \&input.user.owner
+  \STATE frame.cpi[0].info.lamports = \&input.user.lamports
+  \STATE frame.cpi[0].info.data = \&input.user.data
+  \STATE frame.cpi[1].meta.pubkey = \&input.market.address
+  \STATE frame.cpi[1].info.key = \&input.market.address
+  \STATE frame.cpi[1].info.owner = \&input.market.owner
+  \STATE frame.cpi[1].info.lamports = \&input.market.lamports
+  \STATE frame.cpi[1].info.data = \&input.market.data
   \COMMENT{Populate signers seeds for CPI.}
   \STATE frame.signers\_seeds.addr = \&frame.pda\_seeds
   \STATE frame.signers\_seeds.len = \texttt{RegisterMarketFrame.PDA\_SEEDS\_N\_SEEDS}
@@ -146,9 +146,27 @@
       \RETURN \texttt{ErrorCode::BaseTokenProgramNotTokenProgram}
     \ENDIF
   \ENDIF
-  \COMMENT{Advance to quote token program account.}
+  \COMMENT{Derive base vault PDA from base token program.}
+  \STATE frame.pda\_seeds[0].addr = \&input.market.address
+  \STATE frame.vault\_index = \texttt{register\_misc.VAULT\_INDEX\_BASE}
+  \STATE frame.pda\_seeds[1].addr = \&frame.vault\_index
+  \STATE frame.pda\_seeds[1].len = \texttt{u8.size}
+  \STATE syscall.seeds = \&frame.pda\_seeds
+  \STATE syscall.seeds\_len = \texttt{register\_misc.TRY\_FIND\_VAULT\_PDA\_SEEDS\_LEN}
+  \STATE syscall.program\_id = \&acct.address
+  \STATE syscall.program\_address = \&frame.pda
+  \STATE syscall.bump\_seed = \&frame.bump
+  \STATE \CALL{sol-try-find-program-address}{}
+  \COMMENT{Advance to base vault account.}
   \STATE base\_token\_program\_padded\_data\_len = acct.padded\_data\_len
   \STATE acct += base\_token\_program\_padded\_data\_len + \texttt{EmptyAccount.size}
+  \COMMENT{Verify base vault address matches derived PDA.}
+  \IF{acct.pubkey $\neq$ frame.pda}
+    \RETURN \texttt{ErrorCode::InvalidBaseVaultPubkey}
+  \ENDIF
+  \COMMENT{Advance to quote token program account.}
+  \STATE base\_vault\_padded\_data\_len = acct.padded\_data\_len
+  \STATE acct += base\_vault\_padded\_data\_len + \texttt{EmptyAccount.size}
   \COMMENT{Check quote token program account.}
   \IF{acct.duplicate == \texttt{account.NON\_DUP\_MARKER}}
     \COMMENT{Non-duplicate; verify quote token program owns the quote mint.}
@@ -161,6 +179,11 @@
         \RETURN \texttt{ErrorCode::QuoteTokenProgramNotTokenProgram}
       \ENDIF
     \ENDIF
+    \COMMENT{Update syscall program ID from non-duplicate quote token program.}
+    \STATE syscall.program\_id = \&acct.address
+    \COMMENT{Advance past non-duplicate quote token program account.}
+    \STATE quote\_token\_program\_padded\_data\_len = acct.padded\_data\_len
+    \STATE acct += quote\_token\_program\_padded\_data\_len + \texttt{EmptyAccount.size}
   \ELSE
     \COMMENT{Duplicate; verify position is base token program.}
     \IF{acct.duplicate $\neq$ \texttt{RegisterMarketAccounts::BaseTokenProgram}}
@@ -170,6 +193,15 @@
     \IF{input.base\_mint.owner $\neq$ input\_shifted.quote\_mint.owner}
       \RETURN \texttt{ErrorCode::DupQuoteTokenProgramNotQuoteMintOwner}
     \ENDIF
+    \COMMENT{Advance past duplicate quote token program account.}
+    \STATE acct += \texttt{u64.size}
+  \ENDIF
+  \COMMENT{Derive quote vault PDA.}
+  \STATE frame.vault\_index = \texttt{register\_misc.VAULT\_INDEX\_QUOTE}
+  \STATE \CALL{sol-try-find-program-address}{}
+  \COMMENT{Verify quote vault address matches derived PDA.}
+  \IF{acct.pubkey $\neq$ frame.pda}
+    \RETURN \texttt{ErrorCode::InvalidQuoteVaultPubkey}
   \ENDIF
 \ENDPROCEDURE
 \end{algorithmic}
