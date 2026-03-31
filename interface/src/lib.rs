@@ -60,6 +60,8 @@ pub enum ErrorCode {
     QuoteTokenProgramNotTokenProgram,
     /// The base vault account pubkey is invalid.
     InvalidBaseVaultPubkey,
+    /// The quote vault account pubkey is invalid.
+    InvalidQuoteVaultPubkey,
 }
 // endregion: error_enum
 

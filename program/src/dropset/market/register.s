@@ -522,17 +522,17 @@ register_market_base_vault:
     # if acct.pubkey != frame.pda
     #     return ErrorCode::InvalidBaseVaultPubkey
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_0_OFF]
-    ldxdw r1, [r10 + RM_FM_PDA_CHUNK_0_OFF]
-    jne r7, r1, e_invalid_base_vault_pubkey
+    ldxdw r2, [r10 + RM_FM_PDA_CHUNK_0_OFF]
+    jne r7, r2, e_invalid_base_vault_pubkey
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_1_OFF]
-    ldxdw r1, [r10 + RM_FM_PDA_CHUNK_1_OFF]
-    jne r7, r1, e_invalid_base_vault_pubkey
+    ldxdw r2, [r10 + RM_FM_PDA_CHUNK_1_OFF]
+    jne r7, r2, e_invalid_base_vault_pubkey
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_2_OFF]
-    ldxdw r1, [r10 + RM_FM_PDA_CHUNK_2_OFF]
-    jne r7, r1, e_invalid_base_vault_pubkey
+    ldxdw r2, [r10 + RM_FM_PDA_CHUNK_2_OFF]
+    jne r7, r2, e_invalid_base_vault_pubkey
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_3_OFF]
-    ldxdw r1, [r10 + RM_FM_PDA_CHUNK_3_OFF]
-    jne r7, r1, e_invalid_base_vault_pubkey
+    ldxdw r2, [r10 + RM_FM_PDA_CHUNK_3_OFF]
+    jne r7, r2, e_invalid_base_vault_pubkey
     # base_vault_padded_data_len = acct.padded_data_len
     ldxdw r7, [r9 + ACCT_DATA_LEN_OFF]
     add64 r7, DATA_LEN_MAX_PAD
@@ -546,46 +546,49 @@ register_market_base_vault:
     # if acct.pubkey != input_shifted.quote_mint.owner
     #     return ErrorCode::NonDupQuoteTokenProgramNotQuoteMintOwner
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_0_OFF]
-    ldxdw r1, [r6 + RM_MISC_QUOTE_OWNER_CHUNK_0_OFF]
-    jne r7, r1, e_non_dup_quote_token_program_not_quote_mint_owner
+    ldxdw r2, [r6 + RM_MISC_QUOTE_OWNER_CHUNK_0_OFF]
+    jne r7, r2, e_non_dup_quote_token_program_not_quote_mint_owner
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_1_OFF]
-    ldxdw r1, [r6 + RM_MISC_QUOTE_OWNER_CHUNK_1_OFF]
-    jne r7, r1, e_non_dup_quote_token_program_not_quote_mint_owner
+    ldxdw r2, [r6 + RM_MISC_QUOTE_OWNER_CHUNK_1_OFF]
+    jne r7, r2, e_non_dup_quote_token_program_not_quote_mint_owner
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_2_OFF]
-    ldxdw r1, [r6 + RM_MISC_QUOTE_OWNER_CHUNK_2_OFF]
-    jne r7, r1, e_non_dup_quote_token_program_not_quote_mint_owner
+    ldxdw r2, [r6 + RM_MISC_QUOTE_OWNER_CHUNK_2_OFF]
+    jne r7, r2, e_non_dup_quote_token_program_not_quote_mint_owner
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_3_OFF]
-    ldxdw r1, [r6 + RM_MISC_QUOTE_OWNER_CHUNK_3_OFF]
-    jne r7, r1, e_non_dup_quote_token_program_not_quote_mint_owner
+    ldxdw r2, [r6 + RM_MISC_QUOTE_OWNER_CHUNK_3_OFF]
+    jne r7, r2, e_non_dup_quote_token_program_not_quote_mint_owner
     # if acct.pubkey != pubkey.TOKEN_PROGRAM
     #     if acct.pubkey != pubkey.TOKEN_2022_PROGRAM
     #         return ErrorCode::QuoteTokenProgramNotTokenProgram
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_0_OFF]
-    lddw r1, PUBKEY_TOKEN_PROGRAM_CHUNK_0
-    jne r7, r1, register_market_check_quote_token_2022
+    lddw r2, PUBKEY_TOKEN_PROGRAM_CHUNK_0
+    jne r7, r2, register_market_check_quote_token_2022
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_1_OFF]
-    lddw r1, PUBKEY_TOKEN_PROGRAM_CHUNK_1
-    jne r7, r1, register_market_check_quote_token_2022
+    lddw r2, PUBKEY_TOKEN_PROGRAM_CHUNK_1
+    jne r7, r2, register_market_check_quote_token_2022
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_2_OFF]
-    lddw r1, PUBKEY_TOKEN_PROGRAM_CHUNK_2
-    jne r7, r1, register_market_check_quote_token_2022
+    lddw r2, PUBKEY_TOKEN_PROGRAM_CHUNK_2
+    jne r7, r2, register_market_check_quote_token_2022
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_3_OFF]
-    lddw r1, PUBKEY_TOKEN_PROGRAM_CHUNK_3
-    jeq r7, r1, register_market_advance_quote_non_dup
+    lddw r2, PUBKEY_TOKEN_PROGRAM_CHUNK_3
+    jeq r7, r2, register_market_advance_quote_non_dup
 register_market_check_quote_token_2022:
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_0_OFF]
-    lddw r1, PUBKEY_TOKEN_2022_PROGRAM_CHUNK_0
-    jne r7, r1, e_quote_token_program_not_token_program
+    lddw r2, PUBKEY_TOKEN_2022_PROGRAM_CHUNK_0
+    jne r7, r2, e_quote_token_program_not_token_program
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_1_OFF]
-    lddw r1, PUBKEY_TOKEN_2022_PROGRAM_CHUNK_1
-    jne r7, r1, e_quote_token_program_not_token_program
+    lddw r2, PUBKEY_TOKEN_2022_PROGRAM_CHUNK_1
+    jne r7, r2, e_quote_token_program_not_token_program
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_2_OFF]
-    lddw r1, PUBKEY_TOKEN_2022_PROGRAM_CHUNK_2
-    jne r7, r1, e_quote_token_program_not_token_program
+    lddw r2, PUBKEY_TOKEN_2022_PROGRAM_CHUNK_2
+    jne r7, r2, e_quote_token_program_not_token_program
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_3_OFF]
-    lddw r1, PUBKEY_TOKEN_2022_PROGRAM_CHUNK_3
-    jne r7, r1, e_quote_token_program_not_token_program
+    lddw r2, PUBKEY_TOKEN_2022_PROGRAM_CHUNK_3
+    jne r7, r2, e_quote_token_program_not_token_program
 register_market_advance_quote_non_dup:
+    # syscall.program_id = &acct.address
+    mov64 r3, r9
+    add64 r3, ACCT_ADDRESS_OFF
     # quote_token_program_padded_data_len = acct.padded_data_len
     ldxdw r7, [r9 + ACCT_DATA_LEN_OFF]
     add64 r7, DATA_LEN_MAX_PAD
@@ -601,18 +604,40 @@ register_market_base_vault_dup:
     # if input.base_mint.owner != input_shifted.quote_mint.owner
     #     return ErrorCode::DupQuoteTokenProgramNotQuoteMintOwner
     ldxdw r7, [r8 + RM_MISC_BASE_OWNER_CHUNK_0_OFF]
-    ldxdw r1, [r6 + RM_MISC_QUOTE_OWNER_CHUNK_0_OFF]
-    jne r7, r1, e_dup_quote_token_program_not_quote_mint_owner
+    ldxdw r2, [r6 + RM_MISC_QUOTE_OWNER_CHUNK_0_OFF]
+    jne r7, r2, e_dup_quote_token_program_not_quote_mint_owner
     ldxdw r7, [r8 + RM_MISC_BASE_OWNER_CHUNK_1_OFF]
-    ldxdw r1, [r6 + RM_MISC_QUOTE_OWNER_CHUNK_1_OFF]
-    jne r7, r1, e_dup_quote_token_program_not_quote_mint_owner
+    ldxdw r2, [r6 + RM_MISC_QUOTE_OWNER_CHUNK_1_OFF]
+    jne r7, r2, e_dup_quote_token_program_not_quote_mint_owner
     ldxdw r7, [r8 + RM_MISC_BASE_OWNER_CHUNK_2_OFF]
-    ldxdw r1, [r6 + RM_MISC_QUOTE_OWNER_CHUNK_2_OFF]
-    jne r7, r1, e_dup_quote_token_program_not_quote_mint_owner
+    ldxdw r2, [r6 + RM_MISC_QUOTE_OWNER_CHUNK_2_OFF]
+    jne r7, r2, e_dup_quote_token_program_not_quote_mint_owner
     ldxdw r7, [r8 + RM_MISC_BASE_OWNER_CHUNK_3_OFF]
-    ldxdw r1, [r6 + RM_MISC_QUOTE_OWNER_CHUNK_3_OFF]
-    jne r7, r1, e_dup_quote_token_program_not_quote_mint_owner
+    ldxdw r2, [r6 + RM_MISC_QUOTE_OWNER_CHUNK_3_OFF]
+    jne r7, r2, e_dup_quote_token_program_not_quote_mint_owner
+    # syscall.program_id = &input.base_mint.owner
+    mov64 r3, r8
+    add64 r3, RM_MISC_BASE_OWNER_OFF
     # acct += u64.size
     add64 r9, SIZE_OF_U64
 register_market_done_token_programs:
+    # frame.vault_index = register_misc.VAULT_INDEX_QUOTE
+    stb [r10 + RM_FM_VAULT_INDEX_UOFF], RM_MISC_VAULT_INDEX_QUOTE
+    # syscall.seeds_len = register_misc.TRY_FIND_VAULT_PDA_SEEDS_LEN
+    mov64 r2, RM_MISC_TRY_FIND_VAULT_PDA_SEEDS_LEN
+    call sol_try_find_program_address
+    # if acct.pubkey != frame.pda
+    #     return ErrorCode::InvalidQuoteVaultPubkey
+    ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_0_OFF]
+    ldxdw r1, [r10 + RM_FM_PDA_CHUNK_0_OFF]
+    jne r7, r1, e_invalid_quote_vault_pubkey
+    ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_1_OFF]
+    ldxdw r1, [r10 + RM_FM_PDA_CHUNK_1_OFF]
+    jne r7, r1, e_invalid_quote_vault_pubkey
+    ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_2_OFF]
+    ldxdw r1, [r10 + RM_FM_PDA_CHUNK_2_OFF]
+    jne r7, r1, e_invalid_quote_vault_pubkey
+    ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_3_OFF]
+    ldxdw r1, [r10 + RM_FM_PDA_CHUNK_3_OFF]
+    jne r7, r1, e_invalid_quote_vault_pubkey
     exit
