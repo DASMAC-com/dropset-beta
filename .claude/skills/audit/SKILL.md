@@ -58,6 +58,15 @@ and proceed to the **Resolve** section below.
      code is repeated or where a pattern has
      emerged but has not been captured.
 
+1. Check for magic numbers:
+
+   - Flag numeric literals in assembly or Rust
+     that should be named constants (e.g. raw
+     offsets, sizes, bit masks, index values).
+   - For each magic number found, suggest which
+     existing constant (or new constant) should
+     replace it, and where it should be defined.
+
 1. Check that code is easy to change (ETC):
 
    - Flag tight coupling between modules that
