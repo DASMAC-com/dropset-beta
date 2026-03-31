@@ -20,9 +20,11 @@ runs:
     # Clone, generate a lock file with blake3 <1.8.4 to avoid
     # digest 0.10/0.11 conflict, then install from the local path.
     run: |
-      git clone https://github.com/blueshift-gg/sbpf.git /tmp/sbpf
+      git init /tmp/sbpf
       cd /tmp/sbpf
-      git checkout ${{ inputs.sbpf-cli-revision }}
+      git remote add origin https://github.com/blueshift-gg/sbpf.git
+      git fetch --depth 1 origin ${{ inputs.sbpf-cli-revision }}
+      git checkout FETCH_HEAD
       cargo generate-lockfile
       cargo update blake3 --precise 1.8.3
       cargo install --path . --locked
