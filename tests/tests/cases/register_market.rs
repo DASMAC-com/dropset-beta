@@ -77,6 +77,8 @@ test_cases! {
         InvalidQuoteVaultPubkeyNonDupChunk3,
         CreateAccountHappyPathQuoteDup,
         CreateAccountHappyPathQuoteNonDup,
+        CreateAccountHappyPathToken2022QuoteDup,
+        CreateAccountHappyPathToken2022QuoteNonDup,
     }
 }
 
@@ -1236,6 +1238,108 @@ impl TestCase for Case {
                 let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
                 let token_2022_id = Pubkey::from(TOKEN_2022_PROGRAM_ID);
                 let (metas, accounts) = happy_path_accounts(setup, token_program_id, token_2022_id);
+                let instruction = Instruction::new_with_bytes(setup.program_id, insn, metas);
+                let result = setup.mollusk.process_instruction(&instruction, &accounts);
+
+                let mut errors = Vec::new();
+                match &result.program_result {
+                    MolluskResult::Success => {
+                        let market =
+                            &result.resulting_accounts[RegisterMarketAccounts::Market as usize].1;
+
+                        if market.owner != setup.program_id {
+                            errors.push(format!(
+                                "owner: expected {:?}, got {:?}",
+                                setup.program_id, market.owner
+                            ));
+                        }
+                        if market.data.len() != MARKET_HEADER_SIZE {
+                            errors.push(format!(
+                                "data len: expected {}, got {}",
+                                MARKET_HEADER_SIZE,
+                                market.data.len()
+                            ));
+                        }
+                        let rent = &setup.mollusk.sysvars.rent;
+                        if !rent.is_exempt(market.lamports, market.data.len()) {
+                            errors.push(format!(
+                                "market not rent exempt: {} lamports for {} bytes",
+                                market.lamports,
+                                market.data.len()
+                            ));
+                        }
+                    }
+                    other => {
+                        errors.push(format!("expected success, got {:?}", other));
+                    }
+                }
+
+                CaseResult {
+                    cu: result.compute_units_consumed,
+                    error: if errors.is_empty() {
+                        None
+                    } else {
+                        Some(errors.join("; "))
+                    },
+                }
+            }
+            // Verifies: REGISTER-MARKET
+            // Verifies: INIT-VAULT
+            Self::CreateAccountHappyPathToken2022QuoteDup => {
+                let token_2022_id = Pubkey::from(TOKEN_2022_PROGRAM_ID);
+                let (metas, accounts) =
+                    happy_path_accounts(setup, token_2022_id, token_2022_id);
+                let instruction = Instruction::new_with_bytes(setup.program_id, insn, metas);
+                let result = setup.mollusk.process_instruction(&instruction, &accounts);
+
+                let mut errors = Vec::new();
+                match &result.program_result {
+                    MolluskResult::Success => {
+                        let market =
+                            &result.resulting_accounts[RegisterMarketAccounts::Market as usize].1;
+
+                        if market.owner != setup.program_id {
+                            errors.push(format!(
+                                "owner: expected {:?}, got {:?}",
+                                setup.program_id, market.owner
+                            ));
+                        }
+                        if market.data.len() != MARKET_HEADER_SIZE {
+                            errors.push(format!(
+                                "data len: expected {}, got {}",
+                                MARKET_HEADER_SIZE,
+                                market.data.len()
+                            ));
+                        }
+                        let rent = &setup.mollusk.sysvars.rent;
+                        if !rent.is_exempt(market.lamports, market.data.len()) {
+                            errors.push(format!(
+                                "market not rent exempt: {} lamports for {} bytes",
+                                market.lamports,
+                                market.data.len()
+                            ));
+                        }
+                    }
+                    other => {
+                        errors.push(format!("expected success, got {:?}", other));
+                    }
+                }
+
+                CaseResult {
+                    cu: result.compute_units_consumed,
+                    error: if errors.is_empty() {
+                        None
+                    } else {
+                        Some(errors.join("; "))
+                    },
+                }
+            }
+            // Verifies: REGISTER-MARKET
+            // Verifies: INIT-VAULT
+            Self::CreateAccountHappyPathToken2022QuoteNonDup => {
+                let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
+                let token_2022_id = Pubkey::from(TOKEN_2022_PROGRAM_ID);
+                let (metas, accounts) = happy_path_accounts(setup, token_2022_id, token_program_id);
                 let instruction = Instruction::new_with_bytes(setup.program_id, insn, metas);
                 let result = setup.mollusk.process_instruction(&instruction, &accounts);
 
