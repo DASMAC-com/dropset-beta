@@ -6,6 +6,7 @@ pub mod memory;
 pub mod order;
 pub mod pubkey;
 pub mod seat;
+pub mod token;
 
 // region: discriminant_enum
 #[discriminant_enum("common/discriminant")]
@@ -93,4 +94,5 @@ pub const INJECTION_GROUPS: &[&dropset_build::ConstantGroup] = &[
     &memory::input_buffer::GROUP,
     &memory::size_of::GROUP,
     &pubkey::pubkey::GROUP,
+    &token::token::GROUP,
 ];

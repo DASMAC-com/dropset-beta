@@ -5,6 +5,7 @@
 .include "common/error.s"
 .include "common/memory.s"
 .include "common/pubkey.s"
+.include "common/token.s"
 .include "entrypoint.s"
 .include "market/register.s"
 .include "market/init_market_pda.s"
