@@ -18,10 +18,9 @@
   \COMMENT{Pointer to input buffer.}
   \REQUIRE frame.input
   \REQUIRE frame.pda\_seeds[0].len = \texttt{Address.size}
-  \ENSURE $r_1$ = acct
 \PROCEDURE{INIT-VAULT}{acct, frame}
-  \COMMENT{Save acct pointer to frame.}
-  \STATE frame.acct = acct
+  \STATE \CALL{Store}{frame}
+  \STATE \CALL{Store}{acct}
   \COMMENT{Derive vault PDA.}
   \STATE frame.pda\_seeds[0].addr = \&input.market.address
   \STATE frame.pda\_seeds[1].addr = \&frame.vault\_index
@@ -40,8 +39,6 @@
       \RETURN \texttt{ErrorCode::InvalidQuoteVaultPubkey}
     \ENDIF
   \ENDIF
-  \COMMENT{Restore acct pointer.}
-  \STATE acct = frame.acct
 \ENDPROCEDURE
 \end{algorithmic}
 \end{algorithm}

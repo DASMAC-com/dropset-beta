@@ -16,6 +16,7 @@ program/src/dropset/
 │   ├── memory.s           # Memory layout constants
 │   └── pubkey.s           # Pubkey chunk offsets and known addresses
 └── market/
+    ├── init_vault.s       # InitVault function
     └── register.s         # RegisterMarket handler
 ```
 

@@ -1,8 +1,8 @@
 init_vault:
+    # Store(frame)
     mov64 r6, r2
+    # Store(acct)
     mov64 r7, r1
-    # frame.acct = acct
-    stxdw [r6 + RM_FM_ACCT_OFF], r1
     # frame.pda_seeds[0].addr = &input.market.address
     ldxdw r8, [r6 + RM_FM_INPUT_OFF]
     add64 r8, IB_MARKET_PUBKEY_OFF
@@ -28,8 +28,7 @@ init_vault:
     mov64 r5, r6
     add64 r5, RM_FM_BUMP_OFF
     call sol_try_find_program_address
-    # Verify vault address matches derived PDA.
-    # r7 = acct, r6 = frame (callee-saved, preserved across syscall)
+    # if acct.address != frame.pda
     ldxdw r1, [r7 + ACCT_ADDRESS_CHUNK_0_OFF]
     ldxdw r2, [r6 + RM_FM_PDA_CHUNK_0_OFF]
     jne r1, r2, init_vault_invalid_pda
@@ -42,8 +41,6 @@ init_vault:
     ldxdw r1, [r7 + ACCT_ADDRESS_CHUNK_3_OFF]
     ldxdw r2, [r6 + RM_FM_PDA_CHUNK_3_OFF]
     jne r1, r2, init_vault_invalid_pda
-    # Restore acct pointer. r0 = FLOW_RESULT_OK from syscall.
-    mov64 r1, r7
     exit
 init_vault_invalid_pda:
     # if frame.vault_index == register_misc.VAULT_INDEX_BASE
