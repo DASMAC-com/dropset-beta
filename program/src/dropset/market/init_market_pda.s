@@ -6,6 +6,8 @@ init_market_pda:
     add64 r7, ACCT_STORAGE_OVERHEAD
     # lamports_per_byte = acct.data.lamports_per_byte
     ldxdw r8, [r9 + ACCT_DATA_OFF]
+    # frame.lamports_per_byte = lamports_per_byte
+    stxdw [r10 + RM_FM_LAMPORTS_PER_BYTE_OFF], r8
     # frame.create_account_data.lamports = acct_size * lamports_per_byte
     mul64 r7, r8
     stxdw [r10 + RM_FM_CREATE_ACCT_LAMPORTS_UOFF], r7

@@ -153,6 +153,8 @@ pub struct RegisterMarketFrame {
     pub input: u64,
     /// Saved input_shifted pointer.
     pub input_shifted: u64,
+    /// From Rent sysvar.
+    pub lamports_per_byte: u64,
     /// Signer seeds for PDA derivation and CPI signing.
     pub pda_seeds: PDASignerSeeds,
     /// From `sol_try_find_program_address`.
@@ -187,6 +189,8 @@ constant_group! {
         INPUT = offset!(input),
         /// Saved input_shifted pointer.
         INPUT_SHIFTED = offset!(input_shifted),
+        /// From Rent sysvar.
+        LAMPORTS_PER_BYTE = offset!(lamports_per_byte),
         /// PDA signer seeds.
         PDA_SEEDS = signer_seeds!(pda_seeds),
         /// PDA address.

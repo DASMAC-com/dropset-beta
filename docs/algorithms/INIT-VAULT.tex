@@ -17,6 +17,7 @@
   \REQUIRE frame.token\_program\_id
   \COMMENT{Pointer to input buffer.}
   \REQUIRE frame.input
+  \REQUIRE frame.lamports\_per\_byte
   \REQUIRE frame.pda\_seeds[0].len = \texttt{Address.size}
 \FUNCTION{INIT-VAULT}{acct, frame}
   \STATE \CALL{Store}{frame}

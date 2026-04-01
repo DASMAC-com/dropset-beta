@@ -25,9 +25,10 @@
 # Stack frame for REGISTER-MARKET.
 # -------------------------------------------------------------------------
 # Pointer to owning token program address.
-.equ RM_FM_TOKEN_PROGRAM_ID_OFF, -472
-.equ RM_FM_INPUT_OFF, -464 # Saved input buffer pointer.
-.equ RM_FM_INPUT_SHIFTED_OFF, -456 # Saved input_shifted pointer.
+.equ RM_FM_TOKEN_PROGRAM_ID_OFF, -480
+.equ RM_FM_INPUT_OFF, -472 # Saved input buffer pointer.
+.equ RM_FM_INPUT_SHIFTED_OFF, -464 # Saved input_shifted pointer.
+.equ RM_FM_LAMPORTS_PER_BYTE_OFF, -456 # From Rent sysvar.
 .equ RM_FM_PDA_SEEDS_OFF, -448 # Signer seeds offset.
 .equ RM_FM_PDA_SEEDS_N_SEEDS, 3 # Number of signer seeds.
 .equ RM_FM_PDA_SEEDS_IDX_0_ADDR_OFF, -448 # Idx 0 signer seed address.
