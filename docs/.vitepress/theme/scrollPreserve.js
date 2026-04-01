@@ -1,8 +1,8 @@
 // Preserves scroll position across .tex-triggered dev reloads.
 //
 // Algorithm components render asynchronously (katex, pseudocode, shiki),
-// so after reload we poll until the document is tall enough to scroll to
-// the saved offset.
+// so after reload the restore function polls until the document is tall
+// enough to scroll to the saved offset.
 
 const STORAGE_KEY = "tex-reload-scroll";
 const HMR_EVENT = "tex-change";
@@ -18,7 +18,7 @@ export function saveScrollOnTexChange() {
   });
 }
 
-// If a saved offset exists, poll until the page is tall enough to scroll.
+// If a saved offset exists, polls until the page is tall enough to scroll.
 export function restoreScroll() {
   if (typeof window === "undefined") return;
   const saved = sessionStorage.getItem(STORAGE_KEY);
