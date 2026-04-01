@@ -81,6 +81,8 @@ constant_group! {
     cpi {
         /// Mask for writable signer (is_writable | is_signer).
         WRITABLE_SIGNER = immediate!(0x0101),
+        /// Mask for readonly non-signer.
+        READONLY_NON_SIGNER = immediate!(0x0000),
     }
 }
 

@@ -92,6 +92,7 @@
   \STATE acct += base\_token\_program\_padded\_data\_len + \texttt{EmptyAccount.size}
   \COMMENT{Initialize base vault account.}
   \STATE frame.vault\_index = \texttt{register\_misc.VAULT\_INDEX\_BASE}
+  \STATE frame.mint = \&input.base\_mint
   \STATE result = \CALL{INIT-VAULT}{acct, frame}
   \IF{result $\neq$ \texttt{entrypoint.RETURN\_SUCCESS}}
     \RETURN result
@@ -132,6 +133,7 @@
   \ENDIF
   \COMMENT{Initialize quote vault account.}
   \STATE frame.vault\_index = \texttt{register\_misc.VAULT\_INDEX\_QUOTE}
+  \STATE frame.mint = \&input\_shifted.quote\_mint
   \STATE \CALL{INIT-VAULT}{acct, frame}
 \ENDPROCEDURE
 \end{algorithmic}

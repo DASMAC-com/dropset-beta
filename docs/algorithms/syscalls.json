@@ -1,4 +1,5 @@
 {
   "sol_invoke_signed_c": "https://github.com/anza-xyz/agave/blob/v4.0.0-beta.5/platform-tools-sdk/sbf/c/inc/sol/inc/cpi.inc#L56-L90",
-  "sol_try_find_program_address": "https://github.com/anza-xyz/agave/blob/v4.0.0-beta.5/platform-tools-sdk/sbf/c/inc/sol/inc/pubkey.inc#L74-L83"
+  "sol_try_find_program_address": "https://github.com/anza-xyz/agave/blob/v4.0.0-beta.5/platform-tools-sdk/sbf/c/inc/sol/inc/pubkey.inc#L74-L83",
+  "sol_get_return_data": "https://github.com/anza-xyz/agave/blob/v4.0.0-beta.5/platform-tools-sdk/sbf/c/inc/sol/inc/return_data.inc#L27-L35"
 }

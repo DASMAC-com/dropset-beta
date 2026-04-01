@@ -12,5 +12,9 @@ constant_group! {
         ACCOUNT_SIZE = immediate!(TokenAccount::LEN),
         /// GetAccountDataSize instruction discriminator (Token 2022).
         GET_ACCOUNT_DATA_SIZE_DISC = immediate!(GetAccountDataSize::DISCRIMINATOR),
+        /// GetAccountDataSize number of accounts.
+        GET_ACCOUNT_DATA_SIZE_N_ACCOUNTS = immediate!(1),
+        /// GetAccountDataSize number of seeds.
+        GET_ACCOUNT_DATA_SIZE_N_SEEDS = immediate!(0),
     }
 }

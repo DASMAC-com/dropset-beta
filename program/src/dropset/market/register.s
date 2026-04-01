@@ -24,48 +24,55 @@
 
 # Stack frame for REGISTER-MARKET.
 # -------------------------------------------------------------------------
-# Pointer to owning token program address.
-.equ RM_FM_TOKEN_PROGRAM_ID_OFF, -480
-.equ RM_FM_INPUT_OFF, -472 # Saved input buffer pointer.
-.equ RM_FM_INPUT_SHIFTED_OFF, -464 # Saved input_shifted pointer.
-.equ RM_FM_LAMPORTS_PER_BYTE_OFF, -456 # From Rent sysvar.
-.equ RM_FM_PDA_SEEDS_OFF, -448 # Signer seeds offset.
+.equ RM_FM_TOKEN_PROGRAM_ID_OFF, -536 # Pointer to token program address.
+.equ RM_FM_INPUT_OFF, -528 # Saved input buffer pointer.
+.equ RM_FM_INPUT_SHIFTED_OFF, -520 # Saved input_shifted pointer.
+.equ RM_FM_LAMPORTS_PER_BYTE_OFF, -512 # From Rent sysvar.
+# Return value from GetAccountDataSize CPI, to check token account data size at runtime.
+.equ RM_FM_TOKEN_ACCOUNT_DATA_SIZE_OFF, -504
+# Pointer to mint account for vault initialization.
+.equ RM_FM_MINT_OFF, -496
+.equ RM_FM_PDA_SEEDS_OFF, -488 # Signer seeds offset.
 .equ RM_FM_PDA_SEEDS_N_SEEDS, 3 # Number of signer seeds.
-.equ RM_FM_PDA_SEEDS_IDX_0_ADDR_OFF, -448 # Idx 0 signer seed address.
-.equ RM_FM_PDA_SEEDS_IDX_0_LEN_OFF, -440 # Idx 0 signer seed length.
-.equ RM_FM_PDA_SEEDS_IDX_1_ADDR_OFF, -432 # Idx 1 signer seed address.
-.equ RM_FM_PDA_SEEDS_IDX_1_LEN_OFF, -424 # Idx 1 signer seed length.
-.equ RM_FM_PDA_SEEDS_IDX_2_ADDR_OFF, -416 # Idx 2 signer seed address.
-.equ RM_FM_PDA_SEEDS_IDX_2_LEN_OFF, -408 # Idx 2 signer seed length.
-.equ RM_FM_PDA_OFF, -400 # PDA address.
-.equ RM_FM_PDA_CHUNK_0_OFF, -400 # PDA address (chunk 0).
-.equ RM_FM_PDA_CHUNK_1_OFF, -392 # PDA address (chunk 1).
-.equ RM_FM_PDA_CHUNK_2_OFF, -384 # PDA address (chunk 2).
-.equ RM_FM_PDA_CHUNK_3_OFF, -376 # PDA address (chunk 3).
-.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_OFF, -368 # System Program pubkey.
+.equ RM_FM_PDA_SEEDS_IDX_0_ADDR_OFF, -488 # Idx 0 signer seed address.
+.equ RM_FM_PDA_SEEDS_IDX_0_LEN_OFF, -480 # Idx 0 signer seed length.
+.equ RM_FM_PDA_SEEDS_IDX_1_ADDR_OFF, -472 # Idx 1 signer seed address.
+.equ RM_FM_PDA_SEEDS_IDX_1_LEN_OFF, -464 # Idx 1 signer seed length.
+.equ RM_FM_PDA_SEEDS_IDX_2_ADDR_OFF, -456 # Idx 2 signer seed address.
+.equ RM_FM_PDA_SEEDS_IDX_2_LEN_OFF, -448 # Idx 2 signer seed length.
+.equ RM_FM_PDA_OFF, -440 # PDA address.
+.equ RM_FM_PDA_CHUNK_0_OFF, -440 # PDA address (chunk 0).
+.equ RM_FM_PDA_CHUNK_1_OFF, -432 # PDA address (chunk 1).
+.equ RM_FM_PDA_CHUNK_2_OFF, -424 # PDA address (chunk 2).
+.equ RM_FM_PDA_CHUNK_3_OFF, -416 # PDA address (chunk 3).
+.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_OFF, -408 # System Program pubkey.
 # System Program pubkey (chunk 0).
-.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_0_OFF, -368
+.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_0_OFF, -408
 # System Program pubkey (chunk 1).
-.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_1_OFF, -360
+.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_1_OFF, -400
 # System Program pubkey (chunk 2).
-.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_2_OFF, -352
+.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_2_OFF, -392
 # System Program pubkey (chunk 3).
-.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_3_OFF, -344
-.equ RM_FM_CREATE_ACCT_DATA_OFF, -336 # CreateAccount instruction data.
+.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_3_OFF, -384
+# Get return data program ID for CPI calls.
+.equ RM_FM_GET_RETURN_DATA_PROGRAM_ID_OFF, -376
+.equ RM_FM_CREATE_ACCT_DATA_OFF, -344 # CreateAccount instruction data.
 # Lamports field within CreateAccount instruction data.
-.equ RM_FM_CREATE_ACCT_LAMPORTS_UOFF, -332
+.equ RM_FM_CREATE_ACCT_LAMPORTS_UOFF, -340
 # Space field within CreateAccount instruction data.
-.equ RM_FM_CREATE_ACCT_SPACE_UOFF, -324
+.equ RM_FM_CREATE_ACCT_SPACE_UOFF, -332
 # Owner field within CreateAccount instruction data.
-.equ RM_FM_CREATE_ACCT_OWNER_UOFF, -316
+.equ RM_FM_CREATE_ACCT_OWNER_UOFF, -324
 # Owner field within CreateAccount instruction data (chunk 0).
-.equ RM_FM_CREATE_ACCT_OWNER_CHUNK_0_UOFF, -316
+.equ RM_FM_CREATE_ACCT_OWNER_CHUNK_0_UOFF, -324
 # Owner field within CreateAccount instruction data (chunk 1).
-.equ RM_FM_CREATE_ACCT_OWNER_CHUNK_1_UOFF, -308
+.equ RM_FM_CREATE_ACCT_OWNER_CHUNK_1_UOFF, -316
 # Owner field within CreateAccount instruction data (chunk 2).
-.equ RM_FM_CREATE_ACCT_OWNER_CHUNK_2_UOFF, -300
+.equ RM_FM_CREATE_ACCT_OWNER_CHUNK_2_UOFF, -308
 # Owner field within CreateAccount instruction data (chunk 3).
-.equ RM_FM_CREATE_ACCT_OWNER_CHUNK_3_UOFF, -292
+.equ RM_FM_CREATE_ACCT_OWNER_CHUNK_3_UOFF, -300
+# GetAccountDataSize CPI instruction data.
+.equ RM_FM_GET_ACCOUNT_DATA_SIZE_DATA_UOFF, -288
 .equ RM_FM_CPI_N_ACCOUNTS, 3 # Number of CPI accounts.
 .equ RM_FM_CPI_SOL_ACCT_INFO_OFF, -280 # Start of SolAccountInfo vector.
 .equ RM_FM_CPI_SOL_ACCT_META_OFF, -112 # Start of SolAccountMeta vector.
@@ -145,11 +152,11 @@
 # Whether the current token program is Token 2022.
 .equ RM_FM_TOKEN_PROGRAM_IS_2022_UOFF, -6
 # From pda_seeds to sol_instruction.
-.equ RM_FM_PDA_SEEDS_TO_SOL_INSN_REL_OFF_IMM, 400
+.equ RM_FM_PDA_SEEDS_TO_SOL_INSN_REL_OFF_IMM, 440
 # From pda to signers_seeds.
-.equ RM_FM_PDA_TO_SIGNERS_SEEDS_REL_OFF_IMM, 336
+.equ RM_FM_PDA_TO_SIGNERS_SEEDS_REL_OFF_IMM, 376
 # From create_account_data to CPI account metas.
-.equ RM_FM_CREATE_ACCT_DATA_TO_CPI_ACCT_METAS_REL_OFF_IMM, 224
+.equ RM_FM_CREATE_ACCT_DATA_TO_CPI_ACCT_METAS_REL_OFF_IMM, 232
 # -------------------------------------------------------------------------
 
 # Miscellaneous market registration constants.
@@ -366,6 +373,10 @@ register_market_base_vault:
     add64 r9, SIZE_OF_EMPTY_ACCOUNT
     # frame.vault_index = register_misc.VAULT_INDEX_BASE
     stb [r10 + RM_FM_VAULT_INDEX_UOFF], RM_MISC_VAULT_INDEX_BASE
+    # frame.mint = &input.base_mint
+    mov64 r7, r8
+    add64 r7, RM_MISC_BASE_DUPLICATE_OFF
+    stxdw [r10 + RM_FM_MINT_OFF], r7
     # result = INIT-VAULT(acct, frame)
     mov64 r1, r9
     mov64 r2, r10
@@ -469,6 +480,10 @@ register_market_base_vault_dup:
 register_market_done_token_programs:
     # frame.vault_index = register_misc.VAULT_INDEX_QUOTE
     stb [r10 + RM_FM_VAULT_INDEX_UOFF], RM_MISC_VAULT_INDEX_QUOTE
+    # frame.mint = &input_shifted.quote_mint
+    mov64 r7, r6
+    add64 r7, RM_MISC_QUOTE_DUPLICATE_OFF
+    stxdw [r10 + RM_FM_MINT_OFF], r7
     # INIT-VAULT(acct, frame)
     mov64 r1, r9
     mov64 r2, r10
