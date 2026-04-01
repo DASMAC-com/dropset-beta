@@ -7,4 +7,5 @@
 .include "common/pubkey.s"
 .include "entrypoint.s"
 .include "market/register.s"
+.include "market/init_market_pda.s"
 .include "market/init_vault.s"

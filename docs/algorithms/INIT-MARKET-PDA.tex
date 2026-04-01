@@ -1,0 +1,86 @@
+\begin{algorithm}
+\caption{INIT-MARKET-PDA}
+\begin{algorithmic}
+  \COMMENT{Pointer to input buffer.}
+  \INPUT $r_1$ = input
+  \COMMENT{Pointer to instruction data.}
+  \INPUT $r_2$ = insn
+  \COMMENT{Pointer to Rent sysvar account.}
+  \INPUT $r_9$ = acct
+  \COMMENT{Pointer to stack frame.}
+  \INPUT $r_{10}$ = frame
+  \COMMENT{Pointer to shifted input buffer for quote mint offsets.}
+  \REQUIRE frame.input\_shifted
+  \COMMENT{Pointer to System Program ID in input buffer.}
+  \REQUIRE frame.sol\_instruction.program\_id
+  \ENSURE $r_9$ = acct
+  \ENSURE frame.input = input
+\PROCEDURE{INIT-MARKET-PDA}{input, insn, acct, frame}
+  \COMMENT{Prepare CreateAccount instruction lamports, space fields.}
+  \STATE frame.create\_account\_data.space = \texttt{MarketHeader.size}
+  \STATE acct\_size = \texttt{MarketHeader.size} + \texttt{account.STORAGE\_OVERHEAD}
+  \STATE lamports\_per\_byte = acct.data.lamports\_per\_byte
+  \STATE frame.create\_account\_data.lamports = acct\_size $\times$ lamports\_per\_byte
+  \COMMENT{Initialize market PDA signer seeds.}
+  \STATE frame.pda\_seeds[0].addr = input.base\_mint.address
+  \STATE frame.pda\_seeds[0].len = \texttt{Address.size}
+  \STATE frame.pda\_seeds[1].addr = input\_shifted.quote\_mint.address
+  \STATE frame.pda\_seeds[1].len = \texttt{Address.size}
+  \COMMENT{Derive market PDA.}
+  \STATE frame.input = input
+  \STATE syscall.seeds = \&frame.pda\_seeds
+  \STATE syscall.program\_id = \&insn.program\_id
+  \STATE syscall.seeds\_len = \texttt{register\_misc.TRY\_FIND\_MARKET\_PDA\_SEEDS\_LEN}
+  \STATE syscall.program\_address = \&frame.pda
+  \STATE syscall.bump\_seed = \&frame.bump
+  \STATE \CALL{sol-try-find-program-address}{}
+  \COMMENT{Verify derived market PDA matches market account address.}
+  \STATE input = frame.input
+  \IF{input.market.address $\neq$ frame.market\_pda}
+    \RETURN \texttt{ErrorCode::InvalidMarketPubkey}
+  \ENDIF
+  \COMMENT{Populate bump signer seed from derived bump.}
+  \STATE frame.pda\_seeds[2].addr = \&syscall.bump\_seed
+  \STATE frame.pda\_seeds[2].len = \texttt{u8.size}
+  \COMMENT{Populate CreateAccount CPI instruction data owner field.}
+  \STATE frame.create\_account\_data.owner = syscall.program\_id
+  \COMMENT{Assign CPI account fields via immediates.}
+  \STATE frame.cpi[0].info.is\_signer = \texttt{true}
+  \STATE frame.cpi[0].info.is\_writable = \texttt{true}
+  \STATE frame.cpi[0].meta.is\_signer = \texttt{true}
+  \STATE frame.cpi[0].meta.is\_writable = \texttt{true}
+  \STATE frame.cpi[1].info.is\_signer = \texttt{true}
+  \STATE frame.cpi[1].info.is\_writable = \texttt{true}
+  \STATE frame.cpi[1].meta.is\_signer = \texttt{true}
+  \STATE frame.cpi[1].meta.is\_writable = \texttt{true}
+  \COMMENT{Assign CPI account fields via pointers.}
+  \STATE frame.cpi[0].meta.pubkey = \&input.user.address
+  \STATE frame.cpi[0].info.key = \&input.user.address
+  \STATE frame.cpi[0].info.owner = \&input.user.owner
+  \STATE frame.cpi[0].info.lamports = \&input.user.lamports
+  \STATE frame.cpi[0].info.data = \&input.user.data
+  \STATE frame.cpi[1].meta.pubkey = \&input.market.address
+  \STATE frame.cpi[1].info.key = \&input.market.address
+  \STATE frame.cpi[1].info.owner = \&input.market.owner
+  \STATE frame.cpi[1].info.lamports = \&input.market.lamports
+  \STATE frame.cpi[1].info.data = \&input.market.data
+  \COMMENT{Populate signers seeds for CPI.}
+  \STATE frame.signers\_seeds.addr = \&frame.pda\_seeds
+  \STATE frame.signers\_seeds.len = \texttt{RegisterMarketFrame.PDA\_SEEDS\_N\_SEEDS}
+  \COMMENT{Populate SolInstruction for CreateAccount CPI.}
+  \STATE frame.sol\_instruction.accounts = \&frame.cpi.account\_metas
+  \STATE frame.sol\_instruction.account\_len =
+    \texttt{register\_misc.CREATE\_ACCOUNT\_N\_ACCOUNTS}
+  \STATE frame.sol\_instruction.data = \&frame.create\_account\_data
+  \STATE frame.sol\_instruction.data\_len = \texttt{CreateAccountData.size}
+  \COMMENT{Invoke CreateAccount CPI.}
+  \STATE syscall.instruction = \&frame.sol\_instruction
+  \STATE syscall.account\_infos = \&frame.cpi.account\_infos
+  \STATE syscall.account\_infos\_len =
+    \texttt{register\_misc.CREATE\_ACCOUNT\_N\_ACCOUNTS}
+  \STATE syscall.seeds = \&frame.signers\_seeds
+  \STATE syscall.seeds\_len = \texttt{register\_misc.N\_PDA\_SIGNERS}
+  \STATE \CALL{sol-invoke-signed-c}{}
+\ENDPROCEDURE
+\end{algorithmic}
+\end{algorithm}

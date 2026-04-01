@@ -22,7 +22,13 @@ The instruction requires the following accounts:
 
 <Algorithm tex="REGISTER-MARKET" asm="market/register"/>
 
-## Vault initialization
+## Helpers
+
+### Market PDA initialization
+
+<Algorithm tex="INIT-MARKET-PDA" asm="market/init_market_pda"/>
+
+### Vault initialization
 
 <Algorithm tex="INIT-VAULT" asm="market/init_vault"/>
 

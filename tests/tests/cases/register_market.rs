@@ -23,10 +23,6 @@ test_cases! {
         MarketHasData,
         BaseMintIsDuplicate,
         QuoteMintIsDuplicate,
-        InvalidMarketPubkeyChunk0,
-        InvalidMarketPubkeyChunk1,
-        InvalidMarketPubkeyChunk2,
-        InvalidMarketPubkeyChunk3,
         SystemProgramIsDuplicate,
         InvalidSystemProgramPubkeyChunk0,
         InvalidSystemProgramPubkeyChunk1,
@@ -38,6 +34,10 @@ test_cases! {
         InvalidRentSysvarPubkeyChunk2,
         InvalidRentSysvarPubkeyChunk3,
         InvalidRentSysvarPubkeyChunk3Hi,
+        InvalidMarketPubkeyChunk0,
+        InvalidMarketPubkeyChunk1,
+        InvalidMarketPubkeyChunk2,
+        InvalidMarketPubkeyChunk3,
         BaseTokenProgramIsDuplicate,
         BaseTokenProgramNotBaseMintOwnerChunk0,
         BaseTokenProgramNotBaseMintOwnerChunk1,
@@ -139,7 +139,7 @@ fn pda_mismatch_accounts(
     Vec<solana_sdk::instruction::AccountMeta>,
     Vec<(Pubkey, Account)>,
 ) {
-    let (mut keys, accounts) = default_accounts();
+    let (mut keys, mut accounts) = default_accounts();
     let (base_key, quote_key) = find_pda_seed_pair(&setup.program_id);
     keys[RegisterMarketAccounts::BaseMint as usize] = base_key;
     keys[RegisterMarketAccounts::QuoteMint as usize] = quote_key;
@@ -149,6 +149,14 @@ fn pda_mismatch_accounts(
     let offset = corrupt_chunk * 8;
     pda.as_mut()[offset] ^= 0xFF;
     keys[RegisterMarketAccounts::Market as usize] = pda;
+    let (system_program_pubkey, system_program_account) =
+        program::keyed_account_for_system_program();
+    keys[RegisterMarketAccounts::SystemProgram as usize] = system_program_pubkey;
+    accounts[RegisterMarketAccounts::SystemProgram as usize] = system_program_account;
+    let (rent_sysvar_pubkey, rent_sysvar_account) =
+        setup.mollusk.sysvars.keyed_account_for_rent_sysvar();
+    keys[RegisterMarketAccounts::RentSysvar as usize] = rent_sysvar_pubkey;
+    accounts[RegisterMarketAccounts::RentSysvar as usize] = rent_sysvar_account;
     into_metas_and_accounts(keys, accounts)
 }
 
@@ -416,50 +424,6 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
-            Self::InvalidMarketPubkeyChunk0 => {
-                let (metas, accounts) = pda_mismatch_accounts(setup, 0);
-                check_custom(
-                    setup,
-                    insn,
-                    metas,
-                    accounts,
-                    Some(ErrorCode::InvalidMarketPubkey),
-                )
-            }
-            // Verifies: REGISTER-MARKET
-            Self::InvalidMarketPubkeyChunk1 => {
-                let (metas, accounts) = pda_mismatch_accounts(setup, 1);
-                check_custom(
-                    setup,
-                    insn,
-                    metas,
-                    accounts,
-                    Some(ErrorCode::InvalidMarketPubkey),
-                )
-            }
-            // Verifies: REGISTER-MARKET
-            Self::InvalidMarketPubkeyChunk2 => {
-                let (metas, accounts) = pda_mismatch_accounts(setup, 2);
-                check_custom(
-                    setup,
-                    insn,
-                    metas,
-                    accounts,
-                    Some(ErrorCode::InvalidMarketPubkey),
-                )
-            }
-            // Verifies: REGISTER-MARKET
-            Self::InvalidMarketPubkeyChunk3 => {
-                let (metas, accounts) = pda_mismatch_accounts(setup, 3);
-                check_custom(
-                    setup,
-                    insn,
-                    metas,
-                    accounts,
-                    Some(ErrorCode::InvalidMarketPubkey),
-                )
-            }
-            // Verifies: REGISTER-MARKET
             Self::SystemProgramIsDuplicate => {
                 let (mut keys, accounts) = default_accounts();
                 let (base_key, quote_key) = find_pda_seed_pair(&setup.program_id);
@@ -609,7 +573,52 @@ impl TestCase for Case {
                     Some(ErrorCode::InvalidRentSysvarPubkey),
                 )
             }
+            // Verifies: INIT-MARKET-PDA
+            Self::InvalidMarketPubkeyChunk0 => {
+                let (metas, accounts) = pda_mismatch_accounts(setup, 0);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::InvalidMarketPubkey),
+                )
+            }
+            // Verifies: INIT-MARKET-PDA
+            Self::InvalidMarketPubkeyChunk1 => {
+                let (metas, accounts) = pda_mismatch_accounts(setup, 1);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::InvalidMarketPubkey),
+                )
+            }
+            // Verifies: INIT-MARKET-PDA
+            Self::InvalidMarketPubkeyChunk2 => {
+                let (metas, accounts) = pda_mismatch_accounts(setup, 2);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::InvalidMarketPubkey),
+                )
+            }
+            // Verifies: INIT-MARKET-PDA
+            Self::InvalidMarketPubkeyChunk3 => {
+                let (metas, accounts) = pda_mismatch_accounts(setup, 3);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::InvalidMarketPubkey),
+                )
+            }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
             Self::BaseTokenProgramIsDuplicate => {
                 let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
                 let (mut keys, accounts) =
@@ -627,6 +636,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
             Self::BaseTokenProgramNotBaseMintOwnerChunk0 => {
                 let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
                 let (mut keys, accounts) =
@@ -644,6 +654,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
             Self::BaseTokenProgramNotBaseMintOwnerChunk1 => {
                 let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
                 let (mut keys, accounts) =
@@ -661,6 +672,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
             Self::BaseTokenProgramNotBaseMintOwnerChunk2 => {
                 let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
                 let (mut keys, accounts) =
@@ -678,6 +690,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
             Self::BaseTokenProgramNotBaseMintOwnerChunk3 => {
                 let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
                 let (mut keys, accounts) =
@@ -695,6 +708,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
             Self::BaseTokenProgramNotTokenProgramChunk0 => {
                 let mut bad_program = Pubkey::from(TOKEN_PROGRAM_ID);
                 bad_program.as_mut()[CHUNK_0_OFF as usize] ^= 0xFF;
@@ -710,6 +724,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
             Self::BaseTokenProgramNotTokenProgramChunk1 => {
                 let mut bad_program = Pubkey::from(TOKEN_PROGRAM_ID);
                 bad_program.as_mut()[CHUNK_1_OFF as usize] ^= 0xFF;
@@ -725,6 +740,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
             Self::BaseTokenProgramNotTokenProgramChunk2 => {
                 let mut bad_program = Pubkey::from(TOKEN_PROGRAM_ID);
                 bad_program.as_mut()[CHUNK_2_OFF as usize] ^= 0xFF;
@@ -740,6 +756,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
             Self::BaseTokenProgramNotTokenProgramChunk3 => {
                 let mut bad_program = Pubkey::from(TOKEN_PROGRAM_ID);
                 bad_program.as_mut()[CHUNK_3_OFF as usize] ^= 0xFF;
@@ -755,6 +772,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
             Self::NonDupQuoteTokenProgramNotQuoteMintOwnerChunk0 => {
                 let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
                 let token_2022_id = Pubkey::from(TOKEN_2022_PROGRAM_ID);
@@ -774,6 +792,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
             Self::NonDupQuoteTokenProgramNotQuoteMintOwnerChunk1 => {
                 let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
                 let token_2022_id = Pubkey::from(TOKEN_2022_PROGRAM_ID);
@@ -792,6 +811,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
             Self::NonDupQuoteTokenProgramNotQuoteMintOwnerChunk2 => {
                 let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
                 let token_2022_id = Pubkey::from(TOKEN_2022_PROGRAM_ID);
@@ -810,6 +830,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
             Self::NonDupQuoteTokenProgramNotQuoteMintOwnerChunk3 => {
                 let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
                 let token_2022_id = Pubkey::from(TOKEN_2022_PROGRAM_ID);
@@ -828,6 +849,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
             Self::QuoteTokenProgramNotTokenProgramChunk0 => {
                 let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
                 let mut bad_program = Pubkey::from(TOKEN_PROGRAM_ID);
@@ -844,6 +866,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
             Self::QuoteTokenProgramNotTokenProgramChunk1 => {
                 let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
                 let mut bad_program = Pubkey::from(TOKEN_PROGRAM_ID);
@@ -860,6 +883,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
             Self::QuoteTokenProgramNotTokenProgramChunk2 => {
                 let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
                 let mut bad_program = Pubkey::from(TOKEN_PROGRAM_ID);
@@ -876,6 +900,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
             Self::QuoteTokenProgramNotTokenProgramChunk3 => {
                 let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
                 let mut bad_program = Pubkey::from(TOKEN_PROGRAM_ID);
@@ -892,6 +917,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
             Self::InvalidQuoteTokenProgramDuplicateChunk0 => {
                 let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
                 let (mut keys, accounts) =
@@ -908,6 +934,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
             Self::InvalidQuoteTokenProgramDuplicateChunk1 => {
                 let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
                 let (mut keys, accounts) =
@@ -924,6 +951,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
             Self::InvalidQuoteTokenProgramDuplicateChunk2 => {
                 let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
                 let (mut keys, accounts) =
@@ -940,6 +968,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
             Self::InvalidQuoteTokenProgramDuplicateChunk3 => {
                 let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
                 let (mut keys, accounts) =
@@ -956,6 +985,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
             Self::DupQuoteTokenProgramNotQuoteMintOwnerChunk0 => {
                 let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
                 let token_2022_id = Pubkey::from(TOKEN_2022_PROGRAM_ID);
@@ -976,6 +1006,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
             Self::DupQuoteTokenProgramNotQuoteMintOwnerChunk1 => {
                 let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
                 let mut bad_owner = token_program_id;
@@ -994,6 +1025,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
             Self::DupQuoteTokenProgramNotQuoteMintOwnerChunk2 => {
                 let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
                 let mut bad_owner = token_program_id;
@@ -1012,6 +1044,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
             Self::DupQuoteTokenProgramNotQuoteMintOwnerChunk3 => {
                 let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
                 let mut bad_owner = token_program_id;
@@ -1030,6 +1063,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
             // Verifies: INIT-VAULT
             Self::InvalidBaseVaultPubkeyChunk0 => {
                 let (metas, accounts) = base_vault_mismatch_accounts(setup, CHUNK_0_OFF as usize);
@@ -1042,6 +1076,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
             // Verifies: INIT-VAULT
             Self::InvalidBaseVaultPubkeyChunk1 => {
                 let (metas, accounts) = base_vault_mismatch_accounts(setup, CHUNK_1_OFF as usize);
@@ -1054,6 +1089,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
             // Verifies: INIT-VAULT
             Self::InvalidBaseVaultPubkeyChunk2 => {
                 let (metas, accounts) = base_vault_mismatch_accounts(setup, CHUNK_2_OFF as usize);
@@ -1066,6 +1102,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
             // Verifies: INIT-VAULT
             Self::InvalidBaseVaultPubkeyChunk3 => {
                 let (metas, accounts) = base_vault_mismatch_accounts(setup, CHUNK_3_OFF as usize);
@@ -1078,6 +1115,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
             // Verifies: INIT-VAULT
             Self::InvalidQuoteVaultPubkeyDupChunk0 => {
                 let (metas, accounts) =
@@ -1091,6 +1129,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
             // Verifies: INIT-VAULT
             Self::InvalidQuoteVaultPubkeyDupChunk1 => {
                 let (metas, accounts) =
@@ -1104,6 +1143,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
             // Verifies: INIT-VAULT
             Self::InvalidQuoteVaultPubkeyDupChunk2 => {
                 let (metas, accounts) =
@@ -1117,6 +1157,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
             // Verifies: INIT-VAULT
             Self::InvalidQuoteVaultPubkeyDupChunk3 => {
                 let (metas, accounts) =
@@ -1130,6 +1171,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
             // Verifies: INIT-VAULT
             Self::InvalidQuoteVaultPubkeyNonDupChunk0 => {
                 let (metas, accounts) =
@@ -1143,6 +1185,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
             // Verifies: INIT-VAULT
             Self::InvalidQuoteVaultPubkeyNonDupChunk1 => {
                 let (metas, accounts) =
@@ -1156,6 +1199,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
             // Verifies: INIT-VAULT
             Self::InvalidQuoteVaultPubkeyNonDupChunk2 => {
                 let (metas, accounts) =
@@ -1169,6 +1213,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
             // Verifies: INIT-VAULT
             Self::InvalidQuoteVaultPubkeyNonDupChunk3 => {
                 let (metas, accounts) =
@@ -1182,6 +1227,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
             // Verifies: INIT-VAULT
             Self::CreateAccountHappyPathQuoteDup => {
                 let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
@@ -1233,6 +1279,7 @@ impl TestCase for Case {
                 }
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
             // Verifies: INIT-VAULT
             Self::CreateAccountHappyPathQuoteNonDup => {
                 let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
@@ -1284,6 +1331,7 @@ impl TestCase for Case {
                 }
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
             // Verifies: INIT-VAULT
             Self::CreateAccountHappyPathToken2022QuoteDup => {
                 let token_2022_id = Pubkey::from(TOKEN_2022_PROGRAM_ID);
@@ -1334,6 +1382,7 @@ impl TestCase for Case {
                 }
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
             // Verifies: INIT-VAULT
             Self::CreateAccountHappyPathToken2022QuoteNonDup => {
                 let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
