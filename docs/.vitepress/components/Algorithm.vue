@@ -46,6 +46,7 @@ import {
   asmModules,
   syscallRegistry,
 } from "./paths.js";
+import { isRestoring } from "../theme/scrollPreserve.js";
 
 const GH_TESTS = `${GH_ROOT}tests/tests/cases/`;
 
@@ -371,10 +372,12 @@ onMounted(async () => {
     // so the target position is stale. Every Algorithm that finishes
     // rendering re-scrolls to the hash target, progressively
     // correcting the offset as the page builds up.
-    const hashTarget = location.hash.startsWith("#algo-ref-")
-      ? document.getElementById(location.hash.slice(1))
-      : null;
-    if (hashTarget) hashTarget.scrollIntoView();
+    if (!isRestoring()) {
+      const hashTarget = location.hash.startsWith("#algo-ref-")
+        ? document.getElementById(location.hash.slice(1))
+        : null;
+      if (hashTarget) hashTarget.scrollIntoView();
+    }
   } catch (e) {
     console.error("Pseudocode render error:", e);
     container.value.textContent = "Error: " + e.message;
