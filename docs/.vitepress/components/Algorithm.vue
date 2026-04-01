@@ -368,12 +368,13 @@ onMounted(async () => {
     handleAlgoRefClicks(container.value);
 
     // VitePress scrolls to the hash before async content renders,
-    // so the target position is stale. Re-scroll if this component
-    // is the hash target.
-    if (location.hash === `#algo-ref-${props.tex}`) {
-      container.value.closest(`[id="algo-ref-${props.tex}"]`)
-        ?.scrollIntoView();
-    }
+    // so the target position is stale. Every Algorithm that finishes
+    // rendering re-scrolls to the hash target, progressively
+    // correcting the offset as the page builds up.
+    const hashTarget = location.hash.startsWith("#algo-ref-")
+      ? document.getElementById(location.hash.slice(1))
+      : null;
+    if (hashTarget) hashTarget.scrollIntoView();
   } catch (e) {
     console.error("Pseudocode render error:", e);
     container.value.textContent = "Error: " + e.message;
