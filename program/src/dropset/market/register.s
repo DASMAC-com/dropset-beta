@@ -508,7 +508,7 @@ register_market_base_vault:
     mov64 r1, r9
     mov64 r2, r10
     call init_vault
-    # if result != flow.RESULT_OK
+    # if result != entrypoint.RETURN_SUCCESS
     #     return result
     jeq r0, RETURN_SUCCESS, register_market_quote_token_program
     exit
