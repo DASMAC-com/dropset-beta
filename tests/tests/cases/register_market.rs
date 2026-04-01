@@ -23,10 +23,6 @@ test_cases! {
         MarketHasData,
         BaseMintIsDuplicate,
         QuoteMintIsDuplicate,
-        InvalidMarketPubkeyChunk0,
-        InvalidMarketPubkeyChunk1,
-        InvalidMarketPubkeyChunk2,
-        InvalidMarketPubkeyChunk3,
         SystemProgramIsDuplicate,
         InvalidSystemProgramPubkeyChunk0,
         InvalidSystemProgramPubkeyChunk1,
@@ -38,6 +34,10 @@ test_cases! {
         InvalidRentSysvarPubkeyChunk2,
         InvalidRentSysvarPubkeyChunk3,
         InvalidRentSysvarPubkeyChunk3Hi,
+        InvalidMarketPubkeyChunk0,
+        InvalidMarketPubkeyChunk1,
+        InvalidMarketPubkeyChunk2,
+        InvalidMarketPubkeyChunk3,
         BaseTokenProgramIsDuplicate,
         BaseTokenProgramNotBaseMintOwnerChunk0,
         BaseTokenProgramNotBaseMintOwnerChunk1,
@@ -139,7 +139,7 @@ fn pda_mismatch_accounts(
     Vec<solana_sdk::instruction::AccountMeta>,
     Vec<(Pubkey, Account)>,
 ) {
-    let (mut keys, accounts) = default_accounts();
+    let (mut keys, mut accounts) = default_accounts();
     let (base_key, quote_key) = find_pda_seed_pair(&setup.program_id);
     keys[RegisterMarketAccounts::BaseMint as usize] = base_key;
     keys[RegisterMarketAccounts::QuoteMint as usize] = quote_key;
@@ -149,6 +149,14 @@ fn pda_mismatch_accounts(
     let offset = corrupt_chunk * 8;
     pda.as_mut()[offset] ^= 0xFF;
     keys[RegisterMarketAccounts::Market as usize] = pda;
+    let (system_program_pubkey, system_program_account) =
+        program::keyed_account_for_system_program();
+    keys[RegisterMarketAccounts::SystemProgram as usize] = system_program_pubkey;
+    accounts[RegisterMarketAccounts::SystemProgram as usize] = system_program_account;
+    let (rent_sysvar_pubkey, rent_sysvar_account) =
+        setup.mollusk.sysvars.keyed_account_for_rent_sysvar();
+    keys[RegisterMarketAccounts::RentSysvar as usize] = rent_sysvar_pubkey;
+    accounts[RegisterMarketAccounts::RentSysvar as usize] = rent_sysvar_account;
     into_metas_and_accounts(keys, accounts)
 }
 
@@ -416,50 +424,6 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
-            Self::InvalidMarketPubkeyChunk0 => {
-                let (metas, accounts) = pda_mismatch_accounts(setup, 0);
-                check_custom(
-                    setup,
-                    insn,
-                    metas,
-                    accounts,
-                    Some(ErrorCode::InvalidMarketPubkey),
-                )
-            }
-            // Verifies: REGISTER-MARKET
-            Self::InvalidMarketPubkeyChunk1 => {
-                let (metas, accounts) = pda_mismatch_accounts(setup, 1);
-                check_custom(
-                    setup,
-                    insn,
-                    metas,
-                    accounts,
-                    Some(ErrorCode::InvalidMarketPubkey),
-                )
-            }
-            // Verifies: REGISTER-MARKET
-            Self::InvalidMarketPubkeyChunk2 => {
-                let (metas, accounts) = pda_mismatch_accounts(setup, 2);
-                check_custom(
-                    setup,
-                    insn,
-                    metas,
-                    accounts,
-                    Some(ErrorCode::InvalidMarketPubkey),
-                )
-            }
-            // Verifies: REGISTER-MARKET
-            Self::InvalidMarketPubkeyChunk3 => {
-                let (metas, accounts) = pda_mismatch_accounts(setup, 3);
-                check_custom(
-                    setup,
-                    insn,
-                    metas,
-                    accounts,
-                    Some(ErrorCode::InvalidMarketPubkey),
-                )
-            }
-            // Verifies: REGISTER-MARKET
             Self::SystemProgramIsDuplicate => {
                 let (mut keys, accounts) = default_accounts();
                 let (base_key, quote_key) = find_pda_seed_pair(&setup.program_id);
@@ -607,6 +571,50 @@ impl TestCase for Case {
                     metas,
                     accounts,
                     Some(ErrorCode::InvalidRentSysvarPubkey),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            Self::InvalidMarketPubkeyChunk0 => {
+                let (metas, accounts) = pda_mismatch_accounts(setup, 0);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::InvalidMarketPubkey),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            Self::InvalidMarketPubkeyChunk1 => {
+                let (metas, accounts) = pda_mismatch_accounts(setup, 1);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::InvalidMarketPubkey),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            Self::InvalidMarketPubkeyChunk2 => {
+                let (metas, accounts) = pda_mismatch_accounts(setup, 2);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::InvalidMarketPubkey),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            Self::InvalidMarketPubkeyChunk3 => {
+                let (metas, accounts) = pda_mismatch_accounts(setup, 3);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::InvalidMarketPubkey),
                 )
             }
             // Verifies: REGISTER-MARKET
