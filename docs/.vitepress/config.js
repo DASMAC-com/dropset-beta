@@ -51,9 +51,10 @@ export default {
             ) {
               buildAlgorithmIndex();
             }
-            // Trigger a full page reload when a .tex file changes.
+            // Trigger a reload when a .tex file changes, preserving
+            // scroll position so the author stays where they were.
             if (path.endsWith(".tex")) {
-              server.ws.send({ type: "full-reload" });
+              server.ws.send({ type: "custom", event: "tex-change" });
             }
           });
         },
