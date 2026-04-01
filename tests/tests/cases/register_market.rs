@@ -1287,8 +1287,7 @@ impl TestCase for Case {
             // Verifies: INIT-VAULT
             Self::CreateAccountHappyPathToken2022QuoteDup => {
                 let token_2022_id = Pubkey::from(TOKEN_2022_PROGRAM_ID);
-                let (metas, accounts) =
-                    happy_path_accounts(setup, token_2022_id, token_2022_id);
+                let (metas, accounts) = happy_path_accounts(setup, token_2022_id, token_2022_id);
                 let instruction = Instruction::new_with_bytes(setup.program_id, insn, metas);
                 let result = setup.mollusk.process_instruction(&instruction, &accounts);
 
