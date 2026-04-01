@@ -1028,6 +1028,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-VAULT
             Self::InvalidBaseVaultPubkeyChunk0 => {
                 let (metas, accounts) = base_vault_mismatch_accounts(setup, CHUNK_0_OFF as usize);
                 check_custom(
@@ -1039,6 +1040,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-VAULT
             Self::InvalidBaseVaultPubkeyChunk1 => {
                 let (metas, accounts) = base_vault_mismatch_accounts(setup, CHUNK_1_OFF as usize);
                 check_custom(
@@ -1050,6 +1052,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-VAULT
             Self::InvalidBaseVaultPubkeyChunk2 => {
                 let (metas, accounts) = base_vault_mismatch_accounts(setup, CHUNK_2_OFF as usize);
                 check_custom(
@@ -1061,6 +1064,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-VAULT
             Self::InvalidBaseVaultPubkeyChunk3 => {
                 let (metas, accounts) = base_vault_mismatch_accounts(setup, CHUNK_3_OFF as usize);
                 check_custom(
@@ -1072,6 +1076,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-VAULT
             Self::InvalidQuoteVaultPubkeyDupChunk0 => {
                 let (metas, accounts) =
                     quote_vault_mismatch_accounts(setup, CHUNK_0_OFF as usize, true);
@@ -1084,6 +1089,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-VAULT
             Self::InvalidQuoteVaultPubkeyDupChunk1 => {
                 let (metas, accounts) =
                     quote_vault_mismatch_accounts(setup, CHUNK_1_OFF as usize, true);
@@ -1096,6 +1102,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-VAULT
             Self::InvalidQuoteVaultPubkeyDupChunk2 => {
                 let (metas, accounts) =
                     quote_vault_mismatch_accounts(setup, CHUNK_2_OFF as usize, true);
@@ -1108,6 +1115,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-VAULT
             Self::InvalidQuoteVaultPubkeyDupChunk3 => {
                 let (metas, accounts) =
                     quote_vault_mismatch_accounts(setup, CHUNK_3_OFF as usize, true);
@@ -1120,6 +1128,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-VAULT
             Self::InvalidQuoteVaultPubkeyNonDupChunk0 => {
                 let (metas, accounts) =
                     quote_vault_mismatch_accounts(setup, CHUNK_0_OFF as usize, false);
@@ -1132,6 +1141,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-VAULT
             Self::InvalidQuoteVaultPubkeyNonDupChunk1 => {
                 let (metas, accounts) =
                     quote_vault_mismatch_accounts(setup, CHUNK_1_OFF as usize, false);
@@ -1144,6 +1154,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-VAULT
             Self::InvalidQuoteVaultPubkeyNonDupChunk2 => {
                 let (metas, accounts) =
                     quote_vault_mismatch_accounts(setup, CHUNK_2_OFF as usize, false);
@@ -1156,6 +1167,7 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: INIT-VAULT
             Self::InvalidQuoteVaultPubkeyNonDupChunk3 => {
                 let (metas, accounts) =
                     quote_vault_mismatch_accounts(setup, CHUNK_3_OFF as usize, false);
@@ -1167,7 +1179,8 @@ impl TestCase for Case {
                     Some(ErrorCode::InvalidQuoteVaultPubkey),
                 )
             }
-            // Verifies: REGISTER-MARKET (happy path, quote token program is duplicate)
+            // Verifies: REGISTER-MARKET
+            // Verifies: INIT-VAULT
             Self::CreateAccountHappyPathQuoteDup => {
                 let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
                 let (metas, accounts) =
@@ -1217,7 +1230,8 @@ impl TestCase for Case {
                     },
                 }
             }
-            // Verifies: REGISTER-MARKET (happy path, quote token program is non-duplicate)
+            // Verifies: REGISTER-MARKET
+            // Verifies: INIT-VAULT
             Self::CreateAccountHappyPathQuoteNonDup => {
                 let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
                 let token_2022_id = Pubkey::from(TOKEN_2022_PROGRAM_ID);
