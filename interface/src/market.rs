@@ -147,8 +147,6 @@ signer_seeds! {
 #[frame]
 /// Stack frame for REGISTER-MARKET.
 pub struct RegisterMarketFrame {
-    /// Saved acct pointer across INIT-VAULT syscall.
-    pub acct: u64,
     /// Pointer to owning token program address.
     pub token_program_id: u64,
     /// Saved input buffer pointer.
@@ -183,8 +181,6 @@ constant_group! {
     #[inject("market/register")]
     #[frame(RegisterMarketFrame)]
     frame {
-        /// Saved acct pointer across INIT-VAULT syscall.
-        ACCT = offset!(acct),
         /// Pointer to owning token program address.
         TOKEN_PROGRAM_ID = offset!(token_program_id),
         /// Saved input buffer pointer.

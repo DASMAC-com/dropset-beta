@@ -9,13 +9,12 @@
   \INPUT $r_9$ = acct
   \COMMENT{Pointer to stack frame.}
   \INPUT $r_{10}$ = frame
-  \COMMENT{Pointer to input buffer.}
-  \REQUIRE frame.input
   \COMMENT{Pointer to shifted input buffer for quote mint offsets.}
   \REQUIRE frame.input\_shifted
   \COMMENT{Pointer to System Program ID in input buffer.}
   \REQUIRE frame.sol\_instruction.program\_id
   \ENSURE $r_9$ = acct
+  \ENSURE frame.input = input
 \PROCEDURE{INIT-MARKET-PDA}{input, insn, acct, frame}
   \COMMENT{Prepare CreateAccount instruction lamports, space fields.}
   \STATE frame.create\_account\_data.space = \texttt{MarketHeader.size}

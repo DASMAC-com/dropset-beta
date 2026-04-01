@@ -24,7 +24,6 @@
 
 # Stack frame for REGISTER-MARKET.
 # -------------------------------------------------------------------------
-.equ RM_FM_ACCT_OFF, -480 # Saved acct pointer across INIT-VAULT syscall.
 # Pointer to owning token program address.
 .equ RM_FM_TOKEN_PROGRAM_ID_OFF, -472
 .equ RM_FM_INPUT_OFF, -464 # Saved input buffer pointer.
