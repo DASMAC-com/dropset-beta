@@ -386,6 +386,11 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+/* Offset anchor targets so the fixed navbar does not cover them. */
+[id^="algo-ref-"] {
+  scroll-margin-top: calc(var(--vp-nav-height) + 1rem);
+}
+
 /* Code-block-style background matching VitePress fenced blocks. */
 .pseudocode-container {
   background-color: var(--vp-code-block-bg);
