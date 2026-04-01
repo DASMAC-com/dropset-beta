@@ -4,6 +4,7 @@
 .equ INSN_LEN_OFF, -8
 # Offset from instruction data to discriminant, in input buffer.
 .equ INSN_DISC_OFF, 0
+.equ RETURN_SUCCESS, 0 # Successful return code.
 
 entrypoint:
     # n_accounts = input.n_accounts

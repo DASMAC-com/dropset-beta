@@ -74,6 +74,8 @@ constant_group! {
         INSN_LEN = offset!(-size_of::<u64>()),
         /// Offset from instruction data to discriminant, in input buffer.
         INSN_DISC = offset!(0),
+        /// Successful return code.
+        RETURN_SUCCESS = immediate!(0),
     }
 }
 

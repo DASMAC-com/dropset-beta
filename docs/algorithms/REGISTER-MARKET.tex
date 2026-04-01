@@ -9,8 +9,10 @@
   \INPUT $r_3$ = n\_accounts
   \COMMENT{Instruction data length.}
   \INPUT $r_4$ = insn\_len
+  \COMMENT{Pointer to stack frame.}
+  \INPUT $r_{10}$ = frame
   \REQUIRE insn.discriminant == \texttt{Discriminant::RegisterMarket}
-\PROCEDURE{REGISTER-MARKET}{input, insn, n\_accounts, insn\_len}
+\PROCEDURE{REGISTER-MARKET}{input, insn, n\_accounts, insn\_len, frame}
   \COMMENT{Check number of accounts and instruction data length.}
   \IF{n\_accounts $<$ \texttt{RegisterMarketAccounts.LEN}}
     \RETURN \texttt{ErrorCode::InvalidNumberOfAccounts}
@@ -32,7 +34,7 @@
   \IF{input.base\_mint.duplicate $\neq$ \texttt{account.NON\_DUP\_MARKER}}
     \RETURN \texttt{ErrorCode::BaseMintIsDuplicate}
   \ENDIF
-  \STATE frame.pda\_seeds[0].addr = input.base\_mint.pubkey
+  \STATE frame.pda\_seeds[0].addr = input.base\_mint.address
   \STATE frame.pda\_seeds[0].len = \texttt{Address.size}
   \COMMENT{Increment input buffer by base mint padded data length for quote offsets.}
   \STATE input\_shifted = input + input.base\_mint.padded\_data\_len
@@ -41,7 +43,7 @@
   \IF{input\_shifted.quote\_mint.duplicate $\neq$ \texttt{account.NON\_DUP\_MARKER}}
     \RETURN \texttt{ErrorCode::QuoteMintIsDuplicate}
   \ENDIF
-  \STATE frame.pda\_seeds[1].addr = input\_shifted.quote\_mint.pubkey
+  \STATE frame.pda\_seeds[1].addr = input\_shifted.quote\_mint.address
   \STATE frame.pda\_seeds[1].len = \texttt{Address.size}
   \COMMENT{Advance to System Program account.}
   \STATE quote\_mint\_padded\_data\_len = input\_shifted.quote\_mint.padded\_data\_len
@@ -55,9 +57,9 @@
   \STATE syscall.program\_address = \&frame.pda
   \STATE syscall.bump\_seed = \&frame.bump
   \STATE \CALL{sol-try-find-program-address}{}
-  \COMMENT{Verify derived market PDA matches market account pubkey.}
+  \COMMENT{Verify derived market PDA matches market account address.}
   \STATE input = frame.input
-  \IF{input.market.pubkey $\neq$ frame.market\_pda}
+  \IF{input.market.address $\neq$ frame.market\_pda}
     \RETURN \texttt{ErrorCode::InvalidMarketPubkey}
   \ENDIF
   \COMMENT{Populate bump signer seed from derived bump.}
@@ -69,7 +71,7 @@
   \IF{acct.duplicate $\neq$ \texttt{account.NON\_DUP\_MARKER}}
     \RETURN \texttt{ErrorCode::SystemProgramIsDuplicate}
   \ENDIF
-  \IF{acct.pubkey $\neq$ frame.system\_program\_pubkey}
+  \IF{acct.address $\neq$ frame.system\_program\_pubkey}
     \RETURN \texttt{ErrorCode::InvalidSystemProgramPubkey}
   \ENDIF
   \COMMENT{Populate CPI program ID field.}
@@ -81,7 +83,7 @@
   \IF{acct.duplicate $\neq$ \texttt{account.NON\_DUP\_MARKER}}
     \RETURN \texttt{ErrorCode::RentSysvarIsDuplicate}
   \ENDIF
-  \IF{acct.pubkey $\neq$ \texttt{pubkey.RENT}}
+  \IF{acct.address $\neq$ \texttt{pubkey.RENT}}
     \RETURN \texttt{ErrorCode::InvalidRentSysvarPubkey}
   \ENDIF
   \COMMENT{Prepare CreateAccount instruction lamports, space fields.}
@@ -137,32 +139,25 @@
     \RETURN \texttt{ErrorCode::BaseTokenProgramIsDuplicate}
   \ENDIF
   \COMMENT{Verify base token program owns the base mint.}
-  \IF{acct.pubkey $\neq$ input.base\_mint.owner}
+  \IF{acct.address $\neq$ input.base\_mint.owner}
     \RETURN \texttt{ErrorCode::BaseTokenProgramNotBaseMintOwner}
   \ENDIF
   \COMMENT{Verify base token program is Token Program or Token 2022.}
-  \IF{acct.pubkey $\neq$ \texttt{pubkey.TOKEN\_PROGRAM}}
-    \IF{acct.pubkey $\neq$ \texttt{pubkey.TOKEN\_2022\_PROGRAM}}
+  \IF{acct.address $\neq$ \texttt{pubkey.TOKEN\_PROGRAM}}
+    \IF{acct.address $\neq$ \texttt{pubkey.TOKEN\_2022\_PROGRAM}}
       \RETURN \texttt{ErrorCode::BaseTokenProgramNotTokenProgram}
     \ENDIF
+    \STATE frame.token\_program\_is\_2022 = \texttt{true}
   \ENDIF
-  \COMMENT{Derive base vault PDA from base token program.}
-  \STATE frame.pda\_seeds[0].addr = \&input.market.address
-  \STATE frame.vault\_index = \texttt{register\_misc.VAULT\_INDEX\_BASE}
-  \STATE frame.pda\_seeds[1].addr = \&frame.vault\_index
-  \STATE frame.pda\_seeds[1].len = \texttt{u8.size}
-  \STATE syscall.seeds = \&frame.pda\_seeds
-  \STATE syscall.seeds\_len = \texttt{register\_misc.TRY\_FIND\_VAULT\_PDA\_SEEDS\_LEN}
-  \STATE syscall.program\_id = \&acct.address
-  \STATE syscall.program\_address = \&frame.pda
-  \STATE syscall.bump\_seed = \&frame.bump
-  \STATE \CALL{sol-try-find-program-address}{}
+  \STATE frame.token\_program\_id = \&acct.address
   \COMMENT{Advance to base vault account.}
   \STATE base\_token\_program\_padded\_data\_len = acct.padded\_data\_len
   \STATE acct += base\_token\_program\_padded\_data\_len + \texttt{EmptyAccount.size}
-  \COMMENT{Verify base vault address matches derived PDA.}
-  \IF{acct.pubkey $\neq$ frame.pda}
-    \RETURN \texttt{ErrorCode::InvalidBaseVaultPubkey}
+  \COMMENT{Initialize base vault account.}
+  \STATE frame.vault\_index = \texttt{register\_misc.VAULT\_INDEX\_BASE}
+  \STATE result = \CALL{INIT-VAULT}{acct, frame}
+  \IF{result $\neq$ \texttt{entrypoint.RETURN\_SUCCESS}}
+    \RETURN result
   \ENDIF
   \COMMENT{Advance to quote token program account.}
   \STATE base\_vault\_padded\_data\_len = acct.padded\_data\_len
@@ -170,18 +165,20 @@
   \COMMENT{Check quote token program account.}
   \IF{acct.duplicate == \texttt{account.NON\_DUP\_MARKER}}
     \COMMENT{Non-duplicate; verify quote token program owns the quote mint.}
-    \IF{acct.pubkey $\neq$ input\_shifted.quote\_mint.owner}
+    \IF{acct.address $\neq$ input\_shifted.quote\_mint.owner}
       \RETURN \texttt{ErrorCode::NonDupQuoteTokenProgramNotQuoteMintOwner}
     \ENDIF
     \COMMENT{Verify quote token program is Token Program or Token 2022.}
-    \IF{acct.pubkey $\neq$ \texttt{pubkey.TOKEN\_PROGRAM}}
-      \IF{acct.pubkey $\neq$ \texttt{pubkey.TOKEN\_2022\_PROGRAM}}
+    \IF{acct.address $\neq$ \texttt{pubkey.TOKEN\_PROGRAM}}
+      \IF{acct.address $\neq$ \texttt{pubkey.TOKEN\_2022\_PROGRAM}}
         \RETURN \texttt{ErrorCode::QuoteTokenProgramNotTokenProgram}
       \ENDIF
+      \STATE frame.token\_program\_is\_2022 = \texttt{true}
+    \ELSE
+      \STATE frame.token\_program\_is\_2022 = \texttt{false}
     \ENDIF
-    \COMMENT{Update syscall program ID from non-duplicate quote token program.}
-    \STATE syscall.program\_id = \&acct.address
-    \COMMENT{Advance past non-duplicate quote token program account.}
+    \STATE frame.token\_program\_id = \&acct.address
+    \COMMENT{Advance to quote vault account.}
     \STATE quote\_token\_program\_padded\_data\_len = acct.padded\_data\_len
     \STATE acct += quote\_token\_program\_padded\_data\_len + \texttt{EmptyAccount.size}
   \ELSE
@@ -193,16 +190,12 @@
     \IF{input.base\_mint.owner $\neq$ input\_shifted.quote\_mint.owner}
       \RETURN \texttt{ErrorCode::DupQuoteTokenProgramNotQuoteMintOwner}
     \ENDIF
-    \COMMENT{Advance past duplicate quote token program account.}
+    \COMMENT{Advance to quote vault account.}
     \STATE acct += \texttt{u64.size}
   \ENDIF
-  \COMMENT{Derive quote vault PDA.}
+  \COMMENT{Initialize quote vault account.}
   \STATE frame.vault\_index = \texttt{register\_misc.VAULT\_INDEX\_QUOTE}
-  \STATE \CALL{sol-try-find-program-address}{}
-  \COMMENT{Verify quote vault address matches derived PDA.}
-  \IF{acct.pubkey $\neq$ frame.pda}
-    \RETURN \texttt{ErrorCode::InvalidQuoteVaultPubkey}
-  \ENDIF
+  \STATE \CALL{INIT-VAULT}{acct, frame}
 \ENDPROCEDURE
 \end{algorithmic}
 \end{algorithm}

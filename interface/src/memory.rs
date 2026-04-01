@@ -24,6 +24,10 @@ constant_group! {
         LEN_MAX_PAD = immediate!(7),
         /// And mask for data length alignment.
         LEN_AND_MASK = immediate!(-8),
+        /// Boolean false value.
+        BOOL_FALSE = immediate!(0),
+        /// Boolean true value.
+        BOOL_TRUE = immediate!(1),
     }
 }
 

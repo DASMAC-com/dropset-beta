@@ -1,0 +1,44 @@
+\begin{algorithm}
+\caption{INIT-VAULT}
+\begin{algorithmic}
+  \COMMENT{Pointer to vault account.}
+  \INPUT $r_1$ = acct
+  \COMMENT{Pointer to REGISTER-MARKET stack frame.}
+  \INPUT $r_2$ = frame
+  \REQUIRE frame.vault\_index $\in$ \{
+    \texttt{register\_misc.VAULT\_INDEX\_BASE},
+    \texttt{register\_misc.VAULT\_INDEX\_QUOTE}
+  \}
+  \REQUIRE frame.token\_program\_is\_2022 $\in$ \{
+    \texttt{true},
+    \texttt{false}
+  \}
+  \COMMENT{Pointer to owning token program address.}
+  \REQUIRE frame.token\_program\_id
+  \COMMENT{Pointer to input buffer.}
+  \REQUIRE frame.input
+  \REQUIRE frame.pda\_seeds[0].len = \texttt{Address.size}
+\FUNCTION{INIT-VAULT}{acct, frame}
+  \STATE \CALL{Store}{frame}
+  \STATE \CALL{Store}{acct}
+  \COMMENT{Derive vault PDA.}
+  \STATE frame.pda\_seeds[0].addr = \&input.market.address
+  \STATE frame.pda\_seeds[1].addr = \&frame.vault\_index
+  \STATE frame.pda\_seeds[1].len = \texttt{u8.size}
+  \STATE syscall.seeds = \&frame.pda\_seeds
+  \STATE syscall.seeds\_len = \texttt{register\_misc.TRY\_FIND\_VAULT\_PDA\_SEEDS\_LEN}
+  \STATE syscall.program\_id = frame.token\_program\_id
+  \STATE syscall.program\_address = \&frame.pda
+  \STATE syscall.bump\_seed = \&frame.bump
+  \STATE \CALL{sol-try-find-program-address}{}
+  \COMMENT{Verify vault address matches derived PDA.}
+  \IF{acct.address $\neq$ frame.pda}
+    \IF{frame.vault\_index == \texttt{register\_misc.VAULT\_INDEX\_BASE}}
+      \RETURN \texttt{ErrorCode::InvalidBaseVaultPubkey}
+    \ELSE
+      \RETURN \texttt{ErrorCode::InvalidQuoteVaultPubkey}
+    \ENDIF
+  \ENDIF
+\ENDFUNCTION
+\end{algorithmic}
+\end{algorithm}

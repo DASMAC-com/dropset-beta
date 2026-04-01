@@ -7,3 +7,4 @@
 .include "common/pubkey.s"
 .include "entrypoint.s"
 .include "market/register.s"
+.include "market/init_vault.s"

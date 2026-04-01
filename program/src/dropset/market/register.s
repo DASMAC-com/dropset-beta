@@ -24,6 +24,9 @@
 
 # Stack frame for REGISTER-MARKET.
 # -------------------------------------------------------------------------
+.equ RM_FM_ACCT_OFF, -480 # Saved acct pointer across INIT-VAULT syscall.
+# Pointer to owning token program address.
+.equ RM_FM_TOKEN_PROGRAM_ID_OFF, -472
 .equ RM_FM_INPUT_OFF, -464 # Saved input buffer pointer.
 .equ RM_FM_INPUT_SHIFTED_OFF, -456 # Saved input_shifted pointer.
 .equ RM_FM_PDA_SEEDS_OFF, -448 # Signer seeds offset.
@@ -139,6 +142,8 @@
 .equ RM_FM_SOL_INSN_DATA_LEN_UOFF, -16 # SolInstruction data length.
 .equ RM_FM_BUMP_OFF, -8 # Bump seed.
 .equ RM_FM_VAULT_INDEX_UOFF, -7 # Vault index for PDA derivation.
+# Whether the current token program is Token 2022.
+.equ RM_FM_TOKEN_PROGRAM_IS_2022_UOFF, -6
 # From pda_seeds to sol_instruction.
 .equ RM_FM_PDA_SEEDS_TO_SOL_INSN_REL_OFF_IMM, 400
 # From pda to signers_seeds.
@@ -483,35 +488,13 @@ register_market_check_base_token_2022:
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_3_OFF]
     lddw r1, PUBKEY_TOKEN_2022_PROGRAM_CHUNK_3
     jne r7, r1, e_base_token_program_not_token_program
+    # frame.token_program_is_2022 = true
+    stb [r10 + RM_FM_TOKEN_PROGRAM_IS_2022_UOFF], DATA_BOOL_TRUE
 register_market_base_vault:
-    # frame.pda_seeds[0].addr = &input.market.address
-    mov64 r7, r8
-    add64 r7, IB_MARKET_PUBKEY_OFF
-    stxdw [r10 + RM_FM_PDA_SEEDS_IDX_0_ADDR_OFF], r7
-    # frame.vault_index = register_misc.VAULT_INDEX_BASE
-    stb [r10 + RM_FM_VAULT_INDEX_UOFF], RM_MISC_VAULT_INDEX_BASE
-    # frame.pda_seeds[1].addr = &frame.vault_index
-    mov64 r7, r10
-    add64 r7, RM_FM_VAULT_INDEX_UOFF
-    stxdw [r10 + RM_FM_PDA_SEEDS_IDX_1_ADDR_OFF], r7
-    # frame.pda_seeds[1].len = u8.size
-    mov64 r7, SIZE_OF_U8
-    stxdw [r10 + RM_FM_PDA_SEEDS_IDX_1_LEN_OFF], r7
-    # syscall.seeds = &frame.pda_seeds
-    mov64 r1, r10
-    add64 r1, RM_FM_PDA_SEEDS_OFF
-    # syscall.seeds_len = register_misc.TRY_FIND_VAULT_PDA_SEEDS_LEN
-    mov64 r2, RM_MISC_TRY_FIND_VAULT_PDA_SEEDS_LEN
-    # syscall.program_id = &acct.address
-    mov64 r3, r9
-    add64 r3, ACCT_ADDRESS_OFF
-    # syscall.program_address = &frame.pda
-    mov64 r4, r10
-    add64 r4, RM_FM_PDA_OFF
-    # syscall.bump_seed = &frame.bump
-    mov64 r5, r10
-    add64 r5, RM_FM_BUMP_OFF
-    call sol_try_find_program_address
+    # frame.token_program_id = &acct.address
+    mov64 r7, r9
+    add64 r7, ACCT_ADDRESS_OFF
+    stxdw [r10 + RM_FM_TOKEN_PROGRAM_ID_OFF], r7
     # base_token_program_padded_data_len = acct.padded_data_len
     ldxdw r7, [r9 + ACCT_DATA_LEN_OFF]
     add64 r7, DATA_LEN_MAX_PAD
@@ -519,20 +502,17 @@ register_market_base_vault:
     # acct += base_token_program_padded_data_len + EmptyAccount.size
     add64 r9, r7
     add64 r9, SIZE_OF_EMPTY_ACCOUNT
-    # if acct.pubkey != frame.pda
-    #     return ErrorCode::InvalidBaseVaultPubkey
-    ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_0_OFF]
-    ldxdw r2, [r10 + RM_FM_PDA_CHUNK_0_OFF]
-    jne r7, r2, e_invalid_base_vault_pubkey
-    ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_1_OFF]
-    ldxdw r2, [r10 + RM_FM_PDA_CHUNK_1_OFF]
-    jne r7, r2, e_invalid_base_vault_pubkey
-    ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_2_OFF]
-    ldxdw r2, [r10 + RM_FM_PDA_CHUNK_2_OFF]
-    jne r7, r2, e_invalid_base_vault_pubkey
-    ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_3_OFF]
-    ldxdw r2, [r10 + RM_FM_PDA_CHUNK_3_OFF]
-    jne r7, r2, e_invalid_base_vault_pubkey
+    # frame.vault_index = register_misc.VAULT_INDEX_BASE
+    stb [r10 + RM_FM_VAULT_INDEX_UOFF], RM_MISC_VAULT_INDEX_BASE
+    # result = INIT-VAULT(acct, frame)
+    mov64 r1, r9
+    mov64 r2, r10
+    call init_vault
+    # if result != entrypoint.RETURN_SUCCESS
+    #     return result
+    jeq r0, RETURN_SUCCESS, register_market_quote_token_program
+    exit
+register_market_quote_token_program:
     # base_vault_padded_data_len = acct.padded_data_len
     ldxdw r7, [r9 + ACCT_DATA_LEN_OFF]
     add64 r7, DATA_LEN_MAX_PAD
@@ -571,7 +551,7 @@ register_market_base_vault:
     jne r7, r2, register_market_check_quote_token_2022
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_3_OFF]
     lddw r2, PUBKEY_TOKEN_PROGRAM_CHUNK_3
-    jeq r7, r2, register_market_advance_quote_non_dup
+    jeq r7, r2, register_market_quote_is_token_program
 register_market_check_quote_token_2022:
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_0_OFF]
     lddw r2, PUBKEY_TOKEN_2022_PROGRAM_CHUNK_0
@@ -585,10 +565,17 @@ register_market_check_quote_token_2022:
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_3_OFF]
     lddw r2, PUBKEY_TOKEN_2022_PROGRAM_CHUNK_3
     jne r7, r2, e_quote_token_program_not_token_program
+    # frame.token_program_is_2022 = true
+    stb [r10 + RM_FM_TOKEN_PROGRAM_IS_2022_UOFF], DATA_BOOL_TRUE
+    ja register_market_advance_quote_non_dup
+register_market_quote_is_token_program:
+    # frame.token_program_is_2022 = false
+    stb [r10 + RM_FM_TOKEN_PROGRAM_IS_2022_UOFF], DATA_BOOL_FALSE
 register_market_advance_quote_non_dup:
-    # syscall.program_id = &acct.address
-    mov64 r3, r9
-    add64 r3, ACCT_ADDRESS_OFF
+    # frame.token_program_id = &acct.address
+    mov64 r7, r9
+    add64 r7, ACCT_ADDRESS_OFF
+    stxdw [r10 + RM_FM_TOKEN_PROGRAM_ID_OFF], r7
     # quote_token_program_padded_data_len = acct.padded_data_len
     ldxdw r7, [r9 + ACCT_DATA_LEN_OFF]
     add64 r7, DATA_LEN_MAX_PAD
@@ -615,29 +602,13 @@ register_market_base_vault_dup:
     ldxdw r7, [r8 + RM_MISC_BASE_OWNER_CHUNK_3_OFF]
     ldxdw r2, [r6 + RM_MISC_QUOTE_OWNER_CHUNK_3_OFF]
     jne r7, r2, e_dup_quote_token_program_not_quote_mint_owner
-    # syscall.program_id = &input.base_mint.owner
-    mov64 r3, r8
-    add64 r3, RM_MISC_BASE_OWNER_OFF
     # acct += u64.size
     add64 r9, SIZE_OF_U64
 register_market_done_token_programs:
     # frame.vault_index = register_misc.VAULT_INDEX_QUOTE
     stb [r10 + RM_FM_VAULT_INDEX_UOFF], RM_MISC_VAULT_INDEX_QUOTE
-    # syscall.seeds_len = register_misc.TRY_FIND_VAULT_PDA_SEEDS_LEN
-    mov64 r2, RM_MISC_TRY_FIND_VAULT_PDA_SEEDS_LEN
-    call sol_try_find_program_address
-    # if acct.pubkey != frame.pda
-    #     return ErrorCode::InvalidQuoteVaultPubkey
-    ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_0_OFF]
-    ldxdw r1, [r10 + RM_FM_PDA_CHUNK_0_OFF]
-    jne r7, r1, e_invalid_quote_vault_pubkey
-    ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_1_OFF]
-    ldxdw r1, [r10 + RM_FM_PDA_CHUNK_1_OFF]
-    jne r7, r1, e_invalid_quote_vault_pubkey
-    ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_2_OFF]
-    ldxdw r1, [r10 + RM_FM_PDA_CHUNK_2_OFF]
-    jne r7, r1, e_invalid_quote_vault_pubkey
-    ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_3_OFF]
-    ldxdw r1, [r10 + RM_FM_PDA_CHUNK_3_OFF]
-    jne r7, r1, e_invalid_quote_vault_pubkey
+    # INIT-VAULT(acct, frame)
+    mov64 r1, r9
+    mov64 r2, r10
+    call init_vault
     exit
