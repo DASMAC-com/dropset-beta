@@ -3,6 +3,9 @@ import "katex/dist/katex.min.css";
 import Algorithm from "../components/Algorithm.vue";
 import AlgorithmIndex from "../components/AlgorithmIndex.vue";
 import Include from "../components/Include.vue";
+import { saveScrollOnTexChange, restoreScroll } from "./scrollPreserve.js";
+
+saveScrollOnTexChange();
 
 export default {
   extends: DefaultTheme,
@@ -10,5 +13,6 @@ export default {
     app.component("Algorithm", Algorithm);
     app.component("AlgorithmIndex", AlgorithmIndex);
     app.component("Include", Include);
+    restoreScroll();
   },
 };

@@ -112,6 +112,21 @@ Usage:
 
 <Include vitepress="components/AlgorithmIndex" collapsed/>
 
+### Scroll preservation
+
+When writing `.tex` algorithms side by side with the rendered docs page, every
+save triggers an index rebuild and page reload. Without scroll preservation the
+page jumps back to the top on each reload, forcing you to manually scroll back
+to the algorithm you are editing. The [`scrollPreserve.js`] module eliminates
+this by listening for a custom HMR event (`algo-reload`), saving the current
+scroll offset to `sessionStorage`, and reloading the page. After reload it polls
+with `requestAnimationFrame` until the document is tall enough to restore the
+saved position (algorithm content renders asynchronously). While the restore is
+in progress, hash-target scroll corrections in `<Algorithm>` are suppressed via
+the exported `isRestoring()` flag to avoid fighting over scroll position.
+
+<Include vitepress="theme/scrollPreserve" collapsed/>
+
 ## Build-time files
 
 ### [`paths.js`]
@@ -131,8 +146,10 @@ registry is re-exported by [`paths.js`] and consumed by both `<Algorithm>` and
 ### Algorithm index builder
 
 Runs at dev server startup and rebuilds whenever `.tex`, `.md`, or test case
-`.rs` files change. Scans `.tex` files for `\CALL` dependencies, `.md` files
-for `<Algorithm>` usage, and test case files under `tests/tests/cases/` for
+`.rs` files change. Any of these changes also trigger a scroll-preserving reload
+via the `algo-reload` HMR event (see [scroll preservation](#scroll-preservation)
+above). Scans `.tex` files for `\CALL` dependencies, `.md` files for
+`<Algorithm>` usage, and test case files under `tests/tests/cases/` for
 [`// Verifies: ALGORITHM-NAME`][test cases] comments. `\CALL` targets beginning
 with `sol-` are classified as external syscalls (with hyphens converted to
 underscores). Outputs `algorithms/index.json` with forward deps, reverse deps,
@@ -152,4 +169,5 @@ syscalls, page locations, and associated test cases.
 [`syscalls.json`]: https://github.com/DASMAC-com/dropset-beta/blob/main/docs/algorithms/syscalls.json
 [syscall registry]: #syscall-registry
 [algorithm index]: ../program/algorithm-index
+[`scrollPreserve.js`]: https://github.com/DASMAC-com/dropset-beta/blob/main/docs/.vitepress/theme/scrollPreserve.js
 [test cases]: tests#verifies-convention

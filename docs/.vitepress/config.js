@@ -44,16 +44,14 @@ export default {
           server.watcher.add("**/algorithms/*.tex");
           server.watcher.add("**/tests/tests/cases/*.rs");
           server.watcher.on("change", (path) => {
-            if (
+            const rebuild =
               path.endsWith(".tex") ||
               path.endsWith(".md") ||
-              path.includes("tests/cases/")
-            ) {
+              path.includes("tests/cases/");
+            if (rebuild) {
               buildAlgorithmIndex();
-            }
-            // Trigger a full page reload when a .tex file changes.
-            if (path.endsWith(".tex")) {
-              server.ws.send({ type: "full-reload" });
+              // Preserve scroll position across the reload.
+              server.ws.send({ type: "custom", event: "algo-reload" });
             }
           });
         },

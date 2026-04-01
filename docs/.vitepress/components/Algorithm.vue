@@ -46,6 +46,7 @@ import {
   asmModules,
   syscallRegistry,
 } from "./paths.js";
+import { isRestoring } from "../theme/scrollPreserve.js";
 
 const GH_TESTS = `${GH_ROOT}tests/tests/cases/`;
 
@@ -83,6 +84,23 @@ function resolveLinks(names, index) {
     const page = index[name]?.page || "";
     const href = `${page}#algo-ref-${name}`;
     return { name, href };
+  });
+}
+
+// Handle same-page algo-ref links by scrolling directly to the target
+// element instead of relying on VitePress's router, which does not
+// reliably scroll to dynamically rendered anchors.
+function handleAlgoRefClicks(el) {
+  el.addEventListener("click", (e) => {
+    const a = e.target.closest('a[href*="#algo-ref-"]');
+    if (!a) return;
+    const url = new URL(a.href, location.href);
+    if (url.pathname !== location.pathname) return;
+    const target = document.getElementById(url.hash.slice(1));
+    if (!target) return;
+    e.preventDefault();
+    target.scrollIntoView({ behavior: "smooth" });
+    history.replaceState(null, "", url.hash);
   });
 }
 
@@ -348,6 +366,18 @@ onMounted(async () => {
 
       hl.dispose();
     }
+    handleAlgoRefClicks(container.value);
+
+    // VitePress scrolls to the hash before async content renders,
+    // so the target position is stale. Every Algorithm that finishes
+    // rendering re-scrolls to the hash target, progressively
+    // correcting the offset as the page builds up.
+    if (!isRestoring()) {
+      const hashTarget = location.hash.startsWith("#algo-ref-")
+        ? document.getElementById(location.hash.slice(1))
+        : null;
+      if (hashTarget) hashTarget.scrollIntoView();
+    }
   } catch (e) {
     console.error("Pseudocode render error:", e);
     container.value.textContent = "Error: " + e.message;
@@ -356,6 +386,11 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+/* Offset anchor targets so the fixed navbar does not cover them. */
+[id^="algo-ref-"] {
+  scroll-margin-top: calc(var(--vp-nav-height) + 1rem);
+}
+
 /* Code-block-style background matching VitePress fenced blocks. */
 .pseudocode-container {
   background-color: var(--vp-code-block-bg);
