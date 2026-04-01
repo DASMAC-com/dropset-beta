@@ -18,7 +18,7 @@
   \COMMENT{Pointer to input buffer.}
   \REQUIRE frame.input
   \REQUIRE frame.pda\_seeds[0].len = \texttt{Address.size}
-\PROCEDURE{INIT-VAULT}{acct, frame}
+\FUNCTION{INIT-VAULT}{acct, frame}
   \STATE \CALL{Store}{frame}
   \STATE \CALL{Store}{acct}
   \COMMENT{Derive vault PDA.}
@@ -39,6 +39,6 @@
       \RETURN \texttt{ErrorCode::InvalidQuoteVaultPubkey}
     \ENDIF
   \ENDIF
-\ENDPROCEDURE
+\ENDFUNCTION
 \end{algorithmic}
 \end{algorithm}
