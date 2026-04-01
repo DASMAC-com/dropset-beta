@@ -86,6 +86,23 @@ function resolveLinks(names, index) {
   });
 }
 
+// Handle same-page algo-ref links by scrolling directly to the target
+// element instead of relying on VitePress's router, which does not
+// reliably scroll to dynamically rendered anchors.
+function handleAlgoRefClicks(el) {
+  el.addEventListener("click", (e) => {
+    const a = e.target.closest('a[href*="#algo-ref-"]');
+    if (!a) return;
+    const url = new URL(a.href, location.href);
+    if (url.pathname !== location.pathname) return;
+    const target = document.getElementById(url.hash.slice(1));
+    if (!target) return;
+    e.preventDefault();
+    target.scrollIntoView({ behavior: "smooth" });
+    history.replaceState(null, "", url.hash);
+  });
+}
+
 // Client-side only: render pseudocode, assembly, and test cases.
 onMounted(async () => {
   try {
@@ -347,6 +364,15 @@ onMounted(async () => {
         `</details>`;
 
       hl.dispose();
+    }
+    handleAlgoRefClicks(container.value);
+
+    // VitePress scrolls to the hash before async content renders,
+    // so the target position is stale. Re-scroll if this component
+    // is the hash target.
+    if (location.hash === `#algo-ref-${props.tex}`) {
+      container.value.closest(`[id="algo-ref-${props.tex}"]`)
+        ?.scrollIntoView();
     }
   } catch (e) {
     console.error("Pseudocode render error:", e);
