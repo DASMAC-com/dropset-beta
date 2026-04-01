@@ -5,7 +5,7 @@
 // enough to scroll to the saved offset.
 
 const STORAGE_KEY = "tex-reload-scroll";
-const HMR_EVENT = "tex-change";
+const HMR_EVENT = "algo-reload";
 const MAX_POLL_FRAMES = 120; // ~2 s at 60 fps
 const TOLERANCE_PX = 1;
 
