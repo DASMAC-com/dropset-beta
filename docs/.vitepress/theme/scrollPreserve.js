@@ -13,7 +13,9 @@ const TOLERANCE_PX = 1;
 // target correction in Algorithm.vue) should check this to avoid
 // fighting over scroll position.
 let restoring = false;
-export function isRestoring() { return restoring; }
+export function isRestoring() {
+  return restoring;
+}
 
 // Listen for .tex HMR events, save scroll offset, then reload.
 export function saveScrollOnTexChange() {
@@ -40,7 +42,10 @@ export function restoreScroll() {
 
   const poll = () => {
     window.scrollTo(0, y);
-    if (++frame < MAX_POLL_FRAMES && Math.abs(window.scrollY - y) > TOLERANCE_PX) {
+    if (
+      ++frame < MAX_POLL_FRAMES &&
+      Math.abs(window.scrollY - y) > TOLERANCE_PX
+    ) {
       requestAnimationFrame(poll);
     } else {
       restoring = false;
