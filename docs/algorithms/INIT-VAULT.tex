@@ -53,6 +53,7 @@
     \STATE frame.cpi[0].info.key = \&mint.address
     \STATE frame.cpi[0].info.owner = \&mint.owner
     \STATE frame.cpi[0].info.lamports = \&mint.lamports
+    \STATE frame.cpi[0].info.data\_len = mint.data\_len
     \STATE frame.cpi[0].info.data = \&mint.data
     \COMMENT{Populate SolInstruction for GetAccountDataSize CPI.}
     \STATE frame.sol\_instruction.program\_id = frame.token\_program\_id
@@ -78,7 +79,6 @@
   \ELSE
     \STATE acct\_size = \texttt{token.ACCOUNT\_SIZE}
   \ENDIF
-  \STATE \RETURN acct\_size
 \ENDFUNCTION
 \end{algorithmic}
 \end{algorithm}

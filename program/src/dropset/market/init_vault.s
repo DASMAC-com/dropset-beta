@@ -45,7 +45,8 @@ init_vault:
     #     acct_size = token.ACCOUNT_SIZE
     ldxb r1, [r6 + RM_FM_TOKEN_PROGRAM_IS_2022_UOFF]
     jne r1, DATA_BOOL_FALSE, init_vault_get_account_data_size
-    mov64 r0, TOKEN_ACCOUNT_SIZE
+    mov64 r1, TOKEN_ACCOUNT_SIZE
+    stxdw [r6 + RM_FM_TOKEN_ACCOUNT_DATA_SIZE_OFF], r1
     exit
 init_vault_get_account_data_size:
     # frame.cpi[0].info.is_signer = false
@@ -68,8 +69,12 @@ init_vault_get_account_data_size:
     # frame.cpi[0].info.lamports = &mint.lamports
     add64 r9, IB_OWNER_TO_LAMPORTS_REL_OFF_IMM
     stxdw [r6 + RM_FM_CPI_IDX_0_ACCT_INFO_LAMPORTS_UOFF], r9
+    # frame.cpi[0].info.data_len = mint.data_len
+    ldxdw r9, [r8 + ACCT_DATA_LEN_OFF]
+    stxdw [r6 + RM_FM_CPI_IDX_0_ACCT_INFO_DATA_LEN_UOFF], r9
     # frame.cpi[0].info.data = &mint.data
-    add64 r9, IB_LAMPORTS_TO_DATA_REL_OFF_IMM
+    mov64 r9, r8
+    add64 r9, ACCT_DATA_OFF
     stxdw [r6 + RM_FM_CPI_IDX_0_ACCT_INFO_DATA_UOFF], r9
     # frame.sol_instruction.program_id = frame.token_program_id
     ldxdw r9, [r6 + RM_FM_TOKEN_PROGRAM_ID_OFF]
@@ -110,8 +115,6 @@ init_vault_get_account_data_size:
     mov64 r3, r6
     add64 r3, RM_FM_GET_RETURN_DATA_PROGRAM_ID_OFF
     call sol_get_return_data
-    # acct_size = frame.token_account_data_size
-    ldxdw r0, [r6 + RM_FM_TOKEN_ACCOUNT_DATA_SIZE_OFF]
     exit
 init_vault_invalid_pda:
     # if frame.vault_index == register_misc.VAULT_INDEX_BASE
