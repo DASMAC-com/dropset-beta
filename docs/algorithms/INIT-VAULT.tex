@@ -116,7 +116,7 @@
   \STATE frame.cpi[1].info.lamports = \&acct.lamports
   \STATE frame.cpi[1].info.data = \&acct.data
   \COMMENT{Populate SolInstruction for CreateAccount CPI.}
-  \STATE frame.sol\_instruction.program\_id = \&frame.system\_program\_id
+  \STATE frame.sol\_instruction.program\_id = frame.system\_program\_id
   \STATE frame.sol\_instruction.accounts = \&frame.cpi.account\_metas
   \STATE frame.sol\_instruction.account\_len =
     \texttt{register\_misc.CREATE\_ACCOUNT\_N\_ACCOUNTS}
