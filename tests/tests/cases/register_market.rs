@@ -113,6 +113,32 @@ fn into_metas_and_accounts(
 
 const USER_LAMPORTS: u64 = 10_000_000;
 const MARKET_HEADER_SIZE: usize = size_of::<MarketHeader>();
+const TOKEN_ACCOUNT_SIZE: usize = 165;
+
+macro_rules! check_vault {
+    ($errors:expr, $label:expr, $vault:expr, $expected_owner:expr, $rent:expr) => {{
+        let vault = $vault;
+        let expected_owner = $expected_owner;
+        if vault.owner != *expected_owner {
+            $errors.push(format!(
+                "{} owner: expected {:?}, got {:?}",
+                $label, expected_owner, vault.owner
+            ));
+        }
+        if vault.data.len() != TOKEN_ACCOUNT_SIZE {
+            $errors.push(format!(
+                "{} data len: expected {}, got {}",
+                $label, TOKEN_ACCOUNT_SIZE, vault.data.len()
+            ));
+        }
+        if !$rent.is_exempt(vault.lamports, vault.data.len()) {
+            $errors.push(format!(
+                "{} not rent exempt: {} lamports for {} bytes",
+                $label, vault.lamports, vault.data.len()
+            ));
+        }
+    }};
+}
 
 fn default_mint() -> spl_token_interface::state::Mint {
     spl_token_interface::state::Mint {
@@ -1431,6 +1457,20 @@ impl TestCase for Case {
                                 market.data.len()
                             ));
                         }
+
+                        let base_vault = &result.resulting_accounts
+                            [RegisterMarketAccounts::BaseVault as usize]
+                            .1;
+                        check_vault!(
+                            errors, "base vault", base_vault, &token_program_id, rent
+                        );
+
+                        let quote_vault = &result.resulting_accounts
+                            [RegisterMarketAccounts::QuoteVault as usize]
+                            .1;
+                        check_vault!(
+                            errors, "quote vault", quote_vault, &token_program_id, rent
+                        );
                     }
                     other => {
                         errors.push(format!("expected success, got {:?}", other));
@@ -1483,6 +1523,20 @@ impl TestCase for Case {
                                 market.data.len()
                             ));
                         }
+
+                        let base_vault = &result.resulting_accounts
+                            [RegisterMarketAccounts::BaseVault as usize]
+                            .1;
+                        check_vault!(
+                            errors, "base vault", base_vault, &token_program_id, rent
+                        );
+
+                        let quote_vault = &result.resulting_accounts
+                            [RegisterMarketAccounts::QuoteVault as usize]
+                            .1;
+                        check_vault!(
+                            errors, "quote vault", quote_vault, &token_2022_id, rent
+                        );
                     }
                     other => {
                         errors.push(format!("expected success, got {:?}", other));
@@ -1534,6 +1588,20 @@ impl TestCase for Case {
                                 market.data.len()
                             ));
                         }
+
+                        let base_vault = &result.resulting_accounts
+                            [RegisterMarketAccounts::BaseVault as usize]
+                            .1;
+                        check_vault!(
+                            errors, "base vault", base_vault, &token_2022_id, rent
+                        );
+
+                        let quote_vault = &result.resulting_accounts
+                            [RegisterMarketAccounts::QuoteVault as usize]
+                            .1;
+                        check_vault!(
+                            errors, "quote vault", quote_vault, &token_2022_id, rent
+                        );
                     }
                     other => {
                         errors.push(format!("expected success, got {:?}", other));
@@ -1586,6 +1654,20 @@ impl TestCase for Case {
                                 market.data.len()
                             ));
                         }
+
+                        let base_vault = &result.resulting_accounts
+                            [RegisterMarketAccounts::BaseVault as usize]
+                            .1;
+                        check_vault!(
+                            errors, "base vault", base_vault, &token_2022_id, rent
+                        );
+
+                        let quote_vault = &result.resulting_accounts
+                            [RegisterMarketAccounts::QuoteVault as usize]
+                            .1;
+                        check_vault!(
+                            errors, "quote vault", quote_vault, &token_program_id, rent
+                        );
                     }
                     other => {
                         errors.push(format!("expected success, got {:?}", other));
