@@ -8,7 +8,8 @@ use pinocchio_token_2022::instructions::GetAccountDataSize;
 /// CPI instruction data for InitializeAccount2.
 pub struct InitializeAccount2 {
     pub discriminant: u8,
-    pub owner: Address,
+    /// In this implementation, the market PDA. Though the account "owner" is the mint.
+    pub proprietor: Address,
 }
 
 constant_group! {

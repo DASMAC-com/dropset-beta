@@ -24,58 +24,72 @@
 
 # Stack frame for REGISTER-MARKET.
 # -------------------------------------------------------------------------
-.equ RM_FM_TOKEN_PROGRAM_ID_OFF, -560 # Pointer to token program address.
-.equ RM_FM_PROGRAM_ID_OFF, -552 # Pointer to program ID in input buffer.
-.equ RM_FM_INPUT_OFF, -544 # Saved input buffer pointer.
-.equ RM_FM_INPUT_SHIFTED_OFF, -536 # Saved input_shifted pointer.
-.equ RM_FM_LAMPORTS_PER_BYTE_OFF, -528 # From Rent sysvar.
+.equ RM_FM_TOKEN_PROGRAM_ID_OFF, -592 # Pointer to token program address.
+.equ RM_FM_PROGRAM_ID_OFF, -584 # Pointer to program ID in input buffer.
+.equ RM_FM_INPUT_OFF, -576 # Saved input buffer pointer.
+.equ RM_FM_INPUT_SHIFTED_OFF, -568 # Saved input_shifted pointer.
+.equ RM_FM_LAMPORTS_PER_BYTE_OFF, -560 # From Rent sysvar.
 # Return value from GetAccountDataSize CPI, to check token account data size at runtime.
-.equ RM_FM_TOKEN_ACCOUNT_DATA_SIZE_OFF, -520
+.equ RM_FM_TOKEN_ACCOUNT_DATA_SIZE_OFF, -552
 # Pointer to mint account for vault initialization.
-.equ RM_FM_MINT_OFF, -512
-.equ RM_FM_RENT_OFF, -504 # Pointer to Rent sysvar account.
-.equ RM_FM_PDA_SEEDS_OFF, -496 # Signer seeds offset.
+.equ RM_FM_MINT_OFF, -544
+.equ RM_FM_RENT_OFF, -536 # Pointer to Rent sysvar account.
+.equ RM_FM_PDA_SEEDS_OFF, -528 # Signer seeds offset.
 .equ RM_FM_PDA_SEEDS_N_SEEDS, 3 # Number of signer seeds.
-.equ RM_FM_PDA_SEEDS_IDX_0_ADDR_OFF, -496 # Idx 0 signer seed address.
-.equ RM_FM_PDA_SEEDS_IDX_0_LEN_OFF, -488 # Idx 0 signer seed length.
-.equ RM_FM_PDA_SEEDS_IDX_1_ADDR_OFF, -480 # Idx 1 signer seed address.
-.equ RM_FM_PDA_SEEDS_IDX_1_LEN_OFF, -472 # Idx 1 signer seed length.
-.equ RM_FM_PDA_SEEDS_IDX_2_ADDR_OFF, -464 # Idx 2 signer seed address.
-.equ RM_FM_PDA_SEEDS_IDX_2_LEN_OFF, -456 # Idx 2 signer seed length.
-.equ RM_FM_PDA_OFF, -448 # PDA address.
-.equ RM_FM_PDA_CHUNK_0_OFF, -448 # PDA address (chunk 0).
-.equ RM_FM_PDA_CHUNK_1_OFF, -440 # PDA address (chunk 1).
-.equ RM_FM_PDA_CHUNK_2_OFF, -432 # PDA address (chunk 2).
-.equ RM_FM_PDA_CHUNK_3_OFF, -424 # PDA address (chunk 3).
-.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_OFF, -416 # System Program pubkey.
+.equ RM_FM_PDA_SEEDS_IDX_0_ADDR_OFF, -528 # Idx 0 signer seed address.
+.equ RM_FM_PDA_SEEDS_IDX_0_LEN_OFF, -520 # Idx 0 signer seed length.
+.equ RM_FM_PDA_SEEDS_IDX_1_ADDR_OFF, -512 # Idx 1 signer seed address.
+.equ RM_FM_PDA_SEEDS_IDX_1_LEN_OFF, -504 # Idx 1 signer seed length.
+.equ RM_FM_PDA_SEEDS_IDX_2_ADDR_OFF, -496 # Idx 2 signer seed address.
+.equ RM_FM_PDA_SEEDS_IDX_2_LEN_OFF, -488 # Idx 2 signer seed length.
+.equ RM_FM_PDA_OFF, -480 # PDA address.
+.equ RM_FM_PDA_CHUNK_0_OFF, -480 # PDA address (chunk 0).
+.equ RM_FM_PDA_CHUNK_1_OFF, -472 # PDA address (chunk 1).
+.equ RM_FM_PDA_CHUNK_2_OFF, -464 # PDA address (chunk 2).
+.equ RM_FM_PDA_CHUNK_3_OFF, -456 # PDA address (chunk 3).
+.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_OFF, -448 # System Program pubkey.
 # System Program pubkey (chunk 0).
-.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_0_OFF, -416
+.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_0_OFF, -448
 # System Program pubkey (chunk 1).
-.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_1_OFF, -408
+.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_1_OFF, -440
 # System Program pubkey (chunk 2).
-.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_2_OFF, -400
+.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_2_OFF, -432
 # System Program pubkey (chunk 3).
-.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_3_OFF, -392
-.equ RM_FM_SYSTEM_PROGRAM_ID_OFF, -384 # System Program ID in input buffer.
+.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_3_OFF, -424
+.equ RM_FM_SYSTEM_PROGRAM_ID_OFF, -416 # System Program ID in input buffer.
 # Get return data program ID for CPI calls.
-.equ RM_FM_GET_RETURN_DATA_PROGRAM_ID_OFF, -376
-.equ RM_FM_CREATE_ACCT_DATA_OFF, -344 # CreateAccount instruction data.
+.equ RM_FM_GET_RETURN_DATA_PROGRAM_ID_OFF, -408
+.equ RM_FM_CREATE_ACCT_DATA_OFF, -376 # CreateAccount instruction data.
 # Lamports field within CreateAccount instruction data.
-.equ RM_FM_CREATE_ACCT_LAMPORTS_UOFF, -340
+.equ RM_FM_CREATE_ACCT_LAMPORTS_UOFF, -372
 # Space field within CreateAccount instruction data.
-.equ RM_FM_CREATE_ACCT_SPACE_UOFF, -332
+.equ RM_FM_CREATE_ACCT_SPACE_UOFF, -364
 # Owner field within CreateAccount instruction data.
-.equ RM_FM_CREATE_ACCT_OWNER_UOFF, -324
+.equ RM_FM_CREATE_ACCT_OWNER_UOFF, -356
 # Owner field within CreateAccount instruction data (chunk 0).
-.equ RM_FM_CREATE_ACCT_OWNER_CHUNK_0_UOFF, -324
+.equ RM_FM_CREATE_ACCT_OWNER_CHUNK_0_UOFF, -356
 # Owner field within CreateAccount instruction data (chunk 1).
-.equ RM_FM_CREATE_ACCT_OWNER_CHUNK_1_UOFF, -316
+.equ RM_FM_CREATE_ACCT_OWNER_CHUNK_1_UOFF, -348
 # Owner field within CreateAccount instruction data (chunk 2).
-.equ RM_FM_CREATE_ACCT_OWNER_CHUNK_2_UOFF, -308
+.equ RM_FM_CREATE_ACCT_OWNER_CHUNK_2_UOFF, -340
 # Owner field within CreateAccount instruction data (chunk 3).
-.equ RM_FM_CREATE_ACCT_OWNER_CHUNK_3_UOFF, -300
+.equ RM_FM_CREATE_ACCT_OWNER_CHUNK_3_UOFF, -332
+# InitializeAccount2 CPI instruction data.
+.equ RM_FM_INIT_ACCT_2_DATA_OFF, -320
+# Discriminant field within InitializeAccount2 instruction data.
+.equ RM_FM_INIT_ACCT_2_DISC_UOFF, -320
+# Proprietor field within InitializeAccount2 instruction data.
+.equ RM_FM_INIT_ACCT_2_PROPRIETOR_UOFF, -319
+# Proprietor field within InitializeAccount2 instruction data (chunk 0).
+.equ RM_FM_INIT_ACCT_2_PROPRIETOR_CHUNK_0_UOFF, -319
+# Proprietor field within InitializeAccount2 instruction data (chunk 1).
+.equ RM_FM_INIT_ACCT_2_PROPRIETOR_CHUNK_1_UOFF, -311
+# Proprietor field within InitializeAccount2 instruction data (chunk 2).
+.equ RM_FM_INIT_ACCT_2_PROPRIETOR_CHUNK_2_UOFF, -303
+# Proprietor field within InitializeAccount2 instruction data (chunk 3).
+.equ RM_FM_INIT_ACCT_2_PROPRIETOR_CHUNK_3_UOFF, -295
 # GetAccountDataSize CPI instruction data.
-.equ RM_FM_GET_ACCOUNT_DATA_SIZE_DATA_UOFF, -288
+.equ RM_FM_GET_ACCOUNT_DATA_SIZE_DATA_UOFF, -287
 .equ RM_FM_CPI_N_ACCOUNTS, 3 # Number of CPI accounts.
 .equ RM_FM_CPI_SOL_ACCT_INFO_OFF, -280 # Start of SolAccountInfo vector.
 .equ RM_FM_CPI_SOL_ACCT_META_OFF, -112 # Start of SolAccountMeta vector.
@@ -155,11 +169,11 @@
 # Whether the current token program is Token 2022.
 .equ RM_FM_TOKEN_PROGRAM_IS_2022_UOFF, -6
 # From pda_seeds to sol_instruction.
-.equ RM_FM_PDA_SEEDS_TO_SOL_INSN_REL_OFF_IMM, 448
+.equ RM_FM_PDA_SEEDS_TO_SOL_INSN_REL_OFF_IMM, 480
 # From pda to signers_seeds.
-.equ RM_FM_PDA_TO_SIGNERS_SEEDS_REL_OFF_IMM, 384
+.equ RM_FM_PDA_TO_SIGNERS_SEEDS_REL_OFF_IMM, 416
 # From create_account_data to CPI account metas.
-.equ RM_FM_CREATE_ACCT_DATA_TO_CPI_ACCT_METAS_REL_OFF_IMM, 232
+.equ RM_FM_CREATE_ACCT_DATA_TO_CPI_ACCT_METAS_REL_OFF_IMM, 264
 # -------------------------------------------------------------------------
 
 # Miscellaneous market registration constants.

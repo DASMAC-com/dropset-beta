@@ -5,6 +5,7 @@ use crate::memory::EmptyAccount;
 use crate::memory::StackNode;
 use crate::order::Order;
 use crate::seat::Seat;
+use crate::token::InitializeAccount2;
 use dropset_macros::{
     constant_group, cpi_accounts, frame, instruction_accounts, instruction_data, signer_seeds,
     svm_data,
@@ -176,6 +177,8 @@ pub struct RegisterMarketFrame {
     pub get_return_data_program_id: Address,
     /// CPI instruction data for CreateAccount.
     pub create_account_data: CreateAccountData,
+    /// CPI instruction data for InitializeAccount2.
+    pub initialize_account_2_data: InitializeAccount2,
     /// GetAccountDataSize CPI instruction data.
     pub get_account_data_size_data: u8,
     /// CPI accounts for CreateAccount and InitializeAccount2.
@@ -232,6 +235,12 @@ constant_group! {
         CREATE_ACCT_SPACE = unaligned_offset!(create_account_data.space),
         /// Owner field within CreateAccount instruction data.
         CREATE_ACCT_OWNER = unaligned_pubkey_offsets!(create_account_data.owner),
+        /// InitializeAccount2 CPI instruction data.
+        INIT_ACCT_2_DATA = offset!(initialize_account_2_data),
+        /// Discriminant field within InitializeAccount2 instruction data.
+        INIT_ACCT_2_DISC = unaligned_offset!(initialize_account_2_data.discriminant),
+        /// Proprietor field within InitializeAccount2 instruction data.
+        INIT_ACCT_2_PROPRIETOR = unaligned_pubkey_offsets!(initialize_account_2_data.proprietor),
         /// GetAccountDataSize CPI instruction data.
         GET_ACCOUNT_DATA_SIZE_DATA = unaligned_offset!(get_account_data_size_data),
         /// CPI accounts.

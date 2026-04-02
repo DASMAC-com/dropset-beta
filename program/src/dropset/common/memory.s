@@ -81,3 +81,4 @@
 .equ SIZE_OF_EMPTY_ACCOUNT, 10336 # Size of EmptyAccount in bytes.
 .equ SIZE_OF_MARKET_HEADER, 43 # Size of MarketHeader in bytes.
 .equ SIZE_OF_CREATE_ACCOUNT_DATA, 56 # Size of CreateAccountData in bytes.
+.equ SIZE_OF_INITIALIZE_ACCOUNT2, 33 # Size of InitializeAccount2 in bytes.
