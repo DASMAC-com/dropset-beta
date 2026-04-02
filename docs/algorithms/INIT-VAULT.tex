@@ -60,7 +60,8 @@
     \STATE frame.sol\_instruction.accounts = \&frame.cpi[0].meta
     \STATE frame.sol\_instruction.account\_len =
       \texttt{token.GET\_ACCOUNT\_DATA\_SIZE\_N\_ACCOUNTS}
-    \STATE frame.get\_account\_data\_size\_data = \texttt{token.GET\_ACCOUNT\_DATA\_SIZE\_DISC}
+    \STATE frame.get\_account\_data\_size\_data =
+      \texttt{token.GET\_ACCOUNT\_DATA\_SIZE\_DISC}
     \STATE frame.sol\_instruction.data = \&frame.get\_account\_data\_size\_data
     \STATE frame.sol\_instruction.data\_len = \texttt{u8.size}
     \COMMENT{Invoke GetAccountDataSize CPI (no signers).}
