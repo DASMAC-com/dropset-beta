@@ -11,7 +11,7 @@
   \INPUT $r_{10}$ = frame
   \COMMENT{Pointer to shifted input buffer for quote mint offsets.}
   \REQUIRE frame.input\_shifted
-  \REQUIRE *frame.system\_program\_id = \texttt{RegisterMarketAccounts::SystemProgram}
+  \REQUIRE *frame.system\_program\_id = input.system\_program.address
   \REQUIRE frame.cpi[0].info.data\_len = 0
   \REQUIRE frame.cpi[1].info.data\_len = 0
   \ENSURE $r_9$ = acct
