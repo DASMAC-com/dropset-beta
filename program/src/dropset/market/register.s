@@ -24,15 +24,16 @@
 
 # Stack frame for REGISTER-MARKET.
 # -------------------------------------------------------------------------
-.equ RM_FM_TOKEN_PROGRAM_ID_OFF, -552 # Pointer to token program address.
-.equ RM_FM_PROGRAM_ID_OFF, -544 # Pointer to program ID in input buffer.
-.equ RM_FM_INPUT_OFF, -536 # Saved input buffer pointer.
-.equ RM_FM_INPUT_SHIFTED_OFF, -528 # Saved input_shifted pointer.
-.equ RM_FM_LAMPORTS_PER_BYTE_OFF, -520 # From Rent sysvar.
+.equ RM_FM_TOKEN_PROGRAM_ID_OFF, -560 # Pointer to token program address.
+.equ RM_FM_PROGRAM_ID_OFF, -552 # Pointer to program ID in input buffer.
+.equ RM_FM_INPUT_OFF, -544 # Saved input buffer pointer.
+.equ RM_FM_INPUT_SHIFTED_OFF, -536 # Saved input_shifted pointer.
+.equ RM_FM_LAMPORTS_PER_BYTE_OFF, -528 # From Rent sysvar.
 # Return value from GetAccountDataSize CPI, to check token account data size at runtime.
-.equ RM_FM_TOKEN_ACCOUNT_DATA_SIZE_OFF, -512
+.equ RM_FM_TOKEN_ACCOUNT_DATA_SIZE_OFF, -520
 # Pointer to mint account for vault initialization.
-.equ RM_FM_MINT_OFF, -504
+.equ RM_FM_MINT_OFF, -512
+.equ RM_FM_RENT_OFF, -504 # Pointer to Rent sysvar account.
 .equ RM_FM_PDA_SEEDS_OFF, -496 # Signer seeds offset.
 .equ RM_FM_PDA_SEEDS_N_SEEDS, 3 # Number of signer seeds.
 .equ RM_FM_PDA_SEEDS_IDX_0_ADDR_OFF, -496 # Idx 0 signer seed address.
