@@ -28,6 +28,7 @@
   \REQUIRE frame.signers\_seeds.addr = \&frame.pda\_seeds
   \REQUIRE frame.signers\_seeds.len = \texttt{RegisterMarketFrame.PDA\_SEEDS\_N\_SEEDS}
   \REQUIRE input.user.data\_len = \texttt{data.LEN\_ZERO}
+  \REQUIRE frame.cpi[0].info.executable = \texttt{false}
 \FUNCTION{INIT-VAULT}{acct, frame}
   \STATE \CALL{Store}{frame}
   \STATE \CALL{Store}{acct}

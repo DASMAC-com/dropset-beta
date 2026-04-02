@@ -52,8 +52,6 @@ init_vault_get_account_data_size:
     # frame.cpi[0].info.is_signer = false
     # frame.cpi[0].info.is_writable = false
     sth [r6 + RM_FM_CPI_IDX_0_ACCT_INFO_IS_SIGNER_UOFF], CPI_READONLY_NON_SIGNER
-    # frame.cpi[0].info.executable = false
-    stb [r6 + RM_FM_CPI_IDX_0_ACCT_INFO_EXECUTABLE_UOFF], DATA_BOOL_FALSE
     # frame.cpi[0].meta.is_writable = false
     # frame.cpi[0].meta.is_signer = false
     sth [r6 + RM_FM_CPI_IDX_0_ACCT_META_IS_WRITABLE_UOFF], CPI_READONLY_NON_SIGNER
