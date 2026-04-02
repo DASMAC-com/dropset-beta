@@ -118,14 +118,14 @@ init_vault_get_account_data_size:
 init_vault_create_account:
     # acct_size = frame.token_account_data_size
     ldxdw r8, [r6 + RM_FM_TOKEN_ACCOUNT_DATA_SIZE_OFF]
+    # frame.create_account_data.space = acct_size
+    stxdw [r6 + RM_FM_CREATE_ACCT_SPACE_UOFF], r8
     # acct_size = acct_size + account.STORAGE_OVERHEAD
     add64 r8, ACCT_STORAGE_OVERHEAD
     # frame.create_account_data.lamports = acct_size * frame.lamports_per_byte
     ldxdw r9, [r6 + RM_FM_LAMPORTS_PER_BYTE_OFF]
-    mul64 r9, r8
-    stxdw [r6 + RM_FM_CREATE_ACCT_LAMPORTS_UOFF], r9
-    # frame.create_account_data.space = acct_size
-    stxdw [r6 + RM_FM_CREATE_ACCT_SPACE_UOFF], r8
+    mul64 r8, r9
+    stxdw [r6 + RM_FM_CREATE_ACCT_LAMPORTS_UOFF], r8
     # frame.create_account_data.owner = frame.token_program_id
     ldxdw r8, [r6 + RM_FM_TOKEN_PROGRAM_ID_OFF]
     ldxdw r9, [r8 + PUBKEY_CHUNK_0_OFF]
@@ -149,12 +149,14 @@ init_vault_create_account:
     # frame.cpi[1].meta.is_signer = true
     sth [r6 + RM_FM_CPI_IDX_1_ACCT_META_IS_WRITABLE_UOFF], CPI_WRITABLE_SIGNER
     # frame.cpi[0].info.data_len = data.LEN_ZERO
-    stxdw [r6 + RM_FM_CPI_IDX_0_ACCT_INFO_DATA_LEN_UOFF], DATA_LEN_ZERO
+    mov64 r9, DATA_LEN_ZERO
+    stxdw [r6 + RM_FM_CPI_IDX_0_ACCT_INFO_DATA_LEN_UOFF], r9
     # frame.cpi[1].info.data_len = acct.data_len
     ldxdw r9, [r7 + ACCT_DATA_LEN_OFF]
     stxdw [r6 + RM_FM_CPI_IDX_1_ACCT_INFO_DATA_LEN_UOFF], r9
     # frame.cpi[0].meta.pubkey = &input.user.address
     # frame.cpi[0].info.key = &input.user.address
+    ldxdw r8, [r6 + RM_FM_INPUT_OFF]
     add64 r8, IB_USER_PUBKEY_OFF
     stxdw [r6 + RM_FM_CPI_IDX_0_ACCT_META_PUBKEY_UOFF], r8
     stxdw [r6 + RM_FM_CPI_IDX_0_ACCT_INFO_KEY_UOFF], r8

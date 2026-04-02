@@ -91,10 +91,10 @@
     \STATE acct\_size = \texttt{token.ACCOUNT\_SIZE}
   \ENDIF
   \COMMENT{Prepare CreateAccount instruction fields.}
+  \STATE frame.create\_account\_data.space = acct\_size
   \STATE acct\_size = acct\_size + \texttt{account.STORAGE\_OVERHEAD}
   \STATE frame.create\_account\_data.lamports =
     acct\_size $\times$ frame.lamports\_per\_byte
-  \STATE frame.create\_account\_data.space = acct\_size
   \STATE frame.create\_account\_data.owner = frame.token\_program\_id
   \COMMENT{Assign CPI account fields via immediates.}
   \STATE frame.cpi[0].info.is\_signer = \texttt{true}
