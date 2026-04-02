@@ -116,7 +116,8 @@ const MARKET_HEADER_SIZE: usize = size_of::<MarketHeader>();
 const TOKEN_ACCOUNT_SIZE: usize = 165;
 
 macro_rules! check_vault {
-    ($errors:expr, $label:expr, $vault:expr, $expected_owner:expr, $rent:expr) => {{
+    ($errors:expr, $label:expr, $vault:expr, $expected_owner:expr, $rent:expr,
+     $expected_mint:expr, $expected_proprietor:expr) => {{
         let vault = $vault;
         let expected_owner = $expected_owner;
         if vault.owner != *expected_owner {
@@ -140,6 +141,43 @@ macro_rules! check_vault {
                 vault.lamports,
                 vault.data.len()
             ));
+        }
+        use solana_program_pack::Pack;
+        match spl_token_interface::state::Account::unpack_from_slice(&vault.data) {
+            Ok(token_account) => {
+                if token_account.mint != $expected_mint {
+                    $errors.push(format!(
+                        "{} mint: expected {:?}, got {:?}",
+                        $label, $expected_mint, token_account.mint
+                    ));
+                }
+                if token_account.owner != $expected_proprietor {
+                    $errors.push(format!(
+                        "{} proprietor: expected {:?}, got {:?}",
+                        $label, $expected_proprietor, token_account.owner
+                    ));
+                }
+                if token_account.amount != 0 {
+                    $errors.push(format!(
+                        "{} amount: expected 0, got {}",
+                        $label, token_account.amount
+                    ));
+                }
+                if token_account.state
+                    != spl_token_interface::state::AccountState::Initialized
+                {
+                    $errors.push(format!(
+                        "{} state: expected Initialized, got {:?}",
+                        $label, token_account.state
+                    ));
+                }
+            }
+            Err(e) => {
+                $errors.push(format!(
+                    "{} failed to unpack token account: {:?}",
+                    $label, e
+                ));
+            }
         }
     }};
 }
@@ -1486,15 +1524,24 @@ impl TestCase for Case {
                             ));
                         }
 
+                        let market_pda =
+                            result.resulting_accounts[RegisterMarketAccounts::Market as usize].0;
+                        let base_mint_key =
+                            result.resulting_accounts[RegisterMarketAccounts::BaseMint as usize].0;
+                        let quote_mint_key =
+                            result.resulting_accounts[RegisterMarketAccounts::QuoteMint as usize].0;
+
                         let base_vault = &result.resulting_accounts
                             [RegisterMarketAccounts::BaseVault as usize]
                             .1;
-                        check_vault!(errors, "base vault", base_vault, &token_program_id, rent);
+                        check_vault!(errors, "base vault", base_vault, &token_program_id, rent,
+                            base_mint_key, market_pda);
 
                         let quote_vault = &result.resulting_accounts
                             [RegisterMarketAccounts::QuoteVault as usize]
                             .1;
-                        check_vault!(errors, "quote vault", quote_vault, &token_program_id, rent);
+                        check_vault!(errors, "quote vault", quote_vault, &token_program_id, rent,
+                            quote_mint_key, market_pda);
                     }
                     other => {
                         errors.push(format!("expected success, got {:?}", other));
@@ -1548,15 +1595,24 @@ impl TestCase for Case {
                             ));
                         }
 
+                        let market_pda =
+                            result.resulting_accounts[RegisterMarketAccounts::Market as usize].0;
+                        let base_mint_key =
+                            result.resulting_accounts[RegisterMarketAccounts::BaseMint as usize].0;
+                        let quote_mint_key =
+                            result.resulting_accounts[RegisterMarketAccounts::QuoteMint as usize].0;
+
                         let base_vault = &result.resulting_accounts
                             [RegisterMarketAccounts::BaseVault as usize]
                             .1;
-                        check_vault!(errors, "base vault", base_vault, &token_program_id, rent);
+                        check_vault!(errors, "base vault", base_vault, &token_program_id, rent,
+                            base_mint_key, market_pda);
 
                         let quote_vault = &result.resulting_accounts
                             [RegisterMarketAccounts::QuoteVault as usize]
                             .1;
-                        check_vault!(errors, "quote vault", quote_vault, &token_2022_id, rent);
+                        check_vault!(errors, "quote vault", quote_vault, &token_2022_id, rent,
+                            quote_mint_key, market_pda);
                     }
                     other => {
                         errors.push(format!("expected success, got {:?}", other));
@@ -1609,15 +1665,24 @@ impl TestCase for Case {
                             ));
                         }
 
+                        let market_pda =
+                            result.resulting_accounts[RegisterMarketAccounts::Market as usize].0;
+                        let base_mint_key =
+                            result.resulting_accounts[RegisterMarketAccounts::BaseMint as usize].0;
+                        let quote_mint_key =
+                            result.resulting_accounts[RegisterMarketAccounts::QuoteMint as usize].0;
+
                         let base_vault = &result.resulting_accounts
                             [RegisterMarketAccounts::BaseVault as usize]
                             .1;
-                        check_vault!(errors, "base vault", base_vault, &token_2022_id, rent);
+                        check_vault!(errors, "base vault", base_vault, &token_2022_id, rent,
+                            base_mint_key, market_pda);
 
                         let quote_vault = &result.resulting_accounts
                             [RegisterMarketAccounts::QuoteVault as usize]
                             .1;
-                        check_vault!(errors, "quote vault", quote_vault, &token_2022_id, rent);
+                        check_vault!(errors, "quote vault", quote_vault, &token_2022_id, rent,
+                            quote_mint_key, market_pda);
                     }
                     other => {
                         errors.push(format!("expected success, got {:?}", other));
@@ -1671,15 +1736,24 @@ impl TestCase for Case {
                             ));
                         }
 
+                        let market_pda =
+                            result.resulting_accounts[RegisterMarketAccounts::Market as usize].0;
+                        let base_mint_key =
+                            result.resulting_accounts[RegisterMarketAccounts::BaseMint as usize].0;
+                        let quote_mint_key =
+                            result.resulting_accounts[RegisterMarketAccounts::QuoteMint as usize].0;
+
                         let base_vault = &result.resulting_accounts
                             [RegisterMarketAccounts::BaseVault as usize]
                             .1;
-                        check_vault!(errors, "base vault", base_vault, &token_2022_id, rent);
+                        check_vault!(errors, "base vault", base_vault, &token_2022_id, rent,
+                            base_mint_key, market_pda);
 
                         let quote_vault = &result.resulting_accounts
                             [RegisterMarketAccounts::QuoteVault as usize]
                             .1;
-                        check_vault!(errors, "quote vault", quote_vault, &token_program_id, rent);
+                        check_vault!(errors, "quote vault", quote_vault, &token_program_id, rent,
+                            quote_mint_key, market_pda);
                     }
                     other => {
                         errors.push(format!("expected success, got {:?}", other));

@@ -854,6 +854,7 @@ dependencies = [
  "mollusk-svm",
  "mollusk-svm-programs-token",
  "solana-account 3.4.0",
+ "solana-program-pack",
  "solana-sdk",
  "spl-token-interface",
 ]
