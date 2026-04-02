@@ -24,36 +24,37 @@
 
 # Stack frame for REGISTER-MARKET.
 # -------------------------------------------------------------------------
-.equ RM_FM_TOKEN_PROGRAM_ID_OFF, -536 # Pointer to token program address.
-.equ RM_FM_INPUT_OFF, -528 # Saved input buffer pointer.
-.equ RM_FM_INPUT_SHIFTED_OFF, -520 # Saved input_shifted pointer.
-.equ RM_FM_LAMPORTS_PER_BYTE_OFF, -512 # From Rent sysvar.
+.equ RM_FM_TOKEN_PROGRAM_ID_OFF, -544 # Pointer to token program address.
+.equ RM_FM_INPUT_OFF, -536 # Saved input buffer pointer.
+.equ RM_FM_INPUT_SHIFTED_OFF, -528 # Saved input_shifted pointer.
+.equ RM_FM_LAMPORTS_PER_BYTE_OFF, -520 # From Rent sysvar.
 # Return value from GetAccountDataSize CPI, to check token account data size at runtime.
-.equ RM_FM_TOKEN_ACCOUNT_DATA_SIZE_OFF, -504
+.equ RM_FM_TOKEN_ACCOUNT_DATA_SIZE_OFF, -512
 # Pointer to mint account for vault initialization.
-.equ RM_FM_MINT_OFF, -496
-.equ RM_FM_PDA_SEEDS_OFF, -488 # Signer seeds offset.
+.equ RM_FM_MINT_OFF, -504
+.equ RM_FM_PDA_SEEDS_OFF, -496 # Signer seeds offset.
 .equ RM_FM_PDA_SEEDS_N_SEEDS, 3 # Number of signer seeds.
-.equ RM_FM_PDA_SEEDS_IDX_0_ADDR_OFF, -488 # Idx 0 signer seed address.
-.equ RM_FM_PDA_SEEDS_IDX_0_LEN_OFF, -480 # Idx 0 signer seed length.
-.equ RM_FM_PDA_SEEDS_IDX_1_ADDR_OFF, -472 # Idx 1 signer seed address.
-.equ RM_FM_PDA_SEEDS_IDX_1_LEN_OFF, -464 # Idx 1 signer seed length.
-.equ RM_FM_PDA_SEEDS_IDX_2_ADDR_OFF, -456 # Idx 2 signer seed address.
-.equ RM_FM_PDA_SEEDS_IDX_2_LEN_OFF, -448 # Idx 2 signer seed length.
-.equ RM_FM_PDA_OFF, -440 # PDA address.
-.equ RM_FM_PDA_CHUNK_0_OFF, -440 # PDA address (chunk 0).
-.equ RM_FM_PDA_CHUNK_1_OFF, -432 # PDA address (chunk 1).
-.equ RM_FM_PDA_CHUNK_2_OFF, -424 # PDA address (chunk 2).
-.equ RM_FM_PDA_CHUNK_3_OFF, -416 # PDA address (chunk 3).
-.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_OFF, -408 # System Program pubkey.
+.equ RM_FM_PDA_SEEDS_IDX_0_ADDR_OFF, -496 # Idx 0 signer seed address.
+.equ RM_FM_PDA_SEEDS_IDX_0_LEN_OFF, -488 # Idx 0 signer seed length.
+.equ RM_FM_PDA_SEEDS_IDX_1_ADDR_OFF, -480 # Idx 1 signer seed address.
+.equ RM_FM_PDA_SEEDS_IDX_1_LEN_OFF, -472 # Idx 1 signer seed length.
+.equ RM_FM_PDA_SEEDS_IDX_2_ADDR_OFF, -464 # Idx 2 signer seed address.
+.equ RM_FM_PDA_SEEDS_IDX_2_LEN_OFF, -456 # Idx 2 signer seed length.
+.equ RM_FM_PDA_OFF, -448 # PDA address.
+.equ RM_FM_PDA_CHUNK_0_OFF, -448 # PDA address (chunk 0).
+.equ RM_FM_PDA_CHUNK_1_OFF, -440 # PDA address (chunk 1).
+.equ RM_FM_PDA_CHUNK_2_OFF, -432 # PDA address (chunk 2).
+.equ RM_FM_PDA_CHUNK_3_OFF, -424 # PDA address (chunk 3).
+.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_OFF, -416 # System Program pubkey.
 # System Program pubkey (chunk 0).
-.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_0_OFF, -408
+.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_0_OFF, -416
 # System Program pubkey (chunk 1).
-.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_1_OFF, -400
+.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_1_OFF, -408
 # System Program pubkey (chunk 2).
-.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_2_OFF, -392
+.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_2_OFF, -400
 # System Program pubkey (chunk 3).
-.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_3_OFF, -384
+.equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_3_OFF, -392
+.equ RM_FM_SYSTEM_PROGRAM_ID_OFF, -384 # System Program ID in input buffer.
 # Get return data program ID for CPI calls.
 .equ RM_FM_GET_RETURN_DATA_PROGRAM_ID_OFF, -376
 .equ RM_FM_CREATE_ACCT_DATA_OFF, -344 # CreateAccount instruction data.
@@ -152,9 +153,9 @@
 # Whether the current token program is Token 2022.
 .equ RM_FM_TOKEN_PROGRAM_IS_2022_UOFF, -6
 # From pda_seeds to sol_instruction.
-.equ RM_FM_PDA_SEEDS_TO_SOL_INSN_REL_OFF_IMM, 440
+.equ RM_FM_PDA_SEEDS_TO_SOL_INSN_REL_OFF_IMM, 448
 # From pda to signers_seeds.
-.equ RM_FM_PDA_TO_SIGNERS_SEEDS_REL_OFF_IMM, 376
+.equ RM_FM_PDA_TO_SIGNERS_SEEDS_REL_OFF_IMM, 384
 # From create_account_data to CPI account metas.
 .equ RM_FM_CREATE_ACCT_DATA_TO_CPI_ACCT_METAS_REL_OFF_IMM, 232
 # -------------------------------------------------------------------------
@@ -266,10 +267,10 @@ register_market:
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_3_OFF]
     ldxdw r8, [r10 + RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_3_OFF]
     jne r7, r8, e_invalid_system_program_pubkey
-    # frame.sol_instruction.program_id = &acct.address
+    # frame.system_program_id = &acct.address
     mov64 r7, r9
     add64 r7, ACCT_ADDRESS_OFF
-    stxdw [r10 + RM_FM_SOL_INSN_PROGRAM_ID_UOFF], r7
+    stxdw [r10 + RM_FM_SYSTEM_PROGRAM_ID_OFF], r7
     # system_program_padded_data_len = acct.padded_data_len
     ldxdw r7, [r9 + ACCT_DATA_LEN_OFF]
     add64 r7, DATA_LEN_MAX_PAD

@@ -166,6 +166,8 @@ pub struct RegisterMarketFrame {
     pub pda: Address,
     /// System Program pubkey, zero-initialized on stack
     pub system_program_pubkey: Address,
+    /// Pointer to System Program ID in input buffer.
+    pub system_program_id: *const Address,
     /// Get return data program ID for CPI calls, zero-initialized on stack.
     pub get_return_data_program_id: Address,
     /// CPI instruction data for CreateAccount.
@@ -210,6 +212,8 @@ constant_group! {
         PDA = pubkey_offsets!(pda),
         /// System Program pubkey.
         SYSTEM_PROGRAM_PUBKEY = pubkey_offsets!(system_program_pubkey),
+        /// System Program ID in input buffer.
+        SYSTEM_PROGRAM_ID = offset!(system_program_id),
         /// Get return data program ID for CPI calls.
         GET_RETURN_DATA_PROGRAM_ID = offset!(get_return_data_program_id),
         /// CreateAccount instruction data.

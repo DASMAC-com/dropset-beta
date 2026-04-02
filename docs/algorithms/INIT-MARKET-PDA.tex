@@ -11,11 +11,14 @@
   \INPUT $r_{10}$ = frame
   \COMMENT{Pointer to shifted input buffer for quote mint offsets.}
   \REQUIRE frame.input\_shifted
-  \COMMENT{Pointer to System Program ID in input buffer.}
-  \REQUIRE frame.sol\_instruction.program\_id
+  \REQUIRE *frame.system\_program\_id = \texttt{RegisterMarketAccounts::SystemProgram}
+  \REQUIRE frame.cpi[0].info.data\_len = 0
+  \REQUIRE frame.cpi[1].info.data\_len = 0
   \ENSURE $r_9$ = acct
   \ENSURE frame.input = input
   \ENSURE frame.lamports\_per\_byte = acct.data.lamports\_per\_byte
+  \ENSURE frame.signers\_seeds.addr = \&frame.pda\_seeds
+  \ENSURE frame.signers\_seeds.len = \texttt{RegisterMarketFrame.PDA\_SEEDS\_N\_SEEDS}
 \PROCEDURE{INIT-MARKET-PDA}{input, insn, acct, frame}
   \COMMENT{Prepare CreateAccount instruction lamports, space fields.}
   \STATE frame.create\_account\_data.space = \texttt{MarketHeader.size}
@@ -70,6 +73,7 @@
   \STATE frame.signers\_seeds.addr = \&frame.pda\_seeds
   \STATE frame.signers\_seeds.len = \texttt{RegisterMarketFrame.PDA\_SEEDS\_N\_SEEDS}
   \COMMENT{Populate SolInstruction for CreateAccount CPI.}
+  \STATE frame.sol\_instruction.program\_id = frame.system\_program\_id
   \STATE frame.sol\_instruction.accounts = \&frame.cpi.account\_metas
   \STATE frame.sol\_instruction.account\_len =
     \texttt{register\_misc.CREATE\_ACCOUNT\_N\_ACCOUNTS}
