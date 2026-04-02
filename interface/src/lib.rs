@@ -6,6 +6,7 @@ pub mod memory;
 pub mod order;
 pub mod pubkey;
 pub mod seat;
+pub mod token;
 
 // region: discriminant_enum
 #[discriminant_enum("common/discriminant")]
@@ -62,6 +63,14 @@ pub enum ErrorCode {
     InvalidBaseVaultPubkey,
     /// The quote vault account pubkey is invalid.
     InvalidQuoteVaultPubkey,
+    /// The base vault account is a duplicate.
+    BaseVaultIsDuplicate,
+    /// The base vault account already has data.
+    BaseVaultHasData,
+    /// The quote vault account is a duplicate.
+    QuoteVaultIsDuplicate,
+    /// The quote vault account already has data.
+    QuoteVaultHasData,
 }
 // endregion: error_enum
 
@@ -93,4 +102,5 @@ pub const INJECTION_GROUPS: &[&dropset_build::ConstantGroup] = &[
     &memory::input_buffer::GROUP,
     &memory::size_of::GROUP,
     &pubkey::pubkey::GROUP,
+    &token::token::GROUP,
 ];

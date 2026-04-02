@@ -10,6 +10,7 @@ use dropset_macros::{
     svm_data,
 };
 use pinocchio::Address;
+use pinocchio::account::RuntimeAccount;
 
 // region: market_header
 #[svm_data]
@@ -147,20 +148,34 @@ signer_seeds! {
 #[frame]
 /// Stack frame for REGISTER-MARKET.
 pub struct RegisterMarketFrame {
-    /// Pointer to owning token program address.
-    pub token_program_id: u64,
+    /// Pointer to token program address.
+    pub token_program_id: *const Address,
+    /// Pointer to program ID in input buffer.
+    pub program_id: *const Address,
     /// Saved input buffer pointer.
     pub input: u64,
     /// Saved input_shifted pointer.
     pub input_shifted: u64,
+    /// From Rent sysvar.
+    pub lamports_per_byte: u64,
+    /// Return value from GetAccountDataSize CPI, to check token account data size at runtime.
+    pub token_account_data_size: u64,
+    /// Pointer to mint account for vault initialization.
+    pub mint: *const RuntimeAccount,
     /// Signer seeds for PDA derivation and CPI signing.
     pub pda_seeds: PDASignerSeeds,
     /// From `sol_try_find_program_address`.
     pub pda: Address,
     /// System Program pubkey, zero-initialized on stack
     pub system_program_pubkey: Address,
+    /// Pointer to System Program ID in input buffer.
+    pub system_program_id: *const Address,
+    /// Get return data program ID for CPI calls, zero-initialized on stack.
+    pub get_return_data_program_id: Address,
     /// CPI instruction data for CreateAccount.
     pub create_account_data: CreateAccountData,
+    /// GetAccountDataSize CPI instruction data.
+    pub get_account_data_size_data: u8,
     /// CPI accounts for CreateAccount and InitializeAccount2.
     pub cpi_accounts: CPIAccounts,
     /// Signers seeds for CPI.
@@ -169,9 +184,9 @@ pub struct RegisterMarketFrame {
     pub sol_instruction: SolInstruction,
     /// From `sol_try_find_program_address`.
     pub bump: u8,
-    /// Vault index for PDA derivation.
+    /// Vault index for vault PDA derivation.
     pub vault_index: u8,
-    /// Whether the current token program is Token 2022.
+    /// Whether the current token program is Token 2022 (zero-initialized on stack).
     pub token_program_is_2022: u8,
 }
 // endregion: frame_example
@@ -181,18 +196,30 @@ constant_group! {
     #[inject("market/register")]
     #[frame(RegisterMarketFrame)]
     frame {
-        /// Pointer to owning token program address.
+        /// Pointer to token program address.
         TOKEN_PROGRAM_ID = offset!(token_program_id),
+        /// Pointer to program ID in input buffer.
+        PROGRAM_ID = offset!(program_id),
         /// Saved input buffer pointer.
         INPUT = offset!(input),
         /// Saved input_shifted pointer.
         INPUT_SHIFTED = offset!(input_shifted),
+        /// From Rent sysvar.
+        LAMPORTS_PER_BYTE = offset!(lamports_per_byte),
+        /// Return value from GetAccountDataSize CPI, to check token account data size at runtime.
+        TOKEN_ACCOUNT_DATA_SIZE = offset!(token_account_data_size),
+        /// Pointer to mint account for vault initialization.
+        MINT = offset!(mint),
         /// PDA signer seeds.
         PDA_SEEDS = signer_seeds!(pda_seeds),
         /// PDA address.
         PDA = pubkey_offsets!(pda),
         /// System Program pubkey.
         SYSTEM_PROGRAM_PUBKEY = pubkey_offsets!(system_program_pubkey),
+        /// System Program ID in input buffer.
+        SYSTEM_PROGRAM_ID = offset!(system_program_id),
+        /// Get return data program ID for CPI calls.
+        GET_RETURN_DATA_PROGRAM_ID = offset!(get_return_data_program_id),
         /// CreateAccount instruction data.
         CREATE_ACCT_DATA = offset!(create_account_data),
         /// Lamports field within CreateAccount instruction data.
@@ -201,6 +228,8 @@ constant_group! {
         CREATE_ACCT_SPACE = unaligned_offset!(create_account_data.space),
         /// Owner field within CreateAccount instruction data.
         CREATE_ACCT_OWNER = unaligned_pubkey_offsets!(create_account_data.owner),
+        /// GetAccountDataSize CPI instruction data.
+        GET_ACCOUNT_DATA_SIZE_DATA = unaligned_offset!(get_account_data_size_data),
         /// CPI accounts.
         CPI = cpi_accounts!(cpi_accounts),
         /// Signers seeds address.

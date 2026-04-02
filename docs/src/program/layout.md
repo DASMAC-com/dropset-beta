@@ -14,9 +14,11 @@ program/src/dropset/
 │   ├── discriminant.s     # Instruction discriminants
 │   ├── error.s            # Error codes and subroutines
 │   ├── memory.s           # Memory layout constants
-│   └── pubkey.s           # Pubkey chunk offsets and known addresses
+│   ├── pubkey.s           # Pubkey chunk offsets and known addresses
+│   └── token.s            # SPL Token constants
 └── market/
-    ├── init_vault.s       # InitVault function
+    ├── init_market_pda.s  # Market PDA initialization
+    ├── init_vault.s       # Vault initialization
     └── register.s         # RegisterMarket handler
 ```
 
@@ -91,6 +93,13 @@ emits the same set of constants with a `_UOFF` suffix instead of `_OFF`.
 <Include rs="interface::pubkey#pubkey_constants" collapsible/>
 <Include asm="common/pubkey" collapsible/>
 
+### Token
+
+SPL Token constants (account size, instruction discriminators) are injected
+from the [`token`][token-mod] module via [`constant_group!`][bs-constant-group]:
+
+<Include asm="common/token" collapsible/>
+
 [input buffer]: ../program/inputs#input-buffer
 [`program/src/dropset/`]: https://github.com/DASMAC-com/dropset-beta/tree/main/program/src/dropset
 [multi-file assembly]: https://github.com/blueshift-gg/sbpf/pull/109
@@ -98,5 +107,6 @@ emits the same set of constants with a `_UOFF` suffix instead of `_OFF`.
 [bs-discriminant]: ../development/build-scaffolding#discriminant-enum-target
 [bs-error]: ../development/build-scaffolding#error-enum-target
 [pubkey-mod]: https://github.com/DASMAC-com/dropset-beta/blob/main/interface/src/pubkey.rs
+[token-mod]: https://github.com/DASMAC-com/dropset-beta/blob/main/interface/src/token.rs
 [bs-constant-group]: ../development/build-scaffolding#constant_group
 [build scaffolding]: ../development/build-scaffolding

@@ -51,6 +51,8 @@ pub struct TestSetup {
 pub fn setup() -> TestSetup {
     let mut setup = setup_program(DEFAULT_PROGRAM);
     setup.mollusk.sysvars.rent.exemption_threshold = 1.0;
+    mollusk_svm_programs_token::token::add_program(&mut setup.mollusk);
+    mollusk_svm_programs_token::token2022::add_program(&mut setup.mollusk);
     setup
 }
 

@@ -36,6 +36,11 @@
 .equ E_INVALID_BASE_VAULT_PUBKEY, 21
 # The quote vault account pubkey is invalid.
 .equ E_INVALID_QUOTE_VAULT_PUBKEY, 22
+.equ E_BASE_VAULT_IS_DUPLICATE, 23 # The base vault account is a duplicate.
+.equ E_BASE_VAULT_HAS_DATA, 24 # The base vault account already has data.
+# The quote vault account is a duplicate.
+.equ E_QUOTE_VAULT_IS_DUPLICATE, 25
+.equ E_QUOTE_VAULT_HAS_DATA, 26 # The quote vault account already has data.
 
 e_invalid_instruction_length:
     mov32 r0, E_INVALID_INSTRUCTION_LENGTH
@@ -115,4 +120,20 @@ e_quote_token_program_not_token_program:
 
 e_invalid_base_vault_pubkey:
     mov32 r0, E_INVALID_BASE_VAULT_PUBKEY
+    exit
+
+e_base_vault_is_duplicate:
+    mov32 r0, E_BASE_VAULT_IS_DUPLICATE
+    exit
+
+e_base_vault_has_data:
+    mov32 r0, E_BASE_VAULT_HAS_DATA
+    exit
+
+e_quote_vault_is_duplicate:
+    mov32 r0, E_QUOTE_VAULT_IS_DUPLICATE
+    exit
+
+e_quote_vault_has_data:
+    mov32 r0, E_QUOTE_VAULT_HAS_DATA
     exit

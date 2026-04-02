@@ -26,6 +26,7 @@
 # -------------------------------------------------------------------------
 # Mask for writable signer (is_writable | is_signer).
 .equ CPI_WRITABLE_SIGNER, 257
+.equ CPI_READONLY_NON_SIGNER, 0 # Mask for readonly non-signer.
 # -------------------------------------------------------------------------
 
 # Common data-related constants.
