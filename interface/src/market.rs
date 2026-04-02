@@ -150,6 +150,8 @@ signer_seeds! {
 pub struct RegisterMarketFrame {
     /// Pointer to token program address.
     pub token_program_id: *const Address,
+    /// Pointer to program ID in input buffer.
+    pub program_id: *const Address,
     /// Saved input buffer pointer.
     pub input: u64,
     /// Saved input_shifted pointer.
@@ -196,6 +198,8 @@ constant_group! {
     frame {
         /// Pointer to token program address.
         TOKEN_PROGRAM_ID = offset!(token_program_id),
+        /// Pointer to program ID in input buffer.
+        PROGRAM_ID = offset!(program_id),
         /// Saved input buffer pointer.
         INPUT = offset!(input),
         /// Saved input_shifted pointer.

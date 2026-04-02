@@ -105,7 +105,7 @@ fn into_metas_and_accounts(
     (metas, paired)
 }
 
-const USER_LAMPORTS: u64 = 1_000_000;
+const USER_LAMPORTS: u64 = 10_000_000;
 const MARKET_HEADER_SIZE: usize = size_of::<MarketHeader>();
 
 fn default_mint() -> spl_token_interface::state::Mint {
@@ -152,7 +152,7 @@ fn happy_path_accounts(
     let pda = keys[RegisterMarketAccounts::Market as usize];
     let (quote_vault_pda, _) = Pubkey::find_program_address(
         &[pda.as_ref(), &[VAULT_INDEX_QUOTE as u8]],
-        &quote_token_program,
+        &setup.program_id,
     );
     keys[RegisterMarketAccounts::QuoteVault as usize] = quote_vault_pda;
 
@@ -260,7 +260,7 @@ fn token_program_base_accounts(
         );
         let (_vault_pda, vault_bump) = Pubkey::find_program_address(
             &[pda.as_ref(), &[VAULT_INDEX_BASE as u8]],
-            &base_token_program,
+            &setup.program_id,
         );
         if vault_bump != u8::MAX {
             continue;
@@ -268,7 +268,7 @@ fn token_program_base_accounts(
         if require_quote_vault_bump {
             let (_quote_vault, quote_bump) = Pubkey::find_program_address(
                 &[pda.as_ref(), &[VAULT_INDEX_QUOTE as u8]],
-                &quote_token_program,
+                &setup.program_id,
             );
             if quote_bump != u8::MAX {
                 continue;
@@ -292,10 +292,8 @@ fn token_program_base_accounts(
     keys[RegisterMarketAccounts::RentSysvar as usize] = rent_sysvar_pubkey;
     accounts[RegisterMarketAccounts::RentSysvar as usize] = rent_sysvar_account;
 
-    accounts[RegisterMarketAccounts::BaseMint as usize] =
-        mint_account(base_token_program);
-    accounts[RegisterMarketAccounts::QuoteMint as usize] =
-        mint_account(quote_token_program);
+    accounts[RegisterMarketAccounts::BaseMint as usize] = mint_account(base_token_program);
+    accounts[RegisterMarketAccounts::QuoteMint as usize] = mint_account(quote_token_program);
 
     keys[RegisterMarketAccounts::BaseTokenProgram as usize] = base_token_program;
     accounts[RegisterMarketAccounts::BaseTokenProgram as usize] =
@@ -307,7 +305,7 @@ fn token_program_base_accounts(
     // Derive base vault PDA from market address and vault index.
     let (base_vault_pda, _) = Pubkey::find_program_address(
         &[pda.as_ref(), &[VAULT_INDEX_BASE as u8]],
-        &base_token_program,
+        &setup.program_id,
     );
     keys[RegisterMarketAccounts::BaseVault as usize] = base_vault_pda;
 
@@ -323,8 +321,12 @@ fn writable_metas_and_accounts(
         .enumerate()
         .map(|(i, k)| {
             let writable = i == RegisterMarketAccounts::User as usize
-                || i == RegisterMarketAccounts::Market as usize;
-            let signer = i == RegisterMarketAccounts::User as usize;
+                || i == RegisterMarketAccounts::Market as usize
+                || i == RegisterMarketAccounts::BaseVault as usize
+                || i == RegisterMarketAccounts::QuoteVault as usize;
+            let signer = i == RegisterMarketAccounts::User as usize
+                || i == RegisterMarketAccounts::BaseVault as usize
+                || i == RegisterMarketAccounts::QuoteVault as usize;
             if writable {
                 AccountMeta::new(*k, signer)
             } else {
@@ -373,7 +375,7 @@ fn quote_vault_mismatch_accounts(
     let pda = keys[RegisterMarketAccounts::Market as usize];
     let (mut quote_vault_pda, _) = Pubkey::find_program_address(
         &[pda.as_ref(), &[VAULT_INDEX_QUOTE as u8]],
-        &quote_token_program,
+        &setup.program_id,
     );
     quote_vault_pda.as_mut()[corrupt_byte] ^= 0xFF;
     keys[RegisterMarketAccounts::QuoteVault as usize] = quote_vault_pda;

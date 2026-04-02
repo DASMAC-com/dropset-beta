@@ -24,7 +24,8 @@
 
 # Stack frame for REGISTER-MARKET.
 # -------------------------------------------------------------------------
-.equ RM_FM_TOKEN_PROGRAM_ID_OFF, -544 # Pointer to token program address.
+.equ RM_FM_TOKEN_PROGRAM_ID_OFF, -552 # Pointer to token program address.
+.equ RM_FM_PROGRAM_ID_OFF, -544 # Pointer to program ID in input buffer.
 .equ RM_FM_INPUT_OFF, -536 # Saved input buffer pointer.
 .equ RM_FM_INPUT_SHIFTED_OFF, -528 # Saved input_shifted pointer.
 .equ RM_FM_LAMPORTS_PER_BYTE_OFF, -520 # From Rent sysvar.
@@ -213,6 +214,10 @@ register_market:
     # if insn_len != RegisterMarketData.LEN
     #     return ErrorCode::InvalidInstructionLength
     jne r4, REGISTER_MARKET_DATA_LEN, e_invalid_instruction_length
+    # frame.program_id = &insn.program_id
+    mov64 r4, r2
+    add64 r4, REGISTER_MARKET_DATA_LEN
+    stxdw [r10 + RM_FM_PROGRAM_ID_OFF], r4
     # if input.user.data_len != data.DATA_LEN_ZERO
     #     return ErrorCode::UserHasData
     ldxdw r9, [r1 + IB_USER_DATA_LEN_OFF]

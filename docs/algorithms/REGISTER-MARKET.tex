@@ -20,6 +20,7 @@
   \IF{insn\_len $\neq$ \texttt{RegisterMarketData.LEN}}
     \RETURN \texttt{ErrorCode::InvalidInstructionLength}
   \ENDIF
+  \STATE frame.program\_id = \&insn.program\_id
   \COMMENT{Check user, market accounts.}
   \IF{input.user.data\_len $\neq$ 0}
     \RETURN \texttt{ErrorCode::UserHasData}
