@@ -110,7 +110,7 @@ pub enum RegisterMarketAccounts {
 /// CPI instruction data for CreateAccount.
 pub struct CreateAccountData {
     /// Zero-initialized on stack.
-    pub discriminator: u32,
+    pub discriminant: u32,
     pub lamports: u64,
     pub space: u64,
     /// Zero-initialized on stack.
