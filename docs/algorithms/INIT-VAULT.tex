@@ -78,7 +78,7 @@
       \texttt{token.GET\_ACCOUNT\_DATA\_SIZE\_DISC}
     \STATE frame.sol\_instruction.data = \&frame.get\_account\_data\_size\_data
     \STATE frame.sol\_instruction.data\_len = \texttt{u8.size}
-    \COMMENT{Invoke GetAccountDataSize CPI (no signers).}
+    \COMMENT{Invoke GetAccountDataSize CPI.}
     \STATE syscall.instruction = \&frame.sol\_instruction
     \STATE syscall.account\_infos = \&frame.cpi[0].info
     \STATE syscall.account\_infos\_len =
@@ -176,7 +176,7 @@
   \STATE frame.initialize\_account\_2\_data.proprietor = input.market.address
   \STATE frame.sol\_instruction.data = \&frame.initialize\_account\_2\_data
   \STATE frame.sol\_instruction.data\_len = \texttt{InitializeAccount2.size}
-  \COMMENT{Invoke InitializeAccount2 CPI (no signers).}
+  \COMMENT{Invoke InitializeAccount2 CPI.}
   \STATE syscall.instruction = \&frame.sol\_instruction
   \STATE syscall.account\_infos = \&frame.cpi.account\_infos
   \STATE syscall.account\_infos\_len =
