@@ -52,6 +52,8 @@ init_vault_get_account_data_size:
     # frame.cpi[0].info.is_signer = false
     # frame.cpi[0].info.is_writable = false
     sth [r6 + RM_FM_CPI_IDX_0_ACCT_INFO_IS_SIGNER_UOFF], CPI_READONLY_NON_SIGNER
+    # frame.cpi[0].info.executable = false
+    stb [r6 + RM_FM_CPI_IDX_0_ACCT_INFO_EXECUTABLE_UOFF], DATA_BOOL_FALSE
     # frame.cpi[0].meta.is_writable = false
     # frame.cpi[0].meta.is_signer = false
     sth [r6 + RM_FM_CPI_IDX_0_ACCT_META_IS_WRITABLE_UOFF], CPI_READONLY_NON_SIGNER
@@ -115,6 +117,8 @@ init_vault_get_account_data_size:
     mov64 r3, r6
     add64 r3, RM_FM_GET_RETURN_DATA_PROGRAM_ID_OFF
     call sol_get_return_data
+    # result = entrypoint.RETURN_SUCCESS
+    mov64 r0, RETURN_SUCCESS
     exit
 init_vault_invalid_pda:
     # if frame.vault_index == register_misc.VAULT_INDEX_BASE
