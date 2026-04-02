@@ -1,8 +1,10 @@
 [dependencies]
 dropset-interface = {path = "../interface"}
 mollusk-svm = {workspace = true}
+mollusk-svm-programs-token = {workspace = true}
 solana-account = {workspace = true}
 solana-sdk = {workspace = true}
+spl-token-interface = {workspace = true}
 heck.workspace = true
 
 [package]

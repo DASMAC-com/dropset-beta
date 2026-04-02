@@ -182,7 +182,7 @@ pub struct RegisterMarketFrame {
     pub bump: u8,
     /// Vault index for vault PDA derivation.
     pub vault_index: u8,
-    /// Whether the current token program is Token 2022.
+    /// Whether the current token program is Token 2022 (zero-initialized on stack).
     pub token_program_is_2022: u8,
 }
 // endregion: frame_example

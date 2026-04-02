@@ -852,8 +852,10 @@ dependencies = [
  "dropset-interface",
  "heck",
  "mollusk-svm",
+ "mollusk-svm-programs-token",
  "solana-account 3.4.0",
  "solana-sdk",
+ "spl-token-interface",
 ]
 
 [[package]]
@@ -1465,9 +1467,9 @@ dependencies = [
 
 [[package]]
 name = "mollusk-svm"
-version = "0.11.0"
+version = "0.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "03a3cac3aca9ffb1e97c0b60ac4fca70f1ef2cbe532010e62cfdcdf2a2a2a2ef"
+checksum = "9506b7859ad9716fff8c5fcdb23abf9801793571e6106c29dd74a10374aa7d93"
 dependencies = [
  "agave-feature-set",
  "agave-syscalls",
@@ -1509,19 +1511,34 @@ dependencies = [
 
 [[package]]
 name = "mollusk-svm-error"
-version = "0.11.0"
+version = "0.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e315980684803972f443b2d8dd765e3def7e4e20bb67d5125bb80639e858a040"
+checksum = "ff7c52dc834fc5962f54c7ffcb61a73b9f0ae0ab63b5e84043fa387b751254c2"
 dependencies = [
  "solana-pubkey 4.1.0",
- "thiserror 1.0.69",
+ "thiserror 2.0.18",
+]
+
+[[package]]
+name = "mollusk-svm-programs-token"
+version = "0.12.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ba8a9b81a9d39a7ed52fc3c9ed5872b80659c7b9ff34e650f523780e71b13afa"
+dependencies = [
+ "mollusk-svm",
+ "solana-account 3.4.0",
+ "solana-program-pack",
+ "solana-pubkey 4.1.0",
+ "solana-rent 3.1.0",
+ "spl-associated-token-account-interface",
+ "spl-token-interface",
 ]
 
 [[package]]
 name = "mollusk-svm-result"
-version = "0.11.0"
+version = "0.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1d5087302293e891db8627166c41a8cded1d74d1ba6c5b7b3a823bf4d7503e37"
+checksum = "92376062d0cad8a3b28f86e57b58c8949302aa6eaed518f584fdfc2f75d8face"
 dependencies = [
  "solana-account 3.4.0",
  "solana-instruction",
@@ -1584,6 +1601,17 @@ checksum = "b6b19411a9719e753aff12e5187b74d60d3dc449ec3f4dc21e3989c3f554bc95"
 dependencies = [
  "autocfg",
  "num-traits",
+]
+
+[[package]]
+name = "num-derive"
+version = "0.4.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ed3955f1a9c7c0c15e092f9c887db08b1fc683305fdf6eb6684f22555355e202"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.117",
 ]
 
 [[package]]
@@ -3692,6 +3720,36 @@ checksum = "d91ed6c858b01f942cd56b37a94b3e0a1798290327d1236e4d9cf4eaca44d29d"
 dependencies = [
  "base64ct",
  "der",
+]
+
+[[package]]
+name = "spl-associated-token-account-interface"
+version = "2.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e6433917b60441d68d99a17e121d9db0ea15a9a69c0e5afa34649cf5ba12612f"
+dependencies = [
+ "solana-instruction",
+ "solana-pubkey 3.0.0",
+]
+
+[[package]]
+name = "spl-token-interface"
+version = "2.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8c564ac05a7c8d8b12e988a37d82695b5ba4db376d07ea98bc4882c81f96c7f3"
+dependencies = [
+ "arrayref",
+ "bytemuck",
+ "num-derive",
+ "num-traits",
+ "num_enum",
+ "solana-instruction",
+ "solana-program-error",
+ "solana-program-option",
+ "solana-program-pack",
+ "solana-pubkey 3.0.0",
+ "solana-sdk-ids",
+ "thiserror 2.0.18",
 ]
 
 [[package]]

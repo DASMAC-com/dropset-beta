@@ -108,6 +108,35 @@ fn into_metas_and_accounts(
 const USER_LAMPORTS: u64 = 1_000_000;
 const MARKET_HEADER_SIZE: usize = size_of::<MarketHeader>();
 
+fn default_mint() -> spl_token_interface::state::Mint {
+    spl_token_interface::state::Mint {
+        is_initialized: true,
+        ..Default::default()
+    }
+}
+
+fn mint_account(owner: Pubkey) -> Account {
+    if owner == Pubkey::from(TOKEN_PROGRAM_ID) {
+        mollusk_svm_programs_token::token::create_account_for_mint(default_mint())
+    } else if owner == Pubkey::from(TOKEN_2022_PROGRAM_ID) {
+        mollusk_svm_programs_token::token2022::create_account_for_mint(default_mint())
+    } else {
+        let mut acct = Account::default();
+        acct.owner = owner;
+        acct
+    }
+}
+
+fn token_program_account(id: Pubkey) -> Account {
+    if id == Pubkey::from(TOKEN_PROGRAM_ID) {
+        mollusk_svm_programs_token::token::account()
+    } else if id == Pubkey::from(TOKEN_2022_PROGRAM_ID) {
+        mollusk_svm_programs_token::token2022::account()
+    } else {
+        Account::default()
+    }
+}
+
 /// Build valid accounts that pass all checks for a successful CreateAccount CPI.
 /// When `base_token_program` and `quote_token_program` share the same key,
 /// the runtime serializes the quote token program as a duplicate account.
@@ -263,11 +292,17 @@ fn token_program_base_accounts(
     keys[RegisterMarketAccounts::RentSysvar as usize] = rent_sysvar_pubkey;
     accounts[RegisterMarketAccounts::RentSysvar as usize] = rent_sysvar_account;
 
-    accounts[RegisterMarketAccounts::BaseMint as usize].owner = base_token_program;
-    accounts[RegisterMarketAccounts::QuoteMint as usize].owner = quote_token_program;
+    accounts[RegisterMarketAccounts::BaseMint as usize] =
+        mint_account(base_token_program);
+    accounts[RegisterMarketAccounts::QuoteMint as usize] =
+        mint_account(quote_token_program);
 
     keys[RegisterMarketAccounts::BaseTokenProgram as usize] = base_token_program;
+    accounts[RegisterMarketAccounts::BaseTokenProgram as usize] =
+        token_program_account(base_token_program);
     keys[RegisterMarketAccounts::QuoteTokenProgram as usize] = quote_token_program;
+    accounts[RegisterMarketAccounts::QuoteTokenProgram as usize] =
+        token_program_account(quote_token_program);
 
     // Derive base vault PDA from market address and vault index.
     let (base_vault_pda, _) = Pubkey::find_program_address(
