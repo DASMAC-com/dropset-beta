@@ -162,6 +162,8 @@ pub struct RegisterMarketFrame {
     pub token_account_data_size: u64,
     /// Pointer to mint account for vault initialization.
     pub mint: *const RuntimeAccount,
+    /// Pointer to Rent sysvar account.
+    pub rent: *const RuntimeAccount,
     /// Signer seeds for PDA derivation and CPI signing.
     pub pda_seeds: PDASignerSeeds,
     /// From `sol_try_find_program_address`.
@@ -210,6 +212,8 @@ constant_group! {
         TOKEN_ACCOUNT_DATA_SIZE = offset!(token_account_data_size),
         /// Pointer to mint account for vault initialization.
         MINT = offset!(mint),
+        /// Pointer to Rent sysvar account.
+        RENT = offset!(rent),
         /// PDA signer seeds.
         PDA_SEEDS = signer_seeds!(pda_seeds),
         /// PDA address.

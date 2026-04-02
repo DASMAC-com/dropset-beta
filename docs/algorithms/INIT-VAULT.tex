@@ -13,18 +13,19 @@
     \texttt{true},
     \texttt{false}
   \}
-  \REQUIRE *frame.mint $\in$ \{
+  \REQUIRE frame.mint $\in$ \{
     input.base\_mint,
     input\_shifted.quote\_mint
   \}
   \REQUIRE frame.token\_program\_id
   \REQUIRE frame.program\_id
   \REQUIRE frame.input
+  \REQUIRE frame.rent
   \REQUIRE frame.lamports\_per\_byte
   \REQUIRE frame.pda\_seeds[0].len = \texttt{Address.size}
   \REQUIRE frame.pda\_seeds[2].addr = \&frame.bump
   \REQUIRE frame.pda\_seeds[2].len = \texttt{u8.size}
-  \REQUIRE *frame.system\_program\_id = input.system\_program.address
+  \REQUIRE frame.system\_program\_id = &input.system\_program.address
   \REQUIRE frame.signers\_seeds.addr = \&frame.pda\_seeds
   \REQUIRE frame.signers\_seeds.len = \texttt{RegisterMarketFrame.PDA\_SEEDS\_N\_SEEDS}
   \REQUIRE input.user.data\_len = \texttt{data.LEN\_ZERO}

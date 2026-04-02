@@ -64,6 +64,7 @@
   \IF{acct.address $\neq$ \texttt{pubkey.RENT}}
     \RETURN \texttt{ErrorCode::InvalidRentSysvarPubkey}
   \ENDIF
+  \STATE frame.rent = acct
   \COMMENT{Derive market PDA, populate CPI fields, invoke CreateAccount.}
   \STATE \CALL{INIT-MARKET-PDA}{input, insn, acct, frame}
   \COMMENT{Retrieve input buffer pointers and advance to base token program account.}

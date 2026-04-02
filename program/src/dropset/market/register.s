@@ -303,6 +303,8 @@ register_market:
     # (1 CU) replaces lddw (2 CUs).
     mov32 r8, PUBKEY_RENT_CHUNK_3_LO
     jne r7, r8, e_invalid_rent_sysvar_pubkey
+    # frame.rent = acct
+    stxdw [r10 + RM_FM_RENT_OFF], r9
     # INIT-MARKET-PDA(input, insn, acct, frame)
     ja init_market_pda
 init_market_pda_return:
