@@ -151,8 +151,7 @@ init_vault_create_account:
     # frame.cpi[0].info.data_len = data.LEN_ZERO
     mov64 r9, DATA_LEN_ZERO
     stxdw [r6 + RM_FM_CPI_IDX_0_ACCT_INFO_DATA_LEN_UOFF], r9
-    # frame.cpi[1].info.data_len = acct.data_len
-    ldxdw r9, [r7 + ACCT_DATA_LEN_OFF]
+    # frame.cpi[1].info.data_len = data.LEN_ZERO
     stxdw [r6 + RM_FM_CPI_IDX_1_ACCT_INFO_DATA_LEN_UOFF], r9
     # frame.cpi[0].meta.pubkey = &input.user.address
     # frame.cpi[0].info.key = &input.user.address

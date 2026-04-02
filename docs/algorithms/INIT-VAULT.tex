@@ -28,6 +28,7 @@
   \REQUIRE frame.signers\_seeds.addr = \&frame.pda\_seeds
   \REQUIRE frame.signers\_seeds.len = \texttt{RegisterMarketFrame.PDA\_SEEDS\_N\_SEEDS}
   \REQUIRE input.user.data\_len = \texttt{data.LEN\_ZERO}
+  \REQUIRE acct.data\_len = \texttt{data.LEN\_ZERO}
   \REQUIRE frame.cpi[0].info.executable = \texttt{false}
 \FUNCTION{INIT-VAULT}{acct, frame}
   \STATE \CALL{Store}{frame}
@@ -106,7 +107,7 @@
   \STATE frame.cpi[1].meta.is\_signer = \texttt{true}
   \STATE frame.cpi[1].meta.is\_writable = \texttt{true}
   \STATE frame.cpi[0].info.data\_len = \texttt{data.LEN\_ZERO}
-  \STATE frame.cpi[1].info.data\_len = acct.data\_len
+  \STATE frame.cpi[1].info.data\_len = \texttt{data.LEN\_ZERO}
   \COMMENT{Assign CPI account fields via pointers.}
   \STATE frame.cpi[0].meta.pubkey = \&input.user.address
   \STATE frame.cpi[0].info.key = \&input.user.address

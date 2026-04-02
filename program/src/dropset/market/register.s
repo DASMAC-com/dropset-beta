@@ -377,6 +377,14 @@ register_market_base_vault:
     # acct += base_token_program_padded_data_len + EmptyAccount.size
     add64 r9, r7
     add64 r9, SIZE_OF_EMPTY_ACCOUNT
+    # if acct.duplicate != account.NON_DUP_MARKER
+    #     return ErrorCode::BaseVaultIsDuplicate
+    ldxb r7, [r9 + ACCT_DUPLICATE_OFF]
+    jne r7, ACCT_NON_DUP_MARKER, e_base_vault_is_duplicate
+    # if acct.data_len != data.LEN_ZERO
+    #     return ErrorCode::BaseVaultHasData
+    ldxdw r7, [r9 + ACCT_DATA_LEN_OFF]
+    jne r7, DATA_LEN_ZERO, e_base_vault_has_data
     # frame.vault_index = register_misc.VAULT_INDEX_BASE
     stb [r10 + RM_FM_VAULT_INDEX_UOFF], RM_MISC_VAULT_INDEX_BASE
     # frame.mint = &input.base_mint
@@ -392,12 +400,7 @@ register_market_base_vault:
     jeq r0, RETURN_SUCCESS, register_market_quote_token_program
     exit
 register_market_quote_token_program:
-    # base_vault_padded_data_len = acct.padded_data_len
-    ldxdw r7, [r9 + ACCT_DATA_LEN_OFF]
-    add64 r7, DATA_LEN_MAX_PAD
-    and64 r7, DATA_LEN_AND_MASK
-    # acct += base_vault_padded_data_len + EmptyAccount.size
-    add64 r9, r7
+    # acct += EmptyAccount.size
     add64 r9, SIZE_OF_EMPTY_ACCOUNT
     # if acct.duplicate == account.NON_DUP_MARKER
     ldxb r7, [r9 + ACCT_DUPLICATE_OFF]
@@ -484,6 +487,14 @@ register_market_base_vault_dup:
     # acct += u64.size
     add64 r9, SIZE_OF_U64
 register_market_done_token_programs:
+    # if acct.duplicate != account.NON_DUP_MARKER
+    #     return ErrorCode::QuoteVaultIsDuplicate
+    ldxb r7, [r9 + ACCT_DUPLICATE_OFF]
+    jne r7, ACCT_NON_DUP_MARKER, e_quote_vault_is_duplicate
+    # if acct.data_len != data.LEN_ZERO
+    #     return ErrorCode::QuoteVaultHasData
+    ldxdw r7, [r9 + ACCT_DATA_LEN_OFF]
+    jne r7, DATA_LEN_ZERO, e_quote_vault_has_data
     # frame.vault_index = register_misc.VAULT_INDEX_QUOTE
     stb [r10 + RM_FM_VAULT_INDEX_UOFF], RM_MISC_VAULT_INDEX_QUOTE
     # frame.mint = &input_shifted.quote_mint

@@ -63,6 +63,14 @@ pub enum ErrorCode {
     InvalidBaseVaultPubkey,
     /// The quote vault account pubkey is invalid.
     InvalidQuoteVaultPubkey,
+    /// The base vault account is a duplicate.
+    BaseVaultIsDuplicate,
+    /// The base vault account already has data.
+    BaseVaultHasData,
+    /// The quote vault account is a duplicate.
+    QuoteVaultIsDuplicate,
+    /// The quote vault account already has data.
+    QuoteVaultHasData,
 }
 // endregion: error_enum
 
