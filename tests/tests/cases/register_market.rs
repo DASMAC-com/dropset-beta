@@ -248,8 +248,7 @@ fn check_market_header_bumps(
     quote_mint_key: Pubkey,
     market_pda: Pubkey,
 ) {
-    let header: &MarketHeader =
-        unsafe { &*(data.as_ptr() as *const MarketHeader) };
+    let header: &MarketHeader = unsafe { &*(data.as_ptr() as *const MarketHeader) };
 
     let expected_next = MM_INPUT_START + MARKET_DATA_BYTES_OFF as u64;
     let actual_next = header.next as u64;

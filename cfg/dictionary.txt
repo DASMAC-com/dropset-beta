@@ -27,6 +27,7 @@ sbpf
 shiki
 shouty
 solana
+stxb
 stxdw
 swatinem
 syscall
