@@ -3,6 +3,7 @@
 <!-- markdownlint-disable MD013 -->
 
 > [!important] Courtesy of Distributed Atomic State Machine Algorithms Corporation (DASMAC)
+> [DASMAC.com]
 
 <!-- markdownlint-enable MD013 -->
 
@@ -81,6 +82,7 @@ design assurance.
 
 :::
 
+[dasmac.com]: https://dasmac.com
 [CLRS]: https://www.cs.mcgill.ca/~akroit/math/compsci/Cormen%20Introduction%20to%20Algorithms.pdf
 [Dropset repo]: https://github.com/DASMAC-com/dropset-beta
 [formal verification]: https://en.wikipedia.org/wiki/Formal_verification
