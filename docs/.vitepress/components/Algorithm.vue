@@ -165,7 +165,10 @@ onMounted(async () => {
     rendered
       .querySelectorAll(".ps-algorithmic > .ps-block")
       .forEach((block) => {
-        if (!block.querySelector(".ps-line") && block.querySelector(".ps-comment"))
+        if (
+          !block.querySelector(".ps-line") &&
+          block.querySelector(".ps-comment")
+        )
           block.style.marginLeft = "0";
       });
 
@@ -244,7 +247,8 @@ onMounted(async () => {
     // Load and highlight assembly source if specified.
     if (asmFile.value) {
       const asmLoader = asmModules[`${ASM_BASE}${asmFile.value}.s`];
-      if (!asmLoader) throw new Error(`Unknown assembly file: ${asmFile.value}`);
+      if (!asmLoader)
+        throw new Error(`Unknown assembly file: ${asmFile.value}`);
       asmCode.value = (await asmLoader()).trimEnd();
 
       const shiki = await import("shiki");

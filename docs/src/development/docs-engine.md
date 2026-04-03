@@ -23,11 +23,11 @@ from the [algorithm registry].
 
 <!-- markdownlint-disable MD013 -->
 
-| Prop             | Type      | Required | Description                                                    |
-| ---------------- | --------- | -------- | -------------------------------------------------------------- |
-| `id`             | `String`  | yes      | Algorithm name (matches `.tex` filename and registry key)      |
-| `lineNumber`     | `Boolean` | no       | Show line numbers in pseudocode (default: `true`)              |
-| `lineNumberPunc` | `String`  | no       | Punctuation after line numbers (default: `""`)                 |
+| Prop             | Type      | Required | Description                                               |
+| ---------------- | --------- | -------- | --------------------------------------------------------- |
+| `id`             | `String`  | yes      | Algorithm name (matches `.tex` filename and registry key) |
+| `lineNumber`     | `Boolean` | no       | Show line numbers in pseudocode (default: `true`)         |
+| `lineNumberPunc` | `String`  | no       | Punctuation after line numbers (default: `""`)            |
 
 <!-- markdownlint-enable MD013 -->
 
@@ -48,14 +48,14 @@ build-time index records them separately, and at render time the hyphenated name
 is converted to underscore form (e.g. `sol-try-find-program-address` becomes
 `sol_try_find_program_address`) and linked to its upstream source definition via
 the [algorithm registry]. When a syscall has empty arguments (`\CALL{sol-*}{}`),
-the trailing `()` is stripped so it renders as a plain linked name. When a syscall
-has a CPI target argument (e.g.
-`\CALL{sol-invoke-signed-c}{system-program::CreateAccount}`), the
-parentheses are preserved and the argument is rendered as a linked CPI target
-using the `cpis` section of the [algorithm registry]. The displayed name converts
-hyphens to underscores (e.g. `system_program::CreateAccount`). Syscalls and CPI
-targets appear in the "Calls" section alongside algorithm dependencies, and CPI
-targets are included in the [algorithm index] dependency chart as dashed nodes.
+the trailing `()` is stripped so it renders as a plain linked name. When a
+syscall has a CPI target argument (e.g.
+`\CALL{sol-invoke-signed-c}{system-program::CreateAccount}`), the parentheses
+are preserved and the argument is rendered as a linked CPI target using the
+`cpis` section of the [algorithm registry]. The displayed name converts hyphens
+to underscores (e.g. `system_program::CreateAccount`). Syscalls and CPI targets
+appear in the "Calls" section alongside algorithm dependencies, and CPI targets
+are included in the [algorithm index] dependency chart as dashed nodes.
 
 If the algorithm has associated
 [test cases], a collapsed **Tests** section is

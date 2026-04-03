@@ -1,18 +1,26 @@
 {
   "algorithms": {
-    "ENTRYPOINT": { "asm": "entrypoint" },
-    "REGISTER-MARKET": { "asm": "market/register" },
-    "INIT-MARKET-PDA": { "asm": "market/init_market_pda" },
-    "INIT-VAULT": { "asm": "market/init_vault" }
+    "ENTRYPOINT": {
+      "asm": "entrypoint"
+    },
+    "INIT-MARKET-PDA": {
+      "asm": "market/init_market_pda"
+    },
+    "INIT-VAULT": {
+      "asm": "market/init_vault"
+    },
+    "REGISTER-MARKET": {
+      "asm": "market/register"
+    }
+  },
+  "cpis": {
+    "spl_token::InitializeAccount2": "https://github.com/solana-program/token/blob/program@v9.0.0/interface/src/instruction.rs#L352-L365",
+    "spl_token_2022::GetAccountDataSize": "https://github.com/solana-program/token-2022/blob/interface@v2.1.0/interface/src/instruction.rs#L487-L499",
+    "system_program::CreateAccount": "https://github.com/anza-xyz/solana-sdk/blob/sdk@v4.0.1/system-interface/src/instruction.rs#L93-L107"
   },
   "syscalls": {
     "sol_get_return_data": "https://github.com/anza-xyz/agave/blob/v4.0.0-beta.5/platform-tools-sdk/sbf/c/inc/sol/inc/return_data.inc#L27-L35",
     "sol_invoke_signed_c": "https://github.com/anza-xyz/agave/blob/v4.0.0-beta.5/platform-tools-sdk/sbf/c/inc/sol/inc/cpi.inc#L56-L90",
     "sol_try_find_program_address": "https://github.com/anza-xyz/agave/blob/v4.0.0-beta.5/platform-tools-sdk/sbf/c/inc/sol/inc/pubkey.inc#L74-L83"
-  },
-  "cpis": {
-    "system_program::CreateAccount": "https://github.com/anza-xyz/solana-sdk/blob/sdk@v4.0.1/system-interface/src/instruction.rs#L93-L107",
-    "spl_token::InitializeAccount2": "https://github.com/solana-program/token/blob/program@v9.0.0/interface/src/instruction.rs#L352-L365",
-    "spl_token_2022::GetAccountDataSize": "https://github.com/solana-program/token-2022/blob/interface@v2.1.0/interface/src/instruction.rs#L487-L499"
   }
 }
