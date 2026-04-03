@@ -8,7 +8,6 @@ export default {
   description:
     "Courtesy of Distributed Atomic State Machine Algorithms Corporation (DASMAC)",
   head: [
-    // Favicons
     [
       "link",
       {
@@ -26,7 +25,6 @@ export default {
       },
     ],
     ["link", { rel: "apple-touch-icon", href: "/favicon-light.png" }],
-    // Open Graph
     ["meta", { property: "og:site_name", content: "DASMAC" }],
     ["meta", { property: "og:type", content: "website" }],
     ["meta", { property: "og:url", content: "https://docs.dropset.io/" }],
@@ -39,7 +37,13 @@ export default {
           "Courtesy of Distributed Atomic State Machine Algorithms Corporation (DASMAC)",
       },
     ],
-    ["meta", { property: "og:image", content: "https://docs.dropset.io/dasmac-banner.png" }],
+    [
+      "meta",
+      {
+        property: "og:image",
+        content: "https://docs.dropset.io/dasmac-banner.png",
+      },
+    ],
     ["meta", { name: "twitter:card", content: "summary_large_image" }],
     ["meta", { name: "twitter:title", content: "Dropset Docs" }],
     [
@@ -50,7 +54,13 @@ export default {
           "Courtesy of Distributed Atomic State Machine Algorithms Corporation (DASMAC)",
       },
     ],
-    ["meta", { name: "twitter:image", content: "https://docs.dropset.io/dasmac-banner.png" }],
+    [
+      "meta",
+      {
+        name: "twitter:image",
+        content: "https://docs.dropset.io/dasmac-banner.png",
+      },
+    ],
   ],
   srcDir: "src",
   vite: {

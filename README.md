@@ -9,5 +9,5 @@
 Official docs for the beta release of Dropset can be viewed at
 [docs.dropset.io].
 
-[DASMAC]: https://dasmac.com
+[dasmac]: https://dasmac.com
 [docs.dropset.io]: https://docs.dropset.io
