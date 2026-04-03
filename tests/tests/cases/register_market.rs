@@ -10,8 +10,15 @@ use dropset_tests::{
 use mollusk_svm::program;
 use mollusk_svm::result::ProgramResult as MolluskResult;
 use solana_account::Account;
+use solana_program_pack::Pack;
 use solana_sdk::instruction::{AccountMeta, Instruction};
 use solana_sdk::pubkey::Pubkey;
+use spl_token_2022_interface::extension::transfer_fee::{TransferFeeAmount, TransferFeeConfig};
+use spl_token_2022_interface::extension::transfer_hook::{TransferHook, TransferHookAccount};
+use spl_token_2022_interface::extension::{AccountType, ExtensionType, Length};
+use spl_token_interface::state::Account as TokenAccount;
+use spl_token_interface::state::AccountState;
+use spl_token_interface::state::Mint;
 
 test_cases! {
     #[derive(Clone, Copy)]
@@ -113,24 +120,73 @@ fn into_metas_and_accounts(
 
 const USER_LAMPORTS: u64 = 10_000_000;
 const MARKET_HEADER_SIZE: usize = size_of::<MarketHeader>();
-const TOKEN_ACCOUNT_SIZE: usize = 165;
+const TOKEN_ACCOUNT_SIZE: usize = TokenAccount::LEN;
+
+/// Token 2022 TLV header size: ExtensionType + Length.
+const TLV_HEADER_SIZE: usize = size_of::<ExtensionType>() + size_of::<Length>();
+
+/// Token 2022 base token account + AccountType discriminator.
+const BASE_ACCOUNT_AND_TYPE_LENGTH: usize = TokenAccount::LEN + size_of::<AccountType>();
+
+/// Expected token account size for a mint with TransferFeeConfig.
+/// GetAccountDataSize returns base + AccountType + one TransferFeeAmount TLV entry.
+const TOKEN_2022_ACCOUNT_SIZE_A: usize =
+    BASE_ACCOUNT_AND_TYPE_LENGTH + TLV_HEADER_SIZE + size_of::<TransferFeeAmount>();
+
+/// Expected token account size for a mint with TransferHook.
+/// GetAccountDataSize returns base + AccountType + one TransferHookAccount TLV entry.
+const TOKEN_2022_ACCOUNT_SIZE_B: usize =
+    BASE_ACCOUNT_AND_TYPE_LENGTH + TLV_HEADER_SIZE + size_of::<TransferHookAccount>();
+
+/// Build a Token 2022 mint account with a single TLV extension appended.
+fn mint_account_2022(ext_type: ExtensionType, ext_data_len: usize) -> Account {
+    let mut data = vec![0u8; Mint::LEN];
+    Mint::pack(default_mint(), &mut data).unwrap();
+    // Zero-pad from Mint::LEN to TokenAccount::LEN, the offset Token 2022
+    // uses for the AccountType discriminator.
+    data.resize(TokenAccount::LEN, 0);
+    data.push(AccountType::Mint as u8);
+    // TLV entry: ExtensionType + Length + zeroed extension data.
+    data.extend_from_slice(&<[u8; size_of::<ExtensionType>()]>::from(ext_type));
+    data.extend_from_slice(&(ext_data_len as u16).to_le_bytes());
+    data.extend_from_slice(&vec![0u8; ext_data_len]);
+
+    Account {
+        lamports: solana_sdk::rent::Rent::default().minimum_balance(data.len()),
+        data,
+        owner: Pubkey::from(TOKEN_2022_PROGRAM_ID),
+        executable: false,
+        rent_epoch: 0,
+    }
+}
+
+/// Token 2022 mint with TransferFeeConfig extension.
+fn mint_account_2022_a() -> Account {
+    mint_account_2022(ExtensionType::TransferFeeConfig, size_of::<TransferFeeConfig>())
+}
+
+/// Token 2022 mint with TransferHook extension.
+fn mint_account_2022_b() -> Account {
+    mint_account_2022(ExtensionType::TransferHook, size_of::<TransferHook>())
+}
 
 macro_rules! check_vault {
     ($errors:expr, $label:expr, $vault:expr, $expected_owner:expr, $rent:expr,
-     $expected_mint:expr, $expected_proprietor:expr) => {{
+     $expected_mint:expr, $expected_proprietor:expr, $expected_data_len:expr) => {{
         let vault = $vault;
         let expected_owner = $expected_owner;
+        let expected_data_len: usize = $expected_data_len;
         if vault.owner != *expected_owner {
             $errors.push(format!(
                 "{} owner: expected {:?}, got {:?}",
                 $label, expected_owner, vault.owner
             ));
         }
-        if vault.data.len() != TOKEN_ACCOUNT_SIZE {
+        if vault.data.len() != expected_data_len {
             $errors.push(format!(
                 "{} data len: expected {}, got {}",
                 $label,
-                TOKEN_ACCOUNT_SIZE,
+                expected_data_len,
                 vault.data.len()
             ));
         }
@@ -142,8 +198,7 @@ macro_rules! check_vault {
                 vault.data.len()
             ));
         }
-        use solana_program_pack::Pack;
-        match spl_token_interface::state::Account::unpack_from_slice(&vault.data) {
+        match TokenAccount::unpack_from_slice(&vault.data) {
             Ok(token_account) => {
                 if token_account.mint != $expected_mint {
                     $errors.push(format!(
@@ -163,8 +218,7 @@ macro_rules! check_vault {
                         $label, token_account.amount
                     ));
                 }
-                if token_account.state
-                    != spl_token_interface::state::AccountState::Initialized
+                if token_account.state != AccountState::Initialized
                 {
                     $errors.push(format!(
                         "{} state: expected Initialized, got {:?}",
@@ -182,8 +236,8 @@ macro_rules! check_vault {
     }};
 }
 
-fn default_mint() -> spl_token_interface::state::Mint {
-    spl_token_interface::state::Mint {
+fn default_mint() -> Mint {
+    Mint {
         is_initialized: true,
         ..Default::default()
     }
@@ -192,8 +246,6 @@ fn default_mint() -> spl_token_interface::state::Mint {
 fn mint_account(owner: Pubkey) -> Account {
     if owner == Pubkey::from(TOKEN_PROGRAM_ID) {
         mollusk_svm_programs_token::token::create_account_for_mint(default_mint())
-    } else if owner == Pubkey::from(TOKEN_2022_PROGRAM_ID) {
-        mollusk_svm_programs_token::token2022::create_account_for_mint(default_mint())
     } else {
         let mut acct = Account::default();
         acct.owner = owner;
@@ -366,8 +418,20 @@ fn token_program_base_accounts(
     keys[RegisterMarketAccounts::RentSysvar as usize] = rent_sysvar_pubkey;
     accounts[RegisterMarketAccounts::RentSysvar as usize] = rent_sysvar_account;
 
-    accounts[RegisterMarketAccounts::BaseMint as usize] = mint_account(base_token_program);
-    accounts[RegisterMarketAccounts::QuoteMint as usize] = mint_account(quote_token_program);
+    accounts[RegisterMarketAccounts::BaseMint as usize] = if base_token_program
+        == Pubkey::from(TOKEN_2022_PROGRAM_ID)
+    {
+        mint_account_2022_a()
+    } else {
+        mint_account(base_token_program)
+    };
+    accounts[RegisterMarketAccounts::QuoteMint as usize] = if quote_token_program
+        == Pubkey::from(TOKEN_2022_PROGRAM_ID)
+    {
+        mint_account_2022_b()
+    } else {
+        mint_account(quote_token_program)
+    };
 
     keys[RegisterMarketAccounts::BaseTokenProgram as usize] = base_token_program;
     accounts[RegisterMarketAccounts::BaseTokenProgram as usize] =
@@ -1535,13 +1599,13 @@ impl TestCase for Case {
                             [RegisterMarketAccounts::BaseVault as usize]
                             .1;
                         check_vault!(errors, "base vault", base_vault, &token_program_id, rent,
-                            base_mint_key, market_pda);
+                            base_mint_key, market_pda, TOKEN_ACCOUNT_SIZE);
 
                         let quote_vault = &result.resulting_accounts
                             [RegisterMarketAccounts::QuoteVault as usize]
                             .1;
                         check_vault!(errors, "quote vault", quote_vault, &token_program_id, rent,
-                            quote_mint_key, market_pda);
+                            quote_mint_key, market_pda, TOKEN_ACCOUNT_SIZE);
                     }
                     other => {
                         errors.push(format!("expected success, got {:?}", other));
@@ -1606,13 +1670,13 @@ impl TestCase for Case {
                             [RegisterMarketAccounts::BaseVault as usize]
                             .1;
                         check_vault!(errors, "base vault", base_vault, &token_program_id, rent,
-                            base_mint_key, market_pda);
+                            base_mint_key, market_pda, TOKEN_ACCOUNT_SIZE);
 
                         let quote_vault = &result.resulting_accounts
                             [RegisterMarketAccounts::QuoteVault as usize]
                             .1;
                         check_vault!(errors, "quote vault", quote_vault, &token_2022_id, rent,
-                            quote_mint_key, market_pda);
+                            quote_mint_key, market_pda, TOKEN_2022_ACCOUNT_SIZE_B);
                     }
                     other => {
                         errors.push(format!("expected success, got {:?}", other));
@@ -1676,13 +1740,13 @@ impl TestCase for Case {
                             [RegisterMarketAccounts::BaseVault as usize]
                             .1;
                         check_vault!(errors, "base vault", base_vault, &token_2022_id, rent,
-                            base_mint_key, market_pda);
+                            base_mint_key, market_pda, TOKEN_2022_ACCOUNT_SIZE_A);
 
                         let quote_vault = &result.resulting_accounts
                             [RegisterMarketAccounts::QuoteVault as usize]
                             .1;
                         check_vault!(errors, "quote vault", quote_vault, &token_2022_id, rent,
-                            quote_mint_key, market_pda);
+                            quote_mint_key, market_pda, TOKEN_2022_ACCOUNT_SIZE_B);
                     }
                     other => {
                         errors.push(format!("expected success, got {:?}", other));
@@ -1747,13 +1811,13 @@ impl TestCase for Case {
                             [RegisterMarketAccounts::BaseVault as usize]
                             .1;
                         check_vault!(errors, "base vault", base_vault, &token_2022_id, rent,
-                            base_mint_key, market_pda);
+                            base_mint_key, market_pda, TOKEN_2022_ACCOUNT_SIZE_A);
 
                         let quote_vault = &result.resulting_accounts
                             [RegisterMarketAccounts::QuoteVault as usize]
                             .1;
                         check_vault!(errors, "quote vault", quote_vault, &token_program_id, rent,
-                            quote_mint_key, market_pda);
+                            quote_mint_key, market_pda, TOKEN_ACCOUNT_SIZE);
                     }
                     other => {
                         errors.push(format!("expected success, got {:?}", other));
