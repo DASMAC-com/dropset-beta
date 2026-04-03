@@ -159,7 +159,7 @@ pub struct RegisterMarketFrame {
     pub input_shifted: u64,
     /// From Rent sysvar.
     pub lamports_per_byte: u64,
-    /// Return value from GetAccountDataSize CPI, to check token account data size at runtime.
+    /// Return value from spl_token_2022::GetAccountDataSize.
     pub token_account_data_size: u64,
     /// Pointer to mint account for vault initialization.
     pub mint: *const RuntimeAccount,
@@ -211,7 +211,7 @@ constant_group! {
         INPUT_SHIFTED = offset!(input_shifted),
         /// From Rent sysvar.
         LAMPORTS_PER_BYTE = offset!(lamports_per_byte),
-        /// Return value from GetAccountDataSize CPI, to check token account data size at runtime.
+        /// Return value from spl_token_2022::GetAccountDataSize.
         TOKEN_ACCOUNT_DATA_SIZE = offset!(token_account_data_size),
         /// Pointer to mint account for vault initialization.
         MINT = offset!(mint),

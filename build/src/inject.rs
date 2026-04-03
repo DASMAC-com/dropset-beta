@@ -65,11 +65,20 @@ impl Constant {
             }
         };
 
+        let comment_line = format!("# {}", comment);
+        assert!(
+            comment_line.len() <= max_width,
+            "comment exceeds {} chars ({} chars): {}",
+            max_width,
+            comment_line.len(),
+            comment_line,
+        );
+
         let inline = format!(".equ {}, {} # {}", name, value_str, comment);
         if inline.len() <= max_width {
             inline
         } else {
-            format!("# {}\n.equ {}, {}", comment, name, value_str)
+            format!("{}\n.equ {}, {}", comment_line, name, value_str)
         }
     }
 }
@@ -148,9 +157,17 @@ fn render_group(group: &ConstantGroup) -> String {
     if group.comment.is_empty() {
         directives.join("\n")
     } else {
+        let comment_line = format!("# {}", group.comment);
+        assert!(
+            comment_line.len() <= MAX_LINE_WIDTH,
+            "group comment exceeds {} chars ({} chars): {}",
+            MAX_LINE_WIDTH,
+            comment_line.len(),
+            comment_line,
+        );
         format!(
-            "# {}\n{}\n{}\n{}",
-            group.comment,
+            "{}\n{}\n{}\n{}",
+            comment_line,
             SEPARATOR,
             directives.join("\n"),
             SEPARATOR,

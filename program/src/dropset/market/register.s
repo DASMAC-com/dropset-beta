@@ -29,7 +29,7 @@
 .equ RM_FM_INPUT_OFF, -576 # Saved input buffer pointer.
 .equ RM_FM_INPUT_SHIFTED_OFF, -568 # Saved input_shifted pointer.
 .equ RM_FM_LAMPORTS_PER_BYTE_OFF, -560 # From Rent sysvar.
-# Return value from GetAccountDataSize CPI, to check token account data size at runtime.
+# Return value from spl_token_2022::GetAccountDataSize.
 .equ RM_FM_TOKEN_ACCOUNT_DATA_SIZE_OFF, -552
 # Pointer to mint account for vault initialization.
 .equ RM_FM_MINT_OFF, -544
