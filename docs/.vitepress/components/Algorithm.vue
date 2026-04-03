@@ -46,6 +46,7 @@ import {
   asmModules,
   registry,
   syscallRegistry,
+  cpiRegistry,
 } from "./paths.js";
 import { isRestoring } from "../theme/scrollPreserve.js";
 
@@ -127,9 +128,15 @@ onMounted(async () => {
         href: syscallRegistry[name],
         external: true,
       }));
+      const cpiLinks = (entry.cpis || []).map((name) => ({
+        name,
+        href: cpiRegistry[name],
+        external: true,
+      }));
       calls.value = [
         ...resolveLinks(entry.calls, algorithmIndex),
         ...syscallLinks,
+        ...cpiLinks,
       ];
       calledBy.value = resolveLinks(entry.calledBy, algorithmIndex);
       tests.value = entry.tests || [];
@@ -173,20 +180,47 @@ onMounted(async () => {
     // Turn \CALL{Name} references into clickable links.
     // sol-* names are converted to underscore form and linked to the
     // external source via the registry; others link to local algorithms.
+    // When a syscall has a CPI argument (e.g. \CALL{sol-invoke-signed-c}
+    // {system-program::CreateAccount}), the argument text is replaced
+    // with a linked CPI target inside parentheses.
+    //
+    // pseudocode.js renders both cases as a single text node after the
+    // funcname span:
+    //   \CALL{f}{}    → <span class="ps-funcname">f</span>()
+    //   \CALL{f}{arg} → <span class="ps-funcname">f</span>(arg)
     rendered.querySelectorAll(".ps-funcname").forEach((span) => {
       const name = span.textContent.trim();
       const syscallKey = name.replace(/-/g, "_");
       if (syscallRegistry[syscallKey]) {
+        let next = span.nextSibling;
+        if (next?.nodeType === Node.TEXT_NODE) {
+          // Extract the parenthesised content from the text node.
+          const m = next.textContent.match(/^\(([^)]*)\)/);
+          if (m) {
+            const argText = m[1];
+            // Strip the entire "(...)" from the text node.
+            next.textContent = next.textContent.slice(m[0].length);
+            if (argText) {
+              // CPI target present: convert to underscored display name.
+              const cpiName = argText.replace(/-/g, "_");
+              const cpiEl = document.createElement("a");
+              if (cpiRegistry[cpiName]) {
+                cpiEl.href = cpiRegistry[cpiName];
+                cpiEl.target = "_blank";
+              }
+              cpiEl.className = "ps-funcname ps-syscall";
+              cpiEl.textContent = cpiName;
+              span.after("(", cpiEl, ")");
+            }
+            // Empty args: "()" stripped, nothing inserted.
+          }
+        }
+        // Replace the funcname span with a syscall link.
         const a = document.createElement("a");
         a.href = syscallRegistry[syscallKey];
         a.target = "_blank";
         a.className = "ps-funcname ps-syscall";
         a.textContent = syscallKey;
-        // Strip the trailing "()" that pseudocode.js emits for \CALL.
-        let next = span.nextSibling;
-        if (next?.nodeType === Node.TEXT_NODE) {
-          next.textContent = next.textContent.replace(/^\(\)/, "");
-        }
         span.replaceWith(a);
       } else if (algorithmIndex[name]) {
         const a = document.createElement("a");

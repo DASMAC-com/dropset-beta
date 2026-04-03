@@ -84,7 +84,7 @@
     \STATE syscall.account\_infos\_len =
       \texttt{token.GET\_ACCOUNT\_DATA\_SIZE\_N\_ACCOUNTS}
     \STATE syscall.seeds\_len = \texttt{token.GET\_ACCOUNT\_DATA\_SIZE\_N\_SEEDS}
-    \STATE \CALL{sol-invoke-signed-c}{}
+    \STATE \CALL{sol-invoke-signed-c}{spl-token-2022::GetAccountDataSize}
     \COMMENT{Get return data.}
     \STATE syscall.bytes = \&frame.token\_account\_data\_size
     \STATE syscall.bytes\_len = \texttt{u64.size}
@@ -138,7 +138,7 @@
     \texttt{register\_misc.CREATE\_ACCOUNT\_N\_ACCOUNTS}
   \STATE syscall.seeds = \&frame.signers\_seeds
   \STATE syscall.seeds\_len = \texttt{register\_misc.N\_PDA\_SIGNERS}
-  \STATE \CALL{sol-invoke-signed-c}{}
+  \STATE \CALL{sol-invoke-signed-c}{system-program::CreateAccount}
   \COMMENT{Assign CPI account fields for vault.}
   \STATE frame.cpi[0].meta.pubkey = \&acct.address
   \STATE frame.cpi[0].info.key = \&acct.address
@@ -182,7 +182,7 @@
   \STATE syscall.account\_infos\_len =
     \texttt{token.INITIALIZE\_ACCOUNT\_2\_N\_ACCOUNTS}
   \STATE syscall.seeds\_len = \texttt{token.INITIALIZE\_ACCOUNT\_2\_N\_SEEDS}
-  \STATE \CALL{sol-invoke-signed-c}{}
+  \STATE \CALL{sol-invoke-signed-c}{spl-token::InitializeAccount2}
 \ENDFUNCTION
 \end{algorithmic}
 \end{algorithm}

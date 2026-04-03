@@ -47,10 +47,17 @@ export function buildAlgorithmIndex() {
 
     const calls = new Set();
     const syscalls = new Set();
-    for (const match of code.matchAll(/\\CALL\{([\w-]+)\}/g)) {
+    const cpis = new Set();
+    for (const match of code.matchAll(
+      /\\CALL\{([\w-]+)\}(?:\{([\w-:]+)\})?/g,
+    )) {
       if (match[1] === name) continue;
       if (match[1].startsWith("sol-")) {
         syscalls.add(match[1].replace(/-/g, "_"));
+        // Capture CPI target if present (e.g. sol-invoke-signed-c with arg).
+        if (match[2]) {
+          cpis.add(match[2].replace(/-/g, "_"));
+        }
       } else {
         calls.add(match[1]);
       }
@@ -60,6 +67,7 @@ export function buildAlgorithmIndex() {
       page: null,
       calls: [...calls],
       syscalls: [...syscalls],
+      cpis: [...cpis],
       calledBy: [],
     };
   }

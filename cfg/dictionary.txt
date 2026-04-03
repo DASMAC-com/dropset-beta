@@ -2,6 +2,7 @@ bindgen
 clippy
 clrs
 codegen
+cpis
 dasmac
 dropset
 dtolnay

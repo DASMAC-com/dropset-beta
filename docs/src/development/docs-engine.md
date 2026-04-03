@@ -47,9 +47,15 @@ and reverse dependencies ("Called by") are displayed below the pseudocode.
 build-time index records them separately, and at render time the hyphenated name
 is converted to underscore form (e.g. `sol-try-find-program-address` becomes
 `sol_try_find_program_address`) and linked to its upstream source definition via
-the [algorithm registry]. The trailing `()` that pseudocode.js emits for `\CALL`
-is stripped for syscalls so they render as plain linked names. Syscalls appear
-in the "Calls" section alongside algorithm dependencies.
+the [algorithm registry]. When a syscall has empty arguments (`\CALL{sol-*}{}`),
+the trailing `()` is stripped so it renders as a plain linked name. When a syscall
+has a CPI target argument (e.g.
+`\CALL{sol-invoke-signed-c}{system-program::CreateAccount}`), the
+parentheses are preserved and the argument is rendered as a linked CPI target
+using the `cpis` section of the [algorithm registry]. The displayed name converts
+hyphens to underscores (e.g. `system_program::CreateAccount`). Syscalls and CPI
+targets appear in the "Calls" section alongside algorithm dependencies, and CPI
+targets are included in the [algorithm index] dependency chart as dashed nodes.
 
 If the algorithm has associated
 [test cases], a collapsed **Tests** section is
@@ -138,13 +144,19 @@ file mappings, GitHub URL bases, and the [algorithm registry] re-export.
 
 ### [Algorithm registry][`registry.json`]
 
-The manually maintained `algorithms/registry.json` maps each algorithm to its
-assembly implementation file and defines external syscall source URLs. The
-`algorithms` object keys are algorithm names (matching `.tex` filenames), with
-each value containing an `asm` field pointing to the assembly source (without
-`.s` extension). The `syscalls` object maps underscore-separated names
-(e.g. `sol_try_find_program_address`) to upstream source URLs. The registry is
-re-exported by [`paths.js`] and consumed by `<Algorithm>` and
+The manually maintained `algorithms/registry.json` contains three sections:
+
+- **`algorithms`**: keys are algorithm names (matching `.tex` filenames), each
+  value contains an `asm` field pointing to the assembly source (without `.s`
+  extension).
+- **`syscalls`**: maps underscore-separated syscall names
+  (e.g. `sol_try_find_program_address`) to upstream source URLs.
+- **`cpis`**: maps CPI target names in `program::Instruction` form
+  (e.g. `system_program::CreateAccount`) to upstream source URLs. These are
+  referenced from `.tex` files via
+  `\CALL{sol-invoke-signed-c}{program::Instruction}`.
+
+The registry is re-exported by [`paths.js`] and consumed by `<Algorithm>` and
 `<AlgorithmIndex>` at render time.
 
 ### Algorithm index builder
