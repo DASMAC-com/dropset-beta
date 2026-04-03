@@ -114,8 +114,8 @@ their upstream source definitions.
 
 <!-- markdownlint-disable MD013 -->
 
-| Prop   | Type     | Required | Description                                                      |
-| ------ | -------- | -------- | ---------------------------------------------------------------- |
+| Prop   | Type     | Required | Description                                                       |
+| ------ | -------- | -------- | ----------------------------------------------------------------- |
 | `root` | `String` | no       | Algorithm name to scope the graph to (shows only its dep subtree) |
 
 <!-- markdownlint-enable MD013 -->
