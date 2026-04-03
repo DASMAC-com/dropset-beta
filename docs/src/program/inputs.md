@@ -6,7 +6,7 @@ the instruction discriminant to the appropriate handler.
 
 ## Entrypoint
 
-<Algorithm tex="ENTRYPOINT" asm="entrypoint"/>
+<Algorithm id="ENTRYPOINT"/>
 
 ## Input buffer
 

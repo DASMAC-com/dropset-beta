@@ -88,7 +88,7 @@
     \texttt{register\_misc.CREATE\_ACCOUNT\_N\_ACCOUNTS}
   \STATE syscall.seeds = \&frame.signers\_seeds
   \STATE syscall.seeds\_len = \texttt{register\_misc.N\_PDA\_SIGNERS}
-  \STATE \CALL{sol-invoke-signed-c}{}
+  \STATE \CALL{sol-invoke-signed-c}{system-program::CreateAccount}
   \COMMENT{Initialize market header next pointer and store derived bump.}
   \STATE input.market.data.next = input + \texttt{input\_buffer.MARKET\_DATA\_BYTES}
   \STATE input.market.data.bump = frame.bump

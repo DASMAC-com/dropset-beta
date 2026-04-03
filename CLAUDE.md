@@ -53,6 +53,19 @@ development topics:
 - `docs/src/program/algorithm-index.md` algorithm
   documentation
 
+## Algorithm registry
+
+`docs/algorithms/registry.json` is the central mapping
+between algorithm specifications (`.tex` pseudocode in
+`docs/algorithms/`) and their assembly implementations
+(`.s` files in `program/src/dropset/`). Each entry maps
+an algorithm name to its `asm` file path. The registry
+also contains `syscalls` (Solana runtime syscall URLs)
+and `cpis` (cross-program invocation target URLs).
+
+Use the registry when comparing spec vs implementation,
+e.g. verifying a `.tex` algorithm matches its `.s` file.
+
 ## Key commands
 
 ```bash

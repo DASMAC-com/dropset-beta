@@ -2,10 +2,10 @@
 <!-- cspell:word linenum -->
 <!-- cspell:word texttt -->
 <template>
-  <!-- Anchor: #algo-ref-<tex> for cross-page and in-page linking. -->
-  <div :id="`algo-ref-${tex}`">
+  <!-- Anchor: #algo-ref-<id> for cross-page and in-page linking. -->
+  <div :id="`algo-ref-${id}`">
     <div ref="container" class="pseudocode-container">
-      <div v-if="asm" ref="asmBlock" class="asm-block"></div>
+      <div v-if="asmFile" ref="asmBlock" class="asm-block"></div>
       <div ref="testsBlock" class="tests-block"></div>
       <div v-if="calls.length" class="pseudocode-links pseudocode-links-below">
         <div class="pseudocode-link-row">
@@ -36,7 +36,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
 import "pseudocode/build/pseudocode.min.css";
 import algorithmIndex from "../../algorithms/index.json";
 import {
@@ -44,7 +44,9 @@ import {
   GH_BASE,
   GH_ROOT,
   asmModules,
+  registry,
   syscallRegistry,
+  cpiRegistry,
 } from "./paths.js";
 import { isRestoring } from "../theme/scrollPreserve.js";
 
@@ -62,13 +64,15 @@ const testCaseModules = import.meta.glob("../../../tests/tests/cases/*.rs", {
   import: "default",
 });
 
-// Props: tex is the .tex filename, asm is the optional assembly source file.
+// Props: id is the algorithm name (matches .tex filename and registry key).
 const props = defineProps({
-  tex: { type: String, required: true },
-  asm: { type: String, default: "" },
+  id: { type: String, required: true },
   lineNumber: { type: Boolean, default: true },
   lineNumberPunc: { type: String, default: "" },
 });
+
+// Resolve assembly file from registry.
+const asmFile = computed(() => registry.algorithms[props.id]?.asm || "");
 
 const container = ref(null);
 const asmBlock = ref(null);
@@ -112,21 +116,27 @@ onMounted(async () => {
     const pseudocode = await import("pseudocode");
 
     // Load .tex source at build time via glob import.
-    const texLoader = texModules[`../../algorithms/${props.tex}.tex`];
-    if (!texLoader) throw new Error(`Unknown algorithm: ${props.tex}`);
+    const texLoader = texModules[`../../algorithms/${props.id}.tex`];
+    if (!texLoader) throw new Error(`Unknown algorithm: ${props.id}`);
     const code = await texLoader();
 
     // Resolve forward and reverse deps from the algorithm index.
-    const entry = algorithmIndex[props.tex];
+    const entry = algorithmIndex[props.id];
     if (entry) {
       const syscallLinks = (entry.syscalls || []).map((name) => ({
         name,
         href: syscallRegistry[name],
         external: true,
       }));
+      const cpiLinks = (entry.cpis || []).map((name) => ({
+        name,
+        href: cpiRegistry[name],
+        external: true,
+      }));
       calls.value = [
         ...resolveLinks(entry.calls, algorithmIndex),
         ...syscallLinks,
+        ...cpiLinks,
       ];
       calledBy.value = resolveLinks(entry.calledBy, algorithmIndex);
       tests.value = entry.tests || [];
@@ -149,6 +159,19 @@ onMounted(async () => {
     );
     container.value.insertBefore(rendered, container.value.firstChild);
 
+    // Remove the extra indentation pseudocode.js adds to prelude
+    // comments (those in .ps-block divs directly under .ps-algorithmic
+    // that contain no .ps-line children).
+    rendered
+      .querySelectorAll(".ps-algorithmic > .ps-block")
+      .forEach((block) => {
+        if (
+          !block.querySelector(".ps-line") &&
+          block.querySelector(".ps-comment")
+        )
+          block.style.marginLeft = "0";
+      });
+
     // Indent comments that precede a block so they align with the
     // block's first line rather than the parent control keyword.
     rendered.querySelectorAll(".ps-comment").forEach((span) => {
@@ -169,21 +192,48 @@ onMounted(async () => {
 
     // Turn \CALL{Name} references into clickable links.
     // sol-* names are converted to underscore form and linked to the
-    // external source via syscalls.json; others link to local algorithms.
+    // external source via the registry; others link to local algorithms.
+    // When a syscall has a CPI argument (e.g. \CALL{sol-invoke-signed-c}
+    // {system-program::CreateAccount}), the argument text is replaced
+    // with a linked CPI target inside parentheses.
+    //
+    // pseudocode.js renders both cases as a single text node after the
+    // funcname span:
+    //   \CALL{f}{}    → <span class="ps-funcname">f</span>()
+    //   \CALL{f}{arg} → <span class="ps-funcname">f</span>(arg)
     rendered.querySelectorAll(".ps-funcname").forEach((span) => {
       const name = span.textContent.trim();
       const syscallKey = name.replace(/-/g, "_");
       if (syscallRegistry[syscallKey]) {
+        let next = span.nextSibling;
+        if (next?.nodeType === Node.TEXT_NODE) {
+          // Extract the parenthesised content from the text node.
+          const m = next.textContent.match(/^\(([^)]*)\)/);
+          if (m) {
+            const argText = m[1];
+            // Strip the entire "(...)" from the text node.
+            next.textContent = next.textContent.slice(m[0].length);
+            if (argText) {
+              // CPI target present: convert to underscored display name.
+              const cpiName = argText.replace(/-/g, "_");
+              const cpiEl = document.createElement("a");
+              if (cpiRegistry[cpiName]) {
+                cpiEl.href = cpiRegistry[cpiName];
+                cpiEl.target = "_blank";
+              }
+              cpiEl.className = "ps-funcname ps-syscall";
+              cpiEl.textContent = cpiName;
+              span.after("(", cpiEl, ")");
+            }
+            // Empty args: "()" stripped, nothing inserted.
+          }
+        }
+        // Replace the funcname span with a syscall link.
         const a = document.createElement("a");
         a.href = syscallRegistry[syscallKey];
         a.target = "_blank";
         a.className = "ps-funcname ps-syscall";
         a.textContent = syscallKey;
-        // Strip the trailing "()" that pseudocode.js emits for \CALL.
-        let next = span.nextSibling;
-        if (next?.nodeType === Node.TEXT_NODE) {
-          next.textContent = next.textContent.replace(/^\(\)/, "");
-        }
         span.replaceWith(a);
       } else if (algorithmIndex[name]) {
         const a = document.createElement("a");
@@ -195,9 +245,10 @@ onMounted(async () => {
     });
 
     // Load and highlight assembly source if specified.
-    if (props.asm) {
-      const asmLoader = asmModules[`${ASM_BASE}${props.asm}.s`];
-      if (!asmLoader) throw new Error(`Unknown assembly file: ${props.asm}`);
+    if (asmFile.value) {
+      const asmLoader = asmModules[`${ASM_BASE}${asmFile.value}.s`];
+      if (!asmLoader)
+        throw new Error(`Unknown assembly file: ${asmFile.value}`);
       asmCode.value = (await asmLoader()).trimEnd();
 
       const shiki = await import("shiki");
@@ -248,7 +299,7 @@ onMounted(async () => {
 
       asmBlock.value.innerHTML =
         `<details class="details custom-block">` +
-        `<summary>Implementation: <a href="${GH_BASE}${props.asm}.s" target="_blank">${props.asm}.s</a></summary>` +
+        `<summary>Implementation: <a href="${GH_BASE}${asmFile.value}.s" target="_blank">${asmFile.value}.s</a></summary>` +
         `<div class="language-asm vp-adaptive-theme line-numbers-mode">` +
         `<button title="Copy Code" class="copy"></button>` +
         `<span class="lang">asm</span>` +

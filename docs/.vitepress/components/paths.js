@@ -1,6 +1,9 @@
-// External syscall registry. Keys are underscore-separated names
-// (e.g. "sol_try_find_program_address"), values are source URLs.
-export { default as syscallRegistry } from "../../algorithms/syscalls.json";
+// Algorithm registry. Manually maintained mapping of algorithm names
+// to assembly implementations, external syscall URLs, and CPI target URLs.
+import _registry from "../../algorithms/registry.json";
+export const registry = _registry;
+export const syscallRegistry = _registry.syscalls;
+export const cpiRegistry = _registry.cpis;
 
 // Relative path from this directory to the assembly source root.
 // Used as the key prefix when looking up files in asmModules.
