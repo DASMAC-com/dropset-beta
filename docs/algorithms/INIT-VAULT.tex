@@ -13,23 +13,28 @@
     \texttt{true},
     \texttt{false}
   \}
-  \REQUIRE *frame.mint $\in$ \{
+  \REQUIRE frame.mint $\in$ \{
     input.base\_mint,
     input\_shifted.quote\_mint
   \}
   \REQUIRE frame.token\_program\_id
   \REQUIRE frame.program\_id
   \REQUIRE frame.input
+  \REQUIRE frame.rent
   \REQUIRE frame.lamports\_per\_byte
   \REQUIRE frame.pda\_seeds[0].len = \texttt{Address.size}
   \REQUIRE frame.pda\_seeds[2].addr = \&frame.bump
   \REQUIRE frame.pda\_seeds[2].len = \texttt{u8.size}
-  \REQUIRE *frame.system\_program\_id = input.system\_program.address
+  \REQUIRE frame.system\_program\_id = \&input.system\_program.address
   \REQUIRE frame.signers\_seeds.addr = \&frame.pda\_seeds
   \REQUIRE frame.signers\_seeds.len = \texttt{RegisterMarketFrame.PDA\_SEEDS\_N\_SEEDS}
   \REQUIRE input.user.data\_len = \texttt{data.LEN\_ZERO}
   \REQUIRE acct.data\_len = \texttt{data.LEN\_ZERO}
   \REQUIRE frame.cpi[0].info.executable = \texttt{false}
+  \REQUIRE frame.cpi[2].info.is\_signer = \texttt{false}
+  \REQUIRE frame.cpi[2].info.is\_writable = \texttt{false}
+  \REQUIRE frame.cpi[2].meta.is\_signer = \texttt{false}
+  \REQUIRE frame.cpi[2].meta.is\_writable = \texttt{false}
 \FUNCTION{INIT-VAULT}{acct, frame}
   \STATE \CALL{Store}{frame}
   \STATE \CALL{Store}{acct}
@@ -73,7 +78,7 @@
       \texttt{token.GET\_ACCOUNT\_DATA\_SIZE\_DISC}
     \STATE frame.sol\_instruction.data = \&frame.get\_account\_data\_size\_data
     \STATE frame.sol\_instruction.data\_len = \texttt{u8.size}
-    \COMMENT{Invoke GetAccountDataSize CPI (no signers).}
+    \COMMENT{Invoke GetAccountDataSize CPI.}
     \STATE syscall.instruction = \&frame.sol\_instruction
     \STATE syscall.account\_infos = \&frame.cpi[0].info
     \STATE syscall.account\_infos\_len =
@@ -133,6 +138,50 @@
     \texttt{register\_misc.CREATE\_ACCOUNT\_N\_ACCOUNTS}
   \STATE syscall.seeds = \&frame.signers\_seeds
   \STATE syscall.seeds\_len = \texttt{register\_misc.N\_PDA\_SIGNERS}
+  \STATE \CALL{sol-invoke-signed-c}{}
+  \COMMENT{Assign CPI account fields for vault.}
+  \STATE frame.cpi[0].meta.pubkey = \&acct.address
+  \STATE frame.cpi[0].info.key = \&acct.address
+  \STATE frame.cpi[0].info.owner = \&acct.owner
+  \STATE frame.cpi[0].info.lamports = \&acct.lamports
+  \STATE frame.cpi[0].info.data = \&acct.data
+  \STATE frame.cpi[0].info.data\_len = acct.data\_len
+  \COMMENT{Assign CPI account fields for mint.}
+  \STATE mint = frame.mint
+  \STATE frame.cpi[1].info.is\_signer = \texttt{false}
+  \STATE frame.cpi[1].info.is\_writable = \texttt{false}
+  \STATE frame.cpi[1].meta.is\_signer = \texttt{false}
+  \STATE frame.cpi[1].meta.is\_writable = \texttt{false}
+  \STATE frame.cpi[1].meta.pubkey = \&mint.address
+  \STATE frame.cpi[1].info.key = \&mint.address
+  \STATE frame.cpi[1].info.owner = \&mint.owner
+  \STATE frame.cpi[1].info.lamports = \&mint.lamports
+  \STATE frame.cpi[1].info.data = \&mint.data
+  \STATE frame.cpi[1].info.data\_len = mint.data\_len
+  \COMMENT{Assign CPI account fields for Rent sysvar.}
+  \STATE rent = frame.rent
+  \STATE frame.cpi[2].meta.pubkey = \&rent.address
+  \STATE frame.cpi[2].info.key = \&rent.address
+  \STATE frame.cpi[2].info.owner = \&rent.owner
+  \STATE frame.cpi[2].info.lamports = \&rent.lamports
+  \STATE frame.cpi[2].info.data = \&rent.data
+  \STATE frame.cpi[2].info.data\_len = rent.data\_len
+  \COMMENT{Populate SolInstruction for InitializeAccount2.}
+  \STATE frame.sol\_instruction.program\_id = frame.token\_program\_id
+  \STATE frame.sol\_instruction.accounts = \&frame.cpi.account\_metas
+  \STATE frame.sol\_instruction.account\_len =
+    \texttt{token.INITIALIZE\_ACCOUNT\_2\_N\_ACCOUNTS}
+  \STATE frame.initialize\_account\_2\_data.discriminant =
+    \texttt{token.INITIALIZE\_ACCOUNT\_2\_DISC}
+  \STATE frame.initialize\_account\_2\_data.proprietor = input.market.address
+  \STATE frame.sol\_instruction.data = \&frame.initialize\_account\_2\_data
+  \STATE frame.sol\_instruction.data\_len = \texttt{InitializeAccount2.size}
+  \COMMENT{Invoke InitializeAccount2 CPI.}
+  \STATE syscall.instruction = \&frame.sol\_instruction
+  \STATE syscall.account\_infos = \&frame.cpi.account\_infos
+  \STATE syscall.account\_infos\_len =
+    \texttt{token.INITIALIZE\_ACCOUNT\_2\_N\_ACCOUNTS}
+  \STATE syscall.seeds\_len = \texttt{token.INITIALIZE\_ACCOUNT\_2\_N\_SEEDS}
   \STATE \CALL{sol-invoke-signed-c}{}
 \ENDFUNCTION
 \end{algorithmic}

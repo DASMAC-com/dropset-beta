@@ -95,7 +95,7 @@ emits the same set of constants with a `_UOFF` suffix instead of `_OFF`.
 
 ### Token
 
-SPL Token constants (account size, instruction discriminators) are injected
+SPL Token constants (account size, instruction discriminants) are injected
 from the [`token`][token-mod] module via [`constant_group!`][bs-constant-group]:
 
 <Include asm="common/token" collapsible/>
