@@ -105,6 +105,8 @@
   \IF{result $\neq$ \texttt{entrypoint.RETURN\_SUCCESS}}
     \RETURN result
   \ENDIF
+  \COMMENT{Store derived bump in market account data.}
+  \STATE input.market.data.base\_vault\_bump = frame.bump
   \COMMENT{Advance to quote token program account.}
   \STATE acct += \texttt{EmptyAccount.size}
   \COMMENT{Check quote token program account.}
@@ -149,6 +151,8 @@
   \STATE frame.vault\_index = \texttt{register\_misc.VAULT\_INDEX\_QUOTE}
   \STATE frame.mint = \&input\_shifted.quote\_mint
   \STATE \CALL{INIT-VAULT}{acct, frame}
+  \COMMENT{Store derived bump in market account data.}
+  \STATE input.market.data.quote\_vault\_bump = frame.bump
 \ENDPROCEDURE
 \end{algorithmic}
 \end{algorithm}

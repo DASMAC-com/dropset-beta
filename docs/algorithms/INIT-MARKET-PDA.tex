@@ -19,6 +19,8 @@
   \ENSURE frame.lamports\_per\_byte = acct.data.lamports\_per\_byte
   \ENSURE frame.signers\_seeds.addr = \&frame.pda\_seeds
   \ENSURE frame.signers\_seeds.len = \texttt{RegisterMarketFrame.PDA\_SEEDS\_N\_SEEDS}
+  \ENSURE input.market.data.next = input + \texttt{input\_buffer.MARKET\_DATA\_BYTES}
+  \ENSURE input.market.data.bump = frame.bump
 \PROCEDURE{INIT-MARKET-PDA}{input, insn, acct, frame}
   \COMMENT{Prepare CreateAccount instruction lamports, space fields.}
   \STATE frame.create\_account\_data.space = \texttt{MarketHeader.size}
@@ -87,6 +89,9 @@
   \STATE syscall.seeds = \&frame.signers\_seeds
   \STATE syscall.seeds\_len = \texttt{register\_misc.N\_PDA\_SIGNERS}
   \STATE \CALL{sol-invoke-signed-c}{}
+  \COMMENT{Initialize market header next pointer and store derived bump.}
+  \STATE input.market.data.next = input + \texttt{input\_buffer.MARKET\_DATA\_BYTES}
+  \STATE input.market.data.bump = frame.bump
 \ENDPROCEDURE
 \end{algorithmic}
 \end{algorithm}

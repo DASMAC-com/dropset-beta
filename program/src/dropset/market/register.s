@@ -414,7 +414,12 @@ register_market_base_vault:
     call init_vault
     # if result != entrypoint.RETURN_SUCCESS
     #     return result
-    jeq r0, RETURN_SUCCESS, register_market_quote_token_program
+    jne r0, RETURN_SUCCESS, register_market_init_base_vault_failed
+    # input.market.data.base_vault_bump = frame.bump
+    ldxb r7, [r10 + RM_FM_BUMP_OFF]
+    stxb [r8 + IB_MARKET_DATA_BASE_VAULT_BUMP_OFF], r7
+    ja register_market_quote_token_program
+register_market_init_base_vault_failed:
     exit
 register_market_quote_token_program:
     # acct += EmptyAccount.size
@@ -522,4 +527,7 @@ register_market_done_token_programs:
     mov64 r1, r9
     mov64 r2, r10
     call init_vault
+    # input.market.data.quote_vault_bump = frame.bump
+    ldxb r7, [r10 + RM_FM_BUMP_OFF]
+    stxb [r8 + IB_MARKET_DATA_QUOTE_VAULT_BUMP_OFF], r7
     exit

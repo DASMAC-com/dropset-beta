@@ -17,8 +17,12 @@ account.
 
 Through this design, all user and market account metadata can be accessed
 at compile-time-known offsets from `r1`, and more importantly, market account
-data offsets are persisted across transactions. The `InputBufferHeader` layout
-captures this design:
+data offsets are persisted across transactions. The header also overlays a
+`MarketHeader` directly after the `RuntimeAccount` so that market data fields
+(pointers, bump seeds) are addressable at static offsets. A trailing
+`market_data_bytes` field marks the first allocatable byte after the header,
+giving `MarketHeader.next` its initialization target. The `InputBufferHeader`
+layout captures this design:
 
 <Include rs="interface::memory#input_buffer_header" collapsible/>
 

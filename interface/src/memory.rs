@@ -94,6 +94,9 @@ pub struct InputBufferHeader {
     pub n_accounts: u64,
     pub user: EmptyAccount,
     pub market: RuntimeAccount,
+    pub market_data_header: MarketHeader,
+    /// MarketHeader.next initializes to this offset.
+    pub market_data_bytes: u8,
 }
 // endregion: input_buffer_header
 
@@ -123,6 +126,20 @@ constant_group! {
         USER_DATA_TO_MARKET_ADDRESS = relative_offset!(
             InputBufferHeader, user.data, market.address
         ),
+        /// From input buffer to market data next pointer.
+        MARKET_DATA_NEXT = offset!(InputBufferHeader.market_data_header.next),
+        /// From input buffer to market data bump.
+        MARKET_DATA_BUMP = offset!(InputBufferHeader.market_data_header.bump),
+        /// From input buffer to market data base vault bump.
+        MARKET_DATA_BASE_VAULT_BUMP = offset!(
+            InputBufferHeader.market_data_header.base_vault_bump
+        ),
+        /// From input buffer to market data quote vault bump.
+        MARKET_DATA_QUOTE_VAULT_BUMP = offset!(
+            InputBufferHeader.market_data_header.quote_vault_bump
+        ),
+        /// From input buffer to first byte after market data header.
+        MARKET_DATA_BYTES = offset!(InputBufferHeader.market_data_bytes),
     }
 }
 // endregion: constant_group_example
