@@ -24,7 +24,7 @@ The instruction requires the following accounts:
 
 <AlgorithmIndex root="REGISTER-MARKET"/>
 
-### Dispatcher
+### Registration handler
 
 <Algorithm id="REGISTER-MARKET"/>
 
