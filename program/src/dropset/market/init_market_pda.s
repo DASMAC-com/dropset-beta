@@ -145,4 +145,8 @@ init_market_pda:
     # syscall.seeds_len = register_misc.N_PDA_SIGNERS
     mov64 r5, RM_MISC_N_PDA_SIGNERS
     call sol_invoke_signed_c
+    # input.market.data.bump = frame.bump
+    ldxdw r6, [r10 + RM_FM_INPUT_OFF]
+    ldxb r7, [r10 + RM_FM_BUMP_OFF]
+    stxb [r6 + IB_MARKET_DATA_BUMP_OFF], r7
     ja init_market_pda_return

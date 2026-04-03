@@ -94,6 +94,7 @@ pub struct InputBufferHeader {
     pub n_accounts: u64,
     pub user: EmptyAccount,
     pub market: RuntimeAccount,
+    pub market_data: MarketHeader,
 }
 // endregion: input_buffer_header
 
@@ -123,6 +124,12 @@ constant_group! {
         USER_DATA_TO_MARKET_ADDRESS = relative_offset!(
             InputBufferHeader, user.data, market.address
         ),
+        /// From input buffer to market data bump.
+        MARKET_DATA_BUMP = offset!(InputBufferHeader.market_data.bump),
+        /// From input buffer to market data base vault bump.
+        MARKET_DATA_BASE_VAULT_BUMP = offset!(InputBufferHeader.market_data.base_vault_bump),
+        /// From input buffer to market data quote vault bump.
+        MARKET_DATA_QUOTE_VAULT_BUMP = offset!(InputBufferHeader.market_data.quote_vault_bump),
     }
 }
 // endregion: constant_group_example

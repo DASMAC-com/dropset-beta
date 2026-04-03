@@ -73,6 +73,12 @@
 .equ IB_LAMPORTS_TO_DATA_REL_OFF_IMM, 16
 # From user data to market address in the input buffer.
 .equ IB_USER_DATA_TO_MARKET_ADDRESS_REL_OFF_IMM, 10256
+# From input buffer to market data bump.
+.equ IB_MARKET_DATA_BUMP_OFF, 10472
+# From input buffer to market data base vault bump.
+.equ IB_MARKET_DATA_BASE_VAULT_BUMP_OFF, 10473
+# From input buffer to market data quote vault bump.
+.equ IB_MARKET_DATA_QUOTE_VAULT_BUMP_OFF, 10474
 # -------------------------------------------------------------------------
 
 .equ SIZE_OF_U8, 1 # Size of u8 in bytes.

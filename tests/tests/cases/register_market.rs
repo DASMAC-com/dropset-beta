@@ -238,6 +238,51 @@ macro_rules! check_vault {
     }};
 }
 
+fn check_market_header_bumps(
+    errors: &mut Vec<String>,
+    data: &[u8],
+    program_id: &Pubkey,
+    base_mint_key: Pubkey,
+    quote_mint_key: Pubkey,
+    market_pda: Pubkey,
+) {
+    let header: &MarketHeader =
+        unsafe { &*(data.as_ptr() as *const MarketHeader) };
+
+    let (_, expected_market_bump) = Pubkey::find_program_address(
+        &[base_mint_key.as_ref(), quote_mint_key.as_ref()],
+        program_id,
+    );
+    if header.bump != expected_market_bump {
+        errors.push(format!(
+            "market header bump: expected {}, got {}",
+            expected_market_bump, header.bump
+        ));
+    }
+
+    let (_, expected_base_vault_bump) = Pubkey::find_program_address(
+        &[market_pda.as_ref(), &[VAULT_INDEX_BASE as u8]],
+        program_id,
+    );
+    if header.base_vault_bump != expected_base_vault_bump {
+        errors.push(format!(
+            "market header base_vault_bump: expected {}, got {}",
+            expected_base_vault_bump, header.base_vault_bump
+        ));
+    }
+
+    let (_, expected_quote_vault_bump) = Pubkey::find_program_address(
+        &[market_pda.as_ref(), &[VAULT_INDEX_QUOTE as u8]],
+        program_id,
+    );
+    if header.quote_vault_bump != expected_quote_vault_bump {
+        errors.push(format!(
+            "market header quote_vault_bump: expected {}, got {}",
+            expected_quote_vault_bump, header.quote_vault_bump
+        ));
+    }
+}
+
 fn default_mint() -> Mint {
     Mint {
         is_initialized: true,
@@ -1622,6 +1667,15 @@ impl TestCase for Case {
                             market_pda,
                             TOKEN_ACCOUNT_SIZE
                         );
+
+                        check_market_header_bumps(
+                            &mut errors,
+                            &market.data,
+                            &setup.program_id,
+                            base_mint_key,
+                            quote_mint_key,
+                            market_pda,
+                        );
                     }
                     other => {
                         errors.push(format!("expected success, got {:?}", other));
@@ -1709,6 +1763,15 @@ impl TestCase for Case {
                             market_pda,
                             TOKEN_2022_ACCOUNT_SIZE_B
                         );
+
+                        check_market_header_bumps(
+                            &mut errors,
+                            &market.data,
+                            &setup.program_id,
+                            base_mint_key,
+                            quote_mint_key,
+                            market_pda,
+                        );
                     }
                     other => {
                         errors.push(format!("expected success, got {:?}", other));
@@ -1794,6 +1857,15 @@ impl TestCase for Case {
                             quote_mint_key,
                             market_pda,
                             TOKEN_2022_ACCOUNT_SIZE_B
+                        );
+
+                        check_market_header_bumps(
+                            &mut errors,
+                            &market.data,
+                            &setup.program_id,
+                            base_mint_key,
+                            quote_mint_key,
+                            market_pda,
                         );
                     }
                     other => {
@@ -1881,6 +1953,15 @@ impl TestCase for Case {
                             quote_mint_key,
                             market_pda,
                             TOKEN_ACCOUNT_SIZE
+                        );
+
+                        check_market_header_bumps(
+                            &mut errors,
+                            &market.data,
+                            &setup.program_id,
+                            base_mint_key,
+                            quote_mint_key,
+                            market_pda,
                         );
                     }
                     other => {
