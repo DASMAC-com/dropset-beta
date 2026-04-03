@@ -162,7 +162,10 @@ fn mint_account_2022(ext_type: ExtensionType, ext_data_len: usize) -> Account {
 
 /// Token 2022 mint with TransferFeeConfig extension.
 fn mint_account_2022_a() -> Account {
-    mint_account_2022(ExtensionType::TransferFeeConfig, size_of::<TransferFeeConfig>())
+    mint_account_2022(
+        ExtensionType::TransferFeeConfig,
+        size_of::<TransferFeeConfig>(),
+    )
 }
 
 /// Token 2022 mint with TransferHook extension.
@@ -218,8 +221,7 @@ macro_rules! check_vault {
                         $label, token_account.amount
                     ));
                 }
-                if token_account.state != AccountState::Initialized
-                {
+                if token_account.state != AccountState::Initialized {
                     $errors.push(format!(
                         "{} state: expected Initialized, got {:?}",
                         $label, token_account.state
@@ -418,20 +420,18 @@ fn token_program_base_accounts(
     keys[RegisterMarketAccounts::RentSysvar as usize] = rent_sysvar_pubkey;
     accounts[RegisterMarketAccounts::RentSysvar as usize] = rent_sysvar_account;
 
-    accounts[RegisterMarketAccounts::BaseMint as usize] = if base_token_program
-        == Pubkey::from(TOKEN_2022_PROGRAM_ID)
-    {
-        mint_account_2022_a()
-    } else {
-        mint_account(base_token_program)
-    };
-    accounts[RegisterMarketAccounts::QuoteMint as usize] = if quote_token_program
-        == Pubkey::from(TOKEN_2022_PROGRAM_ID)
-    {
-        mint_account_2022_b()
-    } else {
-        mint_account(quote_token_program)
-    };
+    accounts[RegisterMarketAccounts::BaseMint as usize] =
+        if base_token_program == Pubkey::from(TOKEN_2022_PROGRAM_ID) {
+            mint_account_2022_a()
+        } else {
+            mint_account(base_token_program)
+        };
+    accounts[RegisterMarketAccounts::QuoteMint as usize] =
+        if quote_token_program == Pubkey::from(TOKEN_2022_PROGRAM_ID) {
+            mint_account_2022_b()
+        } else {
+            mint_account(quote_token_program)
+        };
 
     keys[RegisterMarketAccounts::BaseTokenProgram as usize] = base_token_program;
     accounts[RegisterMarketAccounts::BaseTokenProgram as usize] =
@@ -1598,14 +1598,30 @@ impl TestCase for Case {
                         let base_vault = &result.resulting_accounts
                             [RegisterMarketAccounts::BaseVault as usize]
                             .1;
-                        check_vault!(errors, "base vault", base_vault, &token_program_id, rent,
-                            base_mint_key, market_pda, TOKEN_ACCOUNT_SIZE);
+                        check_vault!(
+                            errors,
+                            "base vault",
+                            base_vault,
+                            &token_program_id,
+                            rent,
+                            base_mint_key,
+                            market_pda,
+                            TOKEN_ACCOUNT_SIZE
+                        );
 
                         let quote_vault = &result.resulting_accounts
                             [RegisterMarketAccounts::QuoteVault as usize]
                             .1;
-                        check_vault!(errors, "quote vault", quote_vault, &token_program_id, rent,
-                            quote_mint_key, market_pda, TOKEN_ACCOUNT_SIZE);
+                        check_vault!(
+                            errors,
+                            "quote vault",
+                            quote_vault,
+                            &token_program_id,
+                            rent,
+                            quote_mint_key,
+                            market_pda,
+                            TOKEN_ACCOUNT_SIZE
+                        );
                     }
                     other => {
                         errors.push(format!("expected success, got {:?}", other));
@@ -1669,14 +1685,30 @@ impl TestCase for Case {
                         let base_vault = &result.resulting_accounts
                             [RegisterMarketAccounts::BaseVault as usize]
                             .1;
-                        check_vault!(errors, "base vault", base_vault, &token_program_id, rent,
-                            base_mint_key, market_pda, TOKEN_ACCOUNT_SIZE);
+                        check_vault!(
+                            errors,
+                            "base vault",
+                            base_vault,
+                            &token_program_id,
+                            rent,
+                            base_mint_key,
+                            market_pda,
+                            TOKEN_ACCOUNT_SIZE
+                        );
 
                         let quote_vault = &result.resulting_accounts
                             [RegisterMarketAccounts::QuoteVault as usize]
                             .1;
-                        check_vault!(errors, "quote vault", quote_vault, &token_2022_id, rent,
-                            quote_mint_key, market_pda, TOKEN_2022_ACCOUNT_SIZE_B);
+                        check_vault!(
+                            errors,
+                            "quote vault",
+                            quote_vault,
+                            &token_2022_id,
+                            rent,
+                            quote_mint_key,
+                            market_pda,
+                            TOKEN_2022_ACCOUNT_SIZE_B
+                        );
                     }
                     other => {
                         errors.push(format!("expected success, got {:?}", other));
@@ -1739,14 +1771,30 @@ impl TestCase for Case {
                         let base_vault = &result.resulting_accounts
                             [RegisterMarketAccounts::BaseVault as usize]
                             .1;
-                        check_vault!(errors, "base vault", base_vault, &token_2022_id, rent,
-                            base_mint_key, market_pda, TOKEN_2022_ACCOUNT_SIZE_A);
+                        check_vault!(
+                            errors,
+                            "base vault",
+                            base_vault,
+                            &token_2022_id,
+                            rent,
+                            base_mint_key,
+                            market_pda,
+                            TOKEN_2022_ACCOUNT_SIZE_A
+                        );
 
                         let quote_vault = &result.resulting_accounts
                             [RegisterMarketAccounts::QuoteVault as usize]
                             .1;
-                        check_vault!(errors, "quote vault", quote_vault, &token_2022_id, rent,
-                            quote_mint_key, market_pda, TOKEN_2022_ACCOUNT_SIZE_B);
+                        check_vault!(
+                            errors,
+                            "quote vault",
+                            quote_vault,
+                            &token_2022_id,
+                            rent,
+                            quote_mint_key,
+                            market_pda,
+                            TOKEN_2022_ACCOUNT_SIZE_B
+                        );
                     }
                     other => {
                         errors.push(format!("expected success, got {:?}", other));
@@ -1810,14 +1858,30 @@ impl TestCase for Case {
                         let base_vault = &result.resulting_accounts
                             [RegisterMarketAccounts::BaseVault as usize]
                             .1;
-                        check_vault!(errors, "base vault", base_vault, &token_2022_id, rent,
-                            base_mint_key, market_pda, TOKEN_2022_ACCOUNT_SIZE_A);
+                        check_vault!(
+                            errors,
+                            "base vault",
+                            base_vault,
+                            &token_2022_id,
+                            rent,
+                            base_mint_key,
+                            market_pda,
+                            TOKEN_2022_ACCOUNT_SIZE_A
+                        );
 
                         let quote_vault = &result.resulting_accounts
                             [RegisterMarketAccounts::QuoteVault as usize]
                             .1;
-                        check_vault!(errors, "quote vault", quote_vault, &token_program_id, rent,
-                            quote_mint_key, market_pda, TOKEN_ACCOUNT_SIZE);
+                        check_vault!(
+                            errors,
+                            "quote vault",
+                            quote_vault,
+                            &token_program_id,
+                            rent,
+                            quote_mint_key,
+                            market_pda,
+                            TOKEN_ACCOUNT_SIZE
+                        );
                     }
                     other => {
                         errors.push(format!("expected success, got {:?}", other));
