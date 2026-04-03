@@ -10,19 +10,46 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
 import algorithmIndex from "../../algorithms/index.json";
 import { syscallRegistry, cpiRegistry } from "./paths.js";
 
+const props = defineProps({
+  root: { type: String, default: "" },
+});
+
 const chart = ref(null);
 
-// Build algorithm list from the build-time index.
-const algorithms = Object.keys(algorithmIndex)
-  .map((name) => ({
-    name,
-    href: `${algorithmIndex[name].page || "/"}#algo-ref-${name}`,
-  }))
-  .sort((a, b) => a.name.localeCompare(b.name));
+// Collect an algorithm and all its transitive deps (calls only).
+function collectDeps(name, index, result = new Set()) {
+  if (!index[name] || result.has(name)) return result;
+  result.add(name);
+  for (const dep of index[name].calls) {
+    collectDeps(dep, index, result);
+  }
+  return result;
+}
+
+// Filter the index to a subset when root is specified.
+const filteredIndex = computed(() => {
+  if (!props.root) return algorithmIndex;
+  const names = collectDeps(props.root, algorithmIndex);
+  const subset = {};
+  for (const name of names) {
+    subset[name] = algorithmIndex[name];
+  }
+  return subset;
+});
+
+// Build algorithm list from the (possibly filtered) index.
+const algorithms = computed(() =>
+  Object.keys(filteredIndex.value)
+    .map((name) => ({
+      name,
+      href: `${algorithmIndex[name].page || "/"}#algo-ref-${name}`,
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name)),
+);
 
 // Build a Mermaid graph definition from the algorithm index.
 function buildGraph(index) {
@@ -74,8 +101,9 @@ onMounted(async () => {
       theme: "neutral",
       flowchart: { nodeSpacing: 20, rankSpacing: 30 },
     });
-    const graphDef = buildGraph(algorithmIndex);
-    const { svg } = await mermaid.render("algo-dep-chart", graphDef);
+    const graphDef = buildGraph(filteredIndex.value);
+    const chartId = `algo-dep-chart-${props.root || "all"}`;
+    const { svg } = await mermaid.render(chartId, graphDef);
     chart.value.innerHTML = svg;
   } catch (e) {
     console.error("AlgorithmIndex error:", e);

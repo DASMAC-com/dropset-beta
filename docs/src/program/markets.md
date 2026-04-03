@@ -20,9 +20,13 @@ The instruction requires the following accounts:
 
 <Include rs="interface::market#register_market_accounts" collapsed/>
 
-<Algorithm id="REGISTER-MARKET"/>
+## Algorithms
 
-## Helpers
+<AlgorithmIndex root="REGISTER-MARKET"/>
+
+### Dispatcher
+
+<Algorithm id="REGISTER-MARKET"/>
 
 ### Market PDA initialization
 
