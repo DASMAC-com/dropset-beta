@@ -26,12 +26,12 @@ const algorithms = Object.keys(algorithmIndex)
 
 // Build a Mermaid graph definition from the algorithm index.
 function buildGraph(index) {
-  const lines = ["graph TD"];
+  const lines = ["graph LR"];
   const syscallNodes = new Set();
   const cpiNodes = new Set();
   for (const [name, entry] of Object.entries(index)) {
     const href = `${entry.page || "/"}#algo-ref-${name}`;
-    lines.push(`  ${name}["${name}"]`);
+    lines.push(`  ${name}["${name}"]:::algo`);
     lines.push(`  click ${name} "${href}"`);
     for (const dep of entry.calls) {
       lines.push(`  ${name} --> ${dep}`);
@@ -56,15 +56,12 @@ function buildGraph(index) {
           lines.push(`  click ${nodeId} "${cpiRegistry[cpi]}" _blank`);
         }
       }
-      lines.push(`  ${name} -.-> ${nodeId}`);
+      lines.push(`  ${name} --> ${nodeId}`);
     }
   }
-  lines.push(
-    "  classDef syscall fill:#e8e8e8,stroke:#999,stroke-dasharray:5 5",
-  );
-  lines.push(
-    "  classDef cpi fill:#e8f4e8,stroke:#6a9,stroke-dasharray:5 5",
-  );
+  lines.push("  classDef algo fill:#d4edda,stroke:#8aba9a");
+  lines.push("  classDef syscall fill:#e8e8e8,stroke:#999");
+  lines.push("  classDef cpi fill:#c4d9ed,stroke:#7a9bba");
   return lines.join("\n");
 }
 
@@ -72,7 +69,11 @@ onMounted(async () => {
   try {
     // Render Mermaid dep chart.
     const mermaid = (await import("mermaid")).default;
-    mermaid.initialize({ startOnLoad: false, theme: "neutral" });
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: "neutral",
+      flowchart: { nodeSpacing: 20, rankSpacing: 30 },
+    });
     const graphDef = buildGraph(algorithmIndex);
     const { svg } = await mermaid.render("algo-dep-chart", graphDef);
     chart.value.innerHTML = svg;
