@@ -16,37 +16,38 @@ Three custom Vue components are registered globally in the [VitePress theme]:
 ### `<Algorithm>`
 
 Renders a CLRS-style pseudocode specification from a `.tex` file in the
-[`algorithms/`] directory, with an optional collapsible assembly implementation.
+[`algorithms/`] directory, with a collapsible assembly implementation resolved
+from the [algorithm registry].
 
 <Include vitepress="components/Algorithm" collapsed/>
 
 <!-- markdownlint-disable MD013 -->
 
-| Prop             | Type      | Required | Description                                                                     |
-| ---------------- | --------- | -------- | ------------------------------------------------------------------------------- |
-| `tex`            | `String`  | yes      | Name of the `.tex` file (without extension) in `algorithms/`                    |
-| `asm`            | `String`  | no       | Name of the `.s` file (without extension) to show as collapsible implementation |
-| `lineNumber`     | `Boolean` | no       | Show line numbers in pseudocode (default: `true`)                               |
-| `lineNumberPunc` | `String`  | no       | Punctuation after line numbers (default: `""`)                                  |
+| Prop             | Type      | Required | Description                                                    |
+| ---------------- | --------- | -------- | -------------------------------------------------------------- |
+| `id`             | `String`  | yes      | Algorithm name (matches `.tex` filename and registry key)      |
+| `lineNumber`     | `Boolean` | no       | Show line numbers in pseudocode (default: `true`)              |
+| `lineNumberPunc` | `String`  | no       | Punctuation after line numbers (default: `""`)                 |
 
 <!-- markdownlint-enable MD013 -->
 
 Usage:
 
 ```md
-<Algorithm tex="ENTRYPOINT" asm="entrypoint"/>
+<Algorithm id="ENTRYPOINT"/>
 ```
 
-The component automatically resolves `\CALL{Name}` references in the `.tex`
-source into clickable cross-links using the build-time algorithm index. Forward
-dependencies ("Calls") and reverse dependencies ("Called by") are displayed
-below the pseudocode.
+The `id` prop is used to look up the `.tex` source file and the assembly
+implementation from the [algorithm registry]. The component automatically
+resolves `\CALL{Name}` references in the `.tex` source into clickable
+cross-links using the build-time algorithm index. Forward dependencies ("Calls")
+and reverse dependencies ("Called by") are displayed below the pseudocode.
 
 `\CALL` targets that begin with `sol-` are treated as external syscalls. The
 build-time index records them separately, and at render time the hyphenated name
 is converted to underscore form (e.g. `sol-try-find-program-address` becomes
 `sol_try_find_program_address`) and linked to its upstream source definition via
-the [syscall registry]. The trailing `()` that pseudocode.js emits for `\CALL`
+the [algorithm registry]. The trailing `()` that pseudocode.js emits for `\CALL`
 is stripped for syscalls so they render as plain linked names. Syscalls appear
 in the "Calls" section alongside algorithm dependencies.
 
@@ -133,14 +134,17 @@ the exported `isRestoring()` flag to avoid fighting over scroll position.
 
 Configures file resolution for the `<Algorithm>` and `<Include>` components:
 assembly source root, config/root file mappings, Rust crate mappings, VitePress
-file mappings, GitHub URL bases, and the [syscall registry] export.
+file mappings, GitHub URL bases, and the [algorithm registry] re-export.
 
-### [Syscall registry][`syscalls.json`]
+### [Algorithm registry][`registry.json`]
 
-External syscalls referenced by `\CALL{sol-*}` in `.tex` files are registered in
-`algorithms/syscalls.json`. Keys are the underscore-separated display name
-(e.g. `sol_try_find_program_address`), values are the upstream source URL. The
-registry is re-exported by [`paths.js`] and consumed by both `<Algorithm>` and
+The manually maintained `algorithms/registry.json` maps each algorithm to its
+assembly implementation file and defines external syscall source URLs. The
+`algorithms` object keys are algorithm names (matching `.tex` filenames), with
+each value containing an `asm` field pointing to the assembly source (without
+`.s` extension). The `syscalls` object maps underscore-separated names
+(e.g. `sol_try_find_program_address`) to upstream source URLs. The registry is
+re-exported by [`paths.js`] and consumed by `<Algorithm>` and
 `<AlgorithmIndex>` at render time.
 
 ### Algorithm index builder
@@ -148,12 +152,13 @@ registry is re-exported by [`paths.js`] and consumed by both `<Algorithm>` and
 Runs at dev server startup and rebuilds whenever `.tex`, `.md`, or test case
 `.rs` files change. Any of these changes also trigger a scroll-preserving reload
 via the `algo-reload` HMR event (see [scroll preservation](#scroll-preservation)
-above). Scans `.tex` files for `\CALL` dependencies, `.md` files for
-`<Algorithm>` usage, and test case files under `tests/tests/cases/` for
-[`// Verifies: ALGORITHM-NAME`][test cases] comments. `\CALL` targets beginning
-with `sol-` are classified as external syscalls (with hyphens converted to
-underscores). Outputs `algorithms/index.json` with forward deps, reverse deps,
-syscalls, page locations, and associated test cases.
+above). Validates that every `.tex` file has a corresponding entry in the
+[algorithm registry] (and vice versa). Scans `.tex` files for `\CALL`
+dependencies, `.md` files for `<Algorithm>` usage, and test case files under
+`tests/tests/cases/` for [`// Verifies: ALGORITHM-NAME`][test cases] comments.
+`\CALL` targets beginning with `sol-` are classified as external syscalls (with
+hyphens converted to underscores). Outputs `algorithms/index.json` with forward
+deps, reverse deps, syscalls, page locations, and associated test cases.
 
 <Include vitepress="buildAlgorithmIndex" collapsed/>
 
@@ -166,8 +171,8 @@ syscalls, page locations, and associated test cases.
 [Mermaid]: https://mermaid.js.org/
 [`paths.js`]: https://github.com/DASMAC-com/dropset-beta/blob/main/docs/.vitepress/components/paths.js
 [`algorithms/`]: https://github.com/DASMAC-com/dropset-beta/tree/main/docs/algorithms
-[`syscalls.json`]: https://github.com/DASMAC-com/dropset-beta/blob/main/docs/algorithms/syscalls.json
-[syscall registry]: #syscall-registry
+[`registry.json`]: https://github.com/DASMAC-com/dropset-beta/blob/main/docs/algorithms/registry.json
+[algorithm registry]: #algorithm-registry
 [algorithm index]: ../program/algorithm-index
 [`scrollPreserve.js`]: https://github.com/DASMAC-com/dropset-beta/blob/main/docs/.vitepress/theme/scrollPreserve.js
 [test cases]: tests#verifies-convention

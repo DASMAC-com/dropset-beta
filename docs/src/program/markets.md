@@ -20,16 +20,16 @@ The instruction requires the following accounts:
 
 <Include rs="interface::market#register_market_accounts" collapsed/>
 
-<Algorithm tex="REGISTER-MARKET" asm="market/register"/>
+<Algorithm id="REGISTER-MARKET"/>
 
 ## Helpers
 
 ### Market PDA initialization
 
-<Algorithm tex="INIT-MARKET-PDA" asm="market/init_market_pda"/>
+<Algorithm id="INIT-MARKET-PDA"/>
 
 ### Vault initialization
 
-<Algorithm tex="INIT-VAULT" asm="market/init_vault"/>
+<Algorithm id="INIT-VAULT"/>
 
 [input buffer]: inputs#input-buffer

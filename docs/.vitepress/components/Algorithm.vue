@@ -2,10 +2,10 @@
 <!-- cspell:word linenum -->
 <!-- cspell:word texttt -->
 <template>
-  <!-- Anchor: #algo-ref-<tex> for cross-page and in-page linking. -->
-  <div :id="`algo-ref-${tex}`">
+  <!-- Anchor: #algo-ref-<id> for cross-page and in-page linking. -->
+  <div :id="`algo-ref-${id}`">
     <div ref="container" class="pseudocode-container">
-      <div v-if="asm" ref="asmBlock" class="asm-block"></div>
+      <div v-if="asmFile" ref="asmBlock" class="asm-block"></div>
       <div ref="testsBlock" class="tests-block"></div>
       <div v-if="calls.length" class="pseudocode-links pseudocode-links-below">
         <div class="pseudocode-link-row">
@@ -36,7 +36,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
 import "pseudocode/build/pseudocode.min.css";
 import algorithmIndex from "../../algorithms/index.json";
 import {
@@ -44,6 +44,7 @@ import {
   GH_BASE,
   GH_ROOT,
   asmModules,
+  registry,
   syscallRegistry,
 } from "./paths.js";
 import { isRestoring } from "../theme/scrollPreserve.js";
@@ -62,13 +63,15 @@ const testCaseModules = import.meta.glob("../../../tests/tests/cases/*.rs", {
   import: "default",
 });
 
-// Props: tex is the .tex filename, asm is the optional assembly source file.
+// Props: id is the algorithm name (matches .tex filename and registry key).
 const props = defineProps({
-  tex: { type: String, required: true },
-  asm: { type: String, default: "" },
+  id: { type: String, required: true },
   lineNumber: { type: Boolean, default: true },
   lineNumberPunc: { type: String, default: "" },
 });
+
+// Resolve assembly file from registry.
+const asmFile = computed(() => registry.algorithms[props.id]?.asm || "");
 
 const container = ref(null);
 const asmBlock = ref(null);
@@ -112,12 +115,12 @@ onMounted(async () => {
     const pseudocode = await import("pseudocode");
 
     // Load .tex source at build time via glob import.
-    const texLoader = texModules[`../../algorithms/${props.tex}.tex`];
-    if (!texLoader) throw new Error(`Unknown algorithm: ${props.tex}`);
+    const texLoader = texModules[`../../algorithms/${props.id}.tex`];
+    if (!texLoader) throw new Error(`Unknown algorithm: ${props.id}`);
     const code = await texLoader();
 
     // Resolve forward and reverse deps from the algorithm index.
-    const entry = algorithmIndex[props.tex];
+    const entry = algorithmIndex[props.id];
     if (entry) {
       const syscallLinks = (entry.syscalls || []).map((name) => ({
         name,
@@ -169,7 +172,7 @@ onMounted(async () => {
 
     // Turn \CALL{Name} references into clickable links.
     // sol-* names are converted to underscore form and linked to the
-    // external source via syscalls.json; others link to local algorithms.
+    // external source via the registry; others link to local algorithms.
     rendered.querySelectorAll(".ps-funcname").forEach((span) => {
       const name = span.textContent.trim();
       const syscallKey = name.replace(/-/g, "_");
@@ -195,9 +198,9 @@ onMounted(async () => {
     });
 
     // Load and highlight assembly source if specified.
-    if (props.asm) {
-      const asmLoader = asmModules[`${ASM_BASE}${props.asm}.s`];
-      if (!asmLoader) throw new Error(`Unknown assembly file: ${props.asm}`);
+    if (asmFile.value) {
+      const asmLoader = asmModules[`${ASM_BASE}${asmFile.value}.s`];
+      if (!asmLoader) throw new Error(`Unknown assembly file: ${asmFile.value}`);
       asmCode.value = (await asmLoader()).trimEnd();
 
       const shiki = await import("shiki");
@@ -248,7 +251,7 @@ onMounted(async () => {
 
       asmBlock.value.innerHTML =
         `<details class="details custom-block">` +
-        `<summary>Implementation: <a href="${GH_BASE}${props.asm}.s" target="_blank">${props.asm}.s</a></summary>` +
+        `<summary>Implementation: <a href="${GH_BASE}${asmFile.value}.s" target="_blank">${asmFile.value}.s</a></summary>` +
         `<div class="language-asm vp-adaptive-theme line-numbers-mode">` +
         `<button title="Copy Code" class="copy"></button>` +
         `<span class="lang">asm</span>` +

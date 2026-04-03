@@ -2,6 +2,8 @@
 // test case files for "// Verifies:" tags. Outputs algorithms/index.json
 // with deps, reverse deps, page locations, and associated test cases.
 // Algorithm name is the filename stem (used as key and display name).
+// The manually maintained registry.json maps each algorithm to its
+// assembly implementation and defines external syscall URLs.
 
 import { readFileSync, writeFileSync, readdirSync } from "fs";
 import { join, basename, relative } from "path";
@@ -17,6 +19,9 @@ const CASES_DIR = join(
   "cases",
 );
 const OUTPUT = join(ALGO_DIR, "index.json");
+const REGISTRY = JSON.parse(
+  readFileSync(join(ALGO_DIR, "registry.json"), "utf-8"),
+);
 
 // Recursively find all .md files under a directory.
 function findMdFiles(dir) {
@@ -59,6 +64,18 @@ export function buildAlgorithmIndex() {
     };
   }
 
+  // Validate registry against .tex files.
+  const texNames = new Set(Object.keys(index));
+  const regNames = new Set(Object.keys(REGISTRY.algorithms));
+  for (const name of texNames) {
+    if (!regNames.has(name))
+      throw new Error(`${name}.tex has no entry in registry.json`);
+  }
+  for (const name of regNames) {
+    if (!texNames.has(name))
+      throw new Error(`registry.json lists "${name}" but no .tex file exists`);
+  }
+
   // Filter calls to only reference known algorithms (removes notation-only
   // names like "Store" that have no .tex definition).
   for (const entry of Object.values(index)) {
@@ -69,7 +86,7 @@ export function buildAlgorithmIndex() {
   for (const fullPath of findMdFiles(SRC_DIR)) {
     const md = readFileSync(fullPath, "utf-8");
     const relPath = relative(SRC_DIR, fullPath);
-    for (const match of md.matchAll(/<Algorithm\s+tex="([\w-]+)"/g)) {
+    for (const match of md.matchAll(/<Algorithm\s+id="([\w-]+)"/g)) {
       const name = match[1];
       if (index[name]) {
         // Convert file path to VitePress page path.
