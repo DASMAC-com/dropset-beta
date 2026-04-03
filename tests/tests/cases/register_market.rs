@@ -1,5 +1,6 @@
 use dropset_interface::market::register_misc::{VAULT_INDEX_BASE, VAULT_INDEX_QUOTE};
 use dropset_interface::market::{MarketHeader, RegisterMarketAccounts};
+use dropset_interface::memory::input_buffer::MARKET_DATA_BYTES_OFF;
 use dropset_interface::pubkey::pubkey::{CHUNK_0_OFF, CHUNK_1_OFF, CHUNK_2_OFF, CHUNK_3_OFF};
 use dropset_interface::pubkey::{TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID};
 use dropset_interface::{Discriminant, ErrorCode};
@@ -11,6 +12,7 @@ use mollusk_svm::program;
 use mollusk_svm::result::ProgramResult as MolluskResult;
 use solana_account::Account;
 use solana_program_pack::Pack;
+use solana_sbpf::ebpf::MM_INPUT_START;
 use solana_sdk::instruction::{AccountMeta, Instruction};
 use solana_sdk::pubkey::Pubkey;
 use spl_token_2022_interface::extension::transfer_fee::{TransferFeeAmount, TransferFeeConfig};
@@ -248,6 +250,15 @@ fn check_market_header_bumps(
 ) {
     let header: &MarketHeader =
         unsafe { &*(data.as_ptr() as *const MarketHeader) };
+
+    let expected_next = MM_INPUT_START + MARKET_DATA_BYTES_OFF as u64;
+    let actual_next = header.next as u64;
+    if actual_next != expected_next {
+        errors.push(format!(
+            "market header next: expected {:#x}, got {:#x}",
+            expected_next, actual_next
+        ));
+    }
 
     let (_, expected_market_bump) = Pubkey::find_program_address(
         &[base_mint_key.as_ref(), quote_mint_key.as_ref()],
