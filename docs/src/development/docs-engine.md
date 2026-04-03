@@ -55,7 +55,7 @@ are preserved and the argument is rendered as a linked CPI target using the
 `cpis` section of the [algorithm registry]. The displayed name converts hyphens
 to underscores (e.g. `system_program::CreateAccount`). Syscalls and CPI targets
 appear in the "Calls" section alongside algorithm dependencies, and CPI targets
-are included in the [algorithm index] dependency chart as dashed nodes.
+are included in the [algorithm index] dependency chart.
 
 If the algorithm has associated
 [test cases], a collapsed **Tests** section is
@@ -106,15 +106,28 @@ Usage:
 
 ### `<AlgorithmIndex>`
 
-Renders a listing of all algorithms with a Mermaid dependency graph. Takes no
-props. It reads directly from the build-time `algorithms/index.json` file.
-External syscalls appear as dashed stadium-shaped nodes linked to their upstream
-source via the [syscall registry].
+Renders a listing of all algorithms with a left-to-right Mermaid dependency
+graph. It reads from the build-time `algorithms/index.json` file and the
+[algorithm registry]. Algorithms are green, syscalls are grey, and CPI targets
+are blue. All external nodes (syscalls and CPIs) use stadium shapes and link to
+their upstream source definitions.
+
+<!-- markdownlint-disable MD013 -->
+
+| Prop   | Type     | Required | Description                                                      |
+| ------ | -------- | -------- | ---------------------------------------------------------------- |
+| `root` | `String` | no       | Algorithm name to scope the graph to (shows only its dep subtree) |
+
+<!-- markdownlint-enable MD013 -->
 
 Usage:
 
 ```md
-<AlgorithmIndex />
+<!-- Full index (all algorithms) -->
+<AlgorithmIndex/>
+
+<!-- Scoped to one algorithm and its transitive dependencies -->
+<AlgorithmIndex root="REGISTER-MARKET"/>
 ```
 
 <Include vitepress="components/AlgorithmIndex" collapsed/>
