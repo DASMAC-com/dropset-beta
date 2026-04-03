@@ -133,7 +133,7 @@ constant_group! {
         /// From input buffer to market data base vault bump.
         MARKET_DATA_BASE_VAULT_BUMP = offset!(
             InputBufferHeader.market_data_header.base_vault_bump
-    ),
+        ),
         /// From input buffer to market data quote vault bump.
         MARKET_DATA_QUOTE_VAULT_BUMP = offset!(
             InputBufferHeader.market_data_header.quote_vault_bump
