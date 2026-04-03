@@ -159,6 +159,16 @@ onMounted(async () => {
     );
     container.value.insertBefore(rendered, container.value.firstChild);
 
+    // Remove the extra indentation pseudocode.js adds to prelude
+    // comments (those in .ps-block divs directly under .ps-algorithmic
+    // that contain no .ps-line children).
+    rendered
+      .querySelectorAll(".ps-algorithmic > .ps-block")
+      .forEach((block) => {
+        if (!block.querySelector(".ps-line") && block.querySelector(".ps-comment"))
+          block.style.marginLeft = "0";
+      });
+
     // Indent comments that precede a block so they align with the
     // block's first line rather than the parent control keyword.
     rendered.querySelectorAll(".ps-comment").forEach((span) => {

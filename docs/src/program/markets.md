@@ -20,11 +20,11 @@ The instruction requires the following accounts:
 
 <Include rs="interface::market#register_market_accounts" collapsed/>
 
-## Algorithms
+## Market registration algorithms
 
 <AlgorithmIndex root="REGISTER-MARKET"/>
 
-### Registration handler
+### Dispatcher
 
 <Algorithm id="REGISTER-MARKET"/>
 
