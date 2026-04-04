@@ -160,19 +160,39 @@ pub fn instruction_data(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// Registers field-to-type mappings and the doc comment in shared state
 /// for automatic lookup by `constant_group!`.
 ///
+/// When called with a module name argument and combined with `#[inject]`
+/// and `#[prefix]` on the struct, also generates a constant group module
+/// from field-level attributes (`#[offset]`, `#[unaligned_offset]`,
+/// `#[pubkey_offsets]`, `#[signer_seeds]`, `#[cpi_accounts]`,
+/// `#[sol_instruction]`) and struct-level `#[relative_offset]` attrs.
+///
 /// ```ignore
-/// #[frame]
+/// #[frame("frame")]
+/// #[prefix("RM")]
+/// #[inject("market/register")]
 /// /// Stack frame for REGISTER-MARKET.
 /// pub struct RegisterMarketFrame {
+///     /// Pointer to token program address.
+///     #[offset(TOKEN_PROGRAM_ID)]
+///     pub token_program_id: *const Address,
+///     /// PDA signer seeds.
+///     #[signer_seeds(PDA_SEEDS)]
 ///     pub pda_seeds: PdaSignerSeeds,
-///     pub pda: Address,
+///     /// Bump seed.
+///     #[offset(BUMP)]
 ///     pub bump: u8,
 /// }
 /// ```
 #[proc_macro_attribute]
-pub fn frame(_attr: TokenStream, item: TokenStream) -> TokenStream {
+pub fn frame(attr: TokenStream, item: TokenStream) -> TokenStream {
+    let mod_name = if attr.is_empty() {
+        None
+    } else {
+        let lit = parse_macro_input!(attr as LitStr);
+        Some(lit.value())
+    };
     let input = parse_macro_input!(item as syn::ItemStruct);
-    TokenStream::from(frame::expand(&input))
+    TokenStream::from(frame::expand(mod_name, &input))
 }
 
 /// Attribute macro for instruction accounts enums.

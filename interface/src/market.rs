@@ -107,6 +107,7 @@ pub enum RegisterMarketAccounts {
 }
 // endregion: register_market_accounts
 
+// region: register_market_stack
 #[svm_data]
 /// CPI instruction data for CreateAccount.
 pub struct CreateAccountData {
@@ -131,7 +132,6 @@ cpi_accounts! {
     }
 }
 
-// region: register_market_stack
 // region: signer_seeds_example
 signer_seeds! {
     PDASignerSeeds {
@@ -146,126 +146,116 @@ signer_seeds! {
 // endregion: signer_seeds_example
 
 // region: frame_example
-#[frame]
+#[frame("frame")]
+#[prefix("RM")]
+#[inject("market/register")]
+#[relative_offset(
+    PDA_SEEDS_TO_SOL_INSN,
+    pda_seeds,
+    sol_instruction,
+    "From pda_seeds to sol_instruction."
+)]
+#[relative_offset(PDA_TO_SIGNERS_SEEDS, pda, signers_seeds, "From pda to signers_seeds.")]
+#[relative_offset(
+    CREATE_ACCT_DATA_TO_CPI_ACCT_METAS,
+    create_account_data, cpi_accounts.idx_0_meta,
+    "From create_account_data to CPI account metas.")
+]
 /// Stack frame for REGISTER-MARKET.
 pub struct RegisterMarketFrame {
     /// Pointer to token program address.
+    #[offset(TOKEN_PROGRAM_ID)]
     pub token_program_id: *const Address,
     /// Pointer to program ID in input buffer.
+    #[offset(PROGRAM_ID)]
     pub program_id: *const Address,
     /// Saved input buffer pointer.
+    #[offset(INPUT)]
     pub input: u64,
     /// Saved input_shifted pointer.
+    #[offset(INPUT_SHIFTED)]
     pub input_shifted: u64,
     /// From Rent sysvar.
+    #[offset(LAMPORTS_PER_BYTE)]
     pub lamports_per_byte: u64,
     /// Return value from spl_token_2022::GetAccountDataSize.
+    #[offset(TOKEN_ACCOUNT_DATA_SIZE)]
     pub token_account_data_size: u64,
     /// Pointer to mint account for vault initialization.
+    #[offset(MINT)]
     pub mint: *const RuntimeAccount,
     /// Pointer to Rent sysvar account.
+    #[offset(RENT)]
     pub rent: *const RuntimeAccount,
-    /// Signer seeds for PDA derivation and CPI signing.
+    /// PDA signer seeds.
+    #[signer_seeds(PDA_SEEDS)]
     pub pda_seeds: PDASignerSeeds,
-    /// From `sol_try_find_program_address`.
+    /// PDA address.
+    #[pubkey_offsets(PDA)]
     pub pda: Address,
-    /// System Program pubkey, zero-initialized on stack
+    /// System Program pubkey.
+    #[pubkey_offsets(SYSTEM_PROGRAM_PUBKEY)]
     pub system_program_pubkey: Address,
-    /// Pointer to System Program ID in input buffer.
+    /// System Program ID in input buffer.
+    #[offset(SYSTEM_PROGRAM_ID)]
     pub system_program_id: *const Address,
-    /// Get return data program ID for CPI calls, zero-initialized on stack.
+    /// Get return data program ID for CPI calls.
+    #[offset(GET_RETURN_DATA_PROGRAM_ID)]
     pub get_return_data_program_id: Address,
-    /// CPI instruction data for CreateAccount.
+    /// CreateAccount instruction data.
+    #[offset(CREATE_ACCT_DATA)]
+    #[unaligned_offset(
+        CREATE_ACCT_LAMPORTS,
+        lamports,
+        "Lamports field within CreateAccount instruction data."
+    )]
+    #[unaligned_offset(
+        CREATE_ACCT_SPACE,
+        space,
+        "Space field within CreateAccount instruction data."
+    )]
+    #[unaligned_pubkey_offsets(
+        CREATE_ACCT_OWNER,
+        owner,
+        "Owner field within CreateAccount instruction data."
+    )]
     pub create_account_data: CreateAccountData,
-    /// CPI instruction data for InitializeAccount2.
+    /// InitializeAccount2 CPI instruction data.
+    #[offset(INIT_ACCT_2_DATA)]
+    #[unaligned_offset(
+        INIT_ACCT_2_DISC,
+        discriminant,
+        "Discriminant field within InitializeAccount2 instruction data."
+    )]
+    #[unaligned_pubkey_offsets(
+        INIT_ACCT_2_PROPRIETOR,
+        proprietor,
+        "Proprietor field within InitializeAccount2 instruction data."
+    )]
     pub initialize_account_2_data: InitializeAccount2,
     /// GetAccountDataSize CPI instruction data.
+    #[unaligned_offset(GET_ACCOUNT_DATA_SIZE_DATA)]
     pub get_account_data_size_data: u8,
-    /// CPI accounts for CreateAccount and InitializeAccount2.
+    /// CPI accounts.
+    #[cpi_accounts(CPI)]
     pub cpi_accounts: CPIAccounts,
     /// Signers seeds for CPI.
+    #[unaligned_offset(SIGNERS_SEEDS_ADDR, addr, "Signers seeds address.")]
+    #[unaligned_offset(SIGNERS_SEEDS_LEN, len, "Signers seeds length.")]
     pub signers_seeds: SolSignerSeeds,
-    /// Re-used across CPIs, zero-initialized on stack.
+    /// Solana instruction.
+    #[sol_instruction(SOL_INSN)]
     pub sol_instruction: SolInstruction,
-    /// From `sol_try_find_program_address`.
+    /// Bump seed.
+    #[offset(BUMP)]
     pub bump: u8,
-    /// Vault index for vault PDA derivation.
+    /// Vault index for PDA derivation.
+    #[unaligned_offset(VAULT_INDEX)]
     pub vault_index: u8,
-    /// Whether the current token program is Token 2022 (zero-initialized on stack).
+    /// Whether the current token program is Token 2022.
+    #[unaligned_offset(TOKEN_PROGRAM_IS_2022)]
     pub token_program_is_2022: u8,
 }
 // endregion: frame_example
-
-constant_group! {
-    #[prefix("RM")]
-    #[inject("market/register")]
-    #[frame(RegisterMarketFrame)]
-    frame {
-        /// Pointer to token program address.
-        TOKEN_PROGRAM_ID = offset!(token_program_id),
-        /// Pointer to program ID in input buffer.
-        PROGRAM_ID = offset!(program_id),
-        /// Saved input buffer pointer.
-        INPUT = offset!(input),
-        /// Saved input_shifted pointer.
-        INPUT_SHIFTED = offset!(input_shifted),
-        /// From Rent sysvar.
-        LAMPORTS_PER_BYTE = offset!(lamports_per_byte),
-        /// Return value from spl_token_2022::GetAccountDataSize.
-        TOKEN_ACCOUNT_DATA_SIZE = offset!(token_account_data_size),
-        /// Pointer to mint account for vault initialization.
-        MINT = offset!(mint),
-        /// Pointer to Rent sysvar account.
-        RENT = offset!(rent),
-        /// PDA signer seeds.
-        PDA_SEEDS = signer_seeds!(pda_seeds),
-        /// PDA address.
-        PDA = pubkey_offsets!(pda),
-        /// System Program pubkey.
-        SYSTEM_PROGRAM_PUBKEY = pubkey_offsets!(system_program_pubkey),
-        /// System Program ID in input buffer.
-        SYSTEM_PROGRAM_ID = offset!(system_program_id),
-        /// Get return data program ID for CPI calls.
-        GET_RETURN_DATA_PROGRAM_ID = offset!(get_return_data_program_id),
-        /// CreateAccount instruction data.
-        CREATE_ACCT_DATA = offset!(create_account_data),
-        /// Lamports field within CreateAccount instruction data.
-        CREATE_ACCT_LAMPORTS = unaligned_offset!(create_account_data.lamports),
-        /// Space field within CreateAccount instruction data.
-        CREATE_ACCT_SPACE = unaligned_offset!(create_account_data.space),
-        /// Owner field within CreateAccount instruction data.
-        CREATE_ACCT_OWNER = unaligned_pubkey_offsets!(create_account_data.owner),
-        /// InitializeAccount2 CPI instruction data.
-        INIT_ACCT_2_DATA = offset!(initialize_account_2_data),
-        /// Discriminant field within InitializeAccount2 instruction data.
-        INIT_ACCT_2_DISC = unaligned_offset!(initialize_account_2_data.discriminant),
-        /// Proprietor field within InitializeAccount2 instruction data.
-        INIT_ACCT_2_PROPRIETOR = unaligned_pubkey_offsets!(initialize_account_2_data.proprietor),
-        /// GetAccountDataSize CPI instruction data.
-        GET_ACCOUNT_DATA_SIZE_DATA = unaligned_offset!(get_account_data_size_data),
-        /// CPI accounts.
-        CPI = cpi_accounts!(cpi_accounts),
-        /// Signers seeds address.
-        SIGNERS_SEEDS_ADDR = unaligned_offset!(signers_seeds.addr),
-        /// Signers seeds length.
-        SIGNERS_SEEDS_LEN = unaligned_offset!(signers_seeds.len),
-        /// Solana instruction.
-        SOL_INSN = sol_instruction!(sol_instruction),
-        /// Bump seed.
-        BUMP = offset!(bump),
-        /// Vault index for PDA derivation.
-        VAULT_INDEX = unaligned_offset!(vault_index),
-        /// Whether the current token program is Token 2022.
-        TOKEN_PROGRAM_IS_2022 = unaligned_offset!(token_program_is_2022),
-        /// From pda_seeds to sol_instruction.
-        PDA_SEEDS_TO_SOL_INSN = relative_offset!(pda_seeds, sol_instruction),
-        /// From pda to signers_seeds.
-        PDA_TO_SIGNERS_SEEDS = relative_offset!(pda, signers_seeds),
-        /// From create_account_data to CPI account metas.
-        CREATE_ACCT_DATA_TO_CPI_ACCT_METAS = relative_offset!(
-            create_account_data, cpi_accounts.idx_0_meta
-        ),
-    }
-}
 
 // endregion: register_market_stack
