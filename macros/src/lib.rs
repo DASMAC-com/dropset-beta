@@ -17,14 +17,21 @@ mod svm_data;
 
 /// Defines a group of assembly constants with an injection target.
 ///
-/// Supports three constant kinds:
-/// - `offset!(expr)` — signed offset, gets `_OFF` suffix.
-/// - `immediate!(expr)` — signed immediate (i32), no suffix.
-/// - `signer_seeds!(field)` — auto-expands seed offsets (requires `#[frame]`).
+/// Constant kinds:
+/// - `offset!(expr)`: signed offset (`_OFF` suffix)
+/// - `immediate!(expr)`: signed immediate (i32)
+/// - `pubkey!(expr)`: 32-byte key split into chunk immediates
+/// - `pubkey_offsets!(expr)`: base offset + four chunk offsets
 ///
-/// With `#[frame(Type)]`, `offset!(field)` computes a negative frame-pointer-
-/// relative offset with alignment enforcement, and the group's doc comment
-/// defaults to the frame struct's doc.
+/// With `#[frame(Type)]`, additional frame-relative kinds:
+/// - `offset!(field)`: negative frame-pointer-relative (`_OFF`)
+/// - `unaligned_offset!(field)`: frame-relative without alignment (`_UOFF`)
+/// - `pubkey_offsets!(field)`: frame-relative + chunk offsets
+/// - `unaligned_pubkey_offsets!(field)`: same without alignment
+/// - `signer_seeds!(field)`: auto-expands seed offsets
+/// - `cpi_accounts!(field)`: auto-expands CPI account offsets
+/// - `sol_instruction!(field)`: base offset + per-field offsets
+/// - `relative_offset!(from, to)`: difference between two fields
 ///
 /// ```ignore
 /// constant_group! {
