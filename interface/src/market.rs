@@ -117,8 +117,6 @@ pub struct CreateAccountData {
     pub space: u64,
     /// Zero-initialized on stack.
     pub owner: Address,
-    /// Included for alignment on stack.
-    _pad: u32,
 }
 
 cpi_accounts! {
@@ -234,6 +232,21 @@ pub struct RegisterMarketFrame {
     )]
     pub create_account_data: CreateAccountData,
 
+    /// GetAccountDataSize CPI instruction data.
+    #[unaligned_offset]
+    pub get_account_data_size_data: u8,
+
+    /// Vault index for PDA derivation.
+    #[unaligned_offset]
+    pub vault_index: u8,
+
+    /// Whether the current token program is Token 2022.
+    #[unaligned_offset]
+    pub token_program_is_2022: u8,
+
+    /// Padding for 8-byte alignment after CreateAccountData.
+    _pad: u8,
+
     /// InitializeAccount2 CPI instruction data.
     #[offset(INIT_ACCT_2_DATA)]
     #[unaligned_offset(
@@ -247,10 +260,6 @@ pub struct RegisterMarketFrame {
         "Proprietor field within InitializeAccount2 instruction data."
     )]
     pub initialize_account_2_data: InitializeAccount2,
-
-    /// GetAccountDataSize CPI instruction data.
-    #[unaligned_offset]
-    pub get_account_data_size_data: u8,
 
     /// CPI accounts.
     #[cpi_accounts(CPI)]
@@ -268,14 +277,6 @@ pub struct RegisterMarketFrame {
     /// Bump seed.
     #[offset]
     pub bump: u8,
-
-    /// Vault index for PDA derivation.
-    #[unaligned_offset]
-    pub vault_index: u8,
-
-    /// Whether the current token program is Token 2022.
-    #[unaligned_offset]
-    pub token_program_is_2022: u8,
 }
 // endregion: frame_example
 
