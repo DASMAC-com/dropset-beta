@@ -29,7 +29,7 @@
 .equ RM_FM_INPUT_OFF, -576 # Saved input buffer pointer.
 .equ RM_FM_INPUT_SHIFTED_OFF, -568 # Saved input_shifted pointer.
 .equ RM_FM_LAMPORTS_PER_BYTE_OFF, -560 # From Rent sysvar.
-# Return value from GetAccountDataSize CPI, to check token account data size at runtime.
+# Return value from spl_token_2022::GetAccountDataSize.
 .equ RM_FM_TOKEN_ACCOUNT_DATA_SIZE_OFF, -552
 # Pointer to mint account for vault initialization.
 .equ RM_FM_MINT_OFF, -544
@@ -74,6 +74,11 @@
 .equ RM_FM_CREATE_ACCT_OWNER_CHUNK_2_UOFF, -340
 # Owner field within CreateAccount instruction data (chunk 3).
 .equ RM_FM_CREATE_ACCT_OWNER_CHUNK_3_UOFF, -332
+# GetAccountDataSize CPI instruction data.
+.equ RM_FM_GET_ACCOUNT_DATA_SIZE_DATA_UOFF, -324
+.equ RM_FM_VAULT_INDEX_UOFF, -323 # Vault index for PDA derivation.
+# Whether the current token program is Token 2022.
+.equ RM_FM_TOKEN_PROGRAM_IS_2022_UOFF, -322
 # InitializeAccount2 CPI instruction data.
 .equ RM_FM_INIT_ACCT_2_DATA_OFF, -320
 # Discriminant field within InitializeAccount2 instruction data.
@@ -88,8 +93,6 @@
 .equ RM_FM_INIT_ACCT_2_PROPRIETOR_CHUNK_2_UOFF, -303
 # Proprietor field within InitializeAccount2 instruction data (chunk 3).
 .equ RM_FM_INIT_ACCT_2_PROPRIETOR_CHUNK_3_UOFF, -295
-# GetAccountDataSize CPI instruction data.
-.equ RM_FM_GET_ACCOUNT_DATA_SIZE_DATA_UOFF, -287
 .equ RM_FM_CPI_N_ACCOUNTS, 3 # Number of CPI accounts.
 .equ RM_FM_CPI_SOL_ACCT_INFO_OFF, -280 # Start of SolAccountInfo vector.
 .equ RM_FM_CPI_SOL_ACCT_META_OFF, -112 # Start of SolAccountMeta vector.
@@ -165,9 +168,6 @@
 .equ RM_FM_SOL_INSN_DATA_UOFF, -24 # SolInstruction data pointer.
 .equ RM_FM_SOL_INSN_DATA_LEN_UOFF, -16 # SolInstruction data length.
 .equ RM_FM_BUMP_OFF, -8 # Bump seed.
-.equ RM_FM_VAULT_INDEX_UOFF, -7 # Vault index for PDA derivation.
-# Whether the current token program is Token 2022.
-.equ RM_FM_TOKEN_PROGRAM_IS_2022_UOFF, -6
 # From pda_seeds to sol_instruction.
 .equ RM_FM_PDA_SEEDS_TO_SOL_INSN_REL_OFF_IMM, 480
 # From pda to signers_seeds.

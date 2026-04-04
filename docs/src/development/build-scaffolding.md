@@ -89,6 +89,13 @@ In frame-relative mode, generated constant names include a `_FM_` infix after
 the prefix (e.g. `RM_FM_PDA_OFF` instead of `RM_PDA_OFF`) to distinguish
 frame-relative constants from other offset constants.
 
+::: tip
+For frame structs, [`#[frame("mod")]`](#frame) with field attributes can
+generate the constant group directly, making a separate `constant_group!`
+invocation unnecessary. The `constant_group!` macro remains available for
+non-frame groups (e.g. input buffer offsets, standalone immediates).
+:::
+
 <Include rs="interface::market#register_market_stack" collapsible/>
 
 Each group generates:
@@ -152,6 +159,28 @@ mappings and the struct's doc comment in proc-macro shared state so that
 [`constant_group!`](#constant_group) can auto-discover frame fields and
 derive its header comment.
 
+When called as `#[frame("module_name")]` with `#[inject("target")]` and
+`#[prefix("PREFIX")]` on the struct, it also generates a constant group
+module directly from field-level attributes, eliminating the need for a
+separate `constant_group!` invocation. Supported field attributes:
+
+- `#[offset]`: aligned frame-relative offset (`_OFF` suffix). Name is
+  auto-inferred from the field name via `SCREAMING_SNAKE_CASE`, or
+  overridden with `#[offset(CUSTOM_NAME)]`
+- `#[unaligned_offset]`: frame-relative offset without alignment (`_UOFF`)
+- `#[pubkey_offsets]`: base offset + four chunk offsets
+- `#[signer_seeds]`: auto-expands seed offsets from
+  [`signer_seeds!`](#signer_seeds) shared state
+- `#[cpi_accounts]`: auto-expands CPI account offsets from
+  [`cpi_accounts!`](#cpi_accounts) shared state
+- `#[sol_instruction]`: base offset + per-field `SolInstruction` offsets
+
+Sub-field access uses comma-separated form:
+`#[unaligned_offset(NAME, subfield, "doc")]`.
+
+Struct-level `#[relative_offset(NAME, from, to, "doc")]` attributes compute
+the difference between two field offsets.
+
 <Include rs="interface::market#frame_example" collapsible/>
 
 ### `#[svm_data]`
@@ -168,8 +197,9 @@ input buffer segments, tree nodes).
 Function-like macro that defines a `#[repr(C)]` struct where every field is
 typed as `SolSignerSeed`. Field names are registered in proc-macro shared
 state so that `signer_seeds!(field)` inside a
-[`constant_group!`](#constant_group) can auto-discover all seed fields by
-looking up the parent field's type on the frame struct.
+[`constant_group!`](#constant_group), or an `#[signer_seeds]` field attribute
+on a [`#[frame]`](#frame) struct, can auto-discover all seed fields by
+looking up the parent field's type.
 
 <Include rs="interface::market#signer_seeds_example" collapsible/>
 
@@ -178,9 +208,9 @@ looking up the parent field's type on the frame struct.
 Function-like macro that defines a `#[repr(C)]` struct with `SolAccountInfo`
 fields first (contiguous), then `SolAccountMeta` fields (contiguous), for each
 named account. Field names are registered in proc-macro shared state so that
-`cpi_accounts!(field)` inside a [`constant_group!`](#constant_group) can
-auto-discover all account fields by looking up the parent field's type on the
-frame struct.
+`cpi_accounts!(field)` inside a [`constant_group!`](#constant_group), or a
+`#[cpi_accounts]` field attribute on a [`#[frame]`](#frame) struct, can
+auto-discover all account fields by looking up the parent field's type.
 
 ### `size_of_group!`
 

@@ -1,5 +1,5 @@
 mod expand;
-mod parse;
+pub(crate) mod parse;
 
 use syn::{Expr, Ident};
 
