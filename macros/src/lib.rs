@@ -180,13 +180,13 @@ pub fn instruction_data(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// /// Stack frame for REGISTER-MARKET.
 /// pub struct RegisterMarketFrame {
 ///     /// Pointer to token program address.
-///     #[offset(TOKEN_PROGRAM_ID)]
+///     #[offset]
 ///     pub token_program_id: *const Address,
 ///     /// PDA signer seeds.
-///     #[signer_seeds(PDA_SEEDS)]
+///     #[signer_seeds]
 ///     pub pda_seeds: PdaSignerSeeds,
 ///     /// Bump seed.
-///     #[offset(BUMP)]
+///     #[offset]
 ///     pub bump: u8,
 /// }
 /// ```
