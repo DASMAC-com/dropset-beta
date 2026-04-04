@@ -164,44 +164,57 @@ signer_seeds! {
 /// Stack frame for REGISTER-MARKET.
 pub struct RegisterMarketFrame {
     /// Pointer to token program address.
-    #[offset(TOKEN_PROGRAM_ID)]
+    #[offset]
     pub token_program_id: *const Address,
+
     /// Pointer to program ID in input buffer.
-    #[offset(PROGRAM_ID)]
+    #[offset]
     pub program_id: *const Address,
+
     /// Saved input buffer pointer.
-    #[offset(INPUT)]
+    #[offset]
     pub input: u64,
+
     /// Saved input_shifted pointer.
-    #[offset(INPUT_SHIFTED)]
+    #[offset]
     pub input_shifted: u64,
+
     /// From Rent sysvar.
-    #[offset(LAMPORTS_PER_BYTE)]
+    #[offset]
     pub lamports_per_byte: u64,
+
     /// Return value from spl_token_2022::GetAccountDataSize.
-    #[offset(TOKEN_ACCOUNT_DATA_SIZE)]
+    #[offset]
     pub token_account_data_size: u64,
+
     /// Pointer to mint account for vault initialization.
-    #[offset(MINT)]
+    #[offset]
     pub mint: *const RuntimeAccount,
+
     /// Pointer to Rent sysvar account.
-    #[offset(RENT)]
+    #[offset]
     pub rent: *const RuntimeAccount,
+
     /// PDA signer seeds.
-    #[signer_seeds(PDA_SEEDS)]
+    #[signer_seeds]
     pub pda_seeds: PDASignerSeeds,
+
     /// PDA address.
-    #[pubkey_offsets(PDA)]
+    #[pubkey_offsets]
     pub pda: Address,
+
     /// System Program pubkey.
-    #[pubkey_offsets(SYSTEM_PROGRAM_PUBKEY)]
+    #[pubkey_offsets]
     pub system_program_pubkey: Address,
+
     /// System Program ID in input buffer.
-    #[offset(SYSTEM_PROGRAM_ID)]
+    #[offset]
     pub system_program_id: *const Address,
+
     /// Get return data program ID for CPI calls.
-    #[offset(GET_RETURN_DATA_PROGRAM_ID)]
+    #[offset]
     pub get_return_data_program_id: Address,
+
     /// CreateAccount instruction data.
     #[offset(CREATE_ACCT_DATA)]
     #[unaligned_offset(
@@ -220,6 +233,7 @@ pub struct RegisterMarketFrame {
         "Owner field within CreateAccount instruction data."
     )]
     pub create_account_data: CreateAccountData,
+
     /// InitializeAccount2 CPI instruction data.
     #[offset(INIT_ACCT_2_DATA)]
     #[unaligned_offset(
@@ -233,27 +247,34 @@ pub struct RegisterMarketFrame {
         "Proprietor field within InitializeAccount2 instruction data."
     )]
     pub initialize_account_2_data: InitializeAccount2,
+
     /// GetAccountDataSize CPI instruction data.
-    #[unaligned_offset(GET_ACCOUNT_DATA_SIZE_DATA)]
+    #[unaligned_offset]
     pub get_account_data_size_data: u8,
+
     /// CPI accounts.
     #[cpi_accounts(CPI)]
     pub cpi_accounts: CPIAccounts,
+
     /// Signers seeds for CPI.
     #[unaligned_offset(SIGNERS_SEEDS_ADDR, addr, "Signers seeds address.")]
     #[unaligned_offset(SIGNERS_SEEDS_LEN, len, "Signers seeds length.")]
     pub signers_seeds: SolSignerSeeds,
+
     /// Solana instruction.
     #[sol_instruction(SOL_INSN)]
     pub sol_instruction: SolInstruction,
+
     /// Bump seed.
-    #[offset(BUMP)]
+    #[offset]
     pub bump: u8,
+
     /// Vault index for PDA derivation.
-    #[unaligned_offset(VAULT_INDEX)]
+    #[unaligned_offset]
     pub vault_index: u8,
+
     /// Whether the current token program is Token 2022.
-    #[unaligned_offset(TOKEN_PROGRAM_IS_2022)]
+    #[unaligned_offset]
     pub token_program_is_2022: u8,
 }
 // endregion: frame_example

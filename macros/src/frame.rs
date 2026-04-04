@@ -1,3 +1,4 @@
+use heck::ToShoutySnakeCase;
 use proc_macro2::Span;
 use quote::quote;
 use syn::Ident;
@@ -66,9 +67,10 @@ fn is_struct_const_attr(attr: &syn::Attribute) -> bool {
 
 /// Result of parsing a field constant attribute.
 enum FieldAttrForm {
-    /// `#[kind(NAME)]` or `#[kind(NAME, "doc")]`.
+    /// `#[kind]`, `#[kind(NAME)]`, or `#[kind(NAME, "doc")]`.
     Primary {
-        name: Ident,
+        /// `None` when the name should be inferred from the field name.
+        name: Option<Ident>,
         doc_override: Option<String>,
     },
     /// `#[kind(NAME, subfield.nested, "doc")]`.
@@ -81,17 +83,27 @@ enum FieldAttrForm {
 
 /// Parse a field constant attribute in a single pass.
 ///
-/// Detects the form by looking at the token after the first comma:
-/// - No comma → `Primary { doc_override: None }`
-/// - Comma then string literal → `Primary { doc_override: Some(doc) }`
-/// - Comma then identifier → `SubField { sub_fields, doc }`
+/// Forms:
+/// - Empty args (`#[kind]`) → `Primary { name: None }`
+/// - `#[kind(NAME)]` → `Primary { name: Some(NAME) }`
+/// - `#[kind(NAME, "doc")]` → `Primary { name: Some(NAME), doc_override }`
+/// - `#[kind(NAME, subfield, "doc")]` → `SubField`
 fn parse_field_const_attr(attr: &syn::Attribute) -> syn::Result<FieldAttrForm> {
+    // Handle bare `#[kind]` with no parenthesized args.
+    let has_args = matches!(&attr.meta, syn::Meta::List(_));
+    if !has_args {
+        return Ok(FieldAttrForm::Primary {
+            name: None,
+            doc_override: None,
+        });
+    }
+
     attr.parse_args_with(|input: syn::parse::ParseStream| {
         let name: Ident = input.parse()?;
 
         if input.is_empty() {
             return Ok(FieldAttrForm::Primary {
-                name,
+                name: Some(name),
                 doc_override: None,
             });
         }
@@ -101,7 +113,7 @@ fn parse_field_const_attr(attr: &syn::Attribute) -> syn::Result<FieldAttrForm> {
         if input.peek(syn::LitStr) {
             let lit: syn::LitStr = input.parse()?;
             return Ok(FieldAttrForm::Primary {
-                name,
+                name: Some(name),
                 doc_override: Some(lit.value()),
             });
         }
@@ -175,6 +187,17 @@ fn parse_member_chain(input: syn::parse::ParseStream) -> syn::Result<Vec<syn::Me
     Ok(fields)
 }
 
+/// Resolve a constant name: use the explicit name if provided, or derive
+/// from the field name via SCREAMING_SNAKE_CASE.
+fn resolve_name(explicit: Option<Ident>, field_ident: &Ident) -> Ident {
+    explicit.unwrap_or_else(|| {
+        Ident::new(
+            &field_ident.to_string().to_shouty_snake_case(),
+            field_ident.span(),
+        )
+    })
+}
+
 /// Build `ConstantDef`s from a single field's attributes.
 fn field_constants(
     field: &syn::Field,
@@ -197,6 +220,7 @@ fn field_constants(
         match kind_name.as_str() {
             OFFSET => match parsed {
                 FieldAttrForm::Primary { name, doc_override } => {
+                    let name = resolve_name(name, field_ident);
                     let doc = resolve_doc(doc_override, field_doc, &name)?;
                     validate_constant_name(&name)?;
                     defs.push(ConstantDef {
@@ -225,6 +249,7 @@ fn field_constants(
             },
             UNALIGNED_OFFSET => match parsed {
                 FieldAttrForm::Primary { name, doc_override } => {
+                    let name = resolve_name(name, field_ident);
                     let doc = resolve_doc(doc_override, field_doc, &name)?;
                     validate_constant_name(&name)?;
                     defs.push(ConstantDef {
@@ -253,6 +278,7 @@ fn field_constants(
             },
             PUBKEY_OFFSETS => match parsed {
                 FieldAttrForm::Primary { name, doc_override } => {
+                    let name = resolve_name(name, field_ident);
                     let doc = resolve_doc(doc_override, field_doc, &name)?;
                     validate_constant_name(&name)?;
                     defs.push(ConstantDef {
@@ -304,7 +330,7 @@ fn field_constants(
                 }
             },
             SIGNER_SEEDS => {
-                let (name, doc) = primary_only(parsed, attr, field_doc)?;
+                let (name, doc) = primary_only(parsed, attr, field_ident, field_doc)?;
                 let field_names =
                     shared_state::lookup_signer_seed_fields(frame_name, &field_ident.to_string())
                         .map_err(|e| syn::Error::new(span, e))?;
@@ -321,7 +347,7 @@ fn field_constants(
                 });
             }
             CPI_ACCOUNTS => {
-                let (name, doc) = primary_only(parsed, attr, field_doc)?;
+                let (name, doc) = primary_only(parsed, attr, field_ident, field_doc)?;
                 let field_names =
                     shared_state::lookup_cpi_account_fields(frame_name, &field_ident.to_string())
                         .map_err(|e| syn::Error::new(span, e))?;
@@ -339,7 +365,7 @@ fn field_constants(
                 });
             }
             SOL_INSTRUCTION => {
-                let (name, doc) = primary_only(parsed, attr, field_doc)?;
+                let (name, doc) = primary_only(parsed, attr, field_ident, field_doc)?;
                 defs.push(ConstantDef {
                     doc,
                     name,
@@ -359,17 +385,19 @@ fn field_constants(
 fn primary_only(
     parsed: FieldAttrForm,
     attr: &syn::Attribute,
+    field_ident: &Ident,
     field_doc: &Option<String>,
 ) -> syn::Result<(Ident, String)> {
     match parsed {
         FieldAttrForm::Primary { name, doc_override } => {
+            let name = resolve_name(name, field_ident);
             let doc = resolve_doc(doc_override, field_doc, &name)?;
             validate_constant_name(&name)?;
             Ok((name, doc))
         }
         FieldAttrForm::SubField { .. } => Err(syn::Error::new_spanned(
             attr,
-            "this attribute only supports primary form: #[kind(NAME)]",
+            "this attribute only supports primary form: #[kind] or #[kind(NAME)]",
         )),
     }
 }
