@@ -134,7 +134,7 @@ cpi_accounts! {
 
 // region: signer_seeds_example
 signer_seeds! {
-    PDASignerSeeds {
+    SignerSeeds {
         /// Market PDA: base mint address. Vault: market PDA address.
         idx_0,
         /// Market PDA: quote mint address. Vault: vault index (0 = base, 1 = quote).
@@ -197,7 +197,7 @@ pub struct RegisterMarketFrame {
 
     /// PDA signer seeds.
     #[signer_seeds]
-    pub pda_seeds: PDASignerSeeds,
+    pub pda_seeds: SignerSeeds,
 
     /// PDA address.
     #[pubkey_offsets]
