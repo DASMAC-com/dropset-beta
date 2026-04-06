@@ -45,11 +45,11 @@ program/src/dropset/
 ### Discriminants
 
 Instruction discriminant constants are injected from the
-[interface][bs-interface] crate's
-[`#[discriminant_enum]`][bs-discriminant] macro:
+[interface][bs-interface] crate's [`#[discriminant_enum]`][bs-discriminant]
+macro:
 
-<Include rs="interface::lib#discriminant_enum" collapsible/>
-<Include asm="common/discriminant" collapsible/>
+<Include rs="interface::lib#discriminant_enum" collapsed/>
+<Include asm="common/discriminant" collapsed/>
 
 ### Errors
 
