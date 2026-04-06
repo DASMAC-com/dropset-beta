@@ -16,14 +16,14 @@ init_market_pda:
     add64 r8, RM_MISC_BASE_ADDR_OFF
     stxdw [r10 + RM_FM_PDA_SEEDS_IDX_0_ADDR_OFF], r8
     # frame.pda_seeds[0].len = Address.size
-    mov64 r8, SIZE_OF_ADDRESS
+    mov64 r8, SIZE_OF_PUBKEY
     stxdw [r10 + RM_FM_PDA_SEEDS_IDX_0_LEN_OFF], r8
     # frame.pda_seeds[1].addr = input_shifted.quote_mint.address
     ldxdw r8, [r10 + RM_FM_INPUT_SHIFTED_OFF]
     add64 r8, RM_MISC_QUOTE_ADDR_OFF
     stxdw [r10 + RM_FM_PDA_SEEDS_IDX_1_ADDR_OFF], r8
     # frame.pda_seeds[1].len = Address.size
-    mov64 r8, SIZE_OF_ADDRESS
+    mov64 r8, SIZE_OF_PUBKEY
     stxdw [r10 + RM_FM_PDA_SEEDS_IDX_1_LEN_OFF], r8
     # frame.input = input
     stxdw [r10 + RM_FM_INPUT_OFF], r1

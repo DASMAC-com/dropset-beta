@@ -10,7 +10,7 @@ use dropset_macros::{
     constant_group, cpi_accounts, frame, instruction_accounts, instruction_data, signer_seeds,
     svm_data,
 };
-use pinocchio::Address;
+use pinocchio::Address as Pubkey;
 use pinocchio::account::RuntimeAccount;
 
 // region: market_header
@@ -116,7 +116,7 @@ pub struct CreateAccountData {
     pub lamports: u64,
     pub space: u64,
     /// Zero-initialized on stack.
-    pub owner: Address,
+    pub owner: Pubkey,
 }
 
 cpi_accounts! {
@@ -163,11 +163,11 @@ signer_seeds! {
 pub struct RegisterMarketFrame {
     /// Pointer to token program ID.
     #[offset]
-    pub token_program_id: *const Address,
+    pub token_program_id: *const Pubkey,
 
     /// Pointer to program ID in input buffer.
     #[offset]
-    pub program_id: *const Address,
+    pub program_id: *const Pubkey,
 
     /// Saved input buffer pointer.
     #[offset]
@@ -199,19 +199,19 @@ pub struct RegisterMarketFrame {
 
     /// PDA pubkey.
     #[pubkey_offsets]
-    pub pda: Address,
+    pub pda: Pubkey,
 
     /// System Program pubkey.
     #[pubkey_offsets]
-    pub system_program_pubkey: Address,
+    pub system_program_pubkey: Pubkey,
 
     /// System Program ID in input buffer.
     #[offset]
-    pub system_program_id: *const Address,
+    pub system_program_id: *const Pubkey,
 
     /// Get return data program ID for CPI calls.
     #[offset]
-    pub get_return_data_program_id: Address,
+    pub get_return_data_program_id: Pubkey,
 
     /// CreateAccount instruction data.
     #[offset(CREATE_ACCT_DATA)]

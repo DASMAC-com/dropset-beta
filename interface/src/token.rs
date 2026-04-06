@@ -1,5 +1,5 @@
 use dropset_macros::{constant_group, svm_data};
-use pinocchio::Address;
+use pinocchio::Address as Pubkey;
 use pinocchio_token::state::TokenAccount;
 // pinocchio-token does not export GetAccountDataSize yet.
 use pinocchio_token_2022::instructions::GetAccountDataSize;
@@ -9,7 +9,7 @@ use pinocchio_token_2022::instructions::GetAccountDataSize;
 pub struct InitializeAccount2 {
     pub discriminant: u8,
     /// In this implementation, the market PDA.
-    pub proprietor: Address,
+    pub proprietor: Pubkey,
 }
 
 constant_group! {

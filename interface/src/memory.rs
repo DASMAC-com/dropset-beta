@@ -1,7 +1,7 @@
 use crate::market::{CreateAccountData, MarketHeader};
 use crate::token::InitializeAccount2;
 use dropset_macros::{constant_group, size_of_group, svm_data};
-use pinocchio::Address;
+use pinocchio::Address as Pubkey;
 use pinocchio::account::{MAX_PERMITTED_DATA_INCREASE, RuntimeAccount};
 use pinocchio::entrypoint::NON_DUP_MARKER;
 use pinocchio::sysvars::rent::ACCOUNT_STORAGE_OVERHEAD;
@@ -147,7 +147,7 @@ constant_group! {
 // region: size_of_group_example
 size_of_group! {
     #[inject("common/memory")]
-    [u8, u64, Address, EmptyAccount, MarketHeader, CreateAccountData, InitializeAccount2]
+    [u8, u64, Pubkey, EmptyAccount, MarketHeader, CreateAccountData, InitializeAccount2]
 }
 // endregion: size_of_group_example
 

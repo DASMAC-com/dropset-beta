@@ -220,7 +220,7 @@ auto-discover all account fields by looking up the parent field's type.
 
 Injects `SIZE_OF_<TYPE>` immediates for each listed type. Names and doc
 comments are auto-derived from the type name (`Address` becomes
-`SIZE_OF_ADDRESS`). The value is `std::mem::size_of::<Type>()` cast to `i32`.
+`SIZE_OF_PUBKEY`). The value is `std::mem::size_of::<Type>()` cast to `i32`.
 
 <Include rs="interface::memory#size_of_group_example" collapsible/>
 

@@ -181,7 +181,7 @@ pub fn instruction_data(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// pub struct RegisterMarketFrame {
 ///     /// Pointer to token program address.
 ///     #[offset]
-///     pub token_program_id: *const Address,
+///     pub token_program_id: *const Pubkey,
 ///     /// PDA signer seeds.
 ///     #[signer_seeds]
 ///     pub pda_seeds: PdaSignerSeeds,
@@ -244,7 +244,7 @@ pub fn svm_data(_attr: TokenStream, item: TokenStream) -> TokenStream {
 /// ```ignore
 /// size_of_group! {
 ///     #[inject("common/memory")]
-///     [Address]
+///     [Pubkey]
 /// }
 /// ```
 #[proc_macro]
