@@ -23,7 +23,7 @@ mod svm_data;
 /// - `pubkey!(expr)`: 32-byte key split into chunk immediates
 /// - `pubkey_offsets!(expr)`: base offset + four chunk offsets
 ///
-/// With `#[frame(Type)]`, additional frame-relative kinds:
+/// With `#[frame(Context)]`, additional frame-relative kinds:
 /// - `offset!(field)`: negative frame-pointer-relative (`_OFF`)
 /// - `unaligned_offset!(field)`: frame-relative without alignment (`_UOFF`)
 /// - `pubkey_offsets!(field)`: frame-relative + chunk offsets
@@ -181,7 +181,7 @@ pub fn instruction_data(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// pub struct RegisterMarketFrame {
 ///     /// Pointer to token program address.
 ///     #[offset]
-///     pub token_program_id: *const Address,
+///     pub token_program_id: *const Pubkey,
 ///     /// PDA signer seeds.
 ///     #[signer_seeds]
 ///     pub pda_seeds: PdaSignerSeeds,
@@ -244,7 +244,7 @@ pub fn svm_data(_attr: TokenStream, item: TokenStream) -> TokenStream {
 /// ```ignore
 /// size_of_group! {
 ///     #[inject("common/memory")]
-///     [Address]
+///     [Pubkey]
 /// }
 /// ```
 #[proc_macro]

@@ -50,7 +50,7 @@ pub fn parse_relative_offset(
 
 /// Parse the inside of `offset!(...)`.
 ///
-/// When a `#[frame(Type)]` is present, a bare identifier like `offset!(bump)`
+/// When a `#[frame(Context)]` is present, a bare identifier like `offset!(bump)`
 /// or a field chain like `offset!(pda_signer_seeds.base_signer_seed)` is parsed
 /// as a frame-relative offset. Without a frame, the existing syntax applies.
 pub fn parse_offset(

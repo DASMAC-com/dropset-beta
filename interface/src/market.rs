@@ -10,7 +10,7 @@ use dropset_macros::{
     constant_group, cpi_accounts, frame, instruction_accounts, instruction_data, signer_seeds,
     svm_data,
 };
-use pinocchio::Address;
+use pinocchio::Address as Pubkey;
 use pinocchio::account::RuntimeAccount;
 
 // region: market_header
@@ -62,7 +62,7 @@ constant_group! {
         BASE_DUPLICATE = offset!(RegisterMarketInputBuffer.base_mint.header.borrow_state),
         /// From input buffer to base mint data length.
         BASE_DATA_LEN = offset!(RegisterMarketInputBuffer.base_mint.header.data_len),
-        /// From input buffer to base mint address.
+        /// From input buffer to base mint address field.
         BASE_ADDR = offset!(RegisterMarketInputBuffer.base_mint.header.address),
         /// From input buffer to base mint owner.
         BASE_OWNER = pubkey_offsets!(RegisterMarketInputBuffer.base_mint.header.owner),
@@ -70,7 +70,7 @@ constant_group! {
         QUOTE = offset!(RegisterMarketInputBuffer.quote_mint),
         /// From input buffer to quote mint duplicate flag.
         QUOTE_DUPLICATE = offset!(RegisterMarketInputBuffer.quote_mint.header.borrow_state),
-        /// From input buffer to quote mint address.
+        /// From input buffer to quote mint address field.
         QUOTE_ADDR = offset!(RegisterMarketInputBuffer.quote_mint.header.address),
         /// From input buffer to quote mint owner.
         QUOTE_OWNER = pubkey_offsets!(RegisterMarketInputBuffer.quote_mint.header.owner),
@@ -116,7 +116,7 @@ pub struct CreateAccountData {
     pub lamports: u64,
     pub space: u64,
     /// Zero-initialized on stack.
-    pub owner: Address,
+    pub owner: Pubkey,
 }
 
 cpi_accounts! {
@@ -161,13 +161,13 @@ signer_seeds! {
 ]
 /// Stack frame for REGISTER-MARKET.
 pub struct RegisterMarketFrame {
-    /// Pointer to token program address.
+    /// Pointer to token program ID.
     #[offset]
-    pub token_program_id: *const Address,
+    pub token_program_id: *const Pubkey,
 
     /// Pointer to program ID in input buffer.
     #[offset]
-    pub program_id: *const Address,
+    pub program_id: *const Pubkey,
 
     /// Saved input buffer pointer.
     #[offset]
@@ -197,21 +197,21 @@ pub struct RegisterMarketFrame {
     #[signer_seeds]
     pub pda_seeds: SignerSeeds,
 
-    /// PDA address.
+    /// PDA pubkey.
     #[pubkey_offsets]
-    pub pda: Address,
+    pub pda: Pubkey,
 
     /// System Program pubkey.
     #[pubkey_offsets]
-    pub system_program_pubkey: Address,
+    pub system_program_pubkey: Pubkey,
 
     /// System Program ID in input buffer.
     #[offset]
-    pub system_program_id: *const Address,
+    pub system_program_id: *const Pubkey,
 
     /// Get return data program ID for CPI calls.
     #[offset]
-    pub get_return_data_program_id: Address,
+    pub get_return_data_program_id: Pubkey,
 
     /// CreateAccount instruction data.
     #[offset(CREATE_ACCT_DATA)]

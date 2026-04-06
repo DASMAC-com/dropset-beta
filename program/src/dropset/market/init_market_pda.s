@@ -15,15 +15,15 @@ init_market_pda:
     mov64 r8, r1
     add64 r8, RM_MISC_BASE_ADDR_OFF
     stxdw [r10 + RM_FM_PDA_SEEDS_IDX_0_ADDR_OFF], r8
-    # frame.pda_seeds[0].len = Address.size
-    mov64 r8, SIZE_OF_ADDRESS
+    # frame.pda_seeds[0].len = Pubkey.size
+    mov64 r8, SIZE_OF_PUBKEY
     stxdw [r10 + RM_FM_PDA_SEEDS_IDX_0_LEN_OFF], r8
     # frame.pda_seeds[1].addr = input_shifted.quote_mint.address
     ldxdw r8, [r10 + RM_FM_INPUT_SHIFTED_OFF]
     add64 r8, RM_MISC_QUOTE_ADDR_OFF
     stxdw [r10 + RM_FM_PDA_SEEDS_IDX_1_ADDR_OFF], r8
-    # frame.pda_seeds[1].len = Address.size
-    mov64 r8, SIZE_OF_ADDRESS
+    # frame.pda_seeds[1].len = Pubkey.size
+    mov64 r8, SIZE_OF_PUBKEY
     stxdw [r10 + RM_FM_PDA_SEEDS_IDX_1_LEN_OFF], r8
     # frame.input = input
     stxdw [r10 + RM_FM_INPUT_OFF], r1
@@ -46,16 +46,16 @@ init_market_pda:
     ldxdw r6, [r10 + RM_FM_INPUT_OFF]
     # if input.market.pubkey != frame.market_pda
     #     return ErrorCode::InvalidMarketPubkey
-    ldxdw r7, [r6 + IB_MARKET_PUBKEY_CHUNK_0_OFF]
+    ldxdw r7, [r6 + IB_MARKET_ADDRESS_CHUNK_0_OFF]
     ldxdw r8, [r10 + RM_FM_PDA_CHUNK_0_OFF]
     jne r7, r8, e_invalid_market_pubkey
-    ldxdw r7, [r6 + IB_MARKET_PUBKEY_CHUNK_1_OFF]
+    ldxdw r7, [r6 + IB_MARKET_ADDRESS_CHUNK_1_OFF]
     ldxdw r8, [r10 + RM_FM_PDA_CHUNK_1_OFF]
     jne r7, r8, e_invalid_market_pubkey
-    ldxdw r7, [r6 + IB_MARKET_PUBKEY_CHUNK_2_OFF]
+    ldxdw r7, [r6 + IB_MARKET_ADDRESS_CHUNK_2_OFF]
     ldxdw r8, [r10 + RM_FM_PDA_CHUNK_2_OFF]
     jne r7, r8, e_invalid_market_pubkey
-    ldxdw r7, [r6 + IB_MARKET_PUBKEY_CHUNK_3_OFF]
+    ldxdw r7, [r6 + IB_MARKET_ADDRESS_CHUNK_3_OFF]
     ldxdw r8, [r10 + RM_FM_PDA_CHUNK_3_OFF]
     jne r7, r8, e_invalid_market_pubkey
     # frame.pda_seeds[2].addr = &frame.bump
@@ -86,7 +86,7 @@ init_market_pda:
     sth [r10 + RM_FM_CPI_IDX_1_ACCT_META_IS_WRITABLE_UOFF], CPI_WRITABLE_SIGNER
     # frame.cpi[0].meta.pubkey = &input.user.address
     # frame.cpi[0].info.key = &input.user.address
-    add64 r6, IB_USER_PUBKEY_OFF
+    add64 r6, IB_USER_ADDRESS_OFF
     stxdw [r10 + RM_FM_CPI_IDX_0_ACCT_META_PUBKEY_UOFF], r6
     stxdw [r10 + RM_FM_CPI_IDX_0_ACCT_INFO_KEY_UOFF], r6
     # frame.cpi[0].info.owner = &input.user.owner

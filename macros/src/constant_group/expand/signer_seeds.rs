@@ -5,7 +5,7 @@ use syn::Ident;
 use super::offset::emit_frame_offset_const;
 use crate::codegen;
 
-/// Expand `signer_seeds!(parent_field)` inside a `#[frame(Type)]` group.
+/// Expand `signer_seeds!(parent_field)` inside a `#[frame(Context)]` group.
 ///
 /// Emits an `_OFF` offset to the struct, an `N_SEEDS` immediate count,
 /// and per-seed `_ADDR_OFF` and `_LEN_OFF` frame-relative offset constants.

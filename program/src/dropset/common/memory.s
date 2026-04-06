@@ -5,11 +5,11 @@
 .equ ACCT_IS_WRITABLE_OFF, 2 # Whether the account is writable.
 .equ ACCT_EXECUTABLE_OFF, 3 # Whether the account is executable.
 .equ ACCT_RESIZE_DELTA_OFF, 4 # Resize delta.
-.equ ACCT_ADDRESS_OFF, 8 # Account address.
-.equ ACCT_ADDRESS_CHUNK_0_OFF, 8 # Account address (chunk 0).
-.equ ACCT_ADDRESS_CHUNK_1_OFF, 16 # Account address (chunk 1).
-.equ ACCT_ADDRESS_CHUNK_2_OFF, 24 # Account address (chunk 2).
-.equ ACCT_ADDRESS_CHUNK_3_OFF, 32 # Account address (chunk 3).
+.equ ACCT_ADDRESS_OFF, 8 # Account address field.
+.equ ACCT_ADDRESS_CHUNK_0_OFF, 8 # Account address field (chunk 0).
+.equ ACCT_ADDRESS_CHUNK_1_OFF, 16 # Account address field (chunk 1).
+.equ ACCT_ADDRESS_CHUNK_2_OFF, 24 # Account address field (chunk 2).
+.equ ACCT_ADDRESS_CHUNK_3_OFF, 32 # Account address field (chunk 3).
 .equ ACCT_OWNER_OFF, 40 # Account owner.
 .equ ACCT_OWNER_CHUNK_0_OFF, 40 # Account owner (chunk 0).
 .equ ACCT_OWNER_CHUNK_1_OFF, 48 # Account owner (chunk 1).
@@ -43,28 +43,29 @@
 # Input buffer constants for static header.
 # -------------------------------------------------------------------------
 .equ IB_USER_DATA_LEN_OFF, 88 # From input buffer to user data length.
-.equ IB_USER_PUBKEY_OFF, 16 # From input buffer to user pubkey.
-# From input buffer to user pubkey (chunk 0).
-.equ IB_USER_PUBKEY_CHUNK_0_OFF, 16
-# From input buffer to user pubkey (chunk 1).
-.equ IB_USER_PUBKEY_CHUNK_1_OFF, 24
-# From input buffer to user pubkey (chunk 2).
-.equ IB_USER_PUBKEY_CHUNK_2_OFF, 32
-# From input buffer to user pubkey (chunk 3).
-.equ IB_USER_PUBKEY_CHUNK_3_OFF, 40
+.equ IB_USER_ADDRESS_OFF, 16 # From input buffer to user address field.
+# From input buffer to user address field (chunk 0).
+.equ IB_USER_ADDRESS_CHUNK_0_OFF, 16
+# From input buffer to user address field (chunk 1).
+.equ IB_USER_ADDRESS_CHUNK_1_OFF, 24
+# From input buffer to user address field (chunk 2).
+.equ IB_USER_ADDRESS_CHUNK_2_OFF, 32
+# From input buffer to user address field (chunk 3).
+.equ IB_USER_ADDRESS_CHUNK_3_OFF, 40
 # From input buffer to market duplicate flag.
 .equ IB_MARKET_DUPLICATE_OFF, 10344
 # From input buffer to market data length.
 .equ IB_MARKET_DATA_LEN_OFF, 10424
-.equ IB_MARKET_PUBKEY_OFF, 10352 # From input buffer to market address.
-# From input buffer to market address (chunk 0).
-.equ IB_MARKET_PUBKEY_CHUNK_0_OFF, 10352
-# From input buffer to market address (chunk 1).
-.equ IB_MARKET_PUBKEY_CHUNK_1_OFF, 10360
-# From input buffer to market address (chunk 2).
-.equ IB_MARKET_PUBKEY_CHUNK_2_OFF, 10368
-# From input buffer to market address (chunk 3).
-.equ IB_MARKET_PUBKEY_CHUNK_3_OFF, 10376
+# From input buffer to market address field.
+.equ IB_MARKET_ADDRESS_OFF, 10352
+# From input buffer to market address field (chunk 0).
+.equ IB_MARKET_ADDRESS_CHUNK_0_OFF, 10352
+# From input buffer to market address field (chunk 1).
+.equ IB_MARKET_ADDRESS_CHUNK_1_OFF, 10360
+# From input buffer to market address field (chunk 2).
+.equ IB_MARKET_ADDRESS_CHUNK_2_OFF, 10368
+# From input buffer to market address field (chunk 3).
+.equ IB_MARKET_ADDRESS_CHUNK_3_OFF, 10376
 # From address to owner in a runtime account.
 .equ IB_ADDRESS_TO_OWNER_REL_OFF_IMM, 32
 # From owner to lamports in a runtime account.
@@ -87,7 +88,7 @@
 
 .equ SIZE_OF_U8, 1 # Size of u8 in bytes.
 .equ SIZE_OF_U64, 8 # Size of u64 in bytes.
-.equ SIZE_OF_ADDRESS, 32 # Size of Address in bytes.
+.equ SIZE_OF_PUBKEY, 32 # Size of Pubkey in bytes.
 .equ SIZE_OF_EMPTY_ACCOUNT, 10336 # Size of EmptyAccount in bytes.
 .equ SIZE_OF_MARKET_HEADER, 43 # Size of MarketHeader in bytes.
 .equ SIZE_OF_CREATE_ACCOUNT_DATA, 52 # Size of CreateAccountData in bytes.

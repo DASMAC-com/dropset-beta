@@ -49,36 +49,40 @@ syntax forms (parsed within the proc macro, not standalone macros):
 - `immediate!(expr)`: an `i32` immediate value
 - `signer_seeds!(field)`: expands a [`signer_seeds!`](#signer_seeds) field into
   an `_OFF` offset to the struct, an `N_SEEDS` count, and per-seed `_ADDR_OFF`
-  and `_LEN_OFF` constants (requires `#[frame(Type)]`, see below)
+  and `_LEN_OFF` constants (requires `#[frame(Context)]`, see below)
 - `pubkey!(expr)`: splits a 32-byte pubkey into four 8-byte chunks, emitting
   full 64-bit `_CHUNK_{0..3}` `i64` constants (for `lddw`) plus
   `_CHUNK_{0..3}_LO` and `_CHUNK_{0..3}_HI` `i32` immediates (twelve constants
   total)
 - `pubkey_offsets!(expr)`: emits a base `_OFF` offset plus four
-  `_CHUNK_{0..3}_OFF` offsets for each 8-byte chunk of a 32-byte pubkey field
+  `_CHUNK_{0..3}_OFF` offsets for each 8-byte chunk of a 32-byte pubkey field.
+  The generated constant name should mirror the struct field name: use
+  `ADDRESS` when the field is named `address` (e.g. `RuntimeAccount.address`),
+  and `PUBKEY` or the field name otherwise, since "address" also means a
+  runtime pointer in this codebase
 - `unaligned_offset!(field)`: like `offset!` in frame-relative mode but without
-  the alignment assertion, suffixed with `_UOFF` (requires `#[frame(Type)]`)
+  the alignment assertion, suffixed with `_UOFF` (requires `#[frame(Context)]`)
 - `unaligned_pubkey_offsets!(field)`: like `pubkey_offsets!` in frame-relative
   mode but without the alignment assertion, suffixed with `_UOFF` (requires
-  `#[frame(Type)]`)
+  `#[frame(Context)]`). Same naming convention as `pubkey_offsets!`
 - `sol_instruction!(field)`: emits an aligned `_OFF` for the `SolInstruction`
   struct base and unaligned `_UOFF` offsets for each field (`program_id`,
-  `accounts`, `account_len`, `data`, `data_len`) (requires `#[frame(Type)]`)
+  `accounts`, `account_len`, `data`, `data_len`) (requires `#[frame(Context)]`)
 - `cpi_accounts!(field)`: emits an `N_ACCOUNTS` count, `_SOL_ACCT_INFO_OFF`
   and `_SOL_ACCT_META_OFF` vector start offsets, and per-account unaligned
   offsets for each `SolAccountInfo` and `SolAccountMeta` field (requires
-  `#[frame(Type)]`, field type must be defined with
+  `#[frame(Context)]`, field type must be defined with
   [`cpi_accounts!`](#cpi_accounts))
 - `relative_offset!(Struct, from_field, to_field)`: computes the difference
   between two field offsets within the same struct, emitted as an `i32`
-  immediate with `_REL_OFF_IMM` suffix. In `#[frame(Type)]` context the
+  immediate with `_REL_OFF_IMM` suffix. In `#[frame(Context)]` context the
   struct is inferred and only the two field paths are required
 
 <Include rs="interface::memory#constant_group_example" collapsible/>
 
 #### Frame-relative offsets
 
-When annotated with `#[frame(Type)]`, the group enters frame-relative mode.
+When annotated with `#[frame(Context)]`, the group enters frame-relative mode.
 In this mode, `offset!(field)` computes a negative offset from the frame
 pointer (`offset_of` minus `size_of`) and asserts 8-byte alignment
 (`BPF_ALIGN_OF_U128`). The group's doc comment defaults to the frame struct's
@@ -215,8 +219,10 @@ auto-discover all account fields by looking up the parent field's type.
 ### `size_of_group!`
 
 Injects `SIZE_OF_<TYPE>` immediates for each listed type. Names and doc
-comments are auto-derived from the type name (`Address` becomes
-`SIZE_OF_ADDRESS`). The value is `std::mem::size_of::<Type>()` cast to `i32`.
+comments are auto-derived from the type name (`Pubkey` becomes
+`SIZE_OF_PUBKEY`). The value is `std::mem::size_of::<Type>()` cast to `i32`.
+Note that `Pubkey` is a local alias for `pinocchio::Address` (see
+[Pubkeys][layout-pubkeys] for the naming convention).
 
 <Include rs="interface::memory#size_of_group_example" collapsible/>
 
@@ -250,8 +256,9 @@ For example:
 
 The `generate_bindings()` function fetches Solana CPI C headers from the
 [Agave] repository on GitHub, runs [bindgen] to produce Rust FFI structs, and
-replaces `SolPubkey` references with `pinocchio::Address`. The output is written
-to `interface/src/cpi_bindings.rs` and formatted with `rustfmt`.
+replaces `SolPubkey` references with `Pubkey` (a local alias for
+`pinocchio::Address`). The output is written to `interface/src/cpi_bindings.rs`
+and formatted with `rustfmt`.
 
 Bindings generation only runs when the `AGAVE_REV` environment variable is set.
 Locally, `cargo check` and `make asm` skip it entirely. On CI, the
@@ -270,3 +277,4 @@ variables set, and commit the updated `cpi_bindings.rs`.
 [proc macros]: https://doc.rust-lang.org/reference/procedural-macros.html
 [Agave]: https://github.com/anza-xyz/agave
 [bindgen]: https://rust-lang.github.io/rust-bindgen/
+[layout-pubkeys]: /program/layout#pubkeys

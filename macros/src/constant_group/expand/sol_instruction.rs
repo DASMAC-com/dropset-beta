@@ -12,7 +12,7 @@ const FIELDS: &[(&str, &str)] = &[
     ("data_len", "data length"),
 ];
 
-/// Expand `sol_instruction!(field)` inside a `#[frame(Type)]` group.
+/// Expand `sol_instruction!(field)` inside a `#[frame(Context)]` group.
 ///
 /// Emits an aligned `_OFF` for the struct base and unaligned `_UOFF` offsets
 /// for each `SolInstruction` field.

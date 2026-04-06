@@ -5,7 +5,7 @@ use syn::Ident;
 use crate::codegen;
 use crate::sbpf_config::FRAME_ALIGN;
 
-use super::address::{CHUNK_SIZE, N_CHUNKS};
+use super::pubkey::{CHUNK_SIZE, N_CHUNKS};
 
 /// Build the token stream for a frame-relative offset expression:
 /// `offset_of!(frame, field_chain) - size_of::<frame>()`.
@@ -250,7 +250,7 @@ pub fn expand_pubkey_offsets(
     );
 }
 
-/// Expand `pubkey_offsets!(field)` inside a `#[frame(Type)]` group into a base
+/// Expand `pubkey_offsets!(field)` inside a `#[frame(Context)]` group into a base
 /// `_OFF` plus four `_CHUNK_{0..3}_OFF` frame-relative offset constants.
 pub fn expand_frame_pubkey_offsets(
     asm_prefix: &str,
@@ -274,7 +274,7 @@ pub fn expand_frame_pubkey_offsets(
     );
 }
 
-/// Expand `unaligned_pubkey_offsets!(field)` inside a `#[frame(Type)]` group
+/// Expand `unaligned_pubkey_offsets!(field)` inside a `#[frame(Context)]` group
 /// into a base `_UOFF` plus four `_CHUNK_{0..3}_UOFF` frame-relative offset
 /// constants, without alignment assertions.
 pub fn expand_unaligned_frame_pubkey_offsets(
@@ -299,7 +299,7 @@ pub fn expand_unaligned_frame_pubkey_offsets(
     );
 }
 
-/// Expand `unaligned_offset!(field)` inside a `#[frame(Type)]` group.
+/// Expand `unaligned_offset!(field)` inside a `#[frame(Context)]` group.
 /// Like `expand_frame_offset` but without the alignment assertion.
 /// Name gets `_UOFF` suffix.
 pub fn expand_unaligned_frame_offset(
@@ -363,7 +363,7 @@ pub fn expand_relative_offset(
     (def, meta_ident)
 }
 
-/// Expand `offset!(field)` inside a `#[frame(Type)]` group.
+/// Expand `offset!(field)` inside a `#[frame(Context)]` group.
 pub fn expand_frame_offset(
     base_name: &Ident,
     asm_name: &str,

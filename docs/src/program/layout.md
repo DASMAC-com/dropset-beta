@@ -85,10 +85,20 @@ to 1 CU with `mov32` alone when the high bits are zero.
 When a struct field holds a 32-byte pubkey that needs per-chunk access,
 [`pubkey_offsets!`][bs-constant-group] generates a base `_OFF` plus four
 `_CHUNK_{0..3}_OFF` constants. This is used for input buffer fields
-(e.g. `IB_MARKET_PUBKEY_CHUNK_{0..3}_OFF`) and frame-relative fields
+(e.g. `IB_MARKET_ADDRESS_CHUNK_{0..3}_OFF`) and frame-relative fields
 (e.g. `RM_FM_PDA_CHUNK_{0..3}_OFF`). For frame fields that are not aligned
 to `BPF_ALIGN_OF_U128`, [`unaligned_pubkey_offsets!`][bs-constant-group]
 emits the same set of constants with a `_UOFF` suffix instead of `_OFF`.
+
+::: tip Naming: pubkey vs address
+The generated constant name should reflect the underlying struct field name.
+When the field is named `address` (e.g. `RuntimeAccount.address`), use
+`ADDRESS` in the constant (e.g. `IB_USER_ADDRESS`). Otherwise, use `PUBKEY`
+or the field name itself (e.g. `system_program_pubkey` becomes
+`SYSTEM_PROGRAM_PUBKEY`). In this codebase "address" also means a runtime
+pointer, so reserving the term for struct fields named `address` avoids
+ambiguity.
+:::
 
 <Include rs="interface::pubkey#pubkey_constants" collapsible/>
 <Include asm="common/pubkey" collapsible/>
