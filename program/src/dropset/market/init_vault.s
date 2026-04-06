@@ -5,7 +5,7 @@ init_vault:
     mov64 r7, r1
     # frame.pda_seeds[0].addr = &input.market.address
     ldxdw r8, [r6 + RM_FM_INPUT_OFF]
-    add64 r8, IB_MARKET_PUBKEY_OFF
+    add64 r8, IB_MARKET_ADDRESS_OFF
     stxdw [r6 + RM_FM_PDA_SEEDS_IDX_0_ADDR_OFF], r8
     # frame.pda_seeds[1].addr = &frame.vault_index
     mov64 r8, r6
@@ -156,7 +156,7 @@ init_vault_create_account:
     # frame.cpi[0].meta.pubkey = &input.user.address
     # frame.cpi[0].info.key = &input.user.address
     ldxdw r8, [r6 + RM_FM_INPUT_OFF]
-    add64 r8, IB_USER_PUBKEY_OFF
+    add64 r8, IB_USER_ADDRESS_OFF
     stxdw [r6 + RM_FM_CPI_IDX_0_ACCT_META_PUBKEY_UOFF], r8
     stxdw [r6 + RM_FM_CPI_IDX_0_ACCT_INFO_KEY_UOFF], r8
     # frame.cpi[0].info.owner = &input.user.owner
@@ -292,7 +292,7 @@ init_vault_create_account:
     stb [r6 + RM_FM_INIT_ACCT_2_DISC_UOFF], TOKEN_INITIALIZE_ACCOUNT_2_DISC
     # frame.initialize_account_2_data.proprietor = input.market.address
     ldxdw r8, [r6 + RM_FM_INPUT_OFF]
-    add64 r8, IB_MARKET_PUBKEY_OFF
+    add64 r8, IB_MARKET_ADDRESS_OFF
     ldxdw r9, [r8 + PUBKEY_CHUNK_0_OFF]
     stxdw [r6 + RM_FM_INIT_ACCT_2_PROPRIETOR_CHUNK_0_UOFF], r9
     ldxdw r9, [r8 + PUBKEY_CHUNK_1_OFF]

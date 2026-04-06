@@ -24,7 +24,7 @@
 
 # Stack frame for REGISTER-MARKET.
 # -------------------------------------------------------------------------
-.equ RM_FM_TOKEN_PROGRAM_ID_OFF, -592 # Pointer to token program address.
+.equ RM_FM_TOKEN_PROGRAM_ID_OFF, -592 # Pointer to token program ID.
 .equ RM_FM_PROGRAM_ID_OFF, -584 # Pointer to program ID in input buffer.
 .equ RM_FM_INPUT_OFF, -576 # Saved input buffer pointer.
 .equ RM_FM_INPUT_SHIFTED_OFF, -568 # Saved input_shifted pointer.
@@ -42,11 +42,11 @@
 .equ RM_FM_PDA_SEEDS_IDX_1_LEN_OFF, -504 # Idx 1 signer seed length.
 .equ RM_FM_PDA_SEEDS_IDX_2_ADDR_OFF, -496 # Idx 2 signer seed address.
 .equ RM_FM_PDA_SEEDS_IDX_2_LEN_OFF, -488 # Idx 2 signer seed length.
-.equ RM_FM_PDA_OFF, -480 # PDA address.
-.equ RM_FM_PDA_CHUNK_0_OFF, -480 # PDA address (chunk 0).
-.equ RM_FM_PDA_CHUNK_1_OFF, -472 # PDA address (chunk 1).
-.equ RM_FM_PDA_CHUNK_2_OFF, -464 # PDA address (chunk 2).
-.equ RM_FM_PDA_CHUNK_3_OFF, -456 # PDA address (chunk 3).
+.equ RM_FM_PDA_OFF, -480 # PDA pubkey.
+.equ RM_FM_PDA_CHUNK_0_OFF, -480 # PDA pubkey (chunk 0).
+.equ RM_FM_PDA_CHUNK_1_OFF, -472 # PDA pubkey (chunk 1).
+.equ RM_FM_PDA_CHUNK_2_OFF, -464 # PDA pubkey (chunk 2).
+.equ RM_FM_PDA_CHUNK_3_OFF, -456 # PDA pubkey (chunk 3).
 .equ RM_FM_SYSTEM_PROGRAM_PUBKEY_OFF, -448 # System Program pubkey.
 # System Program pubkey (chunk 0).
 .equ RM_FM_SYSTEM_PROGRAM_PUBKEY_CHUNK_0_OFF, -448

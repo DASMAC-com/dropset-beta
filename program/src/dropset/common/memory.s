@@ -43,28 +43,28 @@
 # Input buffer constants for static header.
 # -------------------------------------------------------------------------
 .equ IB_USER_DATA_LEN_OFF, 88 # From input buffer to user data length.
-.equ IB_USER_PUBKEY_OFF, 16 # From input buffer to user pubkey.
-# From input buffer to user pubkey (chunk 0).
-.equ IB_USER_PUBKEY_CHUNK_0_OFF, 16
-# From input buffer to user pubkey (chunk 1).
-.equ IB_USER_PUBKEY_CHUNK_1_OFF, 24
-# From input buffer to user pubkey (chunk 2).
-.equ IB_USER_PUBKEY_CHUNK_2_OFF, 32
-# From input buffer to user pubkey (chunk 3).
-.equ IB_USER_PUBKEY_CHUNK_3_OFF, 40
+.equ IB_USER_ADDRESS_OFF, 16 # From input buffer to user address.
+# From input buffer to user address (chunk 0).
+.equ IB_USER_ADDRESS_CHUNK_0_OFF, 16
+# From input buffer to user address (chunk 1).
+.equ IB_USER_ADDRESS_CHUNK_1_OFF, 24
+# From input buffer to user address (chunk 2).
+.equ IB_USER_ADDRESS_CHUNK_2_OFF, 32
+# From input buffer to user address (chunk 3).
+.equ IB_USER_ADDRESS_CHUNK_3_OFF, 40
 # From input buffer to market duplicate flag.
 .equ IB_MARKET_DUPLICATE_OFF, 10344
 # From input buffer to market data length.
 .equ IB_MARKET_DATA_LEN_OFF, 10424
-.equ IB_MARKET_PUBKEY_OFF, 10352 # From input buffer to market address.
+.equ IB_MARKET_ADDRESS_OFF, 10352 # From input buffer to market address.
 # From input buffer to market address (chunk 0).
-.equ IB_MARKET_PUBKEY_CHUNK_0_OFF, 10352
+.equ IB_MARKET_ADDRESS_CHUNK_0_OFF, 10352
 # From input buffer to market address (chunk 1).
-.equ IB_MARKET_PUBKEY_CHUNK_1_OFF, 10360
+.equ IB_MARKET_ADDRESS_CHUNK_1_OFF, 10360
 # From input buffer to market address (chunk 2).
-.equ IB_MARKET_PUBKEY_CHUNK_2_OFF, 10368
+.equ IB_MARKET_ADDRESS_CHUNK_2_OFF, 10368
 # From input buffer to market address (chunk 3).
-.equ IB_MARKET_PUBKEY_CHUNK_3_OFF, 10376
+.equ IB_MARKET_ADDRESS_CHUNK_3_OFF, 10376
 # From address to owner in a runtime account.
 .equ IB_ADDRESS_TO_OWNER_REL_OFF_IMM, 32
 # From owner to lamports in a runtime account.

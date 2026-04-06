@@ -161,7 +161,7 @@ signer_seeds! {
 ]
 /// Stack frame for REGISTER-MARKET.
 pub struct RegisterMarketFrame {
-    /// Pointer to token program address.
+    /// Pointer to token program ID.
     #[offset]
     pub token_program_id: *const Address,
 
@@ -197,7 +197,7 @@ pub struct RegisterMarketFrame {
     #[signer_seeds]
     pub pda_seeds: SignerSeeds,
 
-    /// PDA address.
+    /// PDA pubkey.
     #[pubkey_offsets]
     pub pda: Address,
 
