@@ -55,12 +55,16 @@ syntax forms (parsed within the proc macro, not standalone macros):
   `_CHUNK_{0..3}_LO` and `_CHUNK_{0..3}_HI` `i32` immediates (twelve constants
   total)
 - `pubkey_offsets!(expr)`: emits a base `_OFF` offset plus four
-  `_CHUNK_{0..3}_OFF` offsets for each 8-byte chunk of a 32-byte pubkey field
+  `_CHUNK_{0..3}_OFF` offsets for each 8-byte chunk of a 32-byte pubkey field.
+  The generated constant name should mirror the struct field name: use
+  `ADDRESS` when the field is named `address` (e.g. `RuntimeAccount.address`),
+  and `PUBKEY` or the field name otherwise, since "address" also means a
+  runtime pointer in this codebase
 - `unaligned_offset!(field)`: like `offset!` in frame-relative mode but without
   the alignment assertion, suffixed with `_UOFF` (requires `#[frame(Type)]`)
 - `unaligned_pubkey_offsets!(field)`: like `pubkey_offsets!` in frame-relative
   mode but without the alignment assertion, suffixed with `_UOFF` (requires
-  `#[frame(Type)]`)
+  `#[frame(Type)]`). Same naming convention as `pubkey_offsets!`
 - `sol_instruction!(field)`: emits an aligned `_OFF` for the `SolInstruction`
   struct base and unaligned `_UOFF` offsets for each field (`program_id`,
   `accounts`, `account_len`, `data`, `data_len`) (requires `#[frame(Type)]`)

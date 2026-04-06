@@ -90,6 +90,16 @@ When a struct field holds a 32-byte pubkey that needs per-chunk access,
 to `BPF_ALIGN_OF_U128`, [`unaligned_pubkey_offsets!`][bs-constant-group]
 emits the same set of constants with a `_UOFF` suffix instead of `_OFF`.
 
+::: tip Naming: pubkey vs address
+The generated constant name should reflect the underlying struct field name.
+When the field is named `address` (e.g. `RuntimeAccount.address`), use
+`ADDRESS` in the constant (e.g. `IB_USER_ADDRESS`). Otherwise, use `PUBKEY`
+or the field name itself (e.g. `system_program_pubkey` becomes
+`SYSTEM_PROGRAM_PUBKEY`). In this codebase "address" also means a runtime
+pointer, so reserving the term for struct fields named `address` avoids
+ambiguity.
+:::
+
 <Include rs="interface::pubkey#pubkey_constants" collapsible/>
 <Include asm="common/pubkey" collapsible/>
 
