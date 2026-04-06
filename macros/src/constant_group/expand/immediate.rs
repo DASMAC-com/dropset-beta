@@ -1,7 +1,7 @@
 use quote::quote;
 use syn::Ident;
 
-use crate::codegen;
+use crate::common::codegen;
 
 /// Expand `immediate!(expr)` into an i32 constant with range check.
 pub fn expand_immediate(

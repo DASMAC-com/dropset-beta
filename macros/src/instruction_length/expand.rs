@@ -1,6 +1,6 @@
 use quote::quote;
 
-use crate::codegen;
+use crate::common::codegen;
 
 /// Expand `#[instruction_data("target")]` on a struct into:
 /// - The original struct

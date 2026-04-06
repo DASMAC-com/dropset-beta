@@ -4,8 +4,8 @@ use syn::Ident;
 
 use heck::{ToShoutySnakeCase, ToSnakeCase};
 
-use crate::attrs::{extract_doc_comment, validate_comment};
-use crate::codegen;
+use crate::common::attrs::{extract_doc_comment, validate_comment};
+use crate::common::codegen;
 
 /// Create a suffixed integer literal matching the given repr type.
 fn typed_literal(value: u8, repr_ty: &str) -> Literal {

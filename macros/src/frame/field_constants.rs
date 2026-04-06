@@ -1,9 +1,9 @@
 use heck::ToShoutySnakeCase;
 use syn::Ident;
 
-use crate::attrs::{extract_doc_comment, validate_comment, validate_name};
+use crate::common::attrs::{extract_doc_comment, validate_comment, validate_name};
 use crate::constant_group::{ConstantDef, ConstantKind};
-use crate::shared_state;
+use crate::common::shared_state;
 
 use super::parse::{self, FieldAttrForm};
 

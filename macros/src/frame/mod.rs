@@ -5,13 +5,13 @@ use proc_macro2::Span;
 use quote::quote;
 use syn::Ident;
 
-use crate::attrs::{
+use crate::common::attrs::{
     extract_attr_string, extract_doc_comment, extract_inject_target, validate_comment,
 };
+use crate::common::sbpf_config;
+use crate::common::shared_state;
 use crate::constant_group::parse::ConstantGroupInput;
 use crate::constant_group::{self};
-use crate::sbpf_config;
-use crate::shared_state;
 
 use field_constants::is_field_const_attr;
 

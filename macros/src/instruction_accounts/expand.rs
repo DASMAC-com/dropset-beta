@@ -1,7 +1,7 @@
 use heck::{ToShoutySnakeCase, ToTitleCase};
 use quote::quote;
 
-use crate::codegen;
+use crate::common::codegen;
 
 /// Expand `#[instruction_accounts("target")]` on an enum into:
 /// - The original enum

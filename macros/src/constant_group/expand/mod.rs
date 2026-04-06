@@ -7,7 +7,7 @@ mod sol_instruction;
 
 use super::ConstantKind;
 use super::parse::ConstantGroupInput;
-use crate::codegen;
+use crate::common::codegen;
 
 /// Expand a parsed `ConstantGroupInput` into a module with constants and a GROUP.
 pub fn expand(input: &ConstantGroupInput) -> proc_macro2::TokenStream {

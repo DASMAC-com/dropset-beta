@@ -1,7 +1,7 @@
 use syn::{Ident, parse::ParseStream};
 
 use super::super::ConstantKind;
-use crate::shared_state;
+use crate::common::shared_state;
 
 /// Parse the inside of `cpi_accounts!(parent_field)`.
 ///

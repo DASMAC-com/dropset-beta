@@ -3,7 +3,7 @@ use quote::quote;
 use syn::Ident;
 
 use super::offset::emit_frame_offset_const;
-use crate::codegen;
+use crate::common::codegen;
 
 /// Expand `signer_seeds!(parent_field)` inside a `#[frame(Context)]` group.
 ///
