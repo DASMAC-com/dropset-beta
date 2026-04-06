@@ -121,6 +121,7 @@ pub fn discriminant_enum(attr: TokenStream, item: TokenStream) -> TokenStream {
         0,
         "u8",
         &input,
+        false,
     ))
 }
 
@@ -128,7 +129,8 @@ pub fn discriminant_enum(attr: TokenStream, item: TokenStream) -> TokenStream {
 ///
 /// Re-emits the enum with `#[repr(u32)]` and explicit discriminant values,
 /// numbered from 1 (0 is reserved for success). Generates a `From<Enum> for u32`
-/// impl and a hidden module with `E_`-prefixed assembly constants.
+/// impl and a hidden module with `E_`-prefixed assembly constants and
+/// error-handler labels (`e_snake_name:` + `mov32 r0, E_NAME` + `exit`).
 ///
 /// ```ignore
 /// #[error_enum("error")]
@@ -141,7 +143,7 @@ pub fn discriminant_enum(attr: TokenStream, item: TokenStream) -> TokenStream {
 pub fn error_enum(attr: TokenStream, item: TokenStream) -> TokenStream {
     let target = parse_macro_input!(attr as LitStr);
     let input = parse_macro_input!(item as syn::ItemEnum);
-    TokenStream::from(enum_to_asm::expand(&target.value(), "E", 1, "u32", &input))
+    TokenStream::from(enum_to_asm::expand(&target.value(), "E", 1, "u32", &input, true))
 }
 
 /// Attribute macro for instruction data structs.

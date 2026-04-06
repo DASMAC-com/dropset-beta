@@ -57,14 +57,14 @@ Error codes and subroutines injected via
 [`#[error_enum]`][bs-error].
 Each error label sets `r0` to the corresponding error code and exits:
 
-<Include rs="interface::lib#error_enum" collapsible/>
-<Include asm="common/error" collapsible/>
+<Include rs="interface::lib#error_enum" collapsed/>
+<Include asm="common/error" collapsed/>
 
 ### Memory
 
 Data-related constants and [input buffer] offset constants are in `memory.s`:
 
-<Include asm="common/memory" collapsible/>
+<Include asm="common/memory" collapsed/>
 
 ### Pubkeys
 
@@ -101,7 +101,7 @@ ambiguity.
 :::
 
 <Include rs="interface::pubkey#pubkey_constants" collapsible/>
-<Include asm="common/pubkey" collapsible/>
+<Include asm="common/pubkey" collapsed/>
 
 ### Token
 

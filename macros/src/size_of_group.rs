@@ -80,5 +80,5 @@ pub fn expand(input: &SizeOfGroupInput) -> proc_macro2::TokenStream {
     }
 
     let mod_name = Ident::new("size_of", Span::call_site());
-    codegen::group_module(&mod_name, &input.target, "", &const_defs, &meta_idents)
+    codegen::group_module(&mod_name, &input.target, "", &const_defs, &meta_idents, &[], &[])
 }
