@@ -23,7 +23,7 @@ mod svm_data;
 /// - `pubkey!(expr)`: 32-byte key split into chunk immediates
 /// - `pubkey_offsets!(expr)`: base offset + four chunk offsets
 ///
-/// With `#[frame(Type)]`, additional frame-relative kinds:
+/// With `#[frame(Context)]`, additional frame-relative kinds:
 /// - `offset!(field)`: negative frame-pointer-relative (`_OFF`)
 /// - `unaligned_offset!(field)`: frame-relative without alignment (`_UOFF`)
 /// - `pubkey_offsets!(field)`: frame-relative + chunk offsets

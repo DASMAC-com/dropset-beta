@@ -49,7 +49,7 @@ syntax forms (parsed within the proc macro, not standalone macros):
 - `immediate!(expr)`: an `i32` immediate value
 - `signer_seeds!(field)`: expands a [`signer_seeds!`](#signer_seeds) field into
   an `_OFF` offset to the struct, an `N_SEEDS` count, and per-seed `_ADDR_OFF`
-  and `_LEN_OFF` constants (requires `#[frame(Type)]`, see below)
+  and `_LEN_OFF` constants (requires `#[frame(Context)]`, see below)
 - `pubkey!(expr)`: splits a 32-byte pubkey into four 8-byte chunks, emitting
   full 64-bit `_CHUNK_{0..3}` `i64` constants (for `lddw`) plus
   `_CHUNK_{0..3}_LO` and `_CHUNK_{0..3}_HI` `i32` immediates (twelve constants
@@ -61,28 +61,28 @@ syntax forms (parsed within the proc macro, not standalone macros):
   and `PUBKEY` or the field name otherwise, since "address" also means a
   runtime pointer in this codebase
 - `unaligned_offset!(field)`: like `offset!` in frame-relative mode but without
-  the alignment assertion, suffixed with `_UOFF` (requires `#[frame(Type)]`)
+  the alignment assertion, suffixed with `_UOFF` (requires `#[frame(Context)]`)
 - `unaligned_pubkey_offsets!(field)`: like `pubkey_offsets!` in frame-relative
   mode but without the alignment assertion, suffixed with `_UOFF` (requires
-  `#[frame(Type)]`). Same naming convention as `pubkey_offsets!`
+  `#[frame(Context)]`). Same naming convention as `pubkey_offsets!`
 - `sol_instruction!(field)`: emits an aligned `_OFF` for the `SolInstruction`
   struct base and unaligned `_UOFF` offsets for each field (`program_id`,
-  `accounts`, `account_len`, `data`, `data_len`) (requires `#[frame(Type)]`)
+  `accounts`, `account_len`, `data`, `data_len`) (requires `#[frame(Context)]`)
 - `cpi_accounts!(field)`: emits an `N_ACCOUNTS` count, `_SOL_ACCT_INFO_OFF`
   and `_SOL_ACCT_META_OFF` vector start offsets, and per-account unaligned
   offsets for each `SolAccountInfo` and `SolAccountMeta` field (requires
-  `#[frame(Type)]`, field type must be defined with
+  `#[frame(Context)]`, field type must be defined with
   [`cpi_accounts!`](#cpi_accounts))
 - `relative_offset!(Struct, from_field, to_field)`: computes the difference
   between two field offsets within the same struct, emitted as an `i32`
-  immediate with `_REL_OFF_IMM` suffix. In `#[frame(Type)]` context the
+  immediate with `_REL_OFF_IMM` suffix. In `#[frame(Context)]` context the
   struct is inferred and only the two field paths are required
 
 <Include rs="interface::memory#constant_group_example" collapsible/>
 
 #### Frame-relative offsets
 
-When annotated with `#[frame(Type)]`, the group enters frame-relative mode.
+When annotated with `#[frame(Context)]`, the group enters frame-relative mode.
 In this mode, `offset!(field)` computes a negative offset from the frame
 pointer (`offset_of` minus `size_of`) and asserts 8-byte alignment
 (`BPF_ALIGN_OF_U128`). The group's doc comment defaults to the frame struct's

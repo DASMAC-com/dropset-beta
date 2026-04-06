@@ -14,7 +14,7 @@ pub fn parse_cpi_accounts(
 ) -> syn::Result<ConstantKind> {
     let frame_path = frame_type
         .as_ref()
-        .ok_or_else(|| syn::Error::new(span, "cpi_accounts! requires #[frame(Type)] attribute"))?;
+        .ok_or_else(|| syn::Error::new(span, "cpi_accounts! requires #[frame(Context)] attribute"))?;
 
     let frame_name = frame_path
         .segments

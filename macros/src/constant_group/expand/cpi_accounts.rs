@@ -25,7 +25,7 @@ const ACCT_META_FIELDS: &[(&str, &str)] = &[
     ("is_signer", "is signer"),
 ];
 
-/// Expand `cpi_accounts!(parent_field)` inside a `#[frame(Type)]` group.
+/// Expand `cpi_accounts!(parent_field)` inside a `#[frame(Context)]` group.
 ///
 /// Emits:
 /// - `N_ACCOUNTS` immediate count.

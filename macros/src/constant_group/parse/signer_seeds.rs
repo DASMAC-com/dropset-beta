@@ -14,7 +14,7 @@ pub fn parse_signer_seeds(
 ) -> syn::Result<ConstantKind> {
     let frame_path = frame_type
         .as_ref()
-        .ok_or_else(|| syn::Error::new(span, "signer_seeds! requires #[frame(Type)] attribute"))?;
+        .ok_or_else(|| syn::Error::new(span, "signer_seeds! requires #[frame(Context)] attribute"))?;
 
     let frame_name = frame_path
         .segments
