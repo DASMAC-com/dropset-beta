@@ -26,7 +26,7 @@ The workspace-root `build.rs` invokes the injection:
 
 Core types are as follows:
 
-<Include rs="build::inject#types" collapsible/>
+<Include rs="build::inject#types" collapsed/>
 
 ## Macros
 
@@ -100,7 +100,7 @@ invocation unnecessary. The `constant_group!` macro remains available for
 non-frame groups (e.g. input buffer offsets, standalone immediates).
 :::
 
-<Include rs="interface::market#register_market_stack" collapsible/>
+<Include rs="interface::market#register_market_stack" collapsed/>
 
 Each group generates:
 
@@ -122,11 +122,14 @@ build-time injection.
 
 <Include rs="interface::lib#discriminant_enum" collapsed/>
 
-### `#[error_enum("target")]`
+### `#[error_enum("target")]` {#error_enum}
 
-Same as `discriminant_enum` but with `#[repr(u32)]`, prefixed with `E_`,
+Similar to `discriminant_enum` but with `#[repr(u32)]`, prefixed with `E_`,
 starting at 1 (0 is reserved for success). A `From<Enum> for u32` impl is
-generated.
+generated. Additionally, error-handler label blocks are generated for each
+variant: a lowercase `e_snake_name:` label that sets `r0` to the corresponding
+`E_` constant and exits. When error labels are present, the build system
+fully regenerates the target assembly file.
 
 <Include rs="interface::lib#error_enum" collapsed/>
 
@@ -185,7 +188,7 @@ Sub-field access uses comma-separated form:
 Struct-level `#[relative_offset(NAME, from, to, "doc")]` attributes compute
 the difference between two field offsets.
 
-<Include rs="interface::market#frame_example" collapsible/>
+<Include rs="interface::market#frame_example" collapsed/>
 
 ### `#[svm_data]`
 
@@ -245,6 +248,11 @@ target file, it wipes all existing `.equ` directives and injects the generated
 ones above the first label. Doc comments from the Rust source become assembly
 comments. Groups that carry a doc comment are rendered with a header comment and
 separator lines; groups without a doc comment are separated by a blank line.
+
+When a group contains error labels
+(from [`#[error_enum]`](#error_enum)), the entire target
+file is regenerated with both `.equ` directives and
+error-handler label blocks.
 
 <Include rs="build::inject" collapsed/>
 

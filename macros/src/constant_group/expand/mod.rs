@@ -175,5 +175,7 @@ pub fn expand(input: &ConstantGroupInput) -> proc_macro2::TokenStream {
         &input.doc,
         &const_defs,
         &meta_idents,
+        &[],
+        &[],
     )
 }

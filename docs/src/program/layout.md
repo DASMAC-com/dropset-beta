@@ -45,11 +45,11 @@ program/src/dropset/
 ### Discriminants
 
 Instruction discriminant constants are injected from the
-[interface][bs-interface] crate's
-[`#[discriminant_enum]`][bs-discriminant] macro:
+[interface][bs-interface] crate's [`#[discriminant_enum]`][bs-discriminant]
+macro:
 
-<Include rs="interface::lib#discriminant_enum" collapsible/>
-<Include asm="common/discriminant" collapsible/>
+<Include rs="interface::lib#discriminant_enum" collapsed/>
+<Include asm="common/discriminant" collapsed/>
 
 ### Errors
 
@@ -57,14 +57,14 @@ Error codes and subroutines injected via
 [`#[error_enum]`][bs-error].
 Each error label sets `r0` to the corresponding error code and exits:
 
-<Include rs="interface::lib#error_enum" collapsible/>
-<Include asm="common/error" collapsible/>
+<Include rs="interface::lib#error_enum" collapsed/>
+<Include asm="common/error" collapsed/>
 
 ### Memory
 
 Data-related constants and [input buffer] offset constants are in `memory.s`:
 
-<Include asm="common/memory" collapsible/>
+<Include asm="common/memory" collapsed/>
 
 ### Pubkeys
 
@@ -101,7 +101,7 @@ ambiguity.
 :::
 
 <Include rs="interface::pubkey#pubkey_constants" collapsible/>
-<Include asm="common/pubkey" collapsible/>
+<Include asm="common/pubkey" collapsed/>
 
 ### Token
 
@@ -115,7 +115,7 @@ from the [`token`][token-mod] module via [`constant_group!`][bs-constant-group]:
 [multi-file assembly]: https://github.com/blueshift-gg/sbpf/pull/109
 [bs-interface]: ../development/build-scaffolding#interface
 [bs-discriminant]: ../development/build-scaffolding#discriminant-enum-target
-[bs-error]: ../development/build-scaffolding#error-enum-target
+[bs-error]: ../development/build-scaffolding#error_enum
 [pubkey-mod]: https://github.com/DASMAC-com/dropset-beta/blob/main/interface/src/pubkey.rs
 [token-mod]: https://github.com/DASMAC-com/dropset-beta/blob/main/interface/src/token.rs
 [bs-constant-group]: ../development/build-scaffolding#constant_group

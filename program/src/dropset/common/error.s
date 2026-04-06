@@ -42,6 +42,10 @@
 .equ E_QUOTE_VAULT_IS_DUPLICATE, 25
 .equ E_QUOTE_VAULT_HAS_DATA, 26 # The quote vault account already has data.
 
+e_invalid_discriminant:
+    mov32 r0, E_INVALID_DISCRIMINANT
+    exit
+
 e_invalid_instruction_length:
     mov32 r0, E_INVALID_INSTRUCTION_LENGTH
     exit
@@ -120,6 +124,10 @@ e_quote_token_program_not_token_program:
 
 e_invalid_base_vault_pubkey:
     mov32 r0, E_INVALID_BASE_VAULT_PUBKEY
+    exit
+
+e_invalid_quote_vault_pubkey:
+    mov32 r0, E_INVALID_QUOTE_VAULT_PUBKEY
     exit
 
 e_base_vault_is_duplicate:

@@ -78,9 +78,19 @@ pub fn with_group(
     body: proc_macro2::TokenStream,
     const_defs: &[proc_macro2::TokenStream],
     meta_idents: &[Ident],
+    label_defs: &[proc_macro2::TokenStream],
+    label_idents: &[Ident],
 ) -> proc_macro2::TokenStream {
     let mod_name = Ident::new(&type_name.to_string().to_snake_case(), type_name.span());
-    let group = group_module(&mod_name, target, "", const_defs, meta_idents);
+    let group = group_module(
+        &mod_name,
+        target,
+        "",
+        const_defs,
+        meta_idents,
+        label_defs,
+        label_idents,
+    );
 
     quote! {
         #body
@@ -121,7 +131,15 @@ pub fn len_group(
         }
     };
 
-    with_group(target, type_name, body, &[meta_def], &[meta_ident])
+    with_group(
+        target,
+        type_name,
+        body,
+        &[meta_def],
+        &[meta_ident],
+        &[],
+        &[],
+    )
 }
 
 /// Emit a `pub mod name { ...defs... pub const GROUP = ... }`.
@@ -131,16 +149,20 @@ pub fn group_module(
     comment: &str,
     const_defs: &[proc_macro2::TokenStream],
     meta_idents: &[Ident],
+    error_label_defs: &[proc_macro2::TokenStream],
+    error_label_idents: &[Ident],
 ) -> proc_macro2::TokenStream {
     quote! {
         pub mod #mod_name {
             #(#const_defs)*
+            #(#error_label_defs)*
 
             /// Constant group for build-time injection.
             pub const GROUP: dropset_build::ConstantGroup = dropset_build::ConstantGroup {
                 target: #target,
                 comment: #comment,
                 constants: &[#(#meta_idents),*],
+                error_labels: &[#(#error_label_idents),*],
             };
         }
     }

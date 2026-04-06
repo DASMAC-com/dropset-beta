@@ -90,7 +90,7 @@ design assurance.
 [solana opcode guide]: https://opcodes.dasmac.com
 [the mythical man-month]: https://en.wikipedia.org/wiki/The_Mythical_Man-Month
 [docs engine]: development/docs-engine
-[syscall registry]: development/docs-engine#syscall-registry
+[syscall registry]: development/docs-engine#algorithm-registry
 [test cases]: development/tests
 [algorithm index]: program/algorithm-index
 [entrypoint]: program/inputs#entrypoint

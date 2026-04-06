@@ -27,6 +27,21 @@ pub enum Constant {
     Wide { header: Header, value: i64 },
 }
 
+/// An error-handler label block to be injected after the `.equ` directives.
+///
+/// Each label expands to:
+/// ```text
+/// e_snake_name:
+///     mov32 r0, E_SHOUTY_NAME
+///     exit
+/// ```
+pub struct ErrorLabel {
+    /// The lowercase label name (e.g., `"e_invalid_discriminant"`).
+    pub label: &'static str,
+    /// The `.equ` constant referenced by `mov32` (e.g., `"E_INVALID_DISCRIMINANT"`).
+    pub constant: &'static str,
+}
+
 /// A named group of constants to be injected into an assembly file.
 pub struct ConstantGroup {
     /// Injection target (e.g., "entrypoint" maps to program/src/dropset/entrypoint.s).
@@ -35,6 +50,8 @@ pub struct ConstantGroup {
     pub comment: &'static str,
     /// The constants in this group.
     pub constants: &'static [Constant],
+    /// Optional error-handler labels generated after the constants.
+    pub error_labels: &'static [ErrorLabel],
 }
 // endregion: types
 
@@ -175,6 +192,19 @@ fn render_group(group: &ConstantGroup) -> String {
     }
 }
 
+/// Render all error-handler labels from the given groups into a single block.
+fn render_error_labels(groups: &[&ConstantGroup]) -> Option<String> {
+    let labels: Vec<&ErrorLabel> = groups.iter().flat_map(|g| g.error_labels.iter()).collect();
+    if labels.is_empty() {
+        return None;
+    }
+    let blocks: Vec<String> = labels
+        .iter()
+        .map(|l| format!("{}:\n    mov32 r0, {}\n    exit", l.label, l.constant))
+        .collect();
+    Some(blocks.join("\n\n"))
+}
+
 fn inject_target(asm_dir: &Path, target: &str, groups: &[&ConstantGroup]) {
     let file = asm_dir.join(format!("{}.s", target));
     let contents = std::fs::read_to_string(&file)
@@ -183,6 +213,22 @@ fn inject_target(asm_dir: &Path, target: &str, groups: &[&ConstantGroup]) {
     // Build the header from all groups.
     let rendered: Vec<String> = groups.iter().map(|g| render_group(g)).collect();
     let header = rendered.join("\n\n");
+
+    let labels_block = render_error_labels(groups);
+
+    // When labels are present, the entire file is generated content.
+    // Wipe and regenerate.
+    if let Some(labels) = labels_block {
+        let output = format!("{}\n\n{}\n", header, labels);
+
+        if contents == output {
+            return;
+        }
+
+        std::fs::write(&file, output)
+            .unwrap_or_else(|e| panic!("failed to write {}: {}", file.display(), e));
+        return;
+    }
 
     // Wipe all .equ directives from the file first, then reconstruct.
     // This ensures stale constants never survive a re-injection regardless

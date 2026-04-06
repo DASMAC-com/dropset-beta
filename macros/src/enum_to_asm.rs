@@ -2,7 +2,7 @@ use proc_macro2::Literal;
 use quote::quote;
 use syn::Ident;
 
-use heck::ToShoutySnakeCase;
+use heck::{ToShoutySnakeCase, ToSnakeCase};
 
 use crate::attrs::{extract_doc_comment, validate_comment};
 use crate::codegen;
@@ -21,18 +21,24 @@ fn typed_literal(value: u8, repr_ty: &str) -> Literal {
 /// Re-emits the enum with `#[repr(repr_ty)]`, explicit discriminant values,
 /// and a `From` impl for the repr type. Assembly injection metadata is emitted
 /// in a hidden module with `Constant::Immediate` entries and a `GROUP`.
+///
+/// When `error_labels` is true, also generates `ErrorLabel` entries that
+/// expand to labeled `mov32`/`exit` blocks in the assembly file.
 pub fn expand(
     target_str: &str,
     prefix: &str,
     start: u8,
     repr_ty: &str,
     input: &syn::ItemEnum,
+    error_labels: bool,
 ) -> proc_macro2::TokenStream {
     let enum_name = &input.ident;
     let repr_ident = Ident::new(repr_ty, proc_macro2::Span::call_site());
 
     let mut meta_defs = Vec::new();
     let mut meta_idents = Vec::new();
+    let mut error_label_defs = Vec::new();
+    let mut error_label_idents = Vec::new();
 
     for (i, variant) in input.variants.iter().enumerate() {
         let variant_name = &variant.ident;
@@ -58,6 +64,20 @@ pub fn expand(
             quote! { #value as i32 },
         ));
         meta_idents.push(meta_ident);
+
+        if error_labels {
+            let label_name = format!("e_{}", variant_name.to_string().to_snake_case());
+            let label_ident = Ident::new(&format!("_LABEL_{}", asm_name), variant_name.span());
+
+            error_label_defs.push(quote! {
+                const #label_ident: dropset_build::ErrorLabel =
+                    dropset_build::ErrorLabel {
+                        label: #label_name,
+                        constant: #asm_name,
+                    };
+            });
+            error_label_idents.push(label_ident);
+        }
     }
 
     // Re-emit the enum with #[repr(repr_ty)] and explicit discriminant values.
@@ -93,5 +113,13 @@ pub fn expand(
         }
     };
 
-    codegen::with_group(target_str, enum_name, body, &meta_defs, &meta_idents)
+    codegen::with_group(
+        target_str,
+        enum_name,
+        body,
+        &meta_defs,
+        &meta_idents,
+        &error_label_defs,
+        &error_label_idents,
+    )
 }
