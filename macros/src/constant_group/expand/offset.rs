@@ -5,7 +5,7 @@ use syn::Ident;
 use crate::codegen;
 use crate::sbpf_config::FRAME_ALIGN;
 
-use super::address::{CHUNK_SIZE, N_CHUNKS};
+use super::pubkey::{CHUNK_SIZE, N_CHUNKS};
 
 /// Build the token stream for a frame-relative offset expression:
 /// `offset_of!(frame, field_chain) - size_of::<frame>()`.

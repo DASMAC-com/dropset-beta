@@ -1,4 +1,4 @@
-mod address;
+mod pubkey;
 mod cpi_accounts;
 mod immediate;
 mod offset;
@@ -94,7 +94,7 @@ pub fn expand(input: &ConstantGroupInput) -> proc_macro2::TokenStream {
                 meta_idents.push(meta);
             }
             ConstantKind::Pubkey { expr } => {
-                address::expand_address(&asm_name, doc, expr, &mut const_defs, &mut meta_idents);
+                pubkey::expand_pubkey(&asm_name, doc, expr, &mut const_defs, &mut meta_idents);
             }
             ConstantKind::PubkeyOffsets { expr } => {
                 offset::expand_pubkey_offsets(

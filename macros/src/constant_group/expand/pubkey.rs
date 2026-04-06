@@ -26,7 +26,7 @@ fn chunk_expr(chunk: usize) -> proc_macro2::TokenStream {
 ///   - `PUBKEY_RENT_CHUNK_0_LO` / `PUBKEY_RENT_CHUNK_0_HI`
 ///   - ...
 ///   - `PUBKEY_RENT_CHUNK_3_LO` / `PUBKEY_RENT_CHUNK_3_HI`
-pub fn expand_address(
+pub fn expand_pubkey(
     asm_prefix: &str,
     doc: &str,
     expr: &syn::Expr,
