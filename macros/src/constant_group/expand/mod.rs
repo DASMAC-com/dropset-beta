@@ -1,7 +1,7 @@
-mod pubkey;
 mod cpi_accounts;
 mod immediate;
 mod offset;
+mod pubkey;
 mod signer_seeds;
 mod sol_instruction;
 

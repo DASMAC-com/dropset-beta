@@ -12,9 +12,9 @@ pub fn parse_cpi_accounts(
     frame_type: &Option<syn::Path>,
     span: proc_macro2::Span,
 ) -> syn::Result<ConstantKind> {
-    let frame_path = frame_type
-        .as_ref()
-        .ok_or_else(|| syn::Error::new(span, "cpi_accounts! requires #[frame(Context)] attribute"))?;
+    let frame_path = frame_type.as_ref().ok_or_else(|| {
+        syn::Error::new(span, "cpi_accounts! requires #[frame(Context)] attribute")
+    })?;
 
     let frame_name = frame_path
         .segments
