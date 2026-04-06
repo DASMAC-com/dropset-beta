@@ -82,7 +82,15 @@ pub fn with_group(
     label_idents: &[Ident],
 ) -> proc_macro2::TokenStream {
     let mod_name = Ident::new(&type_name.to_string().to_snake_case(), type_name.span());
-    let group = group_module(&mod_name, target, "", const_defs, meta_idents, label_defs, label_idents);
+    let group = group_module(
+        &mod_name,
+        target,
+        "",
+        const_defs,
+        meta_idents,
+        label_defs,
+        label_idents,
+    );
 
     quote! {
         #body
@@ -123,7 +131,15 @@ pub fn len_group(
         }
     };
 
-    with_group(target, type_name, body, &[meta_def], &[meta_ident], &[], &[])
+    with_group(
+        target,
+        type_name,
+        body,
+        &[meta_def],
+        &[meta_ident],
+        &[],
+        &[],
+    )
 }
 
 /// Emit a `pub mod name { ...defs... pub const GROUP = ... }`.

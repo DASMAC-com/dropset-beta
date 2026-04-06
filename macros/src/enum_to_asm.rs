@@ -66,14 +66,8 @@ pub fn expand(
         meta_idents.push(meta_ident);
 
         if error_labels {
-            let label_name = format!(
-                "e_{}",
-                variant_name.to_string().to_snake_case()
-            );
-            let label_ident = Ident::new(
-                &format!("_LABEL_{}", asm_name),
-                variant_name.span(),
-            );
+            let label_name = format!("e_{}", variant_name.to_string().to_snake_case());
+            let label_ident = Ident::new(&format!("_LABEL_{}", asm_name), variant_name.span());
 
             error_label_defs.push(quote! {
                 const #label_ident: dropset_build::ErrorLabel =

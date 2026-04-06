@@ -143,7 +143,14 @@ pub fn discriminant_enum(attr: TokenStream, item: TokenStream) -> TokenStream {
 pub fn error_enum(attr: TokenStream, item: TokenStream) -> TokenStream {
     let target = parse_macro_input!(attr as LitStr);
     let input = parse_macro_input!(item as syn::ItemEnum);
-    TokenStream::from(enum_to_asm::expand(&target.value(), "E", 1, "u32", &input, true))
+    TokenStream::from(enum_to_asm::expand(
+        &target.value(),
+        "E",
+        1,
+        "u32",
+        &input,
+        true,
+    ))
 }
 
 /// Attribute macro for instruction data structs.
