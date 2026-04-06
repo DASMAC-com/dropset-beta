@@ -219,8 +219,10 @@ auto-discover all account fields by looking up the parent field's type.
 ### `size_of_group!`
 
 Injects `SIZE_OF_<TYPE>` immediates for each listed type. Names and doc
-comments are auto-derived from the type name (`Address` becomes
+comments are auto-derived from the type name (`Pubkey` becomes
 `SIZE_OF_PUBKEY`). The value is `std::mem::size_of::<Type>()` cast to `i32`.
+Note that `Pubkey` is a local alias for `pinocchio::Address` (see
+[Pubkeys][layout-pubkeys] for the naming convention).
 
 <Include rs="interface::memory#size_of_group_example" collapsible/>
 
@@ -254,8 +256,9 @@ For example:
 
 The `generate_bindings()` function fetches Solana CPI C headers from the
 [Agave] repository on GitHub, runs [bindgen] to produce Rust FFI structs, and
-replaces `SolPubkey` references with `pinocchio::Address`. The output is written
-to `interface/src/cpi_bindings.rs` and formatted with `rustfmt`.
+replaces `SolPubkey` references with `Pubkey` (a local alias for
+`pinocchio::Address`). The output is written to `interface/src/cpi_bindings.rs`
+and formatted with `rustfmt`.
 
 Bindings generation only runs when the `AGAVE_REV` environment variable is set.
 Locally, `cargo check` and `make asm` skip it entirely. On CI, the
@@ -274,3 +277,4 @@ variables set, and commit the updated `cpi_bindings.rs`.
 [proc macros]: https://doc.rust-lang.org/reference/procedural-macros.html
 [Agave]: https://github.com/anza-xyz/agave
 [bindgen]: https://rust-lang.github.io/rust-bindgen/
+[layout-pubkeys]: /program/layout#pubkeys
