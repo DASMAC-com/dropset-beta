@@ -60,7 +60,7 @@ constant_group! {
         EXECUTABLE = offset!(EmptyAccount.header.executable),
         /// Resize delta.
         RESIZE_DELTA = offset!(EmptyAccount.header.resize_delta),
-        /// Account address.
+        /// Account address field.
         ADDRESS = pubkey_offsets!(EmptyAccount.header.address),
         /// Account owner.
         OWNER = pubkey_offsets!(EmptyAccount.header.owner),
@@ -108,13 +108,13 @@ constant_group! {
     input_buffer {
         /// From input buffer to user data length.
         USER_DATA_LEN = offset!(InputBufferHeader.user.header.data_len),
-        /// From input buffer to user address.
+        /// From input buffer to user address field.
         USER_ADDRESS = pubkey_offsets!(InputBufferHeader.user.header.address),
         /// From input buffer to market duplicate flag.
         MARKET_DUPLICATE = offset!(InputBufferHeader.market.borrow_state),
         /// From input buffer to market data length.
         MARKET_DATA_LEN = offset!(InputBufferHeader.market.data_len),
-        /// From input buffer to market address.
+        /// From input buffer to market address field.
         MARKET_ADDRESS = pubkey_offsets!(InputBufferHeader.market.address),
         /// From address to owner in a runtime account.
         ADDRESS_TO_OWNER = relative_offset!(RuntimeAccount, address, owner),

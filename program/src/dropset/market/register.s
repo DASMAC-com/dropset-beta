@@ -182,7 +182,8 @@
 .equ RM_MISC_BASE_DUPLICATE_OFF, 20680
 # From input buffer to base mint data length.
 .equ RM_MISC_BASE_DATA_LEN_OFF, 20760
-.equ RM_MISC_BASE_ADDR_OFF, 20688 # From input buffer to base mint address.
+# From input buffer to base mint address field.
+.equ RM_MISC_BASE_ADDR_OFF, 20688
 .equ RM_MISC_BASE_OWNER_OFF, 20720 # From input buffer to base mint owner.
 # From input buffer to base mint owner (chunk 0).
 .equ RM_MISC_BASE_OWNER_CHUNK_0_OFF, 20720
@@ -195,7 +196,7 @@
 .equ RM_MISC_QUOTE_OFF, 31016 # From input buffer to quote mint.
 # From input buffer to quote mint duplicate flag.
 .equ RM_MISC_QUOTE_DUPLICATE_OFF, 31016
-# From input buffer to quote mint address.
+# From input buffer to quote mint address field.
 .equ RM_MISC_QUOTE_ADDR_OFF, 31024
 # From input buffer to quote mint owner.
 .equ RM_MISC_QUOTE_OWNER_OFF, 31056
