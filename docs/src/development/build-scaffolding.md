@@ -122,7 +122,7 @@ build-time injection.
 
 <Include rs="interface::lib#discriminant_enum" collapsed/>
 
-### `#[error_enum("target")]`
+### `#[error_enum("target")]` {#error_enum}
 
 Similar to `discriminant_enum` but with `#[repr(u32)]`, prefixed with `E_`,
 starting at 1 (0 is reserved for success). A `From<Enum> for u32` impl is
@@ -249,9 +249,10 @@ ones above the first label. Doc comments from the Rust source become assembly
 comments. Groups that carry a doc comment are rendered with a header comment and
 separator lines; groups without a doc comment are separated by a blank line.
 
-When a group contains error labels (from [`#[error_enum]`](#error_enum)), the
-entire target file is regenerated with both `.equ` directives and error-handler
-label blocks.
+When a group contains error labels
+(from [`#[error_enum]`](#error_enum)), the entire target
+file is regenerated with both `.equ` directives and
+error-handler label blocks.
 
 <Include rs="build::inject" collapsed/>
 
