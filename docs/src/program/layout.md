@@ -115,7 +115,7 @@ from the [`token`][token-mod] module via [`constant_group!`][bs-constant-group]:
 [multi-file assembly]: https://github.com/blueshift-gg/sbpf/pull/109
 [bs-interface]: ../development/build-scaffolding#interface
 [bs-discriminant]: ../development/build-scaffolding#discriminant-enum-target
-[bs-error]: ../development/build-scaffolding#error-enum-target
+[bs-error]: ../development/build-scaffolding#error_enum
 [pubkey-mod]: https://github.com/DASMAC-com/dropset-beta/blob/main/interface/src/pubkey.rs
 [token-mod]: https://github.com/DASMAC-com/dropset-beta/blob/main/interface/src/token.rs
 [bs-constant-group]: ../development/build-scaffolding#constant_group
