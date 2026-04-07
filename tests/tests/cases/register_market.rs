@@ -59,32 +59,32 @@ test_cases! {
         BaseTokenProgramNotTokenProgramChunk1,
         BaseTokenProgramNotTokenProgramChunk2,
         BaseTokenProgramNotTokenProgramChunk3,
-        NonDupQuoteTokenProgramNotQuoteMintOwnerChunk0,
-        NonDupQuoteTokenProgramNotQuoteMintOwnerChunk1,
-        NonDupQuoteTokenProgramNotQuoteMintOwnerChunk2,
-        NonDupQuoteTokenProgramNotQuoteMintOwnerChunk3,
-        QuoteTokenProgramNotTokenProgramChunk0,
-        QuoteTokenProgramNotTokenProgramChunk1,
-        QuoteTokenProgramNotTokenProgramChunk2,
-        QuoteTokenProgramNotTokenProgramChunk3,
-        InvalidQuoteTokenProgramDuplicateChunk0,
-        InvalidQuoteTokenProgramDuplicateChunk1,
-        InvalidQuoteTokenProgramDuplicateChunk2,
-        InvalidQuoteTokenProgramDuplicateChunk3,
-        DupQuoteTokenProgramNotQuoteMintOwnerChunk0,
-        DupQuoteTokenProgramNotQuoteMintOwnerChunk1,
-        DupQuoteTokenProgramNotQuoteMintOwnerChunk2,
-        DupQuoteTokenProgramNotQuoteMintOwnerChunk3,
         BaseVaultIsDuplicate,
         BaseVaultHasData,
-        QuoteVaultIsDuplicateDup,
-        QuoteVaultIsDuplicateNonDup,
-        QuoteVaultHasDataDup,
-        QuoteVaultHasDataNonDup,
         InvalidBaseVaultPubkeyChunk0,
         InvalidBaseVaultPubkeyChunk1,
         InvalidBaseVaultPubkeyChunk2,
         InvalidBaseVaultPubkeyChunk3,
+        InvalidQuoteTokenProgramDuplicateChunk0,
+        InvalidQuoteTokenProgramDuplicateChunk1,
+        InvalidQuoteTokenProgramDuplicateChunk2,
+        InvalidQuoteTokenProgramDuplicateChunk3,
+        NonDupQuoteTokenProgramNotQuoteMintOwnerChunk0,
+        DupQuoteTokenProgramNotQuoteMintOwnerChunk0,
+        NonDupQuoteTokenProgramNotQuoteMintOwnerChunk1,
+        DupQuoteTokenProgramNotQuoteMintOwnerChunk1,
+        NonDupQuoteTokenProgramNotQuoteMintOwnerChunk2,
+        DupQuoteTokenProgramNotQuoteMintOwnerChunk2,
+        NonDupQuoteTokenProgramNotQuoteMintOwnerChunk3,
+        DupQuoteTokenProgramNotQuoteMintOwnerChunk3,
+        QuoteVaultIsDuplicateDup,
+        QuoteVaultHasDataDup,
+        QuoteTokenProgramNotTokenProgramChunk0,
+        QuoteTokenProgramNotTokenProgramChunk1,
+        QuoteTokenProgramNotTokenProgramChunk2,
+        QuoteTokenProgramNotTokenProgramChunk3,
+        QuoteVaultIsDuplicateNonDup,
+        QuoteVaultHasDataNonDup,
         InvalidQuoteVaultPubkeyDupChunk0,
         InvalidQuoteVaultPubkeyDupChunk1,
         InvalidQuoteVaultPubkeyDupChunk2,
@@ -95,8 +95,8 @@ test_cases! {
         InvalidQuoteVaultPubkeyNonDupChunk3,
         CreateAccountHappyPathQuoteDup,
         CreateAccountHappyPathQuoteNonDup,
-        CreateAccountHappyPathToken2022QuoteDup,
         CreateAccountHappyPathToken2022QuoteNonDup,
+        CreateAccountHappyPathToken2022QuoteDup,
     }
 }
 
@@ -996,6 +996,162 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            Self::BaseVaultIsDuplicate => {
+                let base_token_program = Pubkey::from(TOKEN_PROGRAM_ID);
+                let (mut keys, accounts) = token_program_base_accounts(
+                    setup,
+                    base_token_program,
+                    base_token_program,
+                    false,
+                );
+                // Base vault shares key with User, causing the runtime
+                // to serialize it as a duplicate.
+                keys[Accounts::BaseVault as usize] = keys[Accounts::User as usize];
+                let (metas, accounts) = writable_metas_and_accounts(keys, accounts);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::BaseVaultIsDuplicate),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            Self::BaseVaultHasData => {
+                let base_token_program = Pubkey::from(TOKEN_PROGRAM_ID);
+                let (keys, mut accounts) = token_program_base_accounts(
+                    setup,
+                    base_token_program,
+                    base_token_program,
+                    false,
+                );
+                accounts[Accounts::BaseVault as usize].data = vec![0u8; 32];
+                let (metas, accounts) = writable_metas_and_accounts(keys, accounts);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::BaseVaultHasData),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
+            // Verifies: INIT-VAULT
+            Self::InvalidBaseVaultPubkeyChunk0 => {
+                let (metas, accounts) = base_vault_mismatch_accounts(setup, CHUNK_0_OFF as usize);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::InvalidBaseVaultPubkey),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
+            // Verifies: INIT-VAULT
+            Self::InvalidBaseVaultPubkeyChunk1 => {
+                let (metas, accounts) = base_vault_mismatch_accounts(setup, CHUNK_1_OFF as usize);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::InvalidBaseVaultPubkey),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
+            // Verifies: INIT-VAULT
+            Self::InvalidBaseVaultPubkeyChunk2 => {
+                let (metas, accounts) = base_vault_mismatch_accounts(setup, CHUNK_2_OFF as usize);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::InvalidBaseVaultPubkey),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
+            // Verifies: INIT-VAULT
+            Self::InvalidBaseVaultPubkeyChunk3 => {
+                let (metas, accounts) = base_vault_mismatch_accounts(setup, CHUNK_3_OFF as usize);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::InvalidBaseVaultPubkey),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
+            Self::InvalidQuoteTokenProgramDuplicateChunk0 => {
+                let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
+                let (mut keys, accounts) =
+                    token_program_base_accounts(setup, token_program_id, token_program_id, false);
+                keys[Accounts::QuoteTokenProgram as usize] = keys[Accounts::User as usize];
+                let (metas, accounts) = writable_metas_and_accounts(keys, accounts);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::InvalidQuoteTokenProgramDuplicate),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
+            Self::InvalidQuoteTokenProgramDuplicateChunk1 => {
+                let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
+                let (mut keys, accounts) =
+                    token_program_base_accounts(setup, token_program_id, token_program_id, false);
+                keys[Accounts::QuoteTokenProgram as usize] = keys[Accounts::Market as usize];
+                let (metas, accounts) = writable_metas_and_accounts(keys, accounts);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::InvalidQuoteTokenProgramDuplicate),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
+            Self::InvalidQuoteTokenProgramDuplicateChunk2 => {
+                let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
+                let (mut keys, accounts) =
+                    token_program_base_accounts(setup, token_program_id, token_program_id, false);
+                keys[Accounts::QuoteTokenProgram as usize] = keys[Accounts::BaseMint as usize];
+                let (metas, accounts) = writable_metas_and_accounts(keys, accounts);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::InvalidQuoteTokenProgramDuplicate),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
+            Self::InvalidQuoteTokenProgramDuplicateChunk3 => {
+                let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
+                let (mut keys, accounts) =
+                    token_program_base_accounts(setup, token_program_id, token_program_id, false);
+                keys[Accounts::QuoteTokenProgram as usize] = keys[Accounts::QuoteMint as usize];
+                let (metas, accounts) = writable_metas_and_accounts(keys, accounts);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::InvalidQuoteTokenProgramDuplicate),
+                )
+            }
+            // Verifies: REGISTER-MARKET
             // Verifies: INIT-MARKET-PDA
             Self::NonDupQuoteTokenProgramNotQuoteMintOwnerChunk0 => {
                 let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
@@ -1013,6 +1169,27 @@ impl TestCase for Case {
                     metas,
                     accounts,
                     Some(ErrorCode::NonDupQuoteTokenProgramNotQuoteMintOwner),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
+            Self::DupQuoteTokenProgramNotQuoteMintOwnerChunk0 => {
+                let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
+                let token_2022_id = Pubkey::from(TOKEN_2022_PROGRAM_ID);
+                // Base uses Token Program, quote uses Token 2022 (different owners),
+                // but quote key duplicates base key (Token Program).
+                let (mut keys, mut accounts) =
+                    token_program_base_accounts(setup, token_program_id, token_program_id, false);
+                accounts[Accounts::QuoteMint as usize].owner = token_2022_id;
+                // Force duplicate by sharing key.
+                keys[Accounts::QuoteTokenProgram as usize] = token_program_id;
+                let (metas, accounts) = writable_metas_and_accounts(keys, accounts);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::DupQuoteTokenProgramNotQuoteMintOwner),
                 )
             }
             // Verifies: REGISTER-MARKET
@@ -1036,6 +1213,25 @@ impl TestCase for Case {
             }
             // Verifies: REGISTER-MARKET
             // Verifies: INIT-MARKET-PDA
+            Self::DupQuoteTokenProgramNotQuoteMintOwnerChunk1 => {
+                let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
+                let mut bad_owner = token_program_id;
+                bad_owner.as_mut()[CHUNK_1_OFF as usize] ^= 0xFF;
+                let (mut keys, mut accounts) =
+                    token_program_base_accounts(setup, token_program_id, token_program_id, false);
+                accounts[Accounts::QuoteMint as usize].owner = bad_owner;
+                keys[Accounts::QuoteTokenProgram as usize] = token_program_id;
+                let (metas, accounts) = writable_metas_and_accounts(keys, accounts);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::DupQuoteTokenProgramNotQuoteMintOwner),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
             Self::NonDupQuoteTokenProgramNotQuoteMintOwnerChunk2 => {
                 let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
                 let token_2022_id = Pubkey::from(TOKEN_2022_PROGRAM_ID);
@@ -1055,6 +1251,25 @@ impl TestCase for Case {
             }
             // Verifies: REGISTER-MARKET
             // Verifies: INIT-MARKET-PDA
+            Self::DupQuoteTokenProgramNotQuoteMintOwnerChunk2 => {
+                let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
+                let mut bad_owner = token_program_id;
+                bad_owner.as_mut()[CHUNK_2_OFF as usize] ^= 0xFF;
+                let (mut keys, mut accounts) =
+                    token_program_base_accounts(setup, token_program_id, token_program_id, false);
+                accounts[Accounts::QuoteMint as usize].owner = bad_owner;
+                keys[Accounts::QuoteTokenProgram as usize] = token_program_id;
+                let (metas, accounts) = writable_metas_and_accounts(keys, accounts);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::DupQuoteTokenProgramNotQuoteMintOwner),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
             Self::NonDupQuoteTokenProgramNotQuoteMintOwnerChunk3 => {
                 let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
                 let token_2022_id = Pubkey::from(TOKEN_2022_PROGRAM_ID);
@@ -1070,6 +1285,77 @@ impl TestCase for Case {
                     metas,
                     accounts,
                     Some(ErrorCode::NonDupQuoteTokenProgramNotQuoteMintOwner),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
+            Self::DupQuoteTokenProgramNotQuoteMintOwnerChunk3 => {
+                let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
+                let mut bad_owner = token_program_id;
+                bad_owner.as_mut()[CHUNK_3_OFF as usize] ^= 0xFF;
+                let (mut keys, mut accounts) =
+                    token_program_base_accounts(setup, token_program_id, token_program_id, false);
+                accounts[Accounts::QuoteMint as usize].owner = bad_owner;
+                keys[Accounts::QuoteTokenProgram as usize] = token_program_id;
+                let (metas, accounts) = writable_metas_and_accounts(keys, accounts);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::DupQuoteTokenProgramNotQuoteMintOwner),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            Self::QuoteVaultIsDuplicateDup => {
+                let base_token_program = Pubkey::from(TOKEN_PROGRAM_ID);
+                let (mut keys, accounts) = token_program_base_accounts(
+                    setup,
+                    base_token_program,
+                    base_token_program,
+                    true,
+                );
+                let pda = keys[Accounts::Market as usize];
+                let (quote_vault_pda, _) = Pubkey::find_program_address(
+                    &[pda.as_ref(), &[VAULT_INDEX_QUOTE as u8]],
+                    &setup.program_id,
+                );
+                keys[Accounts::QuoteVault as usize] = quote_vault_pda;
+                // Quote vault shares key with User, causing the runtime
+                // to serialize it as a duplicate.
+                keys[Accounts::QuoteVault as usize] = keys[Accounts::User as usize];
+                let (metas, accounts) = writable_metas_and_accounts(keys, accounts);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::QuoteVaultIsDuplicate),
+                )
+            }
+            // Verifies: REGISTER-MARKET
+            Self::QuoteVaultHasDataDup => {
+                let base_token_program = Pubkey::from(TOKEN_PROGRAM_ID);
+                let (mut keys, mut accounts) = token_program_base_accounts(
+                    setup,
+                    base_token_program,
+                    base_token_program,
+                    true,
+                );
+                let pda = keys[Accounts::Market as usize];
+                let (quote_vault_pda, _) = Pubkey::find_program_address(
+                    &[pda.as_ref(), &[VAULT_INDEX_QUOTE as u8]],
+                    &setup.program_id,
+                );
+                keys[Accounts::QuoteVault as usize] = quote_vault_pda;
+                accounts[Accounts::QuoteVault as usize].data = vec![0u8; 32];
+                let (metas, accounts) = writable_metas_and_accounts(keys, accounts);
+                check_custom(
+                    setup,
+                    insn,
+                    metas,
+                    accounts,
+                    Some(ErrorCode::QuoteVaultHasData),
                 )
             }
             // Verifies: REGISTER-MARKET
@@ -1141,215 +1427,6 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
-            // Verifies: INIT-MARKET-PDA
-            Self::InvalidQuoteTokenProgramDuplicateChunk0 => {
-                let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
-                let (mut keys, accounts) =
-                    token_program_base_accounts(setup, token_program_id, token_program_id, false);
-                keys[Accounts::QuoteTokenProgram as usize] = keys[Accounts::User as usize];
-                let (metas, accounts) = writable_metas_and_accounts(keys, accounts);
-                check_custom(
-                    setup,
-                    insn,
-                    metas,
-                    accounts,
-                    Some(ErrorCode::InvalidQuoteTokenProgramDuplicate),
-                )
-            }
-            // Verifies: REGISTER-MARKET
-            // Verifies: INIT-MARKET-PDA
-            Self::InvalidQuoteTokenProgramDuplicateChunk1 => {
-                let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
-                let (mut keys, accounts) =
-                    token_program_base_accounts(setup, token_program_id, token_program_id, false);
-                keys[Accounts::QuoteTokenProgram as usize] = keys[Accounts::Market as usize];
-                let (metas, accounts) = writable_metas_and_accounts(keys, accounts);
-                check_custom(
-                    setup,
-                    insn,
-                    metas,
-                    accounts,
-                    Some(ErrorCode::InvalidQuoteTokenProgramDuplicate),
-                )
-            }
-            // Verifies: REGISTER-MARKET
-            // Verifies: INIT-MARKET-PDA
-            Self::InvalidQuoteTokenProgramDuplicateChunk2 => {
-                let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
-                let (mut keys, accounts) =
-                    token_program_base_accounts(setup, token_program_id, token_program_id, false);
-                keys[Accounts::QuoteTokenProgram as usize] = keys[Accounts::BaseMint as usize];
-                let (metas, accounts) = writable_metas_and_accounts(keys, accounts);
-                check_custom(
-                    setup,
-                    insn,
-                    metas,
-                    accounts,
-                    Some(ErrorCode::InvalidQuoteTokenProgramDuplicate),
-                )
-            }
-            // Verifies: REGISTER-MARKET
-            // Verifies: INIT-MARKET-PDA
-            Self::InvalidQuoteTokenProgramDuplicateChunk3 => {
-                let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
-                let (mut keys, accounts) =
-                    token_program_base_accounts(setup, token_program_id, token_program_id, false);
-                keys[Accounts::QuoteTokenProgram as usize] = keys[Accounts::QuoteMint as usize];
-                let (metas, accounts) = writable_metas_and_accounts(keys, accounts);
-                check_custom(
-                    setup,
-                    insn,
-                    metas,
-                    accounts,
-                    Some(ErrorCode::InvalidQuoteTokenProgramDuplicate),
-                )
-            }
-            // Verifies: REGISTER-MARKET
-            // Verifies: INIT-MARKET-PDA
-            Self::DupQuoteTokenProgramNotQuoteMintOwnerChunk0 => {
-                let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
-                let token_2022_id = Pubkey::from(TOKEN_2022_PROGRAM_ID);
-                // Base uses Token Program, quote uses Token 2022 (different owners),
-                // but quote key duplicates base key (Token Program).
-                let (mut keys, mut accounts) =
-                    token_program_base_accounts(setup, token_program_id, token_program_id, false);
-                accounts[Accounts::QuoteMint as usize].owner = token_2022_id;
-                // Force duplicate by sharing key.
-                keys[Accounts::QuoteTokenProgram as usize] = token_program_id;
-                let (metas, accounts) = writable_metas_and_accounts(keys, accounts);
-                check_custom(
-                    setup,
-                    insn,
-                    metas,
-                    accounts,
-                    Some(ErrorCode::DupQuoteTokenProgramNotQuoteMintOwner),
-                )
-            }
-            // Verifies: REGISTER-MARKET
-            // Verifies: INIT-MARKET-PDA
-            Self::DupQuoteTokenProgramNotQuoteMintOwnerChunk1 => {
-                let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
-                let mut bad_owner = token_program_id;
-                bad_owner.as_mut()[CHUNK_1_OFF as usize] ^= 0xFF;
-                let (mut keys, mut accounts) =
-                    token_program_base_accounts(setup, token_program_id, token_program_id, false);
-                accounts[Accounts::QuoteMint as usize].owner = bad_owner;
-                keys[Accounts::QuoteTokenProgram as usize] = token_program_id;
-                let (metas, accounts) = writable_metas_and_accounts(keys, accounts);
-                check_custom(
-                    setup,
-                    insn,
-                    metas,
-                    accounts,
-                    Some(ErrorCode::DupQuoteTokenProgramNotQuoteMintOwner),
-                )
-            }
-            // Verifies: REGISTER-MARKET
-            // Verifies: INIT-MARKET-PDA
-            Self::DupQuoteTokenProgramNotQuoteMintOwnerChunk2 => {
-                let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
-                let mut bad_owner = token_program_id;
-                bad_owner.as_mut()[CHUNK_2_OFF as usize] ^= 0xFF;
-                let (mut keys, mut accounts) =
-                    token_program_base_accounts(setup, token_program_id, token_program_id, false);
-                accounts[Accounts::QuoteMint as usize].owner = bad_owner;
-                keys[Accounts::QuoteTokenProgram as usize] = token_program_id;
-                let (metas, accounts) = writable_metas_and_accounts(keys, accounts);
-                check_custom(
-                    setup,
-                    insn,
-                    metas,
-                    accounts,
-                    Some(ErrorCode::DupQuoteTokenProgramNotQuoteMintOwner),
-                )
-            }
-            // Verifies: REGISTER-MARKET
-            // Verifies: INIT-MARKET-PDA
-            Self::DupQuoteTokenProgramNotQuoteMintOwnerChunk3 => {
-                let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
-                let mut bad_owner = token_program_id;
-                bad_owner.as_mut()[CHUNK_3_OFF as usize] ^= 0xFF;
-                let (mut keys, mut accounts) =
-                    token_program_base_accounts(setup, token_program_id, token_program_id, false);
-                accounts[Accounts::QuoteMint as usize].owner = bad_owner;
-                keys[Accounts::QuoteTokenProgram as usize] = token_program_id;
-                let (metas, accounts) = writable_metas_and_accounts(keys, accounts);
-                check_custom(
-                    setup,
-                    insn,
-                    metas,
-                    accounts,
-                    Some(ErrorCode::DupQuoteTokenProgramNotQuoteMintOwner),
-                )
-            }
-            // Verifies: REGISTER-MARKET
-            Self::BaseVaultIsDuplicate => {
-                let base_token_program = Pubkey::from(TOKEN_PROGRAM_ID);
-                let (mut keys, accounts) = token_program_base_accounts(
-                    setup,
-                    base_token_program,
-                    base_token_program,
-                    false,
-                );
-                // Base vault shares key with User, causing the runtime
-                // to serialize it as a duplicate.
-                keys[Accounts::BaseVault as usize] = keys[Accounts::User as usize];
-                let (metas, accounts) = writable_metas_and_accounts(keys, accounts);
-                check_custom(
-                    setup,
-                    insn,
-                    metas,
-                    accounts,
-                    Some(ErrorCode::BaseVaultIsDuplicate),
-                )
-            }
-            // Verifies: REGISTER-MARKET
-            Self::BaseVaultHasData => {
-                let base_token_program = Pubkey::from(TOKEN_PROGRAM_ID);
-                let (keys, mut accounts) = token_program_base_accounts(
-                    setup,
-                    base_token_program,
-                    base_token_program,
-                    false,
-                );
-                accounts[Accounts::BaseVault as usize].data = vec![0u8; 32];
-                let (metas, accounts) = writable_metas_and_accounts(keys, accounts);
-                check_custom(
-                    setup,
-                    insn,
-                    metas,
-                    accounts,
-                    Some(ErrorCode::BaseVaultHasData),
-                )
-            }
-            // Verifies: REGISTER-MARKET
-            Self::QuoteVaultIsDuplicateDup => {
-                let base_token_program = Pubkey::from(TOKEN_PROGRAM_ID);
-                let (mut keys, accounts) = token_program_base_accounts(
-                    setup,
-                    base_token_program,
-                    base_token_program,
-                    true,
-                );
-                let pda = keys[Accounts::Market as usize];
-                let (quote_vault_pda, _) = Pubkey::find_program_address(
-                    &[pda.as_ref(), &[VAULT_INDEX_QUOTE as u8]],
-                    &setup.program_id,
-                );
-                keys[Accounts::QuoteVault as usize] = quote_vault_pda;
-                // Quote vault shares key with User, causing the runtime
-                // to serialize it as a duplicate.
-                keys[Accounts::QuoteVault as usize] = keys[Accounts::User as usize];
-                let (metas, accounts) = writable_metas_and_accounts(keys, accounts);
-                check_custom(
-                    setup,
-                    insn,
-                    metas,
-                    accounts,
-                    Some(ErrorCode::QuoteVaultIsDuplicate),
-                )
-            }
-            // Verifies: REGISTER-MARKET
             Self::QuoteVaultIsDuplicateNonDup => {
                 let base_token_program = Pubkey::from(TOKEN_PROGRAM_ID);
                 let quote_token_program = Pubkey::from(TOKEN_2022_PROGRAM_ID);
@@ -1378,31 +1455,6 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
-            Self::QuoteVaultHasDataDup => {
-                let base_token_program = Pubkey::from(TOKEN_PROGRAM_ID);
-                let (mut keys, mut accounts) = token_program_base_accounts(
-                    setup,
-                    base_token_program,
-                    base_token_program,
-                    true,
-                );
-                let pda = keys[Accounts::Market as usize];
-                let (quote_vault_pda, _) = Pubkey::find_program_address(
-                    &[pda.as_ref(), &[VAULT_INDEX_QUOTE as u8]],
-                    &setup.program_id,
-                );
-                keys[Accounts::QuoteVault as usize] = quote_vault_pda;
-                accounts[Accounts::QuoteVault as usize].data = vec![0u8; 32];
-                let (metas, accounts) = writable_metas_and_accounts(keys, accounts);
-                check_custom(
-                    setup,
-                    insn,
-                    metas,
-                    accounts,
-                    Some(ErrorCode::QuoteVaultHasData),
-                )
-            }
-            // Verifies: REGISTER-MARKET
             Self::QuoteVaultHasDataNonDup => {
                 let base_token_program = Pubkey::from(TOKEN_PROGRAM_ID);
                 let quote_token_program = Pubkey::from(TOKEN_2022_PROGRAM_ID);
@@ -1426,58 +1478,6 @@ impl TestCase for Case {
                     metas,
                     accounts,
                     Some(ErrorCode::QuoteVaultHasData),
-                )
-            }
-            // Verifies: REGISTER-MARKET
-            // Verifies: INIT-MARKET-PDA
-            // Verifies: INIT-VAULT
-            Self::InvalidBaseVaultPubkeyChunk0 => {
-                let (metas, accounts) = base_vault_mismatch_accounts(setup, CHUNK_0_OFF as usize);
-                check_custom(
-                    setup,
-                    insn,
-                    metas,
-                    accounts,
-                    Some(ErrorCode::InvalidBaseVaultPubkey),
-                )
-            }
-            // Verifies: REGISTER-MARKET
-            // Verifies: INIT-MARKET-PDA
-            // Verifies: INIT-VAULT
-            Self::InvalidBaseVaultPubkeyChunk1 => {
-                let (metas, accounts) = base_vault_mismatch_accounts(setup, CHUNK_1_OFF as usize);
-                check_custom(
-                    setup,
-                    insn,
-                    metas,
-                    accounts,
-                    Some(ErrorCode::InvalidBaseVaultPubkey),
-                )
-            }
-            // Verifies: REGISTER-MARKET
-            // Verifies: INIT-MARKET-PDA
-            // Verifies: INIT-VAULT
-            Self::InvalidBaseVaultPubkeyChunk2 => {
-                let (metas, accounts) = base_vault_mismatch_accounts(setup, CHUNK_2_OFF as usize);
-                check_custom(
-                    setup,
-                    insn,
-                    metas,
-                    accounts,
-                    Some(ErrorCode::InvalidBaseVaultPubkey),
-                )
-            }
-            // Verifies: REGISTER-MARKET
-            // Verifies: INIT-MARKET-PDA
-            // Verifies: INIT-VAULT
-            Self::InvalidBaseVaultPubkeyChunk3 => {
-                let (metas, accounts) = base_vault_mismatch_accounts(setup, CHUNK_3_OFF as usize);
-                check_custom(
-                    setup,
-                    insn,
-                    metas,
-                    accounts,
-                    Some(ErrorCode::InvalidBaseVaultPubkey),
                 )
             }
             // Verifies: REGISTER-MARKET
@@ -1777,96 +1777,6 @@ impl TestCase for Case {
             // Verifies: REGISTER-MARKET
             // Verifies: INIT-MARKET-PDA
             // Verifies: INIT-VAULT
-            Self::CreateAccountHappyPathToken2022QuoteDup => {
-                let token_2022_id = Pubkey::from(TOKEN_2022_PROGRAM_ID);
-                let (metas, accounts) = happy_path_accounts(setup, token_2022_id, token_2022_id);
-                let instruction = Instruction::new_with_bytes(setup.program_id, insn, metas);
-                let result = setup.mollusk.process_instruction(&instruction, &accounts);
-
-                let mut errors = Vec::new();
-                match &result.program_result {
-                    MolluskResult::Success => {
-                        let market = &result.resulting_accounts[Accounts::Market as usize].1;
-
-                        if market.owner != setup.program_id {
-                            errors.push(format!(
-                                "owner: expected {:?}, got {:?}",
-                                setup.program_id, market.owner
-                            ));
-                        }
-                        if market.data.len() != MARKET_HEADER_SIZE {
-                            errors.push(format!(
-                                "data len: expected {}, got {}",
-                                MARKET_HEADER_SIZE,
-                                market.data.len()
-                            ));
-                        }
-                        let rent = &setup.mollusk.sysvars.rent;
-                        if !rent.is_exempt(market.lamports, market.data.len()) {
-                            errors.push(format!(
-                                "market not rent exempt: {} lamports for {} bytes",
-                                market.lamports,
-                                market.data.len()
-                            ));
-                        }
-
-                        let market_pda = result.resulting_accounts[Accounts::Market as usize].0;
-                        let base_mint_key =
-                            result.resulting_accounts[Accounts::BaseMint as usize].0;
-                        let quote_mint_key =
-                            result.resulting_accounts[Accounts::QuoteMint as usize].0;
-
-                        let base_vault = &result.resulting_accounts[Accounts::BaseVault as usize].1;
-                        check_vault!(
-                            errors,
-                            "base vault",
-                            base_vault,
-                            &token_2022_id,
-                            rent,
-                            base_mint_key,
-                            market_pda,
-                            TOKEN_2022_ACCOUNT_SIZE_A
-                        );
-
-                        let quote_vault =
-                            &result.resulting_accounts[Accounts::QuoteVault as usize].1;
-                        check_vault!(
-                            errors,
-                            "quote vault",
-                            quote_vault,
-                            &token_2022_id,
-                            rent,
-                            quote_mint_key,
-                            market_pda,
-                            TOKEN_2022_ACCOUNT_SIZE_B
-                        );
-
-                        check_market_header_bumps(
-                            &mut errors,
-                            &market.data,
-                            &setup.program_id,
-                            base_mint_key,
-                            quote_mint_key,
-                            market_pda,
-                        );
-                    }
-                    other => {
-                        errors.push(format!("expected success, got {:?}", other));
-                    }
-                }
-
-                CaseResult {
-                    cu: result.compute_units_consumed,
-                    error: if errors.is_empty() {
-                        None
-                    } else {
-                        Some(errors.join("; "))
-                    },
-                }
-            }
-            // Verifies: REGISTER-MARKET
-            // Verifies: INIT-MARKET-PDA
-            // Verifies: INIT-VAULT
             Self::CreateAccountHappyPathToken2022QuoteNonDup => {
                 let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
                 let token_2022_id = Pubkey::from(TOKEN_2022_PROGRAM_ID);
@@ -1930,6 +1840,96 @@ impl TestCase for Case {
                             quote_mint_key,
                             market_pda,
                             TOKEN_ACCOUNT_SIZE
+                        );
+
+                        check_market_header_bumps(
+                            &mut errors,
+                            &market.data,
+                            &setup.program_id,
+                            base_mint_key,
+                            quote_mint_key,
+                            market_pda,
+                        );
+                    }
+                    other => {
+                        errors.push(format!("expected success, got {:?}", other));
+                    }
+                }
+
+                CaseResult {
+                    cu: result.compute_units_consumed,
+                    error: if errors.is_empty() {
+                        None
+                    } else {
+                        Some(errors.join("; "))
+                    },
+                }
+            }
+            // Verifies: REGISTER-MARKET
+            // Verifies: INIT-MARKET-PDA
+            // Verifies: INIT-VAULT
+            Self::CreateAccountHappyPathToken2022QuoteDup => {
+                let token_2022_id = Pubkey::from(TOKEN_2022_PROGRAM_ID);
+                let (metas, accounts) = happy_path_accounts(setup, token_2022_id, token_2022_id);
+                let instruction = Instruction::new_with_bytes(setup.program_id, insn, metas);
+                let result = setup.mollusk.process_instruction(&instruction, &accounts);
+
+                let mut errors = Vec::new();
+                match &result.program_result {
+                    MolluskResult::Success => {
+                        let market = &result.resulting_accounts[Accounts::Market as usize].1;
+
+                        if market.owner != setup.program_id {
+                            errors.push(format!(
+                                "owner: expected {:?}, got {:?}",
+                                setup.program_id, market.owner
+                            ));
+                        }
+                        if market.data.len() != MARKET_HEADER_SIZE {
+                            errors.push(format!(
+                                "data len: expected {}, got {}",
+                                MARKET_HEADER_SIZE,
+                                market.data.len()
+                            ));
+                        }
+                        let rent = &setup.mollusk.sysvars.rent;
+                        if !rent.is_exempt(market.lamports, market.data.len()) {
+                            errors.push(format!(
+                                "market not rent exempt: {} lamports for {} bytes",
+                                market.lamports,
+                                market.data.len()
+                            ));
+                        }
+
+                        let market_pda = result.resulting_accounts[Accounts::Market as usize].0;
+                        let base_mint_key =
+                            result.resulting_accounts[Accounts::BaseMint as usize].0;
+                        let quote_mint_key =
+                            result.resulting_accounts[Accounts::QuoteMint as usize].0;
+
+                        let base_vault = &result.resulting_accounts[Accounts::BaseVault as usize].1;
+                        check_vault!(
+                            errors,
+                            "base vault",
+                            base_vault,
+                            &token_2022_id,
+                            rent,
+                            base_mint_key,
+                            market_pda,
+                            TOKEN_2022_ACCOUNT_SIZE_A
+                        );
+
+                        let quote_vault =
+                            &result.resulting_accounts[Accounts::QuoteVault as usize].1;
+                        check_vault!(
+                            errors,
+                            "quote vault",
+                            quote_vault,
+                            &token_2022_id,
+                            rent,
+                            quote_mint_key,
+                            market_pda,
+                            TOKEN_2022_ACCOUNT_SIZE_B
                         );
 
                         check_market_header_bumps(
