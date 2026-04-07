@@ -14,6 +14,12 @@ pub struct FullRuntimeAccount<const DATA_SIZE: usize> {
 }
 // endregion: full_runtime_account
 
+/// Compute the data buffer size for a runtime account with the given data length.
+pub const fn runtime_data_size(data_len: i32) -> usize {
+    MAX_PERMITTED_DATA_INCREASE
+        + (data_len as usize).next_multiple_of(memory::BPF_ALIGN_OF_U128 as usize)
+}
+
 /// Type alias for offset computation with zero-length data.
 pub type EmptyAccount = FullRuntimeAccount<{ runtime_data_size(memory::LEN_ZERO) }>;
 
@@ -57,10 +63,4 @@ constant_group! {
         /// Mask for readonly non-signer.
         READONLY_NON_SIGNER = immediate!(0x0000),
     }
-}
-
-/// Compute the data buffer size for a runtime account with the given data length.
-pub const fn runtime_data_size(data_len: i32) -> usize {
-    MAX_PERMITTED_DATA_INCREASE
-        + (data_len as usize).next_multiple_of(memory::BPF_ALIGN_OF_U128 as usize)
 }

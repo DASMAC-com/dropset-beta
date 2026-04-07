@@ -1,0 +1,16 @@
+pub const INJECTION_GROUPS: &[&dropset_build::ConstantGroup] = &[
+    &crate::entrypoint::discriminant::GROUP,
+    &crate::entrypoint::constants::GROUP,
+    &crate::entrypoint::input_buffer::GROUP,
+    &crate::error::error_code::GROUP,
+    &crate::market::register::data::GROUP,
+    &crate::market::register::accounts::GROUP,
+    &crate::market::register::constants::GROUP,
+    &crate::market::register::frame::GROUP,
+    &crate::common::account::constants::GROUP,
+    &crate::common::account::cpi::GROUP,
+    &crate::common::memory::size_of::GROUP,
+    &crate::common::memory::constants::GROUP,
+    &crate::common::pubkey::constants::GROUP,
+    &crate::common::token::constants::GROUP,
+];
