@@ -23,14 +23,14 @@ const REGISTRY = JSON.parse(
   readFileSync(join(ALGO_DIR, "registry.json"), "utf-8"),
 );
 
-// Recursively find all .md files under a directory.
-function findMdFiles(dir) {
+// Recursively find all files with a given extension under a directory.
+function findFiles(dir, ext) {
   const results = [];
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     const full = join(dir, entry.name);
     if (entry.isDirectory()) {
-      results.push(...findMdFiles(full));
-    } else if (entry.name.endsWith(".md")) {
+      results.push(...findFiles(full, ext));
+    } else if (entry.name.endsWith(ext)) {
       results.push(full);
     }
   }
@@ -41,9 +41,9 @@ export function buildAlgorithmIndex() {
   const index = {};
 
   // Parse each .tex file for \CALL references.
-  for (const file of readdirSync(ALGO_DIR).filter((f) => f.endsWith(".tex"))) {
+  for (const file of findFiles(ALGO_DIR, ".tex")) {
     const name = basename(file, ".tex");
-    const code = readFileSync(join(ALGO_DIR, file), "utf-8");
+    const code = readFileSync(file, "utf-8");
 
     const calls = new Set();
     const syscalls = new Set();
@@ -91,7 +91,7 @@ export function buildAlgorithmIndex() {
   }
 
   // Scan .md files to find which page each algorithm is on.
-  for (const fullPath of findMdFiles(SRC_DIR)) {
+  for (const fullPath of findFiles(SRC_DIR, ".md")) {
     const md = readFileSync(fullPath, "utf-8");
     const relPath = relative(SRC_DIR, fullPath);
     for (const match of md.matchAll(/<Algorithm\s+id="([\w-]+)"/g)) {

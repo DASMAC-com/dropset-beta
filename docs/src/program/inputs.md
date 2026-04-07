@@ -24,14 +24,14 @@ data offsets are persisted across transactions. The header also overlays a
 giving `MarketHeader.next` its initialization target. The `InputBufferHeader`
 layout captures this design:
 
-<Include rs="interface::memory#input_buffer_header" collapsible/>
+<Include rs="interface::entrypoint#input_buffer_header" collapsible/>
 
 Account data regions in the Solana input buffer are variable-length and would
 normally prevent static offset computation. `FullRuntimeAccount` solves this by
 extending [`RuntimeAccount`] with a compile-time-sized data buffer and trailing
 rent epoch:
 
-<Include rs="interface::memory#full_runtime_account" collapsible/>
+<Include rs="interface::common::account#full_runtime_account" collapsible/>
 
 The type alias `EmptyAccount` specializes `FullRuntimeAccount` with zero-length
 data, which is the common case for accounts whose data is not statically known.

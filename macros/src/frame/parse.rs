@@ -1,6 +1,6 @@
 use syn::Ident;
 
-use crate::attrs::{validate_comment, validate_name};
+use crate::common::attrs::{validate_comment, validate_name};
 use crate::constant_group::{ConstantDef, ConstantKind};
 
 /// Result of parsing a field constant attribute.

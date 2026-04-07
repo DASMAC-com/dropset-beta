@@ -94,6 +94,14 @@ and proceed to the **Resolve** section below.
    - Comments in the `.s` file reference the
      correct pseudocode line or step where
      applicable.
+   - All `\texttt{}` references in `.tex` files
+     and inline `#` comments in `.s` files follow
+     the notation spec in
+     `docs/src/program/layout.md#notation`
+     (module paths use `::`, field access uses `.`,
+     constants use full interface path, type names
+     are unqualified, CPI targets use
+     `program::InstructionName` form).
 
 ### Documentation freshness
 

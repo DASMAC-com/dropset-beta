@@ -5,8 +5,8 @@ use syn::{
     parse::{Parse, ParseStream},
 };
 
-use crate::attrs::extract_doc_comment;
-use crate::shared_state;
+use crate::common::attrs::extract_doc_comment;
+use crate::common::shared_state;
 
 /// A single field inside `cpi_accounts! { ... }`.
 struct CpiAccountField {

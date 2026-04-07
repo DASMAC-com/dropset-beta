@@ -32,19 +32,6 @@ pub fn extract_attr_string(attrs: &[syn::Attribute], name: &str) -> Option<Strin
     None
 }
 
-/// Extract a type path from an attribute like `#[name(Type)]`.
-pub fn extract_attr_path(attrs: &[syn::Attribute], name: &str) -> Option<syn::Path> {
-    for attr in attrs {
-        if attr.path().is_ident(name)
-            && let Meta::List(list) = &attr.meta
-        {
-            let path: syn::Path = syn::parse2(list.tokens.clone()).ok()?;
-            return Some(path);
-        }
-    }
-    None
-}
-
 /// Extract `#[inject("target")]` from attributes.
 pub fn extract_inject_target(attrs: &[syn::Attribute]) -> Option<String> {
     extract_attr_string(attrs, "inject")

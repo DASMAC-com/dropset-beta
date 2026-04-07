@@ -1,16 +1,20 @@
 {
   "algorithms": {
     "ENTRYPOINT": {
-      "asm": "entrypoint"
+      "asm": "entrypoint",
+      "tex": "ENTRYPOINT"
     },
     "INIT-MARKET-PDA": {
-      "asm": "market/init_market_pda"
+      "asm": "market/init_market_pda",
+      "tex": "market/INIT-MARKET-PDA"
     },
     "INIT-VAULT": {
-      "asm": "market/init_vault"
+      "asm": "market/init_vault",
+      "tex": "market/INIT-VAULT"
     },
     "REGISTER-MARKET": {
-      "asm": "market/register"
+      "asm": "market/register",
+      "tex": "market/REGISTER-MARKET"
     }
   },
   "cpis": {

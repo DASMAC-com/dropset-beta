@@ -3,7 +3,7 @@ use quote::quote;
 use syn::Ident;
 
 use super::offset::{emit_frame_offset_const, emit_unaligned_frame_offset_const};
-use crate::codegen;
+use crate::common::codegen;
 
 /// SolAccountInfo field names and their doc-friendly labels.
 const ACCT_INFO_FIELDS: &[(&str, &str)] = &[

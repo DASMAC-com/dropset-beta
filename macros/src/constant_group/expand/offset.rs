@@ -2,8 +2,8 @@ use proc_macro2::Span;
 use quote::quote;
 use syn::Ident;
 
-use crate::codegen;
-use crate::sbpf_config::FRAME_ALIGN;
+use crate::common::codegen;
+use crate::common::sbpf_config::FRAME_ALIGN;
 
 use super::pubkey::{CHUNK_SIZE, N_CHUNKS};
 

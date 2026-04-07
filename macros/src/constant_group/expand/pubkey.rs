@@ -2,7 +2,7 @@ use proc_macro2::Span;
 use quote::quote;
 use syn::Ident;
 
-use crate::codegen;
+use crate::common::codegen;
 
 /// Number of 8-byte chunks in a 32-byte address.
 pub const N_CHUNKS: usize = 4;

@@ -19,18 +19,24 @@ check out the [Solana Opcode Guide].
 
 ## About this site
 
-This site uses a custom [docs engine] that provides
-formal [CLRS]-style algorithmic specifications with corresponding assembly
-implementations sourced directly from the codebase.
-[Test cases] are linked to the algorithms they verify via
-`// Verifies:` tags and embedded on each algorithm's page.
+This site uses a custom [docs engine] that provides formal [CLRS]-style
+algorithmic specifications with corresponding assembly implementations
+sourced directly from the codebase. [Test cases] are linked to
+the algorithms they verify via `// Verifies:` tags and are embedded on each
+algorithm's page.
 
-An auto-generated [algorithm index] tracks
-dependencies between all algorithms and cross-links them at their definition
-sites. External syscalls are linked to their upstream source definitions via a
-[syscall registry]. The top-level algorithm is the Dropset program
-[entrypoint]. See [program layout] for more details about program
-architecture.
+An auto-generated [algorithm index] tracks dependencies between all algorithms
+and cross-links them at their definition sites. External [syscalls] and [CPI]
+targets are linked to their upstream source definitions via a centralized
+[algorithm registry]. The top-level algorithm is the Dropset program
+[entrypoint].
+
+Assembly constants (offsets, error codes, discriminants) are defined in Rust
+and [injected into assembly][build scaffolding] at build time. The
+[interface] crate declares program constants, data types, and instruction
+definitions using proc macros. A scoped [notation] convention connects the
+algorithm specifications, Rust interface, and assembly constant names. See
+[program layout] for more details about the file structure.
 
 ## Contributing
 
@@ -90,9 +96,14 @@ design assurance.
 [solana opcode guide]: https://opcodes.dasmac.com
 [the mythical man-month]: https://en.wikipedia.org/wiki/The_Mythical_Man-Month
 [docs engine]: development/docs-engine
-[syscall registry]: development/docs-engine#algorithm-registry
+[algorithm registry]: development/docs-engine#algorithm-registry
+[syscalls]: https://solana.com/docs/core/programs/syscall-reference
+[CPI]: https://solana.com/docs/core/cpi
 [test cases]: development/tests
 [algorithm index]: program/algorithm-index
 [entrypoint]: program/inputs#entrypoint
 [program layout]: program/layout
+[notation]: program/layout#notation
+[build scaffolding]: development/build-scaffolding
+[interface]: development/build-scaffolding#interface
 [Development]: /development/

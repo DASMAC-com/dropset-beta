@@ -82,18 +82,24 @@ if (isVitepress) {
   ghLink = `${GH_CFG}${fileSpec}`;
 } else if (isRust) {
   // Syntax: "crate::module" → crate/src/module.rs
-  const sepIdx = fileSpec.indexOf("::");
+  const sep = "::";
+  const sepIdx = fileSpec.indexOf(sep);
   if (sepIdx === -1)
     throw new Error(`Invalid rs prop (expected "crate::module"): ${fileSpec}`);
   const crateName = fileSpec.slice(0, sepIdx);
-  const modulePath = fileSpec.slice(sepIdx + 2);
+  const modulePath = fileSpec.slice(sepIdx + sep.length).replaceAll(sep, "/");
   const crate = rustCrates[crateName];
   if (!crate) throw new Error(`Unknown crate: ${crateName}`);
-  const key = `../../../${crate.gh}${modulePath}.rs`;
+  const flatKey = `../../../${crate.gh}${modulePath}.rs`;
+  const modKey = `../../../${crate.gh}${modulePath}/mod.rs`;
+  const key = rustModules[flatKey] ? flatKey : modKey;
   loader = rustModules[key];
-  if (!loader) throw new Error(`Unknown Rust file: ${key}`);
-  label = `${crateName}::${modulePath}.rs`;
-  ghLink = `${GH_ROOT}${crate.gh}${modulePath}.rs`;
+  if (!loader) throw new Error(`Unknown Rust file: ${flatKey}`);
+  const filePath = rustModules[flatKey]
+    ? `${modulePath}.rs`
+    : `${modulePath}/mod.rs`;
+  label = `${crateName}::${filePath}`;
+  ghLink = `${GH_ROOT}${crate.gh}${filePath}`;
 } else {
   const asmFile = fileSpec;
   loader = asmModules[`${ASM_BASE}${asmFile}.s`];

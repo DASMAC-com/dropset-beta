@@ -30,7 +30,13 @@ Core types are as follows:
 
 ## Macros
 
-The [`macros`] crate provides several [proc macros]:
+The [`macros`] crate provides several [proc macros]. Attribute macros
+([`#[frame]`](#frame), [`#[svm_data]`](#svm-data),
+[`#[instruction_data]`](#instruction-data-target), etc.) are used when
+the macro annotates a natural Rust item (struct, enum). Function-like
+macros ([`constant_group!`](#constant_group),
+[`size_of_group!`](#size-of-group)) are used when the body has custom
+syntax that doesn't map to a standard Rust item.
 
 <Include rs="macros::lib" collapsed/>
 
@@ -47,9 +53,6 @@ syntax forms (parsed within the proc macro, not standalone macros):
 - `offset!(expr)`: an `i16` memory offset, the generated name is suffixed with
   `_OFF`
 - `immediate!(expr)`: an `i32` immediate value
-- `signer_seeds!(field)`: expands a [`signer_seeds!`](#signer_seeds) field into
-  an `_OFF` offset to the struct, an `N_SEEDS` count, and per-seed `_ADDR_OFF`
-  and `_LEN_OFF` constants (requires `#[frame(Context)]`, see below)
 - `pubkey!(expr)`: splits a 32-byte pubkey into four 8-byte chunks, emitting
   full 64-bit `_CHUNK_{0..3}` `i64` constants (for `lddw`) plus
   `_CHUNK_{0..3}_LO` and `_CHUNK_{0..3}_HI` `i32` immediates (twelve constants
@@ -60,47 +63,17 @@ syntax forms (parsed within the proc macro, not standalone macros):
   `ADDRESS` when the field is named `address` (e.g. `RuntimeAccount.address`),
   and `PUBKEY` or the field name otherwise, since "address" also means a
   runtime pointer in this codebase
-- `unaligned_offset!(field)`: like `offset!` in frame-relative mode but without
-  the alignment assertion, suffixed with `_UOFF` (requires `#[frame(Context)]`)
-- `unaligned_pubkey_offsets!(field)`: like `pubkey_offsets!` in frame-relative
-  mode but without the alignment assertion, suffixed with `_UOFF` (requires
-  `#[frame(Context)]`). Same naming convention as `pubkey_offsets!`
-- `sol_instruction!(field)`: emits an aligned `_OFF` for the `SolInstruction`
-  struct base and unaligned `_UOFF` offsets for each field (`program_id`,
-  `accounts`, `account_len`, `data`, `data_len`) (requires `#[frame(Context)]`)
-- `cpi_accounts!(field)`: emits an `N_ACCOUNTS` count, `_SOL_ACCT_INFO_OFF`
-  and `_SOL_ACCT_META_OFF` vector start offsets, and per-account unaligned
-  offsets for each `SolAccountInfo` and `SolAccountMeta` field (requires
-  `#[frame(Context)]`, field type must be defined with
-  [`cpi_accounts!`](#cpi_accounts))
 - `relative_offset!(Struct, from_field, to_field)`: computes the difference
   between two field offsets within the same struct, emitted as an `i32`
-  immediate with `_REL_OFF_IMM` suffix. In `#[frame(Context)]` context the
-  struct is inferred and only the two field paths are required
+  immediate with `_REL_OFF_IMM` suffix
 
-<Include rs="interface::memory#constant_group_example" collapsible/>
+Frame-relative constant kinds (e.g. `signer_seeds!`, `cpi_accounts!`,
+`sol_instruction!`, `unaligned_offset!`) are only available via
+[`#[frame]`](#frame) field attributes, not directly in `constant_group!`.
 
-#### Frame-relative offsets
+<Include rs="interface::entrypoint#constant_group_example" collapsible/>
 
-When annotated with `#[frame(Context)]`, the group enters frame-relative mode.
-In this mode, `offset!(field)` computes a negative offset from the frame
-pointer (`offset_of` minus `size_of`) and asserts 8-byte alignment
-(`BPF_ALIGN_OF_U128`). The group's doc comment defaults to the frame struct's
-doc comment if not explicitly provided. The `signer_seeds!(field)` and
-`pubkey_offsets!(field)` forms are only available in frame-relative mode.
-
-In frame-relative mode, generated constant names include a `_FM_` infix after
-the prefix (e.g. `RM_FM_PDA_OFF` instead of `RM_PDA_OFF`) to distinguish
-frame-relative constants from other offset constants.
-
-::: tip
-For frame structs, [`#[frame("mod")]`](#frame) with field attributes can
-generate the constant group directly, making a separate `constant_group!`
-invocation unnecessary. The `constant_group!` macro remains available for
-non-frame groups (e.g. input buffer offsets, standalone immediates).
-:::
-
-<Include rs="interface::market#register_market_stack" collapsed/>
+<Include rs="interface::market::register#register_market_stack" collapsed/>
 
 Each group generates:
 
@@ -120,7 +93,7 @@ explicit casts (e.g. `Discriminant::RegisterMarket.into()`). A hidden module
 with `DISC_`-prefixed assembly constants and a `GROUP` is generated for
 build-time injection.
 
-<Include rs="interface::lib#discriminant_enum" collapsed/>
+<Include rs="interface::entrypoint#discriminant_enum" collapsed/>
 
 ### `#[error_enum("target")]` {#error_enum}
 
@@ -131,31 +104,33 @@ variant: a lowercase `e_snake_name:` label that sets `r0` to the corresponding
 `E_` constant and exits. When error labels are present, the build system
 fully regenerates the target assembly file.
 
-<Include rs="interface::lib#error_enum" collapsed/>
+<Include rs="interface::error#error_enum" collapsed/>
 
-### `#[instruction_data("target")]`
+### `#[instruction_data("target")]` {#instruction-data-target}
 
-Attribute macro for instruction data structs. Automatically generates an
-`LEN` associated constant (`u64`) from `size_of::<Self>()`, and a hidden
-module with a `_LEN` suffixed assembly constant and `GROUP` for build-time
-injection. The target string names the assembly file (e.g. `"market/register"`
-targets `program/src/dropset/market/register.s`).
+Attribute macro for instruction data structs. Automatically generates a
+`SIZE` associated constant (`u64`) from `size_of::<Self>()`, and a hidden
+module with an `INSN_DATA_SIZE` suffixed assembly constant and `GROUP` for
+build-time injection. The target string names the assembly file
+(e.g. `"market/register"` targets
+`program/src/dropset/market/register.s`).
 
-The length is accessible in Rust as `RegisterMarketData::LEN`.
+The size is accessible in Rust as `Data::SIZE`.
 
-<Include rs="interface::market#register_market_data" collapsible/>
+<Include rs="interface::market::register#register_market_data" collapsible/>
 
 ### `#[instruction_accounts("target")]`
 
-Attribute macro for instruction accounts enums. Generates a `LEN` associated
-constant (`u64`) from the number of enum variants, plus a per-variant `_POS`
-position constant (`i32`) for each variant. A hidden module with assembly
+Attribute macro for instruction accounts enums. Generates a `COUNT` associated
+constant (`u64`) from the number of enum variants, plus a per-variant
+`INSN_ACCTS_*_POS` position constant (`i32`) for each variant.
+A hidden module with assembly
 constants and `GROUP` is emitted for build-time injection. Assembly comments
 are auto-generated from the variant names.
 
-The count is accessible in Rust as `RegisterMarketAccounts::LEN`.
+The count is accessible in Rust as `Accounts::COUNT`.
 
-<Include rs="interface::market#register_market_accounts" collapsible/>
+<Include rs="interface::market::register#register_market_accounts" collapsible/>
 
 ### `#[frame]`
 
@@ -166,10 +141,10 @@ mappings and the struct's doc comment in proc-macro shared state so that
 [`constant_group!`](#constant_group) can auto-discover frame fields and
 derive its header comment.
 
-When called as `#[frame("module_name")]` with `#[inject("target")]` and
-`#[prefix("PREFIX")]` on the struct, it also generates a constant group
-module directly from field-level attributes, eliminating the need for a
-separate `constant_group!` invocation. Supported field attributes:
+When combined with `#[inject("target")]` and `#[prefix("PREFIX")]` on
+the struct, it also generates a `frame` constant group module directly
+from field-level attributes, eliminating the need for a separate
+`constant_group!` invocation. Supported field attributes:
 
 - `#[offset]`: aligned frame-relative offset (`_OFF` suffix). Name is
   auto-inferred from the field name via `SCREAMING_SNAKE_CASE`, or
@@ -188,9 +163,9 @@ Sub-field access uses comma-separated form:
 Struct-level `#[relative_offset(NAME, from, to, "doc")]` attributes compute
 the difference between two field offsets.
 
-<Include rs="interface::market#frame_example" collapsed/>
+<Include rs="interface::market::register#frame_example" collapsed/>
 
-### `#[svm_data]`
+### `#[svm_data]` {#svm-data}
 
 Attribute macro for packed onchain data structs. Applies `#[repr(C, packed)]`
 to the struct so its layout matches the SVM memory map exactly. Use this for
@@ -208,7 +183,7 @@ state so that `signer_seeds!(field)` inside a
 on a [`#[frame]`](#frame) struct, can auto-discover all seed fields by
 looking up the parent field's type.
 
-<Include rs="interface::market#signer_seeds_example" collapsible/>
+<Include rs="interface::market::register#signer_seeds_example" collapsible/>
 
 ### `cpi_accounts!` {#cpi_accounts}
 
@@ -219,7 +194,7 @@ named account. Field names are registered in proc-macro shared state so that
 `#[cpi_accounts]` field attribute on a [`#[frame]`](#frame) struct, can
 auto-discover all account fields by looking up the parent field's type.
 
-### `size_of_group!`
+### `size_of_group!` {#size-of-group}
 
 Injects `SIZE_OF_<TYPE>` immediates for each listed type. Names and doc
 comments are auto-derived from the type name (`Pubkey` becomes
@@ -227,19 +202,42 @@ comments are auto-derived from the type name (`Pubkey` becomes
 Note that `Pubkey` is a local alias for `pinocchio::Address` (see
 [Pubkeys][layout-pubkeys] for the naming convention).
 
-<Include rs="interface::memory#size_of_group_example" collapsible/>
+<Include rs="interface::common::memory#size_of_group_example" collapsible/>
 
 ## Interface
 
-The [`interface`] crate uses the macros to declare all program constants. The
-`INJECTION_GROUPS` slice collects every constant group for the build script.
+The [`interface`] crate uses the macros to declare program constants, data
+types, and instruction definitions.
 
-<Include rs="interface::lib" collapsed/>
+```txt
+interface/src/
+├── lib.rs                # Module declarations and re-exports
+├── groups.rs             # Injection groups registry
+├── entrypoint.rs         # Discriminants, entrypoint, input buffer
+├── error.rs              # ErrorCode enum
+├── common/
+│   ├── account.rs        # Runtime account layout and CPI constants
+│   ├── cpi_bindings.rs   # Auto-generated Sol* C structs
+│   ├── memory.rs         # Data primitives and type sizes
+│   ├── pubkey.rs         # Pubkey chunk offsets, well-known program IDs
+│   └── token.rs          # SPL Token constants
+├── market/
+│   ├── mod.rs            # MarketHeader and market-level constants
+│   └── register.rs       # REGISTER-MARKET instruction types, frame, constants
+├── order/mod.rs          # Order data structure
+├── seat/mod.rs           # Seat data structure
+└── stack/mod.rs          # StackNode data structure
+```
+
+The `INJECTION_GROUPS` slice collects every constant group for the
+[build script](#assembly-injection).
+
+<Include rs="interface::groups" collapsed/>
 
 ## Build crate
 
 The [`build`] crate has two responsibilities: assembly constant injection and
-CPI bindings generation.
+[CPI] bindings generation.
 
 ### Assembly injection
 
@@ -260,9 +258,9 @@ For example:
 
 <Include asm="entrypoint" collapsible/>
 
-### CPI bindings
+### [CPI] bindings
 
-The `generate_bindings()` function fetches Solana CPI C headers from the
+The `generate_bindings()` function fetches Solana [CPI] C headers from the
 [Agave] repository on GitHub, runs [bindgen] to produce Rust FFI structs, and
 replaces `SolPubkey` references with `Pubkey` (a local alias for
 `pinocchio::Address`). The output is written to `interface/src/cpi_bindings.rs`
@@ -283,6 +281,7 @@ variables set, and commit the updated `cpi_bindings.rs`.
 [`macros`]: https://github.com/DASMAC-com/dropset-beta/tree/main/macros
 [`build`]: https://github.com/DASMAC-com/dropset-beta/tree/main/build
 [proc macros]: https://doc.rust-lang.org/reference/procedural-macros.html
+[CPI]: https://solana.com/docs/core/cpi
 [Agave]: https://github.com/anza-xyz/agave
 [bindgen]: https://rust-lang.github.io/rust-bindgen/
 [layout-pubkeys]: /program/layout#pubkeys

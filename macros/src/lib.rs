@@ -1,16 +1,13 @@
 use proc_macro::TokenStream;
 use syn::{LitStr, parse_macro_input};
 
-mod attrs;
-mod codegen;
+mod common;
 mod constant_group;
 mod cpi_accounts;
 mod enum_to_asm;
 mod frame;
 mod instruction_accounts;
 mod instruction_length;
-mod sbpf_config;
-mod shared_state;
 mod signer_seeds;
 mod size_of_group;
 mod svm_data;
@@ -22,16 +19,7 @@ mod svm_data;
 /// - `immediate!(expr)`: signed immediate (i32)
 /// - `pubkey!(expr)`: 32-byte key split into chunk immediates
 /// - `pubkey_offsets!(expr)`: base offset + four chunk offsets
-///
-/// With `#[frame(Context)]`, additional frame-relative kinds:
-/// - `offset!(field)`: negative frame-pointer-relative (`_OFF`)
-/// - `unaligned_offset!(field)`: frame-relative without alignment (`_UOFF`)
-/// - `pubkey_offsets!(field)`: frame-relative + chunk offsets
-/// - `unaligned_pubkey_offsets!(field)`: same without alignment
-/// - `signer_seeds!(field)`: auto-expands seed offsets
-/// - `cpi_accounts!(field)`: auto-expands CPI account offsets
-/// - `sol_instruction!(field)`: base offset + per-field offsets
-/// - `relative_offset!(from, to)`: difference between two fields
+/// - `relative_offset!(Struct, from, to)`: difference between two fields
 ///
 /// ```ignore
 /// constant_group! {
@@ -176,18 +164,18 @@ pub fn instruction_data(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// Registers field-to-type mappings and the doc comment in shared state
 /// for automatic lookup by `constant_group!`.
 ///
-/// When called with a module name argument and combined with `#[inject]`
-/// and `#[prefix]` on the struct, also generates a constant group module
-/// from field-level attributes (`#[offset]`, `#[unaligned_offset]`,
-/// `#[pubkey_offsets]`, `#[signer_seeds]`, `#[cpi_accounts]`,
-/// `#[sol_instruction]`) and struct-level `#[relative_offset]` attrs.
+/// When combined with `#[inject]` and `#[prefix]` on the struct, also
+/// generates a `frame` constant group module from field-level attributes
+/// (`#[offset]`, `#[unaligned_offset]`, `#[pubkey_offsets]`,
+/// `#[signer_seeds]`, `#[cpi_accounts]`, `#[sol_instruction]`) and
+/// struct-level `#[relative_offset]` attrs.
 ///
 /// ```ignore
-/// #[frame("frame")]
+/// #[frame]
 /// #[prefix("RM")]
 /// #[inject("market/register")]
 /// /// Stack frame for REGISTER-MARKET.
-/// pub struct RegisterMarketFrame {
+/// pub struct Frame {
 ///     /// Pointer to token program address.
 ///     #[offset]
 ///     pub token_program_id: *const Pubkey,
@@ -200,15 +188,9 @@ pub fn instruction_data(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// }
 /// ```
 #[proc_macro_attribute]
-pub fn frame(attr: TokenStream, item: TokenStream) -> TokenStream {
-    let mod_name = if attr.is_empty() {
-        None
-    } else {
-        let lit = parse_macro_input!(attr as LitStr);
-        Some(lit.value())
-    };
+pub fn frame(_attr: TokenStream, item: TokenStream) -> TokenStream {
     let input = parse_macro_input!(item as syn::ItemStruct);
-    TokenStream::from(frame::expand(mod_name, &input))
+    TokenStream::from(frame::expand(&input))
 }
 
 /// Attribute macro for instruction accounts enums.

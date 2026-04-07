@@ -6,8 +6,8 @@ use syn::{
     parse::{Parse, ParseStream},
 };
 
-use crate::attrs::extract_inject_target;
-use crate::codegen;
+use crate::common::attrs::extract_inject_target;
+use crate::common::codegen;
 
 pub struct SizeOfGroupInput {
     target: String,

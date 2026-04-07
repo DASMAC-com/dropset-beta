@@ -12,19 +12,19 @@
   \COMMENT{Pointer to shifted input buffer for quote mint offsets.}
   \REQUIRE frame.input\_shifted
   \REQUIRE frame.system\_program\_id = \&input.system\_program.address
-  \REQUIRE frame.cpi[0].info.data\_len = \texttt{data.LEN\_ZERO}
-  \REQUIRE frame.cpi[1].info.data\_len = \texttt{data.LEN\_ZERO}
+  \REQUIRE frame.cpi[0].info.data\_len = \texttt{common::memory::LEN\_ZERO}
+  \REQUIRE frame.cpi[1].info.data\_len = \texttt{common::memory::LEN\_ZERO}
   \ENSURE $r_9$ = acct
   \ENSURE frame.input = input
   \ENSURE frame.lamports\_per\_byte = acct.data.lamports\_per\_byte
   \ENSURE frame.signers\_seeds.addr = \&frame.pda\_seeds
-  \ENSURE frame.signers\_seeds.len = \texttt{RegisterMarketFrame.PDA\_SEEDS\_N\_SEEDS}
-  \ENSURE input.market.data.next = input + \texttt{input\_buffer.MARKET\_DATA\_BYTES}
+  \ENSURE frame.signers\_seeds.len = \texttt{frame.pda\_seeds.n\_seeds}
+  \ENSURE input.market.data.next = input + \texttt{entrypoint::input\_buffer::MARKET\_DATA\_BYTES}
   \ENSURE input.market.data.bump = frame.bump
 \PROCEDURE{INIT-MARKET-PDA}{input, insn, acct, frame}
   \COMMENT{Prepare CreateAccount instruction lamports, space fields.}
   \STATE frame.create\_account\_data.space = \texttt{MarketHeader.size}
-  \STATE acct\_size = \texttt{MarketHeader.size} + \texttt{account.STORAGE\_OVERHEAD}
+  \STATE acct\_size = \texttt{MarketHeader.size} + \texttt{common::account::STORAGE\_OVERHEAD}
   \STATE lamports\_per\_byte = acct.data.lamports\_per\_byte
   \STATE frame.lamports\_per\_byte = lamports\_per\_byte
   \STATE frame.create\_account\_data.lamports = acct\_size $\times$ lamports\_per\_byte
@@ -37,7 +37,7 @@
   \STATE frame.input = input
   \STATE syscall.seeds = \&frame.pda\_seeds
   \STATE syscall.program\_id = \&insn.program\_id
-  \STATE syscall.seeds\_len = \texttt{register\_misc.TRY\_FIND\_MARKET\_PDA\_SEEDS\_LEN}
+  \STATE syscall.seeds\_len = \texttt{market::register::TRY\_FIND\_MARKET\_PDA\_SEEDS\_LEN}
   \STATE syscall.program\_address = \&frame.pda
   \STATE syscall.bump\_seed = \&frame.bump
   \STATE \CALL{sol-try-find-program-address}{}
@@ -73,24 +73,24 @@
   \STATE frame.cpi[1].info.data = \&input.market.data
   \COMMENT{Populate signers seeds for CPI.}
   \STATE frame.signers\_seeds.addr = \&frame.pda\_seeds
-  \STATE frame.signers\_seeds.len = \texttt{RegisterMarketFrame.PDA\_SEEDS\_N\_SEEDS}
+  \STATE frame.signers\_seeds.len = \texttt{frame.pda\_seeds.n\_seeds}
   \COMMENT{Populate SolInstruction for CreateAccount CPI.}
   \STATE frame.sol\_instruction.program\_id = frame.system\_program\_id
   \STATE frame.sol\_instruction.accounts = \&frame.cpi.account\_metas
   \STATE frame.sol\_instruction.account\_len =
-    \texttt{register\_misc.CREATE\_ACCOUNT\_N\_ACCOUNTS}
+    \texttt{market::register::CREATE\_ACCOUNT\_N\_ACCOUNTS}
   \STATE frame.sol\_instruction.data = \&frame.create\_account\_data
   \STATE frame.sol\_instruction.data\_len = \texttt{CreateAccountData.size}
   \COMMENT{Invoke CreateAccount CPI.}
   \STATE syscall.instruction = \&frame.sol\_instruction
   \STATE syscall.account\_infos = \&frame.cpi.account\_infos
   \STATE syscall.account\_infos\_len =
-    \texttt{register\_misc.CREATE\_ACCOUNT\_N\_ACCOUNTS}
+    \texttt{market::register::CREATE\_ACCOUNT\_N\_ACCOUNTS}
   \STATE syscall.seeds = \&frame.signers\_seeds
-  \STATE syscall.seeds\_len = \texttt{register\_misc.N\_PDA\_SIGNERS}
+  \STATE syscall.seeds\_len = \texttt{market::register::N\_PDA\_SIGNERS}
   \STATE \CALL{sol-invoke-signed-c}{system-program::CreateAccount}
   \COMMENT{Initialize market header next pointer and store derived bump.}
-  \STATE input.market.data.next = input + \texttt{input\_buffer.MARKET\_DATA\_BYTES}
+  \STATE input.market.data.next = input + \texttt{entrypoint::input\_buffer::MARKET\_DATA\_BYTES}
   \STATE input.market.data.bump = frame.bump
 \ENDPROCEDURE
 \end{algorithmic}

@@ -1,11 +1,8 @@
-use crate::cpi_bindings::{
+use crate::common::account::EmptyAccount;
+use crate::common::cpi_bindings::{
     SolAccountInfo, SolAccountMeta, SolInstruction, SolSignerSeed, SolSignerSeeds,
 };
-use crate::memory::EmptyAccount;
-use crate::memory::StackNode;
-use crate::order::Order;
-use crate::seat::Seat;
-use crate::token::InitializeAccount2;
+use crate::common::token::InitializeAccount2;
 use dropset_macros::{
     constant_group, cpi_accounts, frame, instruction_accounts, instruction_data, signer_seeds,
     svm_data,
@@ -13,87 +10,11 @@ use dropset_macros::{
 use pinocchio::Address as Pubkey;
 use pinocchio::account::RuntimeAccount;
 
-// region: market_header
-#[svm_data]
-pub struct MarketHeader {
-    /// Absolute pointer to seats tree root in memory map.
-    pub seats: *mut Seat,
-    /// Absolute pointer to asks tree root in memory map.
-    pub asks: *mut Order,
-    /// Absolute pointer to bids tree root in memory map.
-    pub bids: *mut Order,
-    /// Absolute pointer to stack top in memory map.
-    pub top: *mut StackNode,
-    /// Absolute pointer to where the next node should be allocated in memory map.
-    pub next: *mut StackNode,
-    /// Bump seed for market PDA.
-    pub bump: u8,
-    /// Bump seed for base vault PDA.
-    pub base_vault_bump: u8,
-    /// Bump seed for quote vault PDA.
-    pub quote_vault_bump: u8,
-}
-// endregion: market_header
-
-// region: register_market_data
-#[instruction_data("market/register")]
-pub struct RegisterMarketData {
-    #[allow(dead_code)]
-    discriminant: u8,
-}
-// endregion: register_market_data
-
-#[svm_data]
-pub struct RegisterMarketInputBuffer {
-    pub n_accounts: u64,
-    pub user: EmptyAccount,
-    pub market: EmptyAccount,
-    /// Zero account data statically assumed in order to dynamically check quote offset at runtime.
-    pub base_mint: EmptyAccount,
-    pub quote_mint: EmptyAccount,
-}
-
-constant_group! {
-    #[prefix("RM_MISC")]
-    #[inject("market/register")]
-    /// Miscellaneous market registration constants.
-    register_misc {
-        /// From input buffer to base mint duplicate flag.
-        BASE_DUPLICATE = offset!(RegisterMarketInputBuffer.base_mint.header.borrow_state),
-        /// From input buffer to base mint data length.
-        BASE_DATA_LEN = offset!(RegisterMarketInputBuffer.base_mint.header.data_len),
-        /// From input buffer to base mint address field.
-        BASE_ADDR = offset!(RegisterMarketInputBuffer.base_mint.header.address),
-        /// From input buffer to base mint owner.
-        BASE_OWNER = pubkey_offsets!(RegisterMarketInputBuffer.base_mint.header.owner),
-        /// From input buffer to quote mint.
-        QUOTE = offset!(RegisterMarketInputBuffer.quote_mint),
-        /// From input buffer to quote mint duplicate flag.
-        QUOTE_DUPLICATE = offset!(RegisterMarketInputBuffer.quote_mint.header.borrow_state),
-        /// From input buffer to quote mint address field.
-        QUOTE_ADDR = offset!(RegisterMarketInputBuffer.quote_mint.header.address),
-        /// From input buffer to quote mint owner.
-        QUOTE_OWNER = pubkey_offsets!(RegisterMarketInputBuffer.quote_mint.header.owner),
-        /// From input buffer to quote mint data length.
-        QUOTE_DATA_LEN = offset!(RegisterMarketInputBuffer.quote_mint.header.data_len),
-        /// Number of seeds for market PDA derivation (base mint, quote mint).
-        TRY_FIND_MARKET_PDA_SEEDS_LEN = immediate!(2),
-        /// Number of seeds for vault PDA derivation (market address, vault index).
-        TRY_FIND_VAULT_PDA_SEEDS_LEN = immediate!(2),
-        /// Number of accounts for CreateAccount CPI (user, new account).
-        CREATE_ACCOUNT_N_ACCOUNTS = immediate!(2),
-        /// Number of PDA signers for CPI.
-        N_PDA_SIGNERS = immediate!(1),
-        /// Vault index for base mint in PDA derivation and vault creation.
-        VAULT_INDEX_BASE = immediate!(0),
-        /// Vault index for quote mint in PDA derivation and vault creation.
-        VAULT_INDEX_QUOTE = immediate!(1),
-    }
-}
-
 // region: register_market_accounts
+/// Instruction accounts.
 #[instruction_accounts("market/register")]
-pub enum RegisterMarketAccounts {
+#[prefix("RM")]
+pub enum Accounts {
     User,
     Market,
     BaseMint,
@@ -107,9 +28,63 @@ pub enum RegisterMarketAccounts {
 }
 // endregion: register_market_accounts
 
+// region: register_market_data
+/// Instruction data.
+#[instruction_data("market/register")]
+#[prefix("RM")]
+pub struct Data {
+    #[allow(dead_code)]
+    discriminant: u8,
+}
+// endregion: register_market_data
+
+#[svm_data]
+pub struct InputBuffer {
+    pub n_accounts: u64,
+    pub user: EmptyAccount,
+    pub market: EmptyAccount,
+    /// Zero account data statically assumed in order to dynamically check quote offset at runtime.
+    pub base_mint: EmptyAccount,
+    pub quote_mint: EmptyAccount,
+}
+
+constant_group! {
+    #[prefix("RM")]
+    #[inject("market/register")]
+    /// Market registration-related constants.
+    constants {
+        /// From input buffer to base mint duplicate flag.
+        BASE_DUPLICATE = offset!(InputBuffer.base_mint.header.borrow_state),
+        /// From input buffer to base mint data length.
+        BASE_DATA_LEN = offset!(InputBuffer.base_mint.header.data_len),
+        /// From input buffer to base mint address field.
+        BASE_ADDR = offset!(InputBuffer.base_mint.header.address),
+        /// From input buffer to base mint owner.
+        BASE_OWNER = pubkey_offsets!(InputBuffer.base_mint.header.owner),
+        /// From input buffer to quote mint.
+        QUOTE = offset!(InputBuffer.quote_mint),
+        /// From input buffer to quote mint duplicate flag.
+        QUOTE_DUPLICATE = offset!(InputBuffer.quote_mint.header.borrow_state),
+        /// From input buffer to quote mint address field.
+        QUOTE_ADDR = offset!(InputBuffer.quote_mint.header.address),
+        /// From input buffer to quote mint owner.
+        QUOTE_OWNER = pubkey_offsets!(InputBuffer.quote_mint.header.owner),
+        /// From input buffer to quote mint data length.
+        QUOTE_DATA_LEN = offset!(InputBuffer.quote_mint.header.data_len),
+        /// Number of seeds for market PDA derivation (base mint, quote mint).
+        TRY_FIND_MARKET_PDA_SEEDS_LEN = immediate!(2),
+        /// Number of seeds for vault PDA derivation (market address, vault index).
+        TRY_FIND_VAULT_PDA_SEEDS_LEN = immediate!(2),
+        /// Number of accounts for system_program::CreateAccount CPI.
+        CREATE_ACCOUNT_N_ACCOUNTS = immediate!(2),
+        /// Number of PDA signers for CPI.
+        N_PDA_SIGNERS = immediate!(1),
+    }
+}
+
 // region: register_market_stack
 #[svm_data]
-/// CPI instruction data for CreateAccount.
+/// CPI instruction data for system_program::CreateAccount.
 pub struct CreateAccountData {
     /// Zero-initialized on stack.
     pub discriminant: u32,
@@ -121,11 +96,12 @@ pub struct CreateAccountData {
 
 cpi_accounts! {
     CPIAccounts {
-        /// CreateAccount: funding account. InitializeAccount2: account to initialize.
+        /// system_program::CreateAccount: funding account. spl_token::InitializeAccount2: account
+        /// to initialize.
         idx_0,
-        /// CreateAccount: new account. InitializeAccount2: mint.
+        /// system_program::CreateAccount: new account. spl_token::InitializeAccount2: mint.
         idx_1,
-        /// InitializeAccount2: Rent sysvar. Unused by CreateAccount.
+        /// spl_token::InitializeAccount2: Rent sysvar. Unused by system_program::CreateAccount.
         idx_2,
     }
 }
@@ -144,7 +120,7 @@ signer_seeds! {
 // endregion: signer_seeds_example
 
 // region: frame_example
-#[frame("frame")]
+#[frame]
 #[prefix("RM")]
 #[inject("market/register")]
 #[relative_offset(
@@ -160,7 +136,7 @@ signer_seeds! {
     "From create_account_data to CPI account metas.")
 ]
 /// Stack frame for REGISTER-MARKET.
-pub struct RegisterMarketFrame {
+pub struct Frame {
     /// Pointer to token program ID.
     #[offset]
     pub token_program_id: *const Pubkey,
@@ -213,26 +189,22 @@ pub struct RegisterMarketFrame {
     #[offset]
     pub get_return_data_program_id: Pubkey,
 
-    /// CreateAccount instruction data.
+    /// system_program::CreateAccount instruction data.
     #[offset(CREATE_ACCT_DATA)]
     #[unaligned_offset(
         CREATE_ACCT_LAMPORTS,
         lamports,
-        "Lamports field within CreateAccount instruction data."
+        "system_program::CreateAccount lamports field."
     )]
-    #[unaligned_offset(
-        CREATE_ACCT_SPACE,
-        space,
-        "Space field within CreateAccount instruction data."
-    )]
+    #[unaligned_offset(CREATE_ACCT_SPACE, space, "system_program::CreateAccount space field.")]
     #[unaligned_pubkey_offsets(
         CREATE_ACCT_OWNER,
         owner,
-        "Owner field within CreateAccount instruction data."
+        "system_program::CreateAccount owner field."
     )]
     pub create_account_data: CreateAccountData,
 
-    /// GetAccountDataSize CPI instruction data.
+    /// spl_token_2022::GetAccountDataSize CPI instruction data.
     #[unaligned_offset]
     pub get_account_data_size_data: u8,
 
@@ -244,20 +216,20 @@ pub struct RegisterMarketFrame {
     #[unaligned_offset]
     pub token_program_is_2022: u8,
 
-    /// Padding for 8-byte alignment after CreateAccountData.
+    /// Padding for 8-byte alignment after system_program::CreateAccount data.
     _pad: u8,
 
-    /// InitializeAccount2 CPI instruction data.
+    /// spl_token::InitializeAccount2 CPI instruction data.
     #[offset(INIT_ACCT_2_DATA)]
     #[unaligned_offset(
         INIT_ACCT_2_DISC,
         discriminant,
-        "Discriminant field within InitializeAccount2 instruction data."
+        "spl_token::InitializeAccount2 discriminant field."
     )]
     #[unaligned_pubkey_offsets(
         INIT_ACCT_2_PROPRIETOR,
         proprietor,
-        "Proprietor field within InitializeAccount2 instruction data."
+        "spl_token::InitializeAccount2 proprietor field."
     )]
     pub initialize_account_2_data: InitializeAccount2,
 

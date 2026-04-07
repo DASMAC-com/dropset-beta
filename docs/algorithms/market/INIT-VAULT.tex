@@ -6,8 +6,8 @@
   \COMMENT{Pointer to REGISTER-MARKET stack frame.}
   \INPUT $r_2$ = frame
   \REQUIRE frame.vault\_index $\in$ \{
-    \texttt{register\_misc.VAULT\_INDEX\_BASE},
-    \texttt{register\_misc.VAULT\_INDEX\_QUOTE}
+    \texttt{market::VAULT\_INDEX\_BASE},
+    \texttt{market::VAULT\_INDEX\_QUOTE}
   \}
   \REQUIRE frame.token\_program\_is\_2022 $\in$ \{
     \texttt{true},
@@ -27,9 +27,9 @@
   \REQUIRE frame.pda\_seeds[2].len = \texttt{u8.size}
   \REQUIRE frame.system\_program\_id = \&input.system\_program.address
   \REQUIRE frame.signers\_seeds.addr = \&frame.pda\_seeds
-  \REQUIRE frame.signers\_seeds.len = \texttt{RegisterMarketFrame.PDA\_SEEDS\_N\_SEEDS}
-  \REQUIRE input.user.data\_len = \texttt{data.LEN\_ZERO}
-  \REQUIRE acct.data\_len = \texttt{data.LEN\_ZERO}
+  \REQUIRE frame.signers\_seeds.len = \texttt{frame.pda\_seeds.n\_seeds}
+  \REQUIRE input.user.data\_len = \texttt{common::memory::LEN\_ZERO}
+  \REQUIRE acct.data\_len = \texttt{common::memory::LEN\_ZERO}
   \REQUIRE frame.cpi[0].info.executable = \texttt{false}
   \REQUIRE frame.cpi[2].info.is\_signer = \texttt{false}
   \REQUIRE frame.cpi[2].info.is\_writable = \texttt{false}
@@ -43,14 +43,14 @@
   \STATE frame.pda\_seeds[1].addr = \&frame.vault\_index
   \STATE frame.pda\_seeds[1].len = \texttt{u8.size}
   \STATE syscall.seeds = \&frame.pda\_seeds
-  \STATE syscall.seeds\_len = \texttt{register\_misc.TRY\_FIND\_VAULT\_PDA\_SEEDS\_LEN}
+  \STATE syscall.seeds\_len = \texttt{market::register::TRY\_FIND\_VAULT\_PDA\_SEEDS\_LEN}
   \STATE syscall.program\_id = frame.program\_id
   \STATE syscall.program\_address = \&frame.pda
   \STATE syscall.bump\_seed = \&frame.bump
   \STATE \CALL{sol-try-find-program-address}{}
   \COMMENT{Verify vault address matches derived PDA.}
   \IF{acct.address $\neq$ frame.pda}
-    \IF{frame.vault\_index == \texttt{register\_misc.VAULT\_INDEX\_BASE}}
+    \IF{frame.vault\_index == \texttt{market::VAULT\_INDEX\_BASE}}
       \RETURN \texttt{ErrorCode::InvalidBaseVaultPubkey}
     \ELSE
       \RETURN \texttt{ErrorCode::InvalidQuoteVaultPubkey}
@@ -73,17 +73,17 @@
     \STATE frame.sol\_instruction.program\_id = frame.token\_program\_id
     \STATE frame.sol\_instruction.accounts = \&frame.cpi[0].meta
     \STATE frame.sol\_instruction.account\_len =
-      \texttt{token.GET\_ACCOUNT\_DATA\_SIZE\_N\_ACCOUNTS}
+      \texttt{common::token::GET\_ACCOUNT\_DATA\_SIZE\_N\_ACCOUNTS}
     \STATE frame.get\_account\_data\_size\_data =
-      \texttt{token.GET\_ACCOUNT\_DATA\_SIZE\_DISC}
+      \texttt{common::token::GET\_ACCOUNT\_DATA\_SIZE\_DISC}
     \STATE frame.sol\_instruction.data = \&frame.get\_account\_data\_size\_data
     \STATE frame.sol\_instruction.data\_len = \texttt{u8.size}
     \COMMENT{Invoke GetAccountDataSize CPI.}
     \STATE syscall.instruction = \&frame.sol\_instruction
     \STATE syscall.account\_infos = \&frame.cpi[0].info
     \STATE syscall.account\_infos\_len =
-      \texttt{token.GET\_ACCOUNT\_DATA\_SIZE\_N\_ACCOUNTS}
-    \STATE syscall.seeds\_len = \texttt{token.GET\_ACCOUNT\_DATA\_SIZE\_N\_SEEDS}
+      \texttt{common::token::GET\_ACCOUNT\_DATA\_SIZE\_N\_ACCOUNTS}
+    \STATE syscall.seeds\_len = \texttt{common::token::GET\_ACCOUNT\_DATA\_SIZE\_N\_SEEDS}
     \STATE \CALL{sol-invoke-signed-c}{spl-token-2022::GetAccountDataSize}
     \COMMENT{Get return data.}
     \STATE syscall.bytes = \&frame.token\_account\_data\_size
@@ -92,13 +92,13 @@
     \STATE \CALL{sol-get-return-data}{}
     \STATE acct\_size = frame.token\_account\_data\_size
     \COMMENT{Override default return data nonzero return code.}
-    \STATE result = \texttt{entrypoint.RETURN\_SUCCESS}
+    \STATE result = \texttt{entrypoint::RETURN\_SUCCESS}
   \ELSE
-    \STATE acct\_size = \texttt{token.ACCOUNT\_SIZE}
+    \STATE acct\_size = \texttt{common::token::ACCOUNT\_SIZE}
   \ENDIF
   \COMMENT{Prepare CreateAccount instruction fields.}
   \STATE frame.create\_account\_data.space = acct\_size
-  \STATE acct\_size = acct\_size + \texttt{account.STORAGE\_OVERHEAD}
+  \STATE acct\_size = acct\_size + \texttt{common::account::STORAGE\_OVERHEAD}
   \STATE frame.create\_account\_data.lamports =
     acct\_size $\times$ frame.lamports\_per\_byte
   \STATE frame.create\_account\_data.owner = frame.token\_program\_id
@@ -111,8 +111,8 @@
   \STATE frame.cpi[1].info.is\_writable = \texttt{true}
   \STATE frame.cpi[1].meta.is\_signer = \texttt{true}
   \STATE frame.cpi[1].meta.is\_writable = \texttt{true}
-  \STATE frame.cpi[0].info.data\_len = \texttt{data.LEN\_ZERO}
-  \STATE frame.cpi[1].info.data\_len = \texttt{data.LEN\_ZERO}
+  \STATE frame.cpi[0].info.data\_len = \texttt{common::memory::LEN\_ZERO}
+  \STATE frame.cpi[1].info.data\_len = \texttt{common::memory::LEN\_ZERO}
   \COMMENT{Assign CPI account fields via pointers.}
   \STATE frame.cpi[0].meta.pubkey = \&input.user.address
   \STATE frame.cpi[0].info.key = \&input.user.address
@@ -128,16 +128,16 @@
   \STATE frame.sol\_instruction.program\_id = frame.system\_program\_id
   \STATE frame.sol\_instruction.accounts = \&frame.cpi.account\_metas
   \STATE frame.sol\_instruction.account\_len =
-    \texttt{register\_misc.CREATE\_ACCOUNT\_N\_ACCOUNTS}
+    \texttt{market::register::CREATE\_ACCOUNT\_N\_ACCOUNTS}
   \STATE frame.sol\_instruction.data = \&frame.create\_account\_data
   \STATE frame.sol\_instruction.data\_len = \texttt{CreateAccountData.size}
   \COMMENT{Invoke CreateAccount CPI.}
   \STATE syscall.instruction = \&frame.sol\_instruction
   \STATE syscall.account\_infos = \&frame.cpi.account\_infos
   \STATE syscall.account\_infos\_len =
-    \texttt{register\_misc.CREATE\_ACCOUNT\_N\_ACCOUNTS}
+    \texttt{market::register::CREATE\_ACCOUNT\_N\_ACCOUNTS}
   \STATE syscall.seeds = \&frame.signers\_seeds
-  \STATE syscall.seeds\_len = \texttt{register\_misc.N\_PDA\_SIGNERS}
+  \STATE syscall.seeds\_len = \texttt{market::register::N\_PDA\_SIGNERS}
   \STATE \CALL{sol-invoke-signed-c}{system-program::CreateAccount}
   \COMMENT{Assign CPI account fields for vault.}
   \STATE frame.cpi[0].meta.pubkey = \&acct.address
@@ -170,9 +170,9 @@
   \STATE frame.sol\_instruction.program\_id = frame.token\_program\_id
   \STATE frame.sol\_instruction.accounts = \&frame.cpi.account\_metas
   \STATE frame.sol\_instruction.account\_len =
-    \texttt{token.INITIALIZE\_ACCOUNT\_2\_N\_ACCOUNTS}
+    \texttt{common::token::INITIALIZE\_ACCOUNT\_2\_N\_ACCOUNTS}
   \STATE frame.initialize\_account\_2\_data.discriminant =
-    \texttt{token.INITIALIZE\_ACCOUNT\_2\_DISC}
+    \texttt{common::token::INITIALIZE\_ACCOUNT\_2\_DISC}
   \STATE frame.initialize\_account\_2\_data.proprietor = input.market.address
   \STATE frame.sol\_instruction.data = \&frame.initialize\_account\_2\_data
   \STATE frame.sol\_instruction.data\_len = \texttt{InitializeAccount2.size}
@@ -180,8 +180,8 @@
   \STATE syscall.instruction = \&frame.sol\_instruction
   \STATE syscall.account\_infos = \&frame.cpi.account\_infos
   \STATE syscall.account\_infos\_len =
-    \texttt{token.INITIALIZE\_ACCOUNT\_2\_N\_ACCOUNTS}
-  \STATE syscall.seeds\_len = \texttt{token.INITIALIZE\_ACCOUNT\_2\_N\_SEEDS}
+    \texttt{common::token::INITIALIZE\_ACCOUNT\_2\_N\_ACCOUNTS}
+  \STATE syscall.seeds\_len = \texttt{common::token::INITIALIZE\_ACCOUNT\_2\_N\_SEEDS}
   \STATE \CALL{sol-invoke-signed-c}{spl-token::InitializeAccount2}
 \ENDFUNCTION
 \end{algorithmic}

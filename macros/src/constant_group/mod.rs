@@ -67,26 +67,15 @@ pub(crate) enum ConstantKind {
 }
 
 impl ConstantKind {
-    /// Convert an `Offset` or `FrameOffset` (from `parse_offset`) into its
-    /// pubkey-offsets equivalent. Returns an error message if the kind cannot
-    /// be converted (e.g. negated offsets).
+    /// Convert an `Offset` (from `parse_offset`) into its pubkey-offsets
+    /// equivalent. Returns an error message if the kind cannot be converted.
     pub fn into_pubkey_offsets(self) -> Result<Self, &'static str> {
         match self {
             ConstantKind::Offset { negate: true, .. } => {
                 Err("pubkey_offsets does not support negation")
             }
             ConstantKind::Offset { expr, .. } => Ok(ConstantKind::PubkeyOffsets { expr }),
-            ConstantKind::FrameOffset { fields } => Ok(ConstantKind::FramePubkeyOffsets { fields }),
             _ => Err("unexpected constant kind inside pubkey_offsets"),
-        }
-    }
-
-    pub fn into_unaligned_pubkey_offsets(self) -> Result<Self, &'static str> {
-        match self {
-            ConstantKind::FrameOffset { fields } => {
-                Ok(ConstantKind::UnalignedFramePubkeyOffsets { fields })
-            }
-            _ => Err("unaligned_pubkey_offsets requires a #[frame] context with a bare field path"),
         }
     }
 }

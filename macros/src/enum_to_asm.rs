@@ -4,8 +4,8 @@ use syn::Ident;
 
 use heck::{ToShoutySnakeCase, ToSnakeCase};
 
-use crate::attrs::{extract_doc_comment, validate_comment};
-use crate::codegen;
+use crate::common::attrs::{extract_doc_comment, validate_comment};
+use crate::common::codegen;
 
 /// Create a suffixed integer literal matching the given repr type.
 fn typed_literal(value: u8, repr_ty: &str) -> Literal {
@@ -113,13 +113,16 @@ pub fn expand(
         }
     };
 
-    codegen::with_group(
-        target_str,
-        enum_name,
+    let comment = extract_doc_comment(&input.attrs).unwrap_or_default();
+
+    codegen::with_group(codegen::GroupParams {
+        target: target_str,
+        type_name: enum_name,
+        comment: &comment,
         body,
-        &meta_defs,
-        &meta_idents,
-        &error_label_defs,
-        &error_label_idents,
-    )
+        const_defs: meta_defs,
+        meta_idents,
+        label_defs: error_label_defs,
+        label_idents: error_label_idents,
+    })
 }
