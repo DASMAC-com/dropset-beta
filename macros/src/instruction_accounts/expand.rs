@@ -72,14 +72,14 @@ pub fn expand(target: &str, input: &syn::ItemEnum) -> proc_macro2::TokenStream {
 
     let comment = extract_doc_comment(&input.attrs).unwrap_or_default();
 
-    codegen::with_group(
+    codegen::with_group(codegen::GroupParams {
         target,
-        enum_name,
-        &comment,
+        type_name: enum_name,
+        comment: &comment,
         body,
-        &meta_defs,
-        &meta_idents,
-        &[],
-        &[],
-    )
+        const_defs: meta_defs,
+        meta_idents,
+        label_defs: vec![],
+        label_idents: vec![],
+    })
 }

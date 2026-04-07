@@ -115,14 +115,14 @@ pub fn expand(
 
     let comment = extract_doc_comment(&input.attrs).unwrap_or_default();
 
-    codegen::with_group(
-        target_str,
-        enum_name,
-        &comment,
+    codegen::with_group(codegen::GroupParams {
+        target: target_str,
+        type_name: enum_name,
+        comment: &comment,
         body,
-        &meta_defs,
-        &meta_idents,
-        &error_label_defs,
-        &error_label_idents,
-    )
+        const_defs: meta_defs,
+        meta_idents,
+        label_defs: error_label_defs,
+        label_idents: error_label_idents,
+    })
 }

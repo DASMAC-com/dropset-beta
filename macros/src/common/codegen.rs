@@ -66,32 +66,39 @@ pub fn wide_meta(
     }
 }
 
+/// Parameters for generating a hidden injection group module attached to
+/// a re-emitted item.
+pub struct GroupParams<'a> {
+    pub target: &'a str,
+    pub type_name: &'a Ident,
+    pub comment: &'a str,
+    pub body: proc_macro2::TokenStream,
+    pub const_defs: Vec<proc_macro2::TokenStream>,
+    pub meta_idents: Vec<Ident>,
+    pub label_defs: Vec<proc_macro2::TokenStream>,
+    pub label_idents: Vec<Ident>,
+}
+
 /// Emit item tokens followed by a hidden group module, deriving the module
 /// name from `type_name` via snake_case.
 ///
 /// Shared by the attribute macros (`discriminant_enum`, `error_enum`,
 /// `instruction_data`, `instruction_accounts`) that re-emit an item and
 /// attach a hidden injection group.
-#[allow(clippy::too_many_arguments)]
-pub fn with_group(
-    target: &str,
-    type_name: &Ident,
-    comment: &str,
-    body: proc_macro2::TokenStream,
-    const_defs: &[proc_macro2::TokenStream],
-    meta_idents: &[Ident],
-    label_defs: &[proc_macro2::TokenStream],
-    label_idents: &[Ident],
-) -> proc_macro2::TokenStream {
-    let mod_name = Ident::new(&type_name.to_string().to_snake_case(), type_name.span());
+pub fn with_group(params: GroupParams) -> proc_macro2::TokenStream {
+    let mod_name = Ident::new(
+        &params.type_name.to_string().to_snake_case(),
+        params.type_name.span(),
+    );
+    let body = &params.body;
     let group = group_module(
         &mod_name,
-        target,
-        comment,
-        const_defs,
-        meta_idents,
-        label_defs,
-        label_idents,
+        params.target,
+        params.comment,
+        &params.const_defs,
+        &params.meta_idents,
+        &params.label_defs,
+        &params.label_idents,
     );
 
     quote! {
@@ -100,55 +107,6 @@ pub fn with_group(
         #[doc(hidden)]
         #group
     }
-}
-
-/// Emit a single-constant `_LEN` group with an `impl Type { pub const LEN }`.
-///
-/// Shared by `#[instruction_data]` (struct, `size_of`) and
-/// `#[instruction_accounts]` (enum, variant count). The caller supplies the
-/// `len_expr` that computes the value and the original item to re-emit.
-#[allow(clippy::too_many_arguments)]
-pub fn len_group(
-    target: &str,
-    type_name: &Ident,
-    prefix: &str,
-    comment: &str,
-    doc: &str,
-    asm_suffix: &str,
-    const_name: &str,
-    len_expr: proc_macro2::TokenStream,
-    original_item: proc_macro2::TokenStream,
-) -> proc_macro2::TokenStream {
-    let asm_name = format!("{}_{}", prefix, asm_suffix);
-    let meta_ident = meta_ident(&asm_name, type_name.span());
-    let const_ident = Ident::new(const_name, type_name.span());
-
-    let meta_def = immediate_meta(
-        &meta_ident,
-        &asm_name,
-        doc,
-        quote! { super::#type_name::#const_ident as i32 },
-    );
-
-    let body = quote! {
-        #original_item
-
-        impl #type_name {
-            #[doc = #doc]
-            pub const #const_ident: u64 = #len_expr;
-        }
-    };
-
-    with_group(
-        target,
-        type_name,
-        comment,
-        body,
-        &[meta_def],
-        &[meta_ident],
-        &[],
-        &[],
-    )
 }
 
 /// Emit a `pub mod name { ...defs... pub const GROUP = ... }`.
