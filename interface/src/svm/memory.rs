@@ -7,7 +7,7 @@ use pinocchio::Address as Pubkey;
 
 constant_group! {
     #[prefix("DATA")]
-    #[inject("common/memory")]
+    #[inject("svm/memory")]
     /// Common data-related constants.
     constants {
         /// Data length of zero.
@@ -28,7 +28,7 @@ constant_group! {
 
 // region: size_of_group_example
 size_of_group! {
-    #[inject("common/memory")]
+    #[inject("svm/memory")]
     [u8, u64, Pubkey, EmptyAccount, MarketHeader, CreateAccountData, InitializeAccount2]
 }
 // endregion: size_of_group_example

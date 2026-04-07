@@ -19,7 +19,7 @@ pub type EmptyAccount = FullRuntimeAccount<{ runtime_data_size(memory::LEN_ZERO)
 
 constant_group! {
     #[prefix("ACCT")]
-    #[inject("common/memory")]
+    #[inject("svm/account")]
     /// Assorted runtime account constants.
     constants {
         /// Borrow state / duplicate marker.
@@ -49,8 +49,8 @@ constant_group! {
 
 constant_group! {
     #[prefix("CPI")]
-    #[inject("common/memory")]
-    /// CPI-related constants.
+    #[inject("svm/account")]
+    /// CPI-related account constants.
     cpi {
         /// Mask for writable signer (is_writable | is_signer).
         WRITABLE_SIGNER = immediate!(0x0101),

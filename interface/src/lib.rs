@@ -13,6 +13,7 @@ pub const INJECTION_GROUPS: &[&dropset_build::ConstantGroup] = &[
     &entrypoint::constants::GROUP,
     &entrypoint::discriminant::GROUP,
     &entrypoint::input_buffer::GROUP,
+
     &error::error_code::GROUP,
     &market::register::data::GROUP,
     &market::register::accounts::GROUP,
@@ -20,8 +21,8 @@ pub const INJECTION_GROUPS: &[&dropset_build::ConstantGroup] = &[
     &market::register::constants::GROUP,
     &svm::account::constants::GROUP,
     &svm::account::cpi::GROUP,
-    &svm::memory::constants::GROUP,
     &svm::memory::size_of::GROUP,
+    &svm::memory::constants::GROUP,
     &svm::pubkey::constants::GROUP,
     &svm::token::constants::GROUP,
 ];

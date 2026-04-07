@@ -4,7 +4,7 @@ use dropset_macros::{constant_group, discriminant_enum, svm_data};
 use pinocchio::account::RuntimeAccount;
 
 // region: discriminant_enum
-#[discriminant_enum("common/discriminant")]
+#[discriminant_enum("entrypoint")]
 pub enum Discriminant {
     /// Register a new market.
     RegisterMarket,
@@ -13,6 +13,7 @@ pub enum Discriminant {
 
 constant_group! {
     #[inject("entrypoint")]
+    /// Assorted entrypoint-related constants.
     constants {
         /// Offset from input buffer to number of accounts, in input buffer.
         IB_N_ACCTS = offset!(0),
@@ -41,7 +42,7 @@ pub struct InputBufferHeader {
 // region: constant_group_example
 constant_group! {
     #[prefix("IB")]
-    #[inject("common/memory")]
+    #[inject("entrypoint")]
     /// Input buffer constants for static header.
     input_buffer {
         /// From input buffer to user data length.

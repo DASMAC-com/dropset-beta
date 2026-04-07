@@ -1,7 +1,7 @@
 use dropset_macros::error_enum;
 
 // region: error_enum
-#[error_enum("common/error")]
+#[error_enum("error")]
 pub enum ErrorCode {
     /// The instruction's discriminant does not match any known variant.
     InvalidDiscriminant,
