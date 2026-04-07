@@ -277,7 +277,7 @@ init_vault_create_account:
     # frame.cpi[2].info.data_len = rent.data_len
     ldxdw r9, [r8 + ACCT_DATA_LEN_OFF]
     stxdw [r6 + RM_FM_CPI_IDX_2_ACCT_INFO_DATA_LEN_UOFF], r9
-    # Populate SolInstruction for InitializeAccount2.
+    # Populate SolInstruction for spl_token::InitializeAccount2.
     # frame.sol_instruction.program_id = frame.token_program_id
     ldxdw r8, [r6 + RM_FM_TOKEN_PROGRAM_ID_OFF]
     stxdw [r6 + RM_FM_SOL_INSN_PROGRAM_ID_UOFF], r8
@@ -305,7 +305,7 @@ init_vault_create_account:
     mov64 r8, r6
     add64 r8, RM_FM_INIT_ACCT_2_DATA_OFF
     stxdw [r6 + RM_FM_SOL_INSN_DATA_UOFF], r8
-    # frame.sol_instruction.data_len = InitializeAccount2.size
+    # frame.sol_instruction.data_len = spl_token::InitializeAccount2.size
     mov64 r8, SIZE_OF_INITIALIZE_ACCOUNT2
     stxdw [r6 + RM_FM_SOL_INSN_DATA_LEN_UOFF], r8
     # syscall.instruction = &frame.sol_instruction

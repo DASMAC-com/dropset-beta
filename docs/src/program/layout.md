@@ -186,10 +186,17 @@ their keys in the [algorithm registry].
 
 ### Assembly comments {#assembly-comments}
 
-Assembly comments should contain only `\STATE` and `\IF`/`\RETURN`
-statements from the `.tex` algorithm specifications. `\COMMENT` blocks
-from the `.tex` are section-level descriptions and should not appear as
-inline ASM comments.
+There are two kinds of assembly comments:
+
+**Injected `.equ` comments** are auto-generated from Rust doc comments
+during constant injection. These describe what each constant represents
+and are not manually written.
+
+**Inline instruction comments** are written by hand alongside the
+assembly instructions. These should contain only `\STATE` and
+`\IF`/`\RETURN` statements from the `.tex` algorithm specifications.
+`\COMMENT` blocks from the `.tex` are section-level descriptions and
+should not appear as inline ASM comments.
 
 Optimization notes use `# Optimize:` to explain when the
 implementation deviates from the specification for performance:

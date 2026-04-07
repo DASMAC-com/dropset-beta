@@ -75,7 +75,7 @@ constant_group! {
         TRY_FIND_MARKET_PDA_SEEDS_LEN = immediate!(2),
         /// Number of seeds for vault PDA derivation (market address, vault index).
         TRY_FIND_VAULT_PDA_SEEDS_LEN = immediate!(2),
-        /// Number of accounts for CreateAccount CPI (user, new account).
+        /// Number of accounts for system_program::CreateAccount CPI.
         CREATE_ACCOUNT_N_ACCOUNTS = immediate!(2),
         /// Number of PDA signers for CPI.
         N_PDA_SIGNERS = immediate!(1),
@@ -84,7 +84,7 @@ constant_group! {
 
 // region: register_market_stack
 #[svm_data]
-/// CPI instruction data for CreateAccount.
+/// CPI instruction data for system_program::CreateAccount.
 pub struct CreateAccountData {
     /// Zero-initialized on stack.
     pub discriminant: u32,
@@ -96,11 +96,12 @@ pub struct CreateAccountData {
 
 cpi_accounts! {
     CPIAccounts {
-        /// CreateAccount: funding account. InitializeAccount2: account to initialize.
+        /// system_program::CreateAccount: funding account. spl_token::InitializeAccount2: account
+        /// to initialize.
         idx_0,
-        /// CreateAccount: new account. InitializeAccount2: mint.
+        /// system_program::CreateAccount: new account. spl_token::InitializeAccount2: mint.
         idx_1,
-        /// InitializeAccount2: Rent sysvar. Unused by CreateAccount.
+        /// spl_token::InitializeAccount2: Rent sysvar. Unused by system_program::CreateAccount.
         idx_2,
     }
 }
@@ -188,26 +189,22 @@ pub struct Frame {
     #[offset]
     pub get_return_data_program_id: Pubkey,
 
-    /// CreateAccount instruction data.
+    /// system_program::CreateAccount instruction data.
     #[offset(CREATE_ACCT_DATA)]
     #[unaligned_offset(
         CREATE_ACCT_LAMPORTS,
         lamports,
-        "Lamports field within CreateAccount instruction data."
+        "system_program::CreateAccount lamports field."
     )]
-    #[unaligned_offset(
-        CREATE_ACCT_SPACE,
-        space,
-        "Space field within CreateAccount instruction data."
-    )]
+    #[unaligned_offset(CREATE_ACCT_SPACE, space, "system_program::CreateAccount space field.")]
     #[unaligned_pubkey_offsets(
         CREATE_ACCT_OWNER,
         owner,
-        "Owner field within CreateAccount instruction data."
+        "system_program::CreateAccount owner field."
     )]
     pub create_account_data: CreateAccountData,
 
-    /// GetAccountDataSize CPI instruction data.
+    /// spl_token_2022::GetAccountDataSize CPI instruction data.
     #[unaligned_offset]
     pub get_account_data_size_data: u8,
 
@@ -219,20 +216,20 @@ pub struct Frame {
     #[unaligned_offset]
     pub token_program_is_2022: u8,
 
-    /// Padding for 8-byte alignment after CreateAccountData.
+    /// Padding for 8-byte alignment after system_program::CreateAccount data.
     _pad: u8,
 
-    /// InitializeAccount2 CPI instruction data.
+    /// spl_token::InitializeAccount2 CPI instruction data.
     #[offset(INIT_ACCT_2_DATA)]
     #[unaligned_offset(
         INIT_ACCT_2_DISC,
         discriminant,
-        "Discriminant field within InitializeAccount2 instruction data."
+        "spl_token::InitializeAccount2 discriminant field."
     )]
     #[unaligned_pubkey_offsets(
         INIT_ACCT_2_PROPRIETOR,
         proprietor,
-        "Proprietor field within InitializeAccount2 instruction data."
+        "spl_token::InitializeAccount2 proprietor field."
     )]
     pub initialize_account_2_data: InitializeAccount2,
 

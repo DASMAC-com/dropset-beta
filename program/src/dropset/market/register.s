@@ -57,7 +57,7 @@
 .equ RM_TRY_FIND_MARKET_PDA_SEEDS_LEN, 2
 # Number of seeds for vault PDA derivation (market address, vault index).
 .equ RM_TRY_FIND_VAULT_PDA_SEEDS_LEN, 2
-# Number of accounts for CreateAccount CPI (user, new account).
+# Number of accounts for system_program::CreateAccount CPI.
 .equ RM_CREATE_ACCOUNT_N_ACCOUNTS, 2
 .equ RM_N_PDA_SIGNERS, 1 # Number of PDA signers for CPI.
 # -------------------------------------------------------------------------
@@ -99,39 +99,40 @@
 .equ RM_FM_SYSTEM_PROGRAM_ID_OFF, -416 # System Program ID in input buffer.
 # Get return data program ID for CPI calls.
 .equ RM_FM_GET_RETURN_DATA_PROGRAM_ID_OFF, -408
-.equ RM_FM_CREATE_ACCT_DATA_OFF, -376 # CreateAccount instruction data.
-# Lamports field within CreateAccount instruction data.
+# system_program::CreateAccount instruction data.
+.equ RM_FM_CREATE_ACCT_DATA_OFF, -376
+# system_program::CreateAccount lamports field.
 .equ RM_FM_CREATE_ACCT_LAMPORTS_UOFF, -372
-# Space field within CreateAccount instruction data.
+# system_program::CreateAccount space field.
 .equ RM_FM_CREATE_ACCT_SPACE_UOFF, -364
-# Owner field within CreateAccount instruction data.
+# system_program::CreateAccount owner field.
 .equ RM_FM_CREATE_ACCT_OWNER_UOFF, -356
-# Owner field within CreateAccount instruction data (chunk 0).
+# system_program::CreateAccount owner field (chunk 0).
 .equ RM_FM_CREATE_ACCT_OWNER_CHUNK_0_UOFF, -356
-# Owner field within CreateAccount instruction data (chunk 1).
+# system_program::CreateAccount owner field (chunk 1).
 .equ RM_FM_CREATE_ACCT_OWNER_CHUNK_1_UOFF, -348
-# Owner field within CreateAccount instruction data (chunk 2).
+# system_program::CreateAccount owner field (chunk 2).
 .equ RM_FM_CREATE_ACCT_OWNER_CHUNK_2_UOFF, -340
-# Owner field within CreateAccount instruction data (chunk 3).
+# system_program::CreateAccount owner field (chunk 3).
 .equ RM_FM_CREATE_ACCT_OWNER_CHUNK_3_UOFF, -332
-# GetAccountDataSize CPI instruction data.
+# spl_token_2022::GetAccountDataSize CPI instruction data.
 .equ RM_FM_GET_ACCOUNT_DATA_SIZE_DATA_UOFF, -324
 .equ RM_FM_VAULT_INDEX_UOFF, -323 # Vault index for PDA derivation.
 # Whether the current token program is Token 2022.
 .equ RM_FM_TOKEN_PROGRAM_IS_2022_UOFF, -322
-# InitializeAccount2 CPI instruction data.
+# spl_token::InitializeAccount2 CPI instruction data.
 .equ RM_FM_INIT_ACCT_2_DATA_OFF, -320
-# Discriminant field within InitializeAccount2 instruction data.
+# spl_token::InitializeAccount2 discriminant field.
 .equ RM_FM_INIT_ACCT_2_DISC_UOFF, -320
-# Proprietor field within InitializeAccount2 instruction data.
+# spl_token::InitializeAccount2 proprietor field.
 .equ RM_FM_INIT_ACCT_2_PROPRIETOR_UOFF, -319
-# Proprietor field within InitializeAccount2 instruction data (chunk 0).
+# spl_token::InitializeAccount2 proprietor field (chunk 0).
 .equ RM_FM_INIT_ACCT_2_PROPRIETOR_CHUNK_0_UOFF, -319
-# Proprietor field within InitializeAccount2 instruction data (chunk 1).
+# spl_token::InitializeAccount2 proprietor field (chunk 1).
 .equ RM_FM_INIT_ACCT_2_PROPRIETOR_CHUNK_1_UOFF, -311
-# Proprietor field within InitializeAccount2 instruction data (chunk 2).
+# spl_token::InitializeAccount2 proprietor field (chunk 2).
 .equ RM_FM_INIT_ACCT_2_PROPRIETOR_CHUNK_2_UOFF, -303
-# Proprietor field within InitializeAccount2 instruction data (chunk 3).
+# spl_token::InitializeAccount2 proprietor field (chunk 3).
 .equ RM_FM_INIT_ACCT_2_PROPRIETOR_CHUNK_3_UOFF, -295
 .equ RM_FM_CPI_N_ACCOUNTS, 3 # Number of CPI accounts.
 .equ RM_FM_CPI_SOL_ACCT_INFO_OFF, -280 # Start of SolAccountInfo vector.
