@@ -1,6 +1,6 @@
 # Instruction accounts.
 # -------------------------------------------------------------------------
-.equ RM_INSN_ACCTS_COUNT, 10 # Accounts number of accounts.
+.equ RM_INSN_ACCTS_COUNT, 10 # Number of accounts.
 .equ RM_INSN_ACCTS_USER_POS, 0 # User account position.
 .equ RM_INSN_ACCTS_MARKET_POS, 1 # Market account position.
 .equ RM_INSN_ACCTS_BASE_MINT_POS, 2 # Base Mint account position.

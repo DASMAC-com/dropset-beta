@@ -19,6 +19,7 @@ constant_group! {
 
 // region: market_header
 #[svm_data]
+/// Layout at the start of account data for a market trading pair.
 pub struct MarketHeader {
     /// Absolute pointer to seats tree root in memory map.
     pub seats: *mut Seat,

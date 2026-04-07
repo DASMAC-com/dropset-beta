@@ -17,7 +17,7 @@ pub fn expand(target: &str, input: &syn::ItemEnum) -> proc_macro2::TokenStream {
     let prefix = format!("{}_INSN_ACCTS", user_prefix);
 
     // COUNT constant.
-    let count_doc = format!("{} number of accounts.", enum_name);
+    let count_doc = "Number of accounts.".to_string();
     let count_asm = format!("{}_COUNT", prefix);
     let count_meta_ident = codegen::meta_ident(&count_asm, enum_name.span());
     let count_meta = codegen::immediate_meta(
