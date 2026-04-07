@@ -107,10 +107,12 @@ are used:
 - `::` for module paths and enum variants (Rust syntax)
 - `.` for field access and type properties
 
-Type names (e.g. `Accounts`, `EmptyAccount`) are globally unique and
-appear unqualified. Constants require their [interface][bs-interface]
-module path (with `constants` group name elided). Frame fields are
-scoped to the owning algorithm.
+Type names appear unqualified. Globally unique types (e.g.
+`EmptyAccount`, `MarketHeader`) are unambiguous anywhere.
+Instruction-scoped types (e.g. `Accounts`, `Data`) are resolved by
+the owning algorithm, same as frame fields. Constants require their
+[interface][bs-interface] module path (with `constants` group name
+elided).
 
 ### Enum variants
 

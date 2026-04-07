@@ -27,7 +27,7 @@
   \REQUIRE frame.pda\_seeds[2].len = \texttt{u8.size}
   \REQUIRE frame.system\_program\_id = \&input.system\_program.address
   \REQUIRE frame.signers\_seeds.addr = \&frame.pda\_seeds
-  \REQUIRE frame.signers\_seeds.len = \texttt{frame.PDA\_SEEDS\_N\_SEEDS}
+  \REQUIRE frame.signers\_seeds.len = \texttt{frame.pda\_seeds.n\_seeds}
   \REQUIRE input.user.data\_len = \texttt{common::memory::LEN\_ZERO}
   \REQUIRE acct.data\_len = \texttt{common::memory::LEN\_ZERO}
   \REQUIRE frame.cpi[0].info.executable = \texttt{false}

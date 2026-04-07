@@ -114,7 +114,7 @@ init_market_pda:
     stxdw [r10 + RM_FM_CPI_IDX_1_ACCT_INFO_DATA_UOFF], r6
     # frame.signers_seeds.addr = &frame.pda_seeds
     stxdw [r10 + RM_FM_SIGNERS_SEEDS_ADDR_UOFF], r1
-    # frame.signers_seeds.len = frame.PDA_SEEDS_N_SEEDS
+    # frame.signers_seeds.len = frame.pda_seeds.n_seeds
     mov64 r7, RM_FM_PDA_SEEDS_N_SEEDS
     stxdw [r10 + RM_FM_SIGNERS_SEEDS_LEN_UOFF], r7
     # frame.sol_instruction.program_id = frame.system_program_id
