@@ -231,8 +231,31 @@ Note that `Pubkey` is a local alias for `pinocchio::Address` (see
 
 ## Interface
 
-The [`interface`] crate uses the macros to declare all program constants. The
-`INJECTION_GROUPS` slice collects every constant group for the build script.
+The [`interface`] crate uses the macros to declare program constants, data
+types, and instruction definitions.
+
+```txt
+interface/src/
+├── lib.rs                # Module declarations and re-exports
+├── groups.rs             # Injection groups registry
+├── entrypoint.rs         # Discriminants, entrypoint, and input buffer constants
+├── error.rs              # ErrorCode enum
+├── common/
+│   ├── account.rs        # Runtime account layout and CPI constants
+│   ├── cpi_bindings.rs   # Auto-generated Sol* C structs
+│   ├── memory.rs         # Data primitives and type sizes
+│   ├── pubkey.rs         # Pubkey chunk offsets, well-known program IDs
+│   └── token.rs          # SPL Token constants
+├── market/
+│   ├── mod.rs            # MarketHeader and market-level constants
+│   └── register.rs       # REGISTER-MARKET instruction types, frame, constants
+├── order/mod.rs          # Order data structure
+├── seat/mod.rs           # Seat data structure
+└── stack/mod.rs          # StackNode data structure
+```
+
+The `INJECTION_GROUPS` slice collects every constant group for the
+[build script](#assembly-injection).
 
 <Include rs="interface::groups" collapsed/>
 

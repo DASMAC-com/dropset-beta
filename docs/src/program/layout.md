@@ -27,7 +27,7 @@ program/src/dropset/
 
 Algorithm pseudocode (`.tex` files in `docs/algorithms/`) references
 constants and fields using scoped `\texttt{}` names. The scope mirrors
-the interface module path with these rules:
+the [interface][bs-interface] module path with these rules:
 
 **Enum variants** use Rust `::` syntax:
 
@@ -37,8 +37,9 @@ the interface module path with these rules:
 | `ErrorCode::InvalidDiscriminant` | `error::ErrorCode` |
 | `Accounts::User` | `market::register::Accounts` |
 
-**Constant group values** use the interface module path with `::`.
-When the group is named `constants`, the group name is elided:
+**Constant group values** use the [interface][bs-interface] module
+path with `::`. When the group is named `constants`, the group name
+is elided:
 
 | Example | Rust path | ASM constant |
 |---|---|---|
@@ -64,7 +65,7 @@ access:
 | Example | Meaning |
 |---|---|
 | `Accounts.count` | Number of instruction accounts |
-| `Data.size` | Instruction data byte size |
+| `Data.size` | Instruction data size in bytes |
 | `EmptyAccount.size` | `size_of::<EmptyAccount>()` |
 | `MarketHeader.size` | `size_of::<MarketHeader>()` |
 
@@ -77,6 +78,18 @@ access:
 - `Store(var)`: saves `var` to a callee-saved register before a call that
   would clobber caller-saved registers. The stored value is available after
   the call returns.
+
+### Assembly comments
+
+Assembly comments should contain only `\STATE` and `\IF`/`\RETURN`
+statements from the `.tex` pseudocode. `\COMMENT` blocks from the
+`.tex` are section-level descriptions and should not appear as inline
+ASM comments.
+
+Optimization notes use `# Optimize:` to explain when the
+implementation deviates from the pseudocode for performance:
+
+<Include asm="market/register#optimize_example" collapsible/>
 
 ## Top-level file
 

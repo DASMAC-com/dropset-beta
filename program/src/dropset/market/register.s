@@ -308,9 +308,11 @@ register_market:
     lddw r8, PUBKEY_RENT_CHUNK_2
     jne r7, r8, e_invalid_rent_sysvar_pubkey
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_3_OFF]
+    # region: optimize_example
     # Optimize: pubkey.RENT chunk 3 hi bits are zero, so mov32
     # (1 CU) replaces lddw (2 CUs).
     mov32 r8, PUBKEY_RENT_CHUNK_3_LO
+    # endregion: optimize_example
     jne r7, r8, e_invalid_rent_sysvar_pubkey
     # frame.rent = acct
     stxdw [r10 + RM_FM_RENT_OFF], r9
