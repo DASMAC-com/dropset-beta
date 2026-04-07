@@ -3,6 +3,7 @@ pub const INJECTION_GROUPS: &[&dropset_build::ConstantGroup] = &[
     &crate::entrypoint::constants::GROUP,
     &crate::entrypoint::input_buffer::GROUP,
     &crate::error::error_code::GROUP,
+    &crate::market::constants::GROUP,
     &crate::market::register::data::GROUP,
     &crate::market::register::accounts::GROUP,
     &crate::market::register::constants::GROUP,

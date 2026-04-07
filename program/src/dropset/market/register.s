@@ -60,10 +60,6 @@
 # Number of accounts for CreateAccount CPI (user, new account).
 .equ RM_CREATE_ACCOUNT_N_ACCOUNTS, 2
 .equ RM_N_PDA_SIGNERS, 1 # Number of PDA signers for CPI.
-# Vault index for base mint in PDA derivation and vault creation.
-.equ RM_VAULT_INDEX_BASE, 0
-# Vault index for quote mint in PDA derivation and vault creation.
-.equ RM_VAULT_INDEX_QUOTE, 1
 # -------------------------------------------------------------------------
 
 # Stack frame for REGISTER-MARKET.
@@ -400,8 +396,8 @@ register_market_base_vault:
     #     return ErrorCode::BaseVaultHasData
     ldxdw r7, [r9 + ACCT_DATA_LEN_OFF]
     jne r7, DATA_LEN_ZERO, e_base_vault_has_data
-    # frame.vault_index = constants.VAULT_INDEX_BASE
-    stb [r10 + RM_FM_VAULT_INDEX_UOFF], RM_VAULT_INDEX_BASE
+    # frame.vault_index = market.VAULT_INDEX_BASE
+    stb [r10 + RM_FM_VAULT_INDEX_UOFF], MKT_VAULT_INDEX_BASE
     # frame.mint = &input.base_mint
     mov64 r7, r8
     add64 r7, RM_BASE_DUPLICATE_OFF
@@ -515,8 +511,8 @@ register_market_done_token_programs:
     #     return ErrorCode::QuoteVaultHasData
     ldxdw r7, [r9 + ACCT_DATA_LEN_OFF]
     jne r7, DATA_LEN_ZERO, e_quote_vault_has_data
-    # frame.vault_index = constants.VAULT_INDEX_QUOTE
-    stb [r10 + RM_FM_VAULT_INDEX_UOFF], RM_VAULT_INDEX_QUOTE
+    # frame.vault_index = market.VAULT_INDEX_QUOTE
+    stb [r10 + RM_FM_VAULT_INDEX_UOFF], MKT_VAULT_INDEX_QUOTE
     # frame.mint = &input_shifted.quote_mint
     mov64 r7, r6
     add64 r7, RM_QUOTE_DUPLICATE_OFF

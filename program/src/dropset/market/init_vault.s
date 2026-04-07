@@ -321,11 +321,11 @@ init_vault_create_account:
     call sol_invoke_signed_c
     exit
 init_vault_invalid_pda:
-    # if frame.vault_index == constants.VAULT_INDEX_BASE
+    # if frame.vault_index == market.VAULT_INDEX_BASE
     #     return ErrorCode::InvalidBaseVaultPubkey
     # else
     #     return ErrorCode::InvalidQuoteVaultPubkey
     ldxb r1, [r6 + RM_FM_VAULT_INDEX_UOFF]
-    jeq r1, RM_VAULT_INDEX_BASE, e_invalid_base_vault_pubkey
+    jeq r1, MKT_VAULT_INDEX_BASE, e_invalid_base_vault_pubkey
     mov32 r0, E_INVALID_QUOTE_VAULT_PUBKEY
     exit

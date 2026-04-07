@@ -3,7 +3,19 @@ pub mod register;
 use crate::order::Order;
 use crate::seat::Seat;
 use crate::stack::StackNode;
-use dropset_macros::svm_data;
+use dropset_macros::{constant_group, svm_data};
+
+constant_group! {
+    #[prefix("MKT")]
+    #[inject("market/market")]
+    /// Market-level constants.
+    constants {
+        /// Vault index for base mint in PDA derivation and vault creation.
+        VAULT_INDEX_BASE = immediate!(0),
+        /// Vault index for quote mint in PDA derivation and vault creation.
+        VAULT_INDEX_QUOTE = immediate!(1),
+    }
+}
 
 // region: market_header
 #[svm_data]

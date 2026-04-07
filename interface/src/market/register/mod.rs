@@ -77,10 +77,6 @@ constant_group! {
         CREATE_ACCOUNT_N_ACCOUNTS = immediate!(2),
         /// Number of PDA signers for CPI.
         N_PDA_SIGNERS = immediate!(1),
-        /// Vault index for base mint in PDA derivation and vault creation.
-        VAULT_INDEX_BASE = immediate!(0),
-        /// Vault index for quote mint in PDA derivation and vault creation.
-        VAULT_INDEX_QUOTE = immediate!(1),
     }
 }
 
