@@ -12,8 +12,9 @@ use crate::common::codegen;
 pub fn expand(target: &str, input: &syn::ItemEnum) -> proc_macro2::TokenStream {
     let enum_name = &input.ident;
     let n_variants = input.variants.len();
-    let prefix = extract_attr_string(&input.attrs, "prefix")
+    let user_prefix = extract_attr_string(&input.attrs, "prefix")
         .unwrap_or_else(|| enum_name.to_string().to_shouty_snake_case());
+    let prefix = format!("{}_INSN_ACCTS", user_prefix);
 
     // COUNT constant.
     let count_doc = format!("{} number of accounts.", enum_name);

@@ -32,7 +32,7 @@ init_market_pda:
     add64 r1, RM_FM_PDA_SEEDS_OFF
     # syscall.program_id = &insn.program_id
     mov64 r3, r2
-    add64 r3, RM_SIZE
+    add64 r3, RM_INSN_DATA_SIZE
     # syscall.seeds_len = constants.TRY_FIND_MARKET_PDA_SEEDS_LEN
     mov64 r2, RM_TRY_FIND_MARKET_PDA_SEEDS_LEN
     # syscall.program_address = &frame.pda

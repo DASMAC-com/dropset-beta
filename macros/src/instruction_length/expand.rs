@@ -11,8 +11,9 @@ use crate::common::codegen;
 /// - A hidden module with `GROUP` metadata for assembly injection
 pub fn expand(target: &str, input: &syn::ItemStruct) -> proc_macro2::TokenStream {
     let struct_name = &input.ident;
-    let prefix = extract_attr_string(&input.attrs, "prefix")
+    let user_prefix = extract_attr_string(&input.attrs, "prefix")
         .unwrap_or_else(|| struct_name.to_string().to_shouty_snake_case());
+    let prefix = format!("{}_INSN_DATA", user_prefix);
     let comment = extract_doc_comment(&input.attrs).unwrap_or_default();
     let doc = "Instruction data size.";
 
