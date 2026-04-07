@@ -101,12 +101,18 @@ from the [`token`][token-mod] module via [`constant_group!`][bs-constant-group]:
 ## Notation
 
 Algorithm specifications (`.tex` files in `docs/algorithms/`) reference
-constants and fields using scoped `\texttt{}` names. The scope mirrors
-the [interface][bs-interface] module path with these rules:
+constants and fields using scoped `\texttt{}` names. Two separators
+are used:
+
+- `::` for module paths and enum variants (Rust syntax)
+- `.` for field access and type properties
+
+Type names (e.g. `Accounts`, `EmptyAccount`) are globally unique and
+appear unqualified. Constants require their [interface][bs-interface]
+module path (with `constants` group name elided). Frame fields are
+scoped to the owning algorithm.
 
 ### Enum variants
-
-Enum variants use Rust `::` syntax:
 
 | Algorithm spec | Rust | ASM constant |
 |---|---|---|
@@ -116,11 +122,10 @@ Enum variants use Rust `::` syntax:
 
 ### Constant group values
 
-Constant group values use the [interface][bs-interface] module path
-with `::`. When the group is named `constants`, the group name is
-elided:
+Constants use their [interface][bs-interface] module path with `::`.
+When the group is named `constants`, the group name is elided:
 
-| Algorithm spec | Rust path | ASM constant |
+| Algorithm spec | Rust | ASM constant |
 |---|---|---|
 | `entrypoint::RETURN_SUCCESS` | `entrypoint::constants::RETURN_SUCCESS` | `RETURN_SUCCESS` |
 | `entrypoint::input_buffer::MARKET_DATA_LEN` | `entrypoint::input_buffer::MARKET_DATA_LEN` | `IB_MARKET_DATA_LEN_OFF` |
@@ -133,25 +138,24 @@ elided:
 
 ### Frame fields
 
-Frame fields use the module path to the frame, then `.` for field
-access. The module scope is implicit when referenced from within the
-algorithm that owns the frame:
+Frame fields use `.` for field access. The module scope is implicit
+when referenced from within the algorithm that owns the frame:
 
-| Algorithm spec | Rust field | ASM constant |
+| Algorithm spec | Rust | ASM constant |
 |---|---|---|
 | `frame.input_shifted` | `market::register::Frame.input_shifted` | `RM_FM_INPUT_SHIFTED_OFF` |
 | `frame.pda` | `market::register::Frame.pda` | `RM_FM_PDA_OFF` |
 
 ### Type properties
 
-Type properties use `Type.property` for intrinsic values:
+Type properties use `.` for intrinsic values:
 
 | Algorithm spec | Rust | ASM constant |
 |---|---|---|
 | `Accounts.count` | `market::register::Accounts::COUNT` | `RM_INSN_ACCTS_COUNT` |
 | `Data.size` | `market::register::Data::SIZE` | `RM_INSN_DATA_SIZE` |
-| `EmptyAccount.size` | `common::account::EmptyAccount` | `SIZE_OF_EMPTY_ACCOUNT` |
-| `MarketHeader.size` | `market::MarketHeader` | `SIZE_OF_MARKET_HEADER` |
+| `EmptyAccount.size` | `size_of::<common::account::EmptyAccount>()` | `SIZE_OF_EMPTY_ACCOUNT` |
+| `MarketHeader.size` | `size_of::<market::MarketHeader>()` | `SIZE_OF_MARKET_HEADER` |
 
 ### CPI targets and syscalls
 
