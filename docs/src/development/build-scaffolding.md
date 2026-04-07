@@ -30,7 +30,13 @@ Core types are as follows:
 
 ## Macros
 
-The [`macros`] crate provides several [proc macros]:
+The [`macros`] crate provides several [proc macros]. Attribute macros
+([`#[frame]`](#frame), [`#[svm_data]`](#svm-data),
+[`#[instruction_data]`](#instruction-data-target), etc.) are used when
+the macro annotates a natural Rust item (struct, enum). Function-like
+macros ([`constant_group!`](#constant_group),
+[`size_of_group!`](#size-of-group)) are used when the body has custom
+syntax that doesn't map to a standard Rust item.
 
 <Include rs="macros::lib" collapsed/>
 
