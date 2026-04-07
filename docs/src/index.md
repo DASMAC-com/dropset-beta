@@ -21,7 +21,7 @@ check out the [Solana Opcode Guide].
 
 This site uses a custom [docs engine] that provides formal [CLRS]-style
 algorithmic specifications with corresponding assembly implementations
-sourced directly from the codebase.  [Test cases] are linked to
+sourced directly from the codebase. [Test cases] are linked to
 the algorithms they verify via `// Verifies:` tags and are embedded on each
 algorithm's page.
 

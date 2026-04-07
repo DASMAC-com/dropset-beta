@@ -35,6 +35,7 @@ syscall
 syscalls
 sysvar
 sysvars
+texttt
 uoff
 ureq
 vite

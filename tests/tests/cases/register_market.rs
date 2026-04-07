@@ -1,9 +1,11 @@
+use dropset_interface::common::pubkey::constants::{
+    CHUNK_0_OFF, CHUNK_1_OFF, CHUNK_2_OFF, CHUNK_3_OFF,
+};
+use dropset_interface::common::pubkey::{TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID};
 use dropset_interface::entrypoint::input_buffer::MARKET_DATA_BYTES_OFF;
+use dropset_interface::market::MarketHeader;
 use dropset_interface::market::constants::{VAULT_INDEX_BASE, VAULT_INDEX_QUOTE};
 use dropset_interface::market::register::Accounts;
-use dropset_interface::market::MarketHeader;
-use dropset_interface::common::pubkey::constants::{CHUNK_0_OFF, CHUNK_1_OFF, CHUNK_2_OFF, CHUNK_3_OFF};
-use dropset_interface::common::pubkey::{TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID};
 use dropset_interface::{Discriminant, ErrorCode};
 use dropset_tests::{
     CaseResult, TestCase, TestSetup, check, check_custom, check_with_accounts, find_pda_seed_pair,
@@ -104,8 +106,7 @@ const N_ACCOUNTS: usize = Accounts::COUNT as usize;
 fn default_accounts() -> (Vec<Pubkey>, Vec<Account>) {
     let keys: Vec<Pubkey> = (0..N_ACCOUNTS).map(|_| Pubkey::new_unique()).collect();
     let mut accounts: Vec<Account> = (0..N_ACCOUNTS).map(|_| Account::default()).collect();
-    accounts[Accounts::User as usize] =
-        Account::new(USER_LAMPORTS, 0, &Pubkey::default());
+    accounts[Accounts::User as usize] = Account::new(USER_LAMPORTS, 0, &Pubkey::default());
     (keys, accounts)
 }
 
@@ -490,11 +491,9 @@ fn token_program_base_accounts(
         };
 
     keys[Accounts::BaseTokenProgram as usize] = base_token_program;
-    accounts[Accounts::BaseTokenProgram as usize] =
-        token_program_account(base_token_program);
+    accounts[Accounts::BaseTokenProgram as usize] = token_program_account(base_token_program);
     keys[Accounts::QuoteTokenProgram as usize] = quote_token_program;
-    accounts[Accounts::QuoteTokenProgram as usize] =
-        token_program_account(quote_token_program);
+    accounts[Accounts::QuoteTokenProgram as usize] = token_program_account(quote_token_program);
 
     // Derive base vault PDA from market address and vault index.
     let (base_vault_pda, _) = Pubkey::find_program_address(
@@ -604,8 +603,7 @@ impl TestCase for Case {
                 let (mut keys, accounts) = default_accounts();
                 // Market shares key with User, causing the runtime
                 // to serialize it as a duplicate.
-                keys[Accounts::Market as usize] =
-                    keys[Accounts::User as usize];
+                keys[Accounts::Market as usize] = keys[Accounts::User as usize];
                 let (metas, accounts) = into_metas_and_accounts(keys, accounts);
                 check_custom(
                     setup,
@@ -627,8 +625,7 @@ impl TestCase for Case {
                 let (mut keys, accounts) = default_accounts();
                 // BaseMint shares key with User, causing the runtime
                 // to serialize it as a duplicate.
-                keys[Accounts::BaseMint as usize] =
-                    keys[Accounts::User as usize];
+                keys[Accounts::BaseMint as usize] = keys[Accounts::User as usize];
                 let (metas, accounts) = into_metas_and_accounts(keys, accounts);
                 check_custom(
                     setup,
@@ -643,8 +640,7 @@ impl TestCase for Case {
                 let (mut keys, accounts) = default_accounts();
                 // QuoteMint shares key with User, causing the runtime
                 // to serialize it as a duplicate.
-                keys[Accounts::QuoteMint as usize] =
-                    keys[Accounts::User as usize];
+                keys[Accounts::QuoteMint as usize] = keys[Accounts::User as usize];
                 let (metas, accounts) = into_metas_and_accounts(keys, accounts);
                 check_custom(
                     setup,
@@ -667,8 +663,7 @@ impl TestCase for Case {
                 keys[Accounts::Market as usize] = pda;
                 // SystemProgram shares key with User, causing the runtime
                 // to serialize it as a duplicate.
-                keys[Accounts::SystemProgram as usize] =
-                    keys[Accounts::User as usize];
+                keys[Accounts::SystemProgram as usize] = keys[Accounts::User as usize];
                 let (metas, accounts) = into_metas_and_accounts(keys, accounts);
                 check_custom(
                     setup,
@@ -736,8 +731,7 @@ impl TestCase for Case {
                 keys[Accounts::SystemProgram as usize] = Pubkey::default();
                 // RentSysvar shares key with User, causing the runtime
                 // to serialize it as a duplicate.
-                keys[Accounts::RentSysvar as usize] =
-                    keys[Accounts::User as usize];
+                keys[Accounts::RentSysvar as usize] = keys[Accounts::User as usize];
                 let (metas, accounts) = into_metas_and_accounts(keys, accounts);
                 check_custom(
                     setup,
@@ -855,8 +849,7 @@ impl TestCase for Case {
                 let (mut keys, accounts) =
                     token_program_base_accounts(setup, token_program_id, token_program_id, false);
                 // BaseTokenProgram shares key with User, causing duplicate.
-                keys[Accounts::BaseTokenProgram as usize] =
-                    keys[Accounts::User as usize];
+                keys[Accounts::BaseTokenProgram as usize] = keys[Accounts::User as usize];
                 let (metas, accounts) = writable_metas_and_accounts(keys, accounts);
                 check_custom(
                     setup,
@@ -1153,8 +1146,7 @@ impl TestCase for Case {
                 let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
                 let (mut keys, accounts) =
                     token_program_base_accounts(setup, token_program_id, token_program_id, false);
-                keys[Accounts::QuoteTokenProgram as usize] =
-                    keys[Accounts::User as usize];
+                keys[Accounts::QuoteTokenProgram as usize] = keys[Accounts::User as usize];
                 let (metas, accounts) = writable_metas_and_accounts(keys, accounts);
                 check_custom(
                     setup,
@@ -1170,8 +1162,7 @@ impl TestCase for Case {
                 let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
                 let (mut keys, accounts) =
                     token_program_base_accounts(setup, token_program_id, token_program_id, false);
-                keys[Accounts::QuoteTokenProgram as usize] =
-                    keys[Accounts::Market as usize];
+                keys[Accounts::QuoteTokenProgram as usize] = keys[Accounts::Market as usize];
                 let (metas, accounts) = writable_metas_and_accounts(keys, accounts);
                 check_custom(
                     setup,
@@ -1187,8 +1178,7 @@ impl TestCase for Case {
                 let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
                 let (mut keys, accounts) =
                     token_program_base_accounts(setup, token_program_id, token_program_id, false);
-                keys[Accounts::QuoteTokenProgram as usize] =
-                    keys[Accounts::BaseMint as usize];
+                keys[Accounts::QuoteTokenProgram as usize] = keys[Accounts::BaseMint as usize];
                 let (metas, accounts) = writable_metas_and_accounts(keys, accounts);
                 check_custom(
                     setup,
@@ -1204,8 +1194,7 @@ impl TestCase for Case {
                 let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
                 let (mut keys, accounts) =
                     token_program_base_accounts(setup, token_program_id, token_program_id, false);
-                keys[Accounts::QuoteTokenProgram as usize] =
-                    keys[Accounts::QuoteMint as usize];
+                keys[Accounts::QuoteTokenProgram as usize] = keys[Accounts::QuoteMint as usize];
                 let (metas, accounts) = writable_metas_and_accounts(keys, accounts);
                 check_custom(
                     setup,
@@ -1304,8 +1293,7 @@ impl TestCase for Case {
                 );
                 // Base vault shares key with User, causing the runtime
                 // to serialize it as a duplicate.
-                keys[Accounts::BaseVault as usize] =
-                    keys[Accounts::User as usize];
+                keys[Accounts::BaseVault as usize] = keys[Accounts::User as usize];
                 let (metas, accounts) = writable_metas_and_accounts(keys, accounts);
                 check_custom(
                     setup,
@@ -1351,8 +1339,7 @@ impl TestCase for Case {
                 keys[Accounts::QuoteVault as usize] = quote_vault_pda;
                 // Quote vault shares key with User, causing the runtime
                 // to serialize it as a duplicate.
-                keys[Accounts::QuoteVault as usize] =
-                    keys[Accounts::User as usize];
+                keys[Accounts::QuoteVault as usize] = keys[Accounts::User as usize];
                 let (metas, accounts) = writable_metas_and_accounts(keys, accounts);
                 check_custom(
                     setup,
@@ -1380,8 +1367,7 @@ impl TestCase for Case {
                 keys[Accounts::QuoteVault as usize] = quote_vault_pda;
                 // Quote vault shares key with User, causing the runtime
                 // to serialize it as a duplicate.
-                keys[Accounts::QuoteVault as usize] =
-                    keys[Accounts::User as usize];
+                keys[Accounts::QuoteVault as usize] = keys[Accounts::User as usize];
                 let (metas, accounts) = writable_metas_and_accounts(keys, accounts);
                 check_custom(
                     setup,
@@ -1619,8 +1605,7 @@ impl TestCase for Case {
                 let mut errors = Vec::new();
                 match &result.program_result {
                     MolluskResult::Success => {
-                        let market =
-                            &result.resulting_accounts[Accounts::Market as usize].1;
+                        let market = &result.resulting_accounts[Accounts::Market as usize].1;
 
                         if market.owner != setup.program_id {
                             errors.push(format!(
@@ -1644,16 +1629,13 @@ impl TestCase for Case {
                             ));
                         }
 
-                        let market_pda =
-                            result.resulting_accounts[Accounts::Market as usize].0;
+                        let market_pda = result.resulting_accounts[Accounts::Market as usize].0;
                         let base_mint_key =
                             result.resulting_accounts[Accounts::BaseMint as usize].0;
                         let quote_mint_key =
                             result.resulting_accounts[Accounts::QuoteMint as usize].0;
 
-                        let base_vault = &result.resulting_accounts
-                            [Accounts::BaseVault as usize]
-                            .1;
+                        let base_vault = &result.resulting_accounts[Accounts::BaseVault as usize].1;
                         check_vault!(
                             errors,
                             "base vault",
@@ -1665,9 +1647,8 @@ impl TestCase for Case {
                             TOKEN_ACCOUNT_SIZE
                         );
 
-                        let quote_vault = &result.resulting_accounts
-                            [Accounts::QuoteVault as usize]
-                            .1;
+                        let quote_vault =
+                            &result.resulting_accounts[Accounts::QuoteVault as usize].1;
                         check_vault!(
                             errors,
                             "quote vault",
@@ -1715,8 +1696,7 @@ impl TestCase for Case {
                 let mut errors = Vec::new();
                 match &result.program_result {
                     MolluskResult::Success => {
-                        let market =
-                            &result.resulting_accounts[Accounts::Market as usize].1;
+                        let market = &result.resulting_accounts[Accounts::Market as usize].1;
 
                         if market.owner != setup.program_id {
                             errors.push(format!(
@@ -1740,16 +1720,13 @@ impl TestCase for Case {
                             ));
                         }
 
-                        let market_pda =
-                            result.resulting_accounts[Accounts::Market as usize].0;
+                        let market_pda = result.resulting_accounts[Accounts::Market as usize].0;
                         let base_mint_key =
                             result.resulting_accounts[Accounts::BaseMint as usize].0;
                         let quote_mint_key =
                             result.resulting_accounts[Accounts::QuoteMint as usize].0;
 
-                        let base_vault = &result.resulting_accounts
-                            [Accounts::BaseVault as usize]
-                            .1;
+                        let base_vault = &result.resulting_accounts[Accounts::BaseVault as usize].1;
                         check_vault!(
                             errors,
                             "base vault",
@@ -1761,9 +1738,8 @@ impl TestCase for Case {
                             TOKEN_ACCOUNT_SIZE
                         );
 
-                        let quote_vault = &result.resulting_accounts
-                            [Accounts::QuoteVault as usize]
-                            .1;
+                        let quote_vault =
+                            &result.resulting_accounts[Accounts::QuoteVault as usize].1;
                         check_vault!(
                             errors,
                             "quote vault",
@@ -1810,8 +1786,7 @@ impl TestCase for Case {
                 let mut errors = Vec::new();
                 match &result.program_result {
                     MolluskResult::Success => {
-                        let market =
-                            &result.resulting_accounts[Accounts::Market as usize].1;
+                        let market = &result.resulting_accounts[Accounts::Market as usize].1;
 
                         if market.owner != setup.program_id {
                             errors.push(format!(
@@ -1835,16 +1810,13 @@ impl TestCase for Case {
                             ));
                         }
 
-                        let market_pda =
-                            result.resulting_accounts[Accounts::Market as usize].0;
+                        let market_pda = result.resulting_accounts[Accounts::Market as usize].0;
                         let base_mint_key =
                             result.resulting_accounts[Accounts::BaseMint as usize].0;
                         let quote_mint_key =
                             result.resulting_accounts[Accounts::QuoteMint as usize].0;
 
-                        let base_vault = &result.resulting_accounts
-                            [Accounts::BaseVault as usize]
-                            .1;
+                        let base_vault = &result.resulting_accounts[Accounts::BaseVault as usize].1;
                         check_vault!(
                             errors,
                             "base vault",
@@ -1856,9 +1828,8 @@ impl TestCase for Case {
                             TOKEN_2022_ACCOUNT_SIZE_A
                         );
 
-                        let quote_vault = &result.resulting_accounts
-                            [Accounts::QuoteVault as usize]
-                            .1;
+                        let quote_vault =
+                            &result.resulting_accounts[Accounts::QuoteVault as usize].1;
                         check_vault!(
                             errors,
                             "quote vault",
@@ -1906,8 +1877,7 @@ impl TestCase for Case {
                 let mut errors = Vec::new();
                 match &result.program_result {
                     MolluskResult::Success => {
-                        let market =
-                            &result.resulting_accounts[Accounts::Market as usize].1;
+                        let market = &result.resulting_accounts[Accounts::Market as usize].1;
 
                         if market.owner != setup.program_id {
                             errors.push(format!(
@@ -1931,16 +1901,13 @@ impl TestCase for Case {
                             ));
                         }
 
-                        let market_pda =
-                            result.resulting_accounts[Accounts::Market as usize].0;
+                        let market_pda = result.resulting_accounts[Accounts::Market as usize].0;
                         let base_mint_key =
                             result.resulting_accounts[Accounts::BaseMint as usize].0;
                         let quote_mint_key =
                             result.resulting_accounts[Accounts::QuoteMint as usize].0;
 
-                        let base_vault = &result.resulting_accounts
-                            [Accounts::BaseVault as usize]
-                            .1;
+                        let base_vault = &result.resulting_accounts[Accounts::BaseVault as usize].1;
                         check_vault!(
                             errors,
                             "base vault",
@@ -1952,9 +1919,8 @@ impl TestCase for Case {
                             TOKEN_2022_ACCOUNT_SIZE_A
                         );
 
-                        let quote_vault = &result.resulting_accounts
-                            [Accounts::QuoteVault as usize]
-                            .1;
+                        let quote_vault =
+                            &result.resulting_accounts[Accounts::QuoteVault as usize].1;
                         check_vault!(
                             errors,
                             "quote vault",

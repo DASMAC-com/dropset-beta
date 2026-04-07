@@ -106,13 +106,14 @@ fully regenerates the target assembly file.
 
 <Include rs="interface::error#error_enum" collapsed/>
 
-### `#[instruction_data("target")]`
+### `#[instruction_data("target")]` {#instruction-data-target}
 
 Attribute macro for instruction data structs. Automatically generates a
 `SIZE` associated constant (`u64`) from `size_of::<Self>()`, and a hidden
 module with an `INSN_DATA_SIZE` suffixed assembly constant and `GROUP` for
-build-time injection. The target string names the assembly file (e.g. `"market/register"`
-targets `program/src/dropset/market/register.s`).
+build-time injection. The target string names the assembly file
+(e.g. `"market/register"` targets
+`program/src/dropset/market/register.s`).
 
 The size is accessible in Rust as `Data::SIZE`.
 
@@ -122,7 +123,8 @@ The size is accessible in Rust as `Data::SIZE`.
 
 Attribute macro for instruction accounts enums. Generates a `COUNT` associated
 constant (`u64`) from the number of enum variants, plus a per-variant
-`INSN_ACCTS_*_POS` position constant (`i32`) for each variant. A hidden module with assembly
+`INSN_ACCTS_*_POS` position constant (`i32`) for each variant.
+A hidden module with assembly
 constants and `GROUP` is emitted for build-time injection. Assembly comments
 are auto-generated from the variant names.
 
@@ -163,7 +165,7 @@ the difference between two field offsets.
 
 <Include rs="interface::market::register#frame_example" collapsed/>
 
-### `#[svm_data]`
+### `#[svm_data]` {#svm-data}
 
 Attribute macro for packed onchain data structs. Applies `#[repr(C, packed)]`
 to the struct so its layout matches the SVM memory map exactly. Use this for
@@ -192,7 +194,7 @@ named account. Field names are registered in proc-macro shared state so that
 `#[cpi_accounts]` field attribute on a [`#[frame]`](#frame) struct, can
 auto-discover all account fields by looking up the parent field's type.
 
-### `size_of_group!`
+### `size_of_group!` {#size-of-group}
 
 Injects `SIZE_OF_<TYPE>` immediates for each listed type. Names and doc
 comments are auto-derived from the type name (`Pubkey` becomes
@@ -211,7 +213,7 @@ types, and instruction definitions.
 interface/src/
 ├── lib.rs                # Module declarations and re-exports
 ├── groups.rs             # Injection groups registry
-├── entrypoint.rs         # Discriminants, entrypoint, and input buffer constants
+├── entrypoint.rs         # Discriminants, entrypoint, input buffer
 ├── error.rs              # ErrorCode enum
 ├── common/
 │   ├── account.rs        # Runtime account layout and CPI constants

@@ -1,7 +1,7 @@
-use crate::market::MarketHeader;
-use crate::market::register::CreateAccountData;
 use crate::common::account::EmptyAccount;
 use crate::common::token::InitializeAccount2;
+use crate::market::MarketHeader;
+use crate::market::register::CreateAccountData;
 use dropset_macros::{constant_group, size_of_group};
 use pinocchio::Address as Pubkey;
 

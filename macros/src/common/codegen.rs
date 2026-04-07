@@ -72,6 +72,7 @@ pub fn wide_meta(
 /// Shared by the attribute macros (`discriminant_enum`, `error_enum`,
 /// `instruction_data`, `instruction_accounts`) that re-emit an item and
 /// attach a hidden injection group.
+#[allow(clippy::too_many_arguments)]
 pub fn with_group(
     target: &str,
     type_name: &Ident,
@@ -106,6 +107,7 @@ pub fn with_group(
 /// Shared by `#[instruction_data]` (struct, `size_of`) and
 /// `#[instruction_accounts]` (enum, variant count). The caller supplies the
 /// `len_expr` that computes the value and the original item to re-emit.
+#[allow(clippy::too_many_arguments)]
 pub fn len_group(
     target: &str,
     type_name: &Ident,
