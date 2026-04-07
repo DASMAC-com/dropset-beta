@@ -53,7 +53,7 @@ import { isRestoring } from "../theme/scrollPreserve.js";
 const GH_TESTS = `${GH_ROOT}tests/tests/cases/`;
 
 // Import all .tex files at build time via Vite's glob import with ?raw.
-const texModules = import.meta.glob("../../algorithms/*.tex", {
+const texModules = import.meta.glob("../../algorithms/**/*.tex", {
   query: "?raw",
   import: "default",
 });
@@ -116,7 +116,8 @@ onMounted(async () => {
     const pseudocode = await import("pseudocode");
 
     // Load .tex source at build time via glob import.
-    const texLoader = texModules[`../../algorithms/${props.id}.tex`];
+    const texPath = registry.algorithms[props.id]?.tex ?? props.id;
+    const texLoader = texModules[`../../algorithms/${texPath}.tex`];
     if (!texLoader) throw new Error(`Unknown algorithm: ${props.id}`);
     const code = await texLoader();
 

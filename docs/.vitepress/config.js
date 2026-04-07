@@ -82,7 +82,7 @@ export default {
         // Rebuild algorithm index when .tex or .md files change in dev mode.
         name: "watch-algorithm-index",
         configureServer(server) {
-          server.watcher.add("**/algorithms/*.tex");
+          server.watcher.add("**/algorithms/**/*.tex");
           server.watcher.add("**/tests/tests/cases/*.rs");
           server.watcher.on("change", (path) => {
             const rebuild =
