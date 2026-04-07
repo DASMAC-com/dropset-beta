@@ -13,8 +13,6 @@ static CPI_ACCOUNTS: LazyLock<Mutex<HashMap<String, Vec<String>>>> =
 struct FrameInfo {
     /// Field name → type name mappings (e.g. `("pda_seeds", "PdaSignerSeeds")`).
     fields: Vec<(String, String)>,
-    /// Doc comment from the frame struct, used as the default group header.
-    doc: String,
 }
 
 static FRAME_INFO: LazyLock<Mutex<HashMap<String, FrameInfo>>> =
@@ -37,19 +35,11 @@ pub fn register_cpi_accounts(struct_name: &str, fields: Vec<String>) {
 }
 
 /// Store the metadata of a `#[frame]` struct.
-pub fn register_frame(struct_name: &str, fields: Vec<(String, String)>, doc: String) {
+pub fn register_frame(struct_name: &str, fields: Vec<(String, String)>) {
     FRAME_INFO
         .lock()
         .unwrap()
-        .insert(struct_name.to_string(), FrameInfo { fields, doc });
-}
-
-/// Look up the doc comment registered by `#[frame]`.
-pub fn lookup_frame_doc(frame_name: &str) -> Option<String> {
-    let info = FRAME_INFO.lock().unwrap();
-    info.get(frame_name)
-        .map(|i| i.doc.clone())
-        .filter(|d| !d.is_empty())
+        .insert(struct_name.to_string(), FrameInfo { fields });
 }
 
 /// Resolve a parent field on a frame struct to its type name, then look up

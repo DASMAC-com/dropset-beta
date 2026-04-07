@@ -3,19 +3,14 @@ use syn::{
     parse::{Parse, ParseStream},
 };
 
-mod cpi_accounts;
 mod offset;
-mod signer_seeds;
 
 use super::{ConstantDef, ConstantKind};
 use crate::common::attrs::{
-    extract_attr_path, extract_attr_string, extract_doc_comment, extract_inject_target,
-    validate_comment, validate_name,
+    extract_attr_string, extract_doc_comment, extract_inject_target, validate_comment,
+    validate_name,
 };
-use crate::common::shared_state;
-use cpi_accounts::parse_cpi_accounts;
 use offset::parse_offset;
-use signer_seeds::parse_signer_seeds;
 
 /// The body of `constant_group! { ... }` with custom constant syntax inside.
 pub struct ConstantGroupInput {
@@ -33,16 +28,8 @@ impl Parse for ConstantGroupInput {
         let target = extract_inject_target(&attrs)
             .ok_or_else(|| input.error("constant group must have #[inject(\"target\")]"))?;
         let prefix = extract_attr_string(&attrs, "prefix");
-        let frame_type = extract_attr_path(&attrs, "frame");
 
-        // Use explicit doc comment, or fall back to the frame struct's doc.
-        let doc = extract_doc_comment(&attrs).unwrap_or_else(|| {
-            frame_type
-                .as_ref()
-                .and_then(|p| p.segments.last())
-                .and_then(|s| shared_state::lookup_frame_doc(&s.ident.to_string()))
-                .unwrap_or_default()
-        });
+        let doc = extract_doc_comment(&attrs).unwrap_or_default();
         if !doc.is_empty()
             && let Err(e) = validate_comment(&doc)
         {
@@ -77,33 +64,7 @@ impl Parse for ConstantGroupInput {
                 "offset" => {
                     let inner;
                     syn::parenthesized!(inner in content);
-                    parse_offset(&inner, &frame_type)?
-                }
-                "signer_seeds" => {
-                    let inner;
-                    syn::parenthesized!(inner in content);
-                    parse_signer_seeds(&inner, &frame_type, kind_ident.span())?
-                }
-                "sol_instruction" => {
-                    let inner;
-                    syn::parenthesized!(inner in content);
-                    let parsed = parse_offset(&inner, &frame_type)?;
-                    match parsed {
-                        ConstantKind::FrameOffset { fields } => {
-                            ConstantKind::SolInstruction { fields }
-                        }
-                        _ => {
-                            return Err(syn::Error::new(
-                                kind_ident.span(),
-                                "sol_instruction requires a #[frame] context with a bare field path",
-                            ));
-                        }
-                    }
-                }
-                "cpi_accounts" => {
-                    let inner;
-                    syn::parenthesized!(inner in content);
-                    parse_cpi_accounts(&inner, &frame_type, kind_ident.span())?
+                    parse_offset(&inner)?
                 }
                 "immediate" => {
                     let inner;
@@ -117,38 +78,15 @@ impl Parse for ConstantGroupInput {
                     let expr: Expr = inner.parse()?;
                     ConstantKind::Pubkey { expr }
                 }
-                "unaligned_offset" => {
-                    let inner;
-                    syn::parenthesized!(inner in content);
-                    let parsed = parse_offset(&inner, &frame_type)?;
-                    match parsed {
-                        ConstantKind::FrameOffset { fields } => {
-                            ConstantKind::UnalignedFrameOffset { fields }
-                        }
-                        _ => {
-                            return Err(syn::Error::new(
-                                kind_ident.span(),
-                                "unaligned_offset requires a #[frame] context with a bare field path",
-                            ));
-                        }
-                    }
-                }
-                "unaligned_pubkey_offsets" => {
-                    let inner;
-                    syn::parenthesized!(inner in content);
-                    parse_offset(&inner, &frame_type)?
-                        .into_unaligned_pubkey_offsets()
-                        .map_err(|msg| syn::Error::new(kind_ident.span(), msg))?
-                }
                 "relative_offset" => {
                     let inner;
                     syn::parenthesized!(inner in content);
-                    offset::parse_relative_offset(&inner, &frame_type, kind_ident.span())?
+                    offset::parse_relative_offset(&inner, kind_ident.span())?
                 }
                 "pubkey_offsets" => {
                     let inner;
                     syn::parenthesized!(inner in content);
-                    parse_offset(&inner, &frame_type)?
+                    parse_offset(&inner)?
                         .into_pubkey_offsets()
                         .map_err(|msg| syn::Error::new(kind_ident.span(), msg))?
                 }
@@ -172,7 +110,7 @@ impl Parse for ConstantGroupInput {
         Ok(ConstantGroupInput {
             target,
             prefix,
-            frame_type,
+            frame_type: None,
             doc,
             mod_name,
             constants,

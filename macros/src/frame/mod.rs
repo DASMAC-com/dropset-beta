@@ -79,7 +79,7 @@ pub fn expand(input: &syn::ItemStruct) -> proc_macro2::TokenStream {
         })
         .collect();
     let doc = extract_doc_comment(&input.attrs).unwrap_or_default();
-    shared_state::register_frame(&ident.to_string(), field_types, doc.clone());
+    shared_state::register_frame(&ident.to_string(), field_types);
 
     // Strip custom struct-level attributes from emitted output.
     let struct_attrs: Vec<_> = input
