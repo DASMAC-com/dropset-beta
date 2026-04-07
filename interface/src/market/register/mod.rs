@@ -1,39 +1,14 @@
-use crate::cpi_bindings::{
+use crate::svm::account::EmptyAccount;
+use crate::svm::cpi_bindings::{
     SolAccountInfo, SolAccountMeta, SolInstruction, SolSignerSeed, SolSignerSeeds,
 };
-use crate::memory::EmptyAccount;
-use crate::memory::StackNode;
-use crate::order::Order;
-use crate::seat::Seat;
-use crate::token::InitializeAccount2;
+use crate::svm::token::InitializeAccount2;
 use dropset_macros::{
     constant_group, cpi_accounts, frame, instruction_accounts, instruction_data, signer_seeds,
     svm_data,
 };
 use pinocchio::Address as Pubkey;
 use pinocchio::account::RuntimeAccount;
-
-// region: market_header
-#[svm_data]
-pub struct MarketHeader {
-    /// Absolute pointer to seats tree root in memory map.
-    pub seats: *mut Seat,
-    /// Absolute pointer to asks tree root in memory map.
-    pub asks: *mut Order,
-    /// Absolute pointer to bids tree root in memory map.
-    pub bids: *mut Order,
-    /// Absolute pointer to stack top in memory map.
-    pub top: *mut StackNode,
-    /// Absolute pointer to where the next node should be allocated in memory map.
-    pub next: *mut StackNode,
-    /// Bump seed for market PDA.
-    pub bump: u8,
-    /// Bump seed for base vault PDA.
-    pub base_vault_bump: u8,
-    /// Bump seed for quote vault PDA.
-    pub quote_vault_bump: u8,
-}
-// endregion: market_header
 
 // region: register_market_data
 #[instruction_data("market/register")]
@@ -44,7 +19,7 @@ pub struct RegisterMarketData {
 // endregion: register_market_data
 
 #[svm_data]
-pub struct RegisterMarketInputBuffer {
+pub struct InputBuffer {
     pub n_accounts: u64,
     pub user: EmptyAccount,
     pub market: EmptyAccount,
@@ -59,23 +34,23 @@ constant_group! {
     /// Miscellaneous market registration constants.
     register_misc {
         /// From input buffer to base mint duplicate flag.
-        BASE_DUPLICATE = offset!(RegisterMarketInputBuffer.base_mint.header.borrow_state),
+        BASE_DUPLICATE = offset!(InputBuffer.base_mint.header.borrow_state),
         /// From input buffer to base mint data length.
-        BASE_DATA_LEN = offset!(RegisterMarketInputBuffer.base_mint.header.data_len),
+        BASE_DATA_LEN = offset!(InputBuffer.base_mint.header.data_len),
         /// From input buffer to base mint address field.
-        BASE_ADDR = offset!(RegisterMarketInputBuffer.base_mint.header.address),
+        BASE_ADDR = offset!(InputBuffer.base_mint.header.address),
         /// From input buffer to base mint owner.
-        BASE_OWNER = pubkey_offsets!(RegisterMarketInputBuffer.base_mint.header.owner),
+        BASE_OWNER = pubkey_offsets!(InputBuffer.base_mint.header.owner),
         /// From input buffer to quote mint.
-        QUOTE = offset!(RegisterMarketInputBuffer.quote_mint),
+        QUOTE = offset!(InputBuffer.quote_mint),
         /// From input buffer to quote mint duplicate flag.
-        QUOTE_DUPLICATE = offset!(RegisterMarketInputBuffer.quote_mint.header.borrow_state),
+        QUOTE_DUPLICATE = offset!(InputBuffer.quote_mint.header.borrow_state),
         /// From input buffer to quote mint address field.
-        QUOTE_ADDR = offset!(RegisterMarketInputBuffer.quote_mint.header.address),
+        QUOTE_ADDR = offset!(InputBuffer.quote_mint.header.address),
         /// From input buffer to quote mint owner.
-        QUOTE_OWNER = pubkey_offsets!(RegisterMarketInputBuffer.quote_mint.header.owner),
+        QUOTE_OWNER = pubkey_offsets!(InputBuffer.quote_mint.header.owner),
         /// From input buffer to quote mint data length.
-        QUOTE_DATA_LEN = offset!(RegisterMarketInputBuffer.quote_mint.header.data_len),
+        QUOTE_DATA_LEN = offset!(InputBuffer.quote_mint.header.data_len),
         /// Number of seeds for market PDA derivation (base mint, quote mint).
         TRY_FIND_MARKET_PDA_SEEDS_LEN = immediate!(2),
         /// Number of seeds for vault PDA derivation (market address, vault index).
@@ -160,7 +135,7 @@ signer_seeds! {
     "From create_account_data to CPI account metas.")
 ]
 /// Stack frame for REGISTER-MARKET.
-pub struct RegisterMarketFrame {
+pub struct Frame {
     /// Pointer to token program ID.
     #[offset]
     pub token_program_id: *const Pubkey,
