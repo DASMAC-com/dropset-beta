@@ -10,9 +10,25 @@ use dropset_macros::{
 use pinocchio::Address as Pubkey;
 use pinocchio::account::RuntimeAccount;
 
+// region: register_market_accounts
+#[instruction_accounts("market/register")]
+pub enum Accounts {
+    User,
+    Market,
+    BaseMint,
+    QuoteMint,
+    SystemProgram,
+    RentSysvar,
+    BaseTokenProgram,
+    BaseVault,
+    QuoteTokenProgram,
+    QuoteVault,
+}
+// endregion: register_market_accounts
+
 // region: register_market_data
 #[instruction_data("market/register")]
-pub struct RegisterMarketData {
+pub struct Data {
     #[allow(dead_code)]
     discriminant: u8,
 }
@@ -29,9 +45,9 @@ pub struct InputBuffer {
 }
 
 constant_group! {
-    #[prefix("RM_MISC")]
+    #[prefix("RM")]
     #[inject("market/register")]
-    /// Miscellaneous market registration constants.
+    /// Assorted constants.
     constants {
         /// From input buffer to base mint duplicate flag.
         BASE_DUPLICATE = offset!(InputBuffer.base_mint.header.borrow_state),
@@ -65,22 +81,6 @@ constant_group! {
         VAULT_INDEX_QUOTE = immediate!(1),
     }
 }
-
-// region: register_market_accounts
-#[instruction_accounts("market/register")]
-pub enum RegisterMarketAccounts {
-    User,
-    Market,
-    BaseMint,
-    QuoteMint,
-    SystemProgram,
-    RentSysvar,
-    BaseTokenProgram,
-    BaseVault,
-    QuoteTokenProgram,
-    QuoteVault,
-}
-// endregion: register_market_accounts
 
 // region: register_market_stack
 #[svm_data]

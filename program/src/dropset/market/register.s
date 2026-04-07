@@ -1,26 +1,18 @@
-# RegisterMarketData instruction data length.
-.equ REGISTER_MARKET_DATA_LEN, 1
+.equ DATA_LEN, 1 # Data instruction data length.
 
-# RegisterMarketAccounts number of accounts.
-.equ REGISTER_MARKET_ACCOUNTS_LEN, 10
-.equ REGISTER_MARKET_ACCOUNTS_USER_POS, 0 # User account position.
-.equ REGISTER_MARKET_ACCOUNTS_MARKET_POS, 1 # Market account position.
-# Base Mint account position.
-.equ REGISTER_MARKET_ACCOUNTS_BASE_MINT_POS, 2
-# Quote Mint account position.
-.equ REGISTER_MARKET_ACCOUNTS_QUOTE_MINT_POS, 3
-# System Program account position.
-.equ REGISTER_MARKET_ACCOUNTS_SYSTEM_PROGRAM_POS, 4
-# Rent Sysvar account position.
-.equ REGISTER_MARKET_ACCOUNTS_RENT_SYSVAR_POS, 5
+.equ ACCOUNTS_LEN, 10 # Accounts number of accounts.
+.equ ACCOUNTS_USER_POS, 0 # User account position.
+.equ ACCOUNTS_MARKET_POS, 1 # Market account position.
+.equ ACCOUNTS_BASE_MINT_POS, 2 # Base Mint account position.
+.equ ACCOUNTS_QUOTE_MINT_POS, 3 # Quote Mint account position.
+.equ ACCOUNTS_SYSTEM_PROGRAM_POS, 4 # System Program account position.
+.equ ACCOUNTS_RENT_SYSVAR_POS, 5 # Rent Sysvar account position.
 # Base Token Program account position.
-.equ REGISTER_MARKET_ACCOUNTS_BASE_TOKEN_PROGRAM_POS, 6
-# Base Vault account position.
-.equ REGISTER_MARKET_ACCOUNTS_BASE_VAULT_POS, 7
+.equ ACCOUNTS_BASE_TOKEN_PROGRAM_POS, 6
+.equ ACCOUNTS_BASE_VAULT_POS, 7 # Base Vault account position.
 # Quote Token Program account position.
-.equ REGISTER_MARKET_ACCOUNTS_QUOTE_TOKEN_PROGRAM_POS, 8
-# Quote Vault account position.
-.equ REGISTER_MARKET_ACCOUNTS_QUOTE_VAULT_POS, 9
+.equ ACCOUNTS_QUOTE_TOKEN_PROGRAM_POS, 8
+.equ ACCOUNTS_QUOTE_VAULT_POS, 9 # Quote Vault account position.
 
 # Stack frame for REGISTER-MARKET.
 # -------------------------------------------------------------------------
@@ -176,63 +168,62 @@
 .equ RM_FM_CREATE_ACCT_DATA_TO_CPI_ACCT_METAS_REL_OFF_IMM, 264
 # -------------------------------------------------------------------------
 
-# Miscellaneous market registration constants.
+# Assorted constants.
 # -------------------------------------------------------------------------
 # From input buffer to base mint duplicate flag.
-.equ RM_MISC_BASE_DUPLICATE_OFF, 20680
+.equ RM_BASE_DUPLICATE_OFF, 20680
 # From input buffer to base mint data length.
-.equ RM_MISC_BASE_DATA_LEN_OFF, 20760
+.equ RM_BASE_DATA_LEN_OFF, 20760
 # From input buffer to base mint address field.
-.equ RM_MISC_BASE_ADDR_OFF, 20688
-.equ RM_MISC_BASE_OWNER_OFF, 20720 # From input buffer to base mint owner.
+.equ RM_BASE_ADDR_OFF, 20688
+.equ RM_BASE_OWNER_OFF, 20720 # From input buffer to base mint owner.
 # From input buffer to base mint owner (chunk 0).
-.equ RM_MISC_BASE_OWNER_CHUNK_0_OFF, 20720
+.equ RM_BASE_OWNER_CHUNK_0_OFF, 20720
 # From input buffer to base mint owner (chunk 1).
-.equ RM_MISC_BASE_OWNER_CHUNK_1_OFF, 20728
+.equ RM_BASE_OWNER_CHUNK_1_OFF, 20728
 # From input buffer to base mint owner (chunk 2).
-.equ RM_MISC_BASE_OWNER_CHUNK_2_OFF, 20736
+.equ RM_BASE_OWNER_CHUNK_2_OFF, 20736
 # From input buffer to base mint owner (chunk 3).
-.equ RM_MISC_BASE_OWNER_CHUNK_3_OFF, 20744
-.equ RM_MISC_QUOTE_OFF, 31016 # From input buffer to quote mint.
+.equ RM_BASE_OWNER_CHUNK_3_OFF, 20744
+.equ RM_QUOTE_OFF, 31016 # From input buffer to quote mint.
 # From input buffer to quote mint duplicate flag.
-.equ RM_MISC_QUOTE_DUPLICATE_OFF, 31016
+.equ RM_QUOTE_DUPLICATE_OFF, 31016
 # From input buffer to quote mint address field.
-.equ RM_MISC_QUOTE_ADDR_OFF, 31024
-# From input buffer to quote mint owner.
-.equ RM_MISC_QUOTE_OWNER_OFF, 31056
+.equ RM_QUOTE_ADDR_OFF, 31024
+.equ RM_QUOTE_OWNER_OFF, 31056 # From input buffer to quote mint owner.
 # From input buffer to quote mint owner (chunk 0).
-.equ RM_MISC_QUOTE_OWNER_CHUNK_0_OFF, 31056
+.equ RM_QUOTE_OWNER_CHUNK_0_OFF, 31056
 # From input buffer to quote mint owner (chunk 1).
-.equ RM_MISC_QUOTE_OWNER_CHUNK_1_OFF, 31064
+.equ RM_QUOTE_OWNER_CHUNK_1_OFF, 31064
 # From input buffer to quote mint owner (chunk 2).
-.equ RM_MISC_QUOTE_OWNER_CHUNK_2_OFF, 31072
+.equ RM_QUOTE_OWNER_CHUNK_2_OFF, 31072
 # From input buffer to quote mint owner (chunk 3).
-.equ RM_MISC_QUOTE_OWNER_CHUNK_3_OFF, 31080
+.equ RM_QUOTE_OWNER_CHUNK_3_OFF, 31080
 # From input buffer to quote mint data length.
-.equ RM_MISC_QUOTE_DATA_LEN_OFF, 31096
+.equ RM_QUOTE_DATA_LEN_OFF, 31096
 # Number of seeds for market PDA derivation (base mint, quote mint).
-.equ RM_MISC_TRY_FIND_MARKET_PDA_SEEDS_LEN, 2
+.equ RM_TRY_FIND_MARKET_PDA_SEEDS_LEN, 2
 # Number of seeds for vault PDA derivation (market address, vault index).
-.equ RM_MISC_TRY_FIND_VAULT_PDA_SEEDS_LEN, 2
+.equ RM_TRY_FIND_VAULT_PDA_SEEDS_LEN, 2
 # Number of accounts for CreateAccount CPI (user, new account).
-.equ RM_MISC_CREATE_ACCOUNT_N_ACCOUNTS, 2
-.equ RM_MISC_N_PDA_SIGNERS, 1 # Number of PDA signers for CPI.
+.equ RM_CREATE_ACCOUNT_N_ACCOUNTS, 2
+.equ RM_N_PDA_SIGNERS, 1 # Number of PDA signers for CPI.
 # Vault index for base mint in PDA derivation and vault creation.
-.equ RM_MISC_VAULT_INDEX_BASE, 0
+.equ RM_VAULT_INDEX_BASE, 0
 # Vault index for quote mint in PDA derivation and vault creation.
-.equ RM_MISC_VAULT_INDEX_QUOTE, 1
+.equ RM_VAULT_INDEX_QUOTE, 1
 # -------------------------------------------------------------------------
 
 register_market:
-    # if input.n_accounts < RegisterMarketAccounts.LEN
+    # if input.n_accounts < Accounts.LEN
     #     return ErrorCode::InvalidNumberOfAccounts
-    jlt r3, REGISTER_MARKET_ACCOUNTS_LEN, e_invalid_number_of_accounts
-    # if insn_len != RegisterMarketData.LEN
+    jlt r3, ACCOUNTS_LEN, e_invalid_number_of_accounts
+    # if insn_len != Data.LEN
     #     return ErrorCode::InvalidInstructionLength
-    jne r4, REGISTER_MARKET_DATA_LEN, e_invalid_instruction_length
+    jne r4, DATA_LEN, e_invalid_instruction_length
     # frame.program_id = &insn.program_id
     mov64 r4, r2
-    add64 r4, REGISTER_MARKET_DATA_LEN
+    add64 r4, DATA_LEN
     stxdw [r10 + RM_FM_PROGRAM_ID_OFF], r4
     # if input.user.data_len != data.DATA_LEN_ZERO
     #     return ErrorCode::UserHasData
@@ -248,10 +239,10 @@ register_market:
     jne r9, DATA_LEN_ZERO, e_market_has_data
     # if input.base_mint.duplicate != account.NON_DUP_MARKER
     #     return ErrorCode::BaseMintIsDuplicate
-    ldxb r9, [r1 + RM_MISC_BASE_DUPLICATE_OFF]
+    ldxb r9, [r1 + RM_BASE_DUPLICATE_OFF]
     jne r9, ACCT_NON_DUP_MARKER, e_base_mint_is_duplicate
     # input_shifted = input + input.base_mint.padded_data_len
-    ldxdw r9, [r1 + RM_MISC_BASE_DATA_LEN_OFF]
+    ldxdw r9, [r1 + RM_BASE_DATA_LEN_OFF]
     add64 r9, DATA_LEN_MAX_PAD
     and64 r9, DATA_LEN_AND_MASK
     add64 r9, r1
@@ -259,14 +250,14 @@ register_market:
     stxdw [r10 + RM_FM_INPUT_SHIFTED_OFF], r9
     # if input_shifted.quote_mint.duplicate != account.NON_DUP_MARKER
     #     return ErrorCode::QuoteMintIsDuplicate
-    ldxb r8, [r9 + RM_MISC_QUOTE_DUPLICATE_OFF]
+    ldxb r8, [r9 + RM_QUOTE_DUPLICATE_OFF]
     jne r8, ACCT_NON_DUP_MARKER, e_quote_mint_is_duplicate
     # quote_mint_padded_data_len = input_shifted.quote_mint.padded_data_len
-    ldxdw r8, [r9 + RM_MISC_QUOTE_DATA_LEN_OFF]
+    ldxdw r8, [r9 + RM_QUOTE_DATA_LEN_OFF]
     add64 r8, DATA_LEN_MAX_PAD
     and64 r8, DATA_LEN_AND_MASK
     # acct = &input_shifted.quote_mint
-    add64 r9, RM_MISC_QUOTE_OFF
+    add64 r9, RM_QUOTE_OFF
     # acct += quote_mint_padded_data_len + EmptyAccount.size
     add64 r9, r8
     add64 r9, SIZE_OF_EMPTY_ACCOUNT
@@ -342,16 +333,16 @@ init_market_pda_return:
     # if acct.pubkey != input.base_mint.owner
     #     return ErrorCode::BaseTokenProgramNotBaseMintOwner
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_0_OFF]
-    ldxdw r1, [r8 + RM_MISC_BASE_OWNER_CHUNK_0_OFF]
+    ldxdw r1, [r8 + RM_BASE_OWNER_CHUNK_0_OFF]
     jne r7, r1, e_base_token_program_not_base_mint_owner
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_1_OFF]
-    ldxdw r1, [r8 + RM_MISC_BASE_OWNER_CHUNK_1_OFF]
+    ldxdw r1, [r8 + RM_BASE_OWNER_CHUNK_1_OFF]
     jne r7, r1, e_base_token_program_not_base_mint_owner
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_2_OFF]
-    ldxdw r1, [r8 + RM_MISC_BASE_OWNER_CHUNK_2_OFF]
+    ldxdw r1, [r8 + RM_BASE_OWNER_CHUNK_2_OFF]
     jne r7, r1, e_base_token_program_not_base_mint_owner
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_3_OFF]
-    ldxdw r1, [r8 + RM_MISC_BASE_OWNER_CHUNK_3_OFF]
+    ldxdw r1, [r8 + RM_BASE_OWNER_CHUNK_3_OFF]
     jne r7, r1, e_base_token_program_not_base_mint_owner
     # if acct.pubkey != pubkey.TOKEN_PROGRAM
     #     if acct.pubkey != pubkey.TOKEN_2022_PROGRAM
@@ -403,11 +394,11 @@ register_market_base_vault:
     #     return ErrorCode::BaseVaultHasData
     ldxdw r7, [r9 + ACCT_DATA_LEN_OFF]
     jne r7, DATA_LEN_ZERO, e_base_vault_has_data
-    # frame.vault_index = register_misc.VAULT_INDEX_BASE
-    stb [r10 + RM_FM_VAULT_INDEX_UOFF], RM_MISC_VAULT_INDEX_BASE
+    # frame.vault_index = constants.VAULT_INDEX_BASE
+    stb [r10 + RM_FM_VAULT_INDEX_UOFF], RM_VAULT_INDEX_BASE
     # frame.mint = &input.base_mint
     mov64 r7, r8
-    add64 r7, RM_MISC_BASE_DUPLICATE_OFF
+    add64 r7, RM_BASE_DUPLICATE_OFF
     stxdw [r10 + RM_FM_MINT_OFF], r7
     # result = INIT-VAULT(acct, frame)
     mov64 r1, r9
@@ -431,16 +422,16 @@ register_market_quote_token_program:
     # if acct.pubkey != input_shifted.quote_mint.owner
     #     return ErrorCode::NonDupQuoteTokenProgramNotQuoteMintOwner
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_0_OFF]
-    ldxdw r2, [r6 + RM_MISC_QUOTE_OWNER_CHUNK_0_OFF]
+    ldxdw r2, [r6 + RM_QUOTE_OWNER_CHUNK_0_OFF]
     jne r7, r2, e_non_dup_quote_token_program_not_quote_mint_owner
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_1_OFF]
-    ldxdw r2, [r6 + RM_MISC_QUOTE_OWNER_CHUNK_1_OFF]
+    ldxdw r2, [r6 + RM_QUOTE_OWNER_CHUNK_1_OFF]
     jne r7, r2, e_non_dup_quote_token_program_not_quote_mint_owner
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_2_OFF]
-    ldxdw r2, [r6 + RM_MISC_QUOTE_OWNER_CHUNK_2_OFF]
+    ldxdw r2, [r6 + RM_QUOTE_OWNER_CHUNK_2_OFF]
     jne r7, r2, e_non_dup_quote_token_program_not_quote_mint_owner
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_3_OFF]
-    ldxdw r2, [r6 + RM_MISC_QUOTE_OWNER_CHUNK_3_OFF]
+    ldxdw r2, [r6 + RM_QUOTE_OWNER_CHUNK_3_OFF]
     jne r7, r2, e_non_dup_quote_token_program_not_quote_mint_owner
     # if acct.pubkey != pubkey.TOKEN_PROGRAM
     #     if acct.pubkey != pubkey.TOKEN_2022_PROGRAM
@@ -490,22 +481,22 @@ register_market_advance_quote_non_dup:
     add64 r9, SIZE_OF_EMPTY_ACCOUNT
     ja register_market_done_token_programs
 register_market_base_vault_dup:
-    # if acct.duplicate != RegisterMarketAccounts::BaseTokenProgram
+    # if acct.duplicate != Accounts::BaseTokenProgram
     #     return ErrorCode::InvalidQuoteTokenProgramDuplicate
-    jne r7, REGISTER_MARKET_ACCOUNTS_BASE_TOKEN_PROGRAM_POS, e_invalid_quote_token_program_duplicate
+    jne r7, ACCOUNTS_BASE_TOKEN_PROGRAM_POS, e_invalid_quote_token_program_duplicate
     # if input.base_mint.owner != input_shifted.quote_mint.owner
     #     return ErrorCode::DupQuoteTokenProgramNotQuoteMintOwner
-    ldxdw r7, [r8 + RM_MISC_BASE_OWNER_CHUNK_0_OFF]
-    ldxdw r2, [r6 + RM_MISC_QUOTE_OWNER_CHUNK_0_OFF]
+    ldxdw r7, [r8 + RM_BASE_OWNER_CHUNK_0_OFF]
+    ldxdw r2, [r6 + RM_QUOTE_OWNER_CHUNK_0_OFF]
     jne r7, r2, e_dup_quote_token_program_not_quote_mint_owner
-    ldxdw r7, [r8 + RM_MISC_BASE_OWNER_CHUNK_1_OFF]
-    ldxdw r2, [r6 + RM_MISC_QUOTE_OWNER_CHUNK_1_OFF]
+    ldxdw r7, [r8 + RM_BASE_OWNER_CHUNK_1_OFF]
+    ldxdw r2, [r6 + RM_QUOTE_OWNER_CHUNK_1_OFF]
     jne r7, r2, e_dup_quote_token_program_not_quote_mint_owner
-    ldxdw r7, [r8 + RM_MISC_BASE_OWNER_CHUNK_2_OFF]
-    ldxdw r2, [r6 + RM_MISC_QUOTE_OWNER_CHUNK_2_OFF]
+    ldxdw r7, [r8 + RM_BASE_OWNER_CHUNK_2_OFF]
+    ldxdw r2, [r6 + RM_QUOTE_OWNER_CHUNK_2_OFF]
     jne r7, r2, e_dup_quote_token_program_not_quote_mint_owner
-    ldxdw r7, [r8 + RM_MISC_BASE_OWNER_CHUNK_3_OFF]
-    ldxdw r2, [r6 + RM_MISC_QUOTE_OWNER_CHUNK_3_OFF]
+    ldxdw r7, [r8 + RM_BASE_OWNER_CHUNK_3_OFF]
+    ldxdw r2, [r6 + RM_QUOTE_OWNER_CHUNK_3_OFF]
     jne r7, r2, e_dup_quote_token_program_not_quote_mint_owner
     # acct += u64.size
     add64 r9, SIZE_OF_U64
@@ -518,11 +509,11 @@ register_market_done_token_programs:
     #     return ErrorCode::QuoteVaultHasData
     ldxdw r7, [r9 + ACCT_DATA_LEN_OFF]
     jne r7, DATA_LEN_ZERO, e_quote_vault_has_data
-    # frame.vault_index = register_misc.VAULT_INDEX_QUOTE
-    stb [r10 + RM_FM_VAULT_INDEX_UOFF], RM_MISC_VAULT_INDEX_QUOTE
+    # frame.vault_index = constants.VAULT_INDEX_QUOTE
+    stb [r10 + RM_FM_VAULT_INDEX_UOFF], RM_VAULT_INDEX_QUOTE
     # frame.mint = &input_shifted.quote_mint
     mov64 r7, r6
-    add64 r7, RM_MISC_QUOTE_DUPLICATE_OFF
+    add64 r7, RM_QUOTE_DUPLICATE_OFF
     stxdw [r10 + RM_FM_MINT_OFF], r7
     # INIT-VAULT(acct, frame)
     mov64 r1, r9

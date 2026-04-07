@@ -16,7 +16,7 @@ constant_group! {
     #[prefix("TOKEN")]
     #[inject("common/token")]
     /// SPL Token constants.
-    token {
+    constants {
         /// Size of a token account (SPL Token and Token 2022 base).
         ACCOUNT_SIZE = immediate!(TokenAccount::LEN),
         /// GetAccountDataSize instruction discriminant (Token 2022).

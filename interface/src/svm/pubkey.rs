@@ -8,7 +8,7 @@ constant_group! {
     #[prefix("PUBKEY")]
     #[inject("common/pubkey")]
     /// Pubkey constants.
-    pubkey {
+    constants {
         /// Offset for the first 8 bytes.
         CHUNK_0_OFF = immediate!(0),
         /// Offset for the second 8 bytes.

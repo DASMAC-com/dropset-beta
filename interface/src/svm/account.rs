@@ -1,4 +1,4 @@
-use crate::svm::memory::data;
+use crate::svm::memory::constants as memory;
 use dropset_macros::{constant_group, svm_data};
 use pinocchio::account::{MAX_PERMITTED_DATA_INCREASE, RuntimeAccount};
 use pinocchio::entrypoint::NON_DUP_MARKER;
@@ -15,13 +15,13 @@ pub struct FullRuntimeAccount<const DATA_SIZE: usize> {
 // endregion: full_runtime_account
 
 /// Type alias for offset computation with zero-length data.
-pub type EmptyAccount = FullRuntimeAccount<{ runtime_data_size(data::LEN_ZERO) }>;
+pub type EmptyAccount = FullRuntimeAccount<{ runtime_data_size(memory::LEN_ZERO) }>;
 
 constant_group! {
     #[prefix("ACCT")]
     #[inject("common/memory")]
     /// Assorted runtime account constants.
-    account {
+    constants {
         /// Borrow state / duplicate marker.
         DUPLICATE = offset!(EmptyAccount.header.borrow_state),
         /// Whether the account is a signer.
@@ -62,5 +62,5 @@ constant_group! {
 /// Compute the data buffer size for a runtime account with the given data length.
 pub const fn runtime_data_size(data_len: i32) -> usize {
     MAX_PERMITTED_DATA_INCREASE
-        + (data_len as usize).next_multiple_of(data::BPF_ALIGN_OF_U128 as usize)
+        + (data_len as usize).next_multiple_of(memory::BPF_ALIGN_OF_U128 as usize)
 }

@@ -9,7 +9,7 @@ constant_group! {
     #[prefix("DATA")]
     #[inject("common/memory")]
     /// Common data-related constants.
-    data {
+    constants {
         /// Data length of zero.
         LEN_ZERO = immediate!(0),
         /// Data alignment during runtime.

@@ -13,14 +13,14 @@ init_market_pda:
     stxdw [r10 + RM_FM_CREATE_ACCT_LAMPORTS_UOFF], r7
     # frame.pda_seeds[0].addr = input.base_mint.address
     mov64 r8, r1
-    add64 r8, RM_MISC_BASE_ADDR_OFF
+    add64 r8, RM_BASE_ADDR_OFF
     stxdw [r10 + RM_FM_PDA_SEEDS_IDX_0_ADDR_OFF], r8
     # frame.pda_seeds[0].len = Pubkey.size
     mov64 r8, SIZE_OF_PUBKEY
     stxdw [r10 + RM_FM_PDA_SEEDS_IDX_0_LEN_OFF], r8
     # frame.pda_seeds[1].addr = input_shifted.quote_mint.address
     ldxdw r8, [r10 + RM_FM_INPUT_SHIFTED_OFF]
-    add64 r8, RM_MISC_QUOTE_ADDR_OFF
+    add64 r8, RM_QUOTE_ADDR_OFF
     stxdw [r10 + RM_FM_PDA_SEEDS_IDX_1_ADDR_OFF], r8
     # frame.pda_seeds[1].len = Pubkey.size
     mov64 r8, SIZE_OF_PUBKEY
@@ -32,9 +32,9 @@ init_market_pda:
     add64 r1, RM_FM_PDA_SEEDS_OFF
     # syscall.program_id = &insn.program_id
     mov64 r3, r2
-    add64 r3, REGISTER_MARKET_DATA_LEN
-    # syscall.seeds_len = register_misc.TRY_FIND_MARKET_PDA_SEEDS_LEN
-    mov64 r2, RM_MISC_TRY_FIND_MARKET_PDA_SEEDS_LEN
+    add64 r3, DATA_LEN
+    # syscall.seeds_len = constants.TRY_FIND_MARKET_PDA_SEEDS_LEN
+    mov64 r2, RM_TRY_FIND_MARKET_PDA_SEEDS_LEN
     # syscall.program_address = &frame.pda
     mov64 r4, r10
     add64 r4, RM_FM_PDA_OFF
@@ -127,8 +127,8 @@ init_market_pda:
     # frame.sol_instruction.accounts = &frame.cpi.account_metas
     add64 r7, RM_FM_CREATE_ACCT_DATA_TO_CPI_ACCT_METAS_REL_OFF_IMM
     stxdw [r10 + RM_FM_SOL_INSN_ACCOUNTS_UOFF], r7
-    # frame.sol_instruction.account_len = register_misc.CREATE_ACCOUNT_N_ACCOUNTS
-    mov64 r7, RM_MISC_CREATE_ACCOUNT_N_ACCOUNTS
+    # frame.sol_instruction.account_len = constants.CREATE_ACCOUNT_N_ACCOUNTS
+    mov64 r7, RM_CREATE_ACCOUNT_N_ACCOUNTS
     stxdw [r10 + RM_FM_SOL_INSN_ACCOUNT_LEN_UOFF], r7
     # frame.sol_instruction.data_len = CreateAccountData.size
     mov64 r7, SIZE_OF_CREATE_ACCOUNT_DATA
@@ -138,12 +138,12 @@ init_market_pda:
     # syscall.account_infos = &frame.cpi.account_infos
     mov64 r2, r10
     add64 r2, RM_FM_CPI_SOL_ACCT_INFO_OFF
-    # syscall.account_infos_len = register_misc.CREATE_ACCOUNT_N_ACCOUNTS
-    mov64 r3, RM_MISC_CREATE_ACCOUNT_N_ACCOUNTS
+    # syscall.account_infos_len = constants.CREATE_ACCOUNT_N_ACCOUNTS
+    mov64 r3, RM_CREATE_ACCOUNT_N_ACCOUNTS
     # syscall.seeds = &frame.signers_seeds
     add64 r4, RM_FM_PDA_TO_SIGNERS_SEEDS_REL_OFF_IMM
-    # syscall.seeds_len = register_misc.N_PDA_SIGNERS
-    mov64 r5, RM_MISC_N_PDA_SIGNERS
+    # syscall.seeds_len = constants.N_PDA_SIGNERS
+    mov64 r5, RM_N_PDA_SIGNERS
     call sol_invoke_signed_c
     # input.market.data.next = input + input_buffer.MARKET_DATA_BYTES
     ldxdw r6, [r10 + RM_FM_INPUT_OFF]

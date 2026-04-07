@@ -17,8 +17,8 @@ init_vault:
     # syscall.seeds = &frame.pda_seeds
     mov64 r1, r6
     add64 r1, RM_FM_PDA_SEEDS_OFF
-    # syscall.seeds_len = register_misc.TRY_FIND_VAULT_PDA_SEEDS_LEN
-    mov64 r2, RM_MISC_TRY_FIND_VAULT_PDA_SEEDS_LEN
+    # syscall.seeds_len = constants.TRY_FIND_VAULT_PDA_SEEDS_LEN
+    mov64 r2, RM_TRY_FIND_VAULT_PDA_SEEDS_LEN
     # syscall.program_id = frame.program_id
     ldxdw r3, [r6 + RM_FM_PROGRAM_ID_OFF]
     # syscall.program_address = &frame.pda
@@ -193,8 +193,8 @@ init_vault_create_account:
     # frame.sol_instruction.accounts = &frame.cpi.account_metas
     add64 r8, RM_FM_CREATE_ACCT_DATA_TO_CPI_ACCT_METAS_REL_OFF_IMM
     stxdw [r6 + RM_FM_SOL_INSN_ACCOUNTS_UOFF], r8
-    # frame.sol_instruction.account_len = register_misc.CREATE_ACCOUNT_N_ACCOUNTS
-    mov64 r8, RM_MISC_CREATE_ACCOUNT_N_ACCOUNTS
+    # frame.sol_instruction.account_len = constants.CREATE_ACCOUNT_N_ACCOUNTS
+    mov64 r8, RM_CREATE_ACCOUNT_N_ACCOUNTS
     stxdw [r6 + RM_FM_SOL_INSN_ACCOUNT_LEN_UOFF], r8
     # frame.sol_instruction.data_len = CreateAccountData.size
     mov64 r8, SIZE_OF_CREATE_ACCOUNT_DATA
@@ -205,13 +205,13 @@ init_vault_create_account:
     # syscall.account_infos = &frame.cpi.account_infos
     mov64 r2, r6
     add64 r2, RM_FM_CPI_SOL_ACCT_INFO_OFF
-    # syscall.account_infos_len = register_misc.CREATE_ACCOUNT_N_ACCOUNTS
-    mov64 r3, RM_MISC_CREATE_ACCOUNT_N_ACCOUNTS
+    # syscall.account_infos_len = constants.CREATE_ACCOUNT_N_ACCOUNTS
+    mov64 r3, RM_CREATE_ACCOUNT_N_ACCOUNTS
     # syscall.seeds = &frame.signers_seeds
     mov64 r4, r6
     add64 r4, RM_FM_SIGNERS_SEEDS_ADDR_UOFF
-    # syscall.seeds_len = register_misc.N_PDA_SIGNERS
-    mov64 r5, RM_MISC_N_PDA_SIGNERS
+    # syscall.seeds_len = constants.N_PDA_SIGNERS
+    mov64 r5, RM_N_PDA_SIGNERS
     call sol_invoke_signed_c
     # frame.cpi[0].meta.pubkey = &acct.address
     # frame.cpi[0].info.key = &acct.address
@@ -321,11 +321,11 @@ init_vault_create_account:
     call sol_invoke_signed_c
     exit
 init_vault_invalid_pda:
-    # if frame.vault_index == register_misc.VAULT_INDEX_BASE
+    # if frame.vault_index == constants.VAULT_INDEX_BASE
     #     return ErrorCode::InvalidBaseVaultPubkey
     # else
     #     return ErrorCode::InvalidQuoteVaultPubkey
     ldxb r1, [r6 + RM_FM_VAULT_INDEX_UOFF]
-    jeq r1, RM_MISC_VAULT_INDEX_BASE, e_invalid_base_vault_pubkey
+    jeq r1, RM_VAULT_INDEX_BASE, e_invalid_base_vault_pubkey
     mov32 r0, E_INVALID_QUOTE_VAULT_PUBKEY
     exit
