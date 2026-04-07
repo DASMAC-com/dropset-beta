@@ -53,6 +53,26 @@ development topics:
 - `docs/src/program/algorithm-index.md` algorithm
   documentation
 
+## Notation
+
+`docs/src/program/layout.md#notation` defines the scoping
+convention for referencing constants, types, and fields
+across `.tex` algorithm specs, Rust interface code, and
+assembly comments. Key rules:
+
+- `::` for module paths and enum variants
+- `.` for field access and type properties
+- Type names are unqualified (globally unique types
+  like `MarketHeader`, or instruction-scoped types
+  like `Accounts` resolved by the owning algorithm)
+- Constants use their interface module path with
+  `constants` group name elided
+- CPI targets use `program::InstructionName` form
+- Syscalls use underscore-separated names
+
+All `.tex` `\texttt{}` references, ASM inline comments,
+and Rust doc comments should follow this convention.
+
 ## Algorithm registry
 
 `docs/algorithms/registry.json` is the central mapping
