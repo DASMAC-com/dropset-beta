@@ -28,6 +28,7 @@ pub enum Accounts {
 // endregion: register_market_accounts
 
 // region: register_market_data
+/// Instruction data.
 #[instruction_data("market/register")]
 pub struct Data {
     #[allow(dead_code)]

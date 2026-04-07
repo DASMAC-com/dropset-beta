@@ -1,5 +1,6 @@
 use quote::quote;
 
+use crate::common::attrs::extract_doc_comment;
 use crate::common::codegen;
 
 /// Expand `#[instruction_data("target")]` on a struct into:
@@ -8,7 +9,8 @@ use crate::common::codegen;
 /// - A hidden module with `GROUP` metadata for assembly injection
 pub fn expand(target: &str, input: &syn::ItemStruct) -> proc_macro2::TokenStream {
     let struct_name = &input.ident;
-    let doc = format!("{} instruction data length.", struct_name);
+    let comment = extract_doc_comment(&input.attrs).unwrap_or_default();
+    let doc = "Instruction data length.";
 
     let len_expr = quote! {{
         const VALUE: u64 = core::mem::size_of::<#struct_name>() as u64;
@@ -19,5 +21,5 @@ pub fn expand(target: &str, input: &syn::ItemStruct) -> proc_macro2::TokenStream
         VALUE
     }};
 
-    codegen::len_group(target, struct_name, &doc, len_expr, quote! { #input })
+    codegen::len_group(target, struct_name, &comment, doc, len_expr, quote! { #input })
 }

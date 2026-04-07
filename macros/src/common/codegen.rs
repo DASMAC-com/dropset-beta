@@ -109,6 +109,7 @@ pub fn with_group(
 pub fn len_group(
     target: &str,
     type_name: &Ident,
+    comment: &str,
     doc: &str,
     len_expr: proc_macro2::TokenStream,
     original_item: proc_macro2::TokenStream,
@@ -135,7 +136,7 @@ pub fn len_group(
     with_group(
         target,
         type_name,
-        "",
+        comment,
         body,
         &[meta_def],
         &[meta_ident],

@@ -1,4 +1,7 @@
-.equ DATA_LEN, 1 # Data instruction data length.
+# Instruction data.
+# -------------------------------------------------------------------------
+.equ DATA_LEN, 1 # Instruction data length.
+# -------------------------------------------------------------------------
 
 # Instruction accounts.
 # -------------------------------------------------------------------------
@@ -15,6 +18,52 @@
 # Quote Token Program account position.
 .equ ACCOUNTS_QUOTE_TOKEN_PROGRAM_POS, 8
 .equ ACCOUNTS_QUOTE_VAULT_POS, 9 # Quote Vault account position.
+# -------------------------------------------------------------------------
+
+# Market registration-related constants.
+# -------------------------------------------------------------------------
+# From input buffer to base mint duplicate flag.
+.equ RM_BASE_DUPLICATE_OFF, 20680
+# From input buffer to base mint data length.
+.equ RM_BASE_DATA_LEN_OFF, 20760
+# From input buffer to base mint address field.
+.equ RM_BASE_ADDR_OFF, 20688
+.equ RM_BASE_OWNER_OFF, 20720 # From input buffer to base mint owner.
+# From input buffer to base mint owner (chunk 0).
+.equ RM_BASE_OWNER_CHUNK_0_OFF, 20720
+# From input buffer to base mint owner (chunk 1).
+.equ RM_BASE_OWNER_CHUNK_1_OFF, 20728
+# From input buffer to base mint owner (chunk 2).
+.equ RM_BASE_OWNER_CHUNK_2_OFF, 20736
+# From input buffer to base mint owner (chunk 3).
+.equ RM_BASE_OWNER_CHUNK_3_OFF, 20744
+.equ RM_QUOTE_OFF, 31016 # From input buffer to quote mint.
+# From input buffer to quote mint duplicate flag.
+.equ RM_QUOTE_DUPLICATE_OFF, 31016
+# From input buffer to quote mint address field.
+.equ RM_QUOTE_ADDR_OFF, 31024
+.equ RM_QUOTE_OWNER_OFF, 31056 # From input buffer to quote mint owner.
+# From input buffer to quote mint owner (chunk 0).
+.equ RM_QUOTE_OWNER_CHUNK_0_OFF, 31056
+# From input buffer to quote mint owner (chunk 1).
+.equ RM_QUOTE_OWNER_CHUNK_1_OFF, 31064
+# From input buffer to quote mint owner (chunk 2).
+.equ RM_QUOTE_OWNER_CHUNK_2_OFF, 31072
+# From input buffer to quote mint owner (chunk 3).
+.equ RM_QUOTE_OWNER_CHUNK_3_OFF, 31080
+# From input buffer to quote mint data length.
+.equ RM_QUOTE_DATA_LEN_OFF, 31096
+# Number of seeds for market PDA derivation (base mint, quote mint).
+.equ RM_TRY_FIND_MARKET_PDA_SEEDS_LEN, 2
+# Number of seeds for vault PDA derivation (market address, vault index).
+.equ RM_TRY_FIND_VAULT_PDA_SEEDS_LEN, 2
+# Number of accounts for CreateAccount CPI (user, new account).
+.equ RM_CREATE_ACCOUNT_N_ACCOUNTS, 2
+.equ RM_N_PDA_SIGNERS, 1 # Number of PDA signers for CPI.
+# Vault index for base mint in PDA derivation and vault creation.
+.equ RM_VAULT_INDEX_BASE, 0
+# Vault index for quote mint in PDA derivation and vault creation.
+.equ RM_VAULT_INDEX_QUOTE, 1
 # -------------------------------------------------------------------------
 
 # Stack frame for REGISTER-MARKET.
@@ -169,52 +218,6 @@
 .equ RM_FM_PDA_TO_SIGNERS_SEEDS_REL_OFF_IMM, 416
 # From create_account_data to CPI account metas.
 .equ RM_FM_CREATE_ACCT_DATA_TO_CPI_ACCT_METAS_REL_OFF_IMM, 264
-# -------------------------------------------------------------------------
-
-# Market registration-related constants.
-# -------------------------------------------------------------------------
-# From input buffer to base mint duplicate flag.
-.equ RM_BASE_DUPLICATE_OFF, 20680
-# From input buffer to base mint data length.
-.equ RM_BASE_DATA_LEN_OFF, 20760
-# From input buffer to base mint address field.
-.equ RM_BASE_ADDR_OFF, 20688
-.equ RM_BASE_OWNER_OFF, 20720 # From input buffer to base mint owner.
-# From input buffer to base mint owner (chunk 0).
-.equ RM_BASE_OWNER_CHUNK_0_OFF, 20720
-# From input buffer to base mint owner (chunk 1).
-.equ RM_BASE_OWNER_CHUNK_1_OFF, 20728
-# From input buffer to base mint owner (chunk 2).
-.equ RM_BASE_OWNER_CHUNK_2_OFF, 20736
-# From input buffer to base mint owner (chunk 3).
-.equ RM_BASE_OWNER_CHUNK_3_OFF, 20744
-.equ RM_QUOTE_OFF, 31016 # From input buffer to quote mint.
-# From input buffer to quote mint duplicate flag.
-.equ RM_QUOTE_DUPLICATE_OFF, 31016
-# From input buffer to quote mint address field.
-.equ RM_QUOTE_ADDR_OFF, 31024
-.equ RM_QUOTE_OWNER_OFF, 31056 # From input buffer to quote mint owner.
-# From input buffer to quote mint owner (chunk 0).
-.equ RM_QUOTE_OWNER_CHUNK_0_OFF, 31056
-# From input buffer to quote mint owner (chunk 1).
-.equ RM_QUOTE_OWNER_CHUNK_1_OFF, 31064
-# From input buffer to quote mint owner (chunk 2).
-.equ RM_QUOTE_OWNER_CHUNK_2_OFF, 31072
-# From input buffer to quote mint owner (chunk 3).
-.equ RM_QUOTE_OWNER_CHUNK_3_OFF, 31080
-# From input buffer to quote mint data length.
-.equ RM_QUOTE_DATA_LEN_OFF, 31096
-# Number of seeds for market PDA derivation (base mint, quote mint).
-.equ RM_TRY_FIND_MARKET_PDA_SEEDS_LEN, 2
-# Number of seeds for vault PDA derivation (market address, vault index).
-.equ RM_TRY_FIND_VAULT_PDA_SEEDS_LEN, 2
-# Number of accounts for CreateAccount CPI (user, new account).
-.equ RM_CREATE_ACCOUNT_N_ACCOUNTS, 2
-.equ RM_N_PDA_SIGNERS, 1 # Number of PDA signers for CPI.
-# Vault index for base mint in PDA derivation and vault creation.
-.equ RM_VAULT_INDEX_BASE, 0
-# Vault index for quote mint in PDA derivation and vault creation.
-.equ RM_VAULT_INDEX_QUOTE, 1
 # -------------------------------------------------------------------------
 
 register_market:
