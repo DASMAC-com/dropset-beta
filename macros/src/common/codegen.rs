@@ -75,6 +75,7 @@ pub fn wide_meta(
 pub fn with_group(
     target: &str,
     type_name: &Ident,
+    comment: &str,
     body: proc_macro2::TokenStream,
     const_defs: &[proc_macro2::TokenStream],
     meta_idents: &[Ident],
@@ -85,7 +86,7 @@ pub fn with_group(
     let group = group_module(
         &mod_name,
         target,
-        "",
+        comment,
         const_defs,
         meta_idents,
         label_defs,
@@ -134,6 +135,7 @@ pub fn len_group(
     with_group(
         target,
         type_name,
+        "",
         body,
         &[meta_def],
         &[meta_ident],

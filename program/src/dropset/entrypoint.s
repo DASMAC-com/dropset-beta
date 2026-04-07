@@ -1,17 +1,18 @@
-# Assorted entrypoint-related constants.
+# Instruction discriminants.
 # -------------------------------------------------------------------------
-# Offset from input buffer to number of accounts, in input buffer.
-.equ IB_N_ACCTS_OFF, 0
-# Offset from instruction data to instruction data length, in input buffer.
+.equ DISC_REGISTER_MARKET, 0 # Register a new market.
+# -------------------------------------------------------------------------
+
+# General entrypoint-related constants.
+# -------------------------------------------------------------------------
+.equ N_ACCTS_OFF, 0 # Offset from input buffer to number of accounts.
+# Offset from instruction data to instruction data length.
 .equ INSN_LEN_OFF, -8
-# Offset from instruction data to discriminant, in input buffer.
-.equ INSN_DISC_OFF, 0
+.equ INSN_DISC_OFF, 0 # Offset from instruction data to discriminant.
 .equ RETURN_SUCCESS, 0 # Successful return code.
 # -------------------------------------------------------------------------
 
-.equ DISC_REGISTER_MARKET, 0 # Register a new market.
-
-# Input buffer constants for static header.
+# Constants for static input buffer header with empty user, then market.
 # -------------------------------------------------------------------------
 .equ IB_USER_DATA_LEN_OFF, 88 # From input buffer to user data length.
 .equ IB_USER_ADDRESS_OFF, 16 # From input buffer to user address field.
@@ -59,10 +60,10 @@
 
 entrypoint:
     # n_accounts = input.n_accounts
-    ldxdw r3, [r1 + IB_N_ACCTS_OFF]
-    # insn_len = insn.length
+    ldxdw r3, [r1 + N_ACCTS_OFF]
+    # len = insn.length
     ldxdw r4, [r2 + INSN_LEN_OFF]
-    # insn_disc = insn.discriminant
+    # disc = insn.discriminant
     ldxb r5, [r2 + INSN_DISC_OFF]
     # if insn_disc == Discriminant::RegisterMarket return REGISTER-MARKET
     jeq r5, DISC_REGISTER_MARKET, register_market

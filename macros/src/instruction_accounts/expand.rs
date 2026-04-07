@@ -62,5 +62,5 @@ pub fn expand(target: &str, input: &syn::ItemEnum) -> proc_macro2::TokenStream {
         }
     };
 
-    codegen::with_group(target, enum_name, body, &meta_defs, &meta_idents, &[], &[])
+    codegen::with_group(target, enum_name, "", body, &meta_defs, &meta_idents, &[], &[])
 }

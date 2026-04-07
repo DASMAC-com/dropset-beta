@@ -10,10 +10,9 @@ pub use entrypoint::Discriminant;
 pub use error::ErrorCode;
 
 pub const INJECTION_GROUPS: &[&dropset_build::ConstantGroup] = &[
-    &entrypoint::constants::GROUP,
     &entrypoint::discriminant::GROUP,
+    &entrypoint::constants::GROUP,
     &entrypoint::input_buffer::GROUP,
-
     &error::error_code::GROUP,
     &market::register::data::GROUP,
     &market::register::accounts::GROUP,

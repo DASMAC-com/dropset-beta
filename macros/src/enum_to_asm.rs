@@ -113,9 +113,12 @@ pub fn expand(
         }
     };
 
+    let comment = extract_doc_comment(&input.attrs).unwrap_or_default();
+
     codegen::with_group(
         target_str,
         enum_name,
+        &comment,
         body,
         &meta_defs,
         &meta_idents,
