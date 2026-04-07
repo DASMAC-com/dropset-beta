@@ -23,90 +23,6 @@ program/src/dropset/
     └── init_vault.s       # Vault initialization
 ```
 
-## Notation
-
-Algorithm pseudocode (`.tex` files in `docs/algorithms/`) references
-constants and fields using scoped `\texttt{}` names. The scope mirrors
-the [interface][bs-interface] module path with these rules:
-
-### Algorithm conventions
-
-- `procedure`: a label that does not return (no stack push); control flow
-  exits via `exit` or jumps to another procedure.
-- `function`: a label that pushes onto the call stack and returns to the
-  caller.
-- `Store(var)`: saves `var` to a callee-saved register before a call that
-  would clobber caller-saved registers. The stored value is available after
-  the call returns.
-
-### Assembly comments {#assembly-comments}
-
-Assembly comments should contain only `\STATE` and `\IF`/`\RETURN`
-statements from the `.tex` pseudocode. `\COMMENT` blocks from the
-`.tex` are section-level descriptions and should not appear as inline
-ASM comments.
-
-Optimization notes use `# Optimize:` to explain when the
-implementation deviates from the pseudocode for performance:
-
-<Include asm="market/register#optimize_example" collapsible/>
-
-### Enum variants
-
-Enum variants use Rust `::` syntax:
-
-| Algorithm spec | Source |
-|---|---|
-| `Discriminant::RegisterMarket` | `entrypoint::Discriminant` |
-| `ErrorCode::InvalidDiscriminant` | `error::ErrorCode` |
-| `Accounts::User` | `market::register::Accounts` |
-
-### Constant group values
-
-Constant group values use the [interface][bs-interface] module path
-with `::`. When the group is named `constants`, the group name is
-elided:
-
-| Algorithm spec | Rust path | ASM constant |
-|---|---|---|
-| `entrypoint::RETURN_SUCCESS` | `entrypoint::constants::RETURN_SUCCESS` | `RETURN_SUCCESS` |
-| `entrypoint::input_buffer::MARKET_DATA_LEN` | `entrypoint::input_buffer::MARKET_DATA_LEN` | `IB_MARKET_DATA_LEN_OFF` |
-| `common::account::NON_DUP_MARKER` | `common::account::constants::NON_DUP_MARKER` | `ACCT_NON_DUP_MARKER` |
-| `common::memory::LEN_ZERO` | `common::memory::constants::LEN_ZERO` | `DATA_LEN_ZERO` |
-| `common::pubkey::RENT` | `common::pubkey::constants::RENT` | `PUBKEY_RENT_CHUNK_{0..3}` |
-| `common::token::ACCOUNT_SIZE` | `common::token::constants::ACCOUNT_SIZE` | `TOKEN_ACCOUNT_SIZE` |
-| `market::VAULT_INDEX_BASE` | `market::constants::VAULT_INDEX_BASE` | `MKT_VAULT_INDEX_BASE` |
-| `market::register::N_PDA_SIGNERS` | `market::register::constants::N_PDA_SIGNERS` | `RM_N_PDA_SIGNERS` |
-
-### Frame fields
-
-Frame fields use the module path to the frame, then `.` for field
-access:
-
-| Algorithm spec | ASM constant |
-|---|---|
-| `market::register::frame.input_shifted` | `RM_FM_INPUT_SHIFTED_OFF` |
-| `market::register::frame.pda` | `RM_FM_PDA_OFF` |
-
-### Type properties
-
-Type properties use `Type.property` for intrinsic values:
-
-| Algorithm spec | Meaning |
-|---|---|
-| `Accounts.count` | Number of instruction accounts |
-| `Data.size` | Instruction data size in bytes |
-| `EmptyAccount.size` | `size_of::<EmptyAccount>()` |
-| `MarketHeader.size` | `size_of::<MarketHeader>()` |
-
-### CPI targets and syscalls
-
-[CPI] targets use `program::InstructionName` form (e.g.
-`system_program::CreateAccount`, `spl_token::InitializeAccount2`).
-[Syscalls] use underscore-separated names (e.g.
-`sol_try_find_program_address`, `sol_invoke_signed_c`). Both match
-their keys in the [algorithm registry].
-
 ## Top-level file
 
 `dropset.s` file declares the global entrypoint and includes all other files.
@@ -181,6 +97,91 @@ SPL Token constants (account size, instruction discriminants) are injected
 from the [`token`][token-mod] module via [`constant_group!`][bs-constant-group]:
 
 <Include asm="common/token" collapsible/>
+
+## Notation
+
+Algorithm specifications (`.tex` files in `docs/algorithms/`) reference
+constants and fields using scoped `\texttt{}` names. The scope mirrors
+the [interface][bs-interface] module path with these rules:
+
+### Enum variants
+
+Enum variants use Rust `::` syntax:
+
+| Algorithm spec | Rust | ASM constant |
+|---|---|---|
+| `Discriminant::RegisterMarket` | `entrypoint::Discriminant::RegisterMarket` | `DISC_REGISTER_MARKET` |
+| `ErrorCode::InvalidDiscriminant` | `error::ErrorCode::InvalidDiscriminant` | `E_INVALID_DISCRIMINANT` |
+| `Accounts::User` | `market::register::Accounts::User` | `RM_INSN_ACCTS_USER_POS` |
+
+### Constant group values
+
+Constant group values use the [interface][bs-interface] module path
+with `::`. When the group is named `constants`, the group name is
+elided:
+
+| Algorithm spec | Rust path | ASM constant |
+|---|---|---|
+| `entrypoint::RETURN_SUCCESS` | `entrypoint::constants::RETURN_SUCCESS` | `RETURN_SUCCESS` |
+| `entrypoint::input_buffer::MARKET_DATA_LEN` | `entrypoint::input_buffer::MARKET_DATA_LEN` | `IB_MARKET_DATA_LEN_OFF` |
+| `common::account::NON_DUP_MARKER` | `common::account::constants::NON_DUP_MARKER` | `ACCT_NON_DUP_MARKER` |
+| `common::memory::LEN_ZERO` | `common::memory::constants::LEN_ZERO` | `DATA_LEN_ZERO` |
+| `common::pubkey::RENT` | `common::pubkey::constants::RENT` | `PUBKEY_RENT_CHUNK_{0..3}` |
+| `common::token::ACCOUNT_SIZE` | `common::token::constants::ACCOUNT_SIZE` | `TOKEN_ACCOUNT_SIZE` |
+| `market::VAULT_INDEX_BASE` | `market::constants::VAULT_INDEX_BASE` | `MKT_VAULT_INDEX_BASE` |
+| `market::register::N_PDA_SIGNERS` | `market::register::constants::N_PDA_SIGNERS` | `RM_N_PDA_SIGNERS` |
+
+### Frame fields
+
+Frame fields use the module path to the frame, then `.` for field
+access. The module scope is implicit when referenced from within the
+algorithm that owns the frame:
+
+| Algorithm spec | Rust field | ASM constant |
+|---|---|---|
+| `frame.input_shifted` | `market::register::Frame.input_shifted` | `RM_FM_INPUT_SHIFTED_OFF` |
+| `frame.pda` | `market::register::Frame.pda` | `RM_FM_PDA_OFF` |
+
+### Type properties
+
+Type properties use `Type.property` for intrinsic values:
+
+| Algorithm spec | Rust | ASM constant |
+|---|---|---|
+| `Accounts.count` | `market::register::Accounts::COUNT` | `RM_INSN_ACCTS_COUNT` |
+| `Data.size` | `market::register::Data::SIZE` | `RM_INSN_DATA_SIZE` |
+| `EmptyAccount.size` | `common::account::EmptyAccount` | `SIZE_OF_EMPTY_ACCOUNT` |
+| `MarketHeader.size` | `market::MarketHeader` | `SIZE_OF_MARKET_HEADER` |
+
+### CPI targets and syscalls
+
+[CPI] targets use `program::InstructionName` form (e.g.
+`system_program::CreateAccount`, `spl_token::InitializeAccount2`).
+[Syscalls] use underscore-separated names (e.g.
+`sol_try_find_program_address`, `sol_invoke_signed_c`). Both match
+their keys in the [algorithm registry].
+
+### Algorithm conventions
+
+- `procedure`: a label that does not return (no stack push); control flow
+  exits via `exit` or jumps to another procedure.
+- `function`: a label that pushes onto the call stack and returns to the
+  caller.
+- `Store(var)`: saves `var` to a callee-saved register before a call that
+  would clobber caller-saved registers. The stored value is available after
+  the call returns.
+
+### Assembly comments {#assembly-comments}
+
+Assembly comments should contain only `\STATE` and `\IF`/`\RETURN`
+statements from the `.tex` algorithm specifications. `\COMMENT` blocks
+from the `.tex` are section-level descriptions and should not appear as
+inline ASM comments.
+
+Optimization notes use `# Optimize:` to explain when the
+implementation deviates from the specification for performance:
+
+<Include asm="market/register#optimize_example" collapsible/>
 
 [input buffer]: ../program/inputs#input-buffer
 [`program/src/dropset/`]: https://github.com/DASMAC-com/dropset-beta/tree/main/program/src/dropset
