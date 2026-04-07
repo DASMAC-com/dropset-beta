@@ -94,7 +94,7 @@ the prefix (e.g. `RM_FM_PDA_OFF` instead of `RM_PDA_OFF`) to distinguish
 frame-relative constants from other offset constants.
 
 ::: tip
-For frame structs, [`#[frame("mod")]`](#frame) with field attributes can
+For frame structs, [`#[frame]`](#frame) with field attributes can
 generate the constant group directly, making a separate `constant_group!`
 invocation unnecessary. The `constant_group!` macro remains available for
 non-frame groups (e.g. input buffer offsets, standalone immediates).
@@ -166,10 +166,10 @@ mappings and the struct's doc comment in proc-macro shared state so that
 [`constant_group!`](#constant_group) can auto-discover frame fields and
 derive its header comment.
 
-When called as `#[frame("module_name")]` with `#[inject("target")]` and
-`#[prefix("PREFIX")]` on the struct, it also generates a constant group
-module directly from field-level attributes, eliminating the need for a
-separate `constant_group!` invocation. Supported field attributes:
+When combined with `#[inject("target")]` and `#[prefix("PREFIX")]` on
+the struct, it also generates a `frame` constant group module directly
+from field-level attributes, eliminating the need for a separate
+`constant_group!` invocation. Supported field attributes:
 
 - `#[offset]`: aligned frame-relative offset (`_OFF` suffix). Name is
   auto-inferred from the field name via `SCREAMING_SNAKE_CASE`, or

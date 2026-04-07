@@ -52,16 +52,16 @@ fn strip_field_attrs(fields: &syn::Fields) -> syn::Fields {
     fields
 }
 
-/// Expand `#[frame]` or `#[frame("mod_name")]` on a struct.
+/// Expand `#[frame]` on a struct.
 ///
 /// When no `#[inject]` is present on the struct, this behaves as before:
 /// applies `#[repr(C, align(8))]` and asserts the struct fits in one
 /// SBPF stack frame.
 ///
-/// When `#[inject]` is present, it also generates a constant group module
-/// from field-level and struct-level constant attributes, eliminating the
-/// need for a separate `constant_group!` invocation.
-pub fn expand(mod_name: Option<String>, input: &syn::ItemStruct) -> proc_macro2::TokenStream {
+/// When `#[inject]` is present, it also generates a `frame` constant
+/// group module from field-level and struct-level constant attributes,
+/// eliminating the need for a separate `constant_group!` invocation.
+pub fn expand(input: &syn::ItemStruct) -> proc_macro2::TokenStream {
     let vis = &input.vis;
     let ident = &input.ident;
     let generics = &input.generics;
@@ -109,13 +109,7 @@ pub fn expand(mod_name: Option<String>, input: &syn::ItemStruct) -> proc_macro2:
     }
     let target = target.unwrap();
     let prefix = extract_attr_string(&input.attrs, "prefix");
-    let mod_name = mod_name.unwrap_or_else(|| {
-        panic!(
-            "#[frame] with #[inject] requires a module name argument, \
-             e.g. #[frame(\"frame\")]"
-        )
-    });
-    let mod_ident = Ident::new(&mod_name, Span::call_site());
+    let mod_ident = Ident::new("frame", Span::call_site());
     let frame_name = ident.to_string();
 
     // Validate the group doc comment if present.

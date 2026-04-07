@@ -119,7 +119,7 @@ signer_seeds! {
 // endregion: signer_seeds_example
 
 // region: frame_example
-#[frame("frame")]
+#[frame]
 #[prefix("RM")]
 #[inject("market/register")]
 #[relative_offset(
