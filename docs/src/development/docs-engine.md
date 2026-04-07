@@ -21,15 +21,11 @@ from the [algorithm registry].
 
 <Include vitepress="components/Algorithm" collapsed/>
 
-<!-- markdownlint-disable MD013 -->
-
 | Prop             | Type      | Required | Description                                               |
 | ---------------- | --------- | -------- | --------------------------------------------------------- |
 | `id`             | `String`  | yes      | Algorithm name (matches `.tex` filename and registry key) |
 | `lineNumber`     | `Boolean` | no       | Show line numbers in pseudocode (default: `true`)         |
 | `lineNumberPunc` | `String`  | no       | Punctuation after line numbers (default: `""`)            |
-
-<!-- markdownlint-enable MD013 -->
 
 Usage:
 
@@ -70,8 +66,6 @@ link to the file on GitHub. Supports assembly (`.s`), config/root files
 
 <Include vitepress="components/Include" collapsed/>
 
-<!-- markdownlint-disable MD013 -->
-
 | Prop          | Type              | Required | Description                                                                            |
 | ------------- | ----------------- | -------- | -------------------------------------------------------------------------------------- |
 | `asm`         | `String`          | no       | Assembly file name (without `.s` extension)                                            |
@@ -80,8 +74,6 @@ link to the file on GitHub. Supports assembly (`.s`), config/root files
 | `vitepress`   | `String`          | no       | VitePress file path (e.g. `components/Algorithm`, `theme/index`)                       |
 | `collapsible` | `Boolean\|String` | no       | Wrap in a `<details>` block, open by default. String value overrides the summary label |
 | `collapsed`   | `Boolean\|String` | no       | Same as `collapsible` but closed by default                                            |
-
-<!-- markdownlint-enable MD013 -->
 
 Usage:
 
@@ -112,13 +104,9 @@ graph. It reads from the build-time `algorithms/index.json` file and the
 are blue. All external nodes (syscalls and CPIs) use stadium shapes and link to
 their upstream source definitions.
 
-<!-- markdownlint-disable MD013 -->
-
 | Prop   | Type     | Required | Description                                                       |
 | ------ | -------- | -------- | ----------------------------------------------------------------- |
 | `root` | `String` | no       | Algorithm name to scope the graph to (shows only its dep subtree) |
-
-<!-- markdownlint-enable MD013 -->
 
 Usage:
 
