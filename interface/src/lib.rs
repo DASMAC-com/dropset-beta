@@ -10,18 +10,18 @@ pub use entrypoint::Discriminant;
 pub use error::ErrorCode;
 
 pub const INJECTION_GROUPS: &[&dropset_build::ConstantGroup] = &[
-    &entrypoint::entrypoint::GROUP,
+    &entrypoint::constants::GROUP,
     &entrypoint::discriminant::GROUP,
+    &entrypoint::input_buffer::GROUP,
     &error::error_code::GROUP,
     &market::register::register_market_data::GROUP,
     &market::register::register_market_accounts::GROUP,
     &market::register::frame::GROUP,
-    &market::register::register_misc::GROUP,
+    &market::register::constants::GROUP,
     &svm::account::account::GROUP,
     &svm::account::cpi::GROUP,
-    &svm::account::data::GROUP,
-    &entrypoint::input_buffer::GROUP,
-    &svm::account::size_of::GROUP,
+    &svm::memory::data::GROUP,
+    &svm::memory::size_of::GROUP,
     &svm::pubkey::pubkey::GROUP,
     &svm::token::token::GROUP,
 ];

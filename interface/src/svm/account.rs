@@ -1,32 +1,8 @@
-use crate::market::MarketHeader;
-use crate::market::register::CreateAccountData;
-use crate::svm::token::InitializeAccount2;
-use dropset_macros::{constant_group, size_of_group, svm_data};
-use pinocchio::Address as Pubkey;
+use crate::svm::memory::data;
+use dropset_macros::{constant_group, svm_data};
 use pinocchio::account::{MAX_PERMITTED_DATA_INCREASE, RuntimeAccount};
 use pinocchio::entrypoint::NON_DUP_MARKER;
 use pinocchio::sysvars::rent::ACCOUNT_STORAGE_OVERHEAD;
-
-constant_group! {
-    #[prefix("DATA")]
-    #[inject("common/memory")]
-    /// Common data-related constants.
-    data {
-        /// Data length of zero.
-        LEN_ZERO = immediate!(0),
-        /// Data alignment during runtime.
-        // pinocchio constant is private.
-        BPF_ALIGN_OF_U128 = immediate!(8),
-        /// Maximum possible data length padding for a runtime account.
-        LEN_MAX_PAD = immediate!(7),
-        /// And mask for data length alignment.
-        LEN_AND_MASK = immediate!(-8),
-        /// Boolean false value.
-        BOOL_FALSE = immediate!(0),
-        /// Boolean true value.
-        BOOL_TRUE = immediate!(1),
-    }
-}
 
 // region: full_runtime_account
 #[svm_data]
@@ -82,13 +58,6 @@ constant_group! {
         READONLY_NON_SIGNER = immediate!(0x0000),
     }
 }
-
-// region: size_of_group_example
-size_of_group! {
-    #[inject("common/memory")]
-    [u8, u64, Pubkey, EmptyAccount, MarketHeader, CreateAccountData, InitializeAccount2]
-}
-// endregion: size_of_group_example
 
 /// Compute the data buffer size for a runtime account with the given data length.
 pub const fn runtime_data_size(data_len: i32) -> usize {

@@ -32,7 +32,7 @@ constant_group! {
     #[prefix("RM_MISC")]
     #[inject("market/register")]
     /// Miscellaneous market registration constants.
-    register_misc {
+    constants {
         /// From input buffer to base mint duplicate flag.
         BASE_DUPLICATE = offset!(InputBuffer.base_mint.header.borrow_state),
         /// From input buffer to base mint data length.

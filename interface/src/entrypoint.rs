@@ -13,7 +13,7 @@ pub enum Discriminant {
 
 constant_group! {
     #[inject("entrypoint")]
-    entrypoint {
+    constants {
         /// Offset from input buffer to number of accounts, in input buffer.
         IB_N_ACCTS = offset!(0),
         /// Offset from instruction data to instruction data length, in input buffer.
