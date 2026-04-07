@@ -13,6 +13,7 @@ use pinocchio::account::RuntimeAccount;
 // region: register_market_accounts
 /// Instruction accounts.
 #[instruction_accounts("market/register")]
+#[prefix("RM")]
 pub enum Accounts {
     User,
     Market,
@@ -30,6 +31,7 @@ pub enum Accounts {
 // region: register_market_data
 /// Instruction data.
 #[instruction_data("market/register")]
+#[prefix("RM")]
 pub struct Data {
     #[allow(dead_code)]
     discriminant: u8,

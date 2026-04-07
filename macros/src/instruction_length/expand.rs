@@ -25,6 +25,11 @@ pub fn expand(target: &str, input: &syn::ItemStruct) -> proc_macro2::TokenStream
         VALUE
     }};
 
+    let mut filtered_input = input.clone();
+    filtered_input
+        .attrs
+        .retain(|a| !a.path().is_ident("prefix"));
+
     codegen::len_group(
         target,
         struct_name,
@@ -34,6 +39,6 @@ pub fn expand(target: &str, input: &syn::ItemStruct) -> proc_macro2::TokenStream
         "SIZE",
         "SIZE",
         len_expr,
-        quote! { #input },
+        quote! { #filtered_input },
     )
 }

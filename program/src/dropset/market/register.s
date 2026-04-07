@@ -1,23 +1,21 @@
 # Instruction data.
 # -------------------------------------------------------------------------
-.equ DATA_SIZE, 1 # Instruction data size.
+.equ RM_SIZE, 1 # Instruction data size.
 # -------------------------------------------------------------------------
 
 # Instruction accounts.
 # -------------------------------------------------------------------------
-.equ ACCOUNTS_COUNT, 10 # Accounts number of accounts.
-.equ ACCOUNTS_USER_POS, 0 # User account position.
-.equ ACCOUNTS_MARKET_POS, 1 # Market account position.
-.equ ACCOUNTS_BASE_MINT_POS, 2 # Base Mint account position.
-.equ ACCOUNTS_QUOTE_MINT_POS, 3 # Quote Mint account position.
-.equ ACCOUNTS_SYSTEM_PROGRAM_POS, 4 # System Program account position.
-.equ ACCOUNTS_RENT_SYSVAR_POS, 5 # Rent Sysvar account position.
-# Base Token Program account position.
-.equ ACCOUNTS_BASE_TOKEN_PROGRAM_POS, 6
-.equ ACCOUNTS_BASE_VAULT_POS, 7 # Base Vault account position.
-# Quote Token Program account position.
-.equ ACCOUNTS_QUOTE_TOKEN_PROGRAM_POS, 8
-.equ ACCOUNTS_QUOTE_VAULT_POS, 9 # Quote Vault account position.
+.equ RM_COUNT, 10 # Accounts number of accounts.
+.equ RM_USER_POS, 0 # User account position.
+.equ RM_MARKET_POS, 1 # Market account position.
+.equ RM_BASE_MINT_POS, 2 # Base Mint account position.
+.equ RM_QUOTE_MINT_POS, 3 # Quote Mint account position.
+.equ RM_SYSTEM_PROGRAM_POS, 4 # System Program account position.
+.equ RM_RENT_SYSVAR_POS, 5 # Rent Sysvar account position.
+.equ RM_BASE_TOKEN_PROGRAM_POS, 6 # Base Token Program account position.
+.equ RM_BASE_VAULT_POS, 7 # Base Vault account position.
+.equ RM_QUOTE_TOKEN_PROGRAM_POS, 8 # Quote Token Program account position.
+.equ RM_QUOTE_VAULT_POS, 9 # Quote Vault account position.
 # -------------------------------------------------------------------------
 
 # Market registration-related constants.
@@ -219,13 +217,13 @@
 register_market:
     # if input.n_accounts < Accounts.count
     #     return ErrorCode::InvalidNumberOfAccounts
-    jlt r3, ACCOUNTS_COUNT, e_invalid_number_of_accounts
+    jlt r3, RM_COUNT, e_invalid_number_of_accounts
     # if insn_len != Data.size
     #     return ErrorCode::InvalidInstructionLength
-    jne r4, DATA_SIZE, e_invalid_instruction_length
+    jne r4, RM_SIZE, e_invalid_instruction_length
     # frame.program_id = &insn.program_id
     mov64 r4, r2
-    add64 r4, DATA_SIZE
+    add64 r4, RM_SIZE
     stxdw [r10 + RM_FM_PROGRAM_ID_OFF], r4
     # if input.user.data_len != data.DATA_LEN_ZERO
     #     return ErrorCode::UserHasData
@@ -485,7 +483,7 @@ register_market_advance_quote_non_dup:
 register_market_base_vault_dup:
     # if acct.duplicate != Accounts::BaseTokenProgram
     #     return ErrorCode::InvalidQuoteTokenProgramDuplicate
-    jne r7, ACCOUNTS_BASE_TOKEN_PROGRAM_POS, e_invalid_quote_token_program_duplicate
+    jne r7, RM_BASE_TOKEN_PROGRAM_POS, e_invalid_quote_token_program_duplicate
     # if input.base_mint.owner != input_shifted.quote_mint.owner
     #     return ErrorCode::DupQuoteTokenProgramNotQuoteMintOwner
     ldxdw r7, [r8 + RM_BASE_OWNER_CHUNK_0_OFF]

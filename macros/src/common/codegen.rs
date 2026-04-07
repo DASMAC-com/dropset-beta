@@ -1,4 +1,4 @@
-use heck::{ToShoutySnakeCase, ToSnakeCase};
+use heck::ToSnakeCase;
 use quote::quote;
 use syn::Ident;
 

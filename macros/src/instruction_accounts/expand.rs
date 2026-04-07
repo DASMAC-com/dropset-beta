@@ -55,8 +55,13 @@ pub fn expand(target: &str, input: &syn::ItemEnum) -> proc_macro2::TokenStream {
         meta_idents.push(meta_ident);
     }
 
+    let mut filtered_input = input.clone();
+    filtered_input
+        .attrs
+        .retain(|a| !a.path().is_ident("prefix"));
+
     let body = quote! {
-        #input
+        #filtered_input
 
         impl #enum_name {
             #[doc = #count_doc]
