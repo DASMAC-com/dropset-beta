@@ -76,7 +76,7 @@ link to the file on GitHub. Supports assembly (`.s`), config/root files
 | ------------- | ----------------- | -------- | -------------------------------------------------------------------------------------- |
 | `asm`         | `String`          | no       | Assembly file name (without `.s` extension)                                            |
 | `cfg`         | `String`          | no       | Config/root file path from repo root (e.g. `Makefile`, `.github/workflows/test.yml`)   |
-| `rs`          | `String`          | no       | Rust file in `crate::module` syntax (e.g. `interface::lib`)                            |
+| `rs`          | `String`          | no       | Rust file in `crate::module` syntax (e.g. `interface::common::pubkey`)                 |
 | `vitepress`   | `String`          | no       | VitePress file path (e.g. `components/Algorithm`, `theme/index`)                       |
 | `collapsible` | `Boolean\|String` | no       | Wrap in a `<details>` block, open by default. String value overrides the summary label |
 | `collapsed`   | `Boolean\|String` | no       | Same as `collapsible` but closed by default                                            |
@@ -89,8 +89,8 @@ Usage:
 <!-- Assembly file, collapsible and open -->
 <Include asm="dropset" collapsible/>
 
-<!-- Rust file, collapsed by default -->
-<Include rs="interface::lib" collapsed/>
+<!-- Rust file (nested modules use :: separators) -->
+<Include rs="interface::common::pubkey" collapsed/>
 
 <!-- VitePress component, collapsed -->
 <Include vitepress="components/Algorithm" collapsed/>

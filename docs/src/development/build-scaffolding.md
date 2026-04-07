@@ -78,7 +78,7 @@ syntax forms (parsed within the proc macro, not standalone macros):
   immediate with `_REL_OFF_IMM` suffix. In `#[frame(Context)]` context the
   struct is inferred and only the two field paths are required
 
-<Include rs="interface::memory#constant_group_example" collapsible/>
+<Include rs="interface::entrypoint#constant_group_example" collapsible/>
 
 #### Frame-relative offsets
 
@@ -100,7 +100,7 @@ invocation unnecessary. The `constant_group!` macro remains available for
 non-frame groups (e.g. input buffer offsets, standalone immediates).
 :::
 
-<Include rs="interface::market#register_market_stack" collapsed/>
+<Include rs="interface::market::register#register_market_stack" collapsed/>
 
 Each group generates:
 
@@ -120,7 +120,7 @@ explicit casts (e.g. `Discriminant::RegisterMarket.into()`). A hidden module
 with `DISC_`-prefixed assembly constants and a `GROUP` is generated for
 build-time injection.
 
-<Include rs="interface::lib#discriminant_enum" collapsed/>
+<Include rs="interface::entrypoint#discriminant_enum" collapsed/>
 
 ### `#[error_enum("target")]` {#error_enum}
 
@@ -131,31 +131,31 @@ variant: a lowercase `e_snake_name:` label that sets `r0` to the corresponding
 `E_` constant and exits. When error labels are present, the build system
 fully regenerates the target assembly file.
 
-<Include rs="interface::lib#error_enum" collapsed/>
+<Include rs="interface::error#error_enum" collapsed/>
 
 ### `#[instruction_data("target")]`
 
-Attribute macro for instruction data structs. Automatically generates an
-`LEN` associated constant (`u64`) from `size_of::<Self>()`, and a hidden
-module with a `_LEN` suffixed assembly constant and `GROUP` for build-time
-injection. The target string names the assembly file (e.g. `"market/register"`
+Attribute macro for instruction data structs. Automatically generates a
+`SIZE` associated constant (`u64`) from `size_of::<Self>()`, and a hidden
+module with an `INSN_DATA_SIZE` suffixed assembly constant and `GROUP` for
+build-time injection. The target string names the assembly file (e.g. `"market/register"`
 targets `program/src/dropset/market/register.s`).
 
-The length is accessible in Rust as `RegisterMarketData::LEN`.
+The size is accessible in Rust as `Data::SIZE`.
 
-<Include rs="interface::market#register_market_data" collapsible/>
+<Include rs="interface::market::register#register_market_data" collapsible/>
 
 ### `#[instruction_accounts("target")]`
 
-Attribute macro for instruction accounts enums. Generates a `LEN` associated
-constant (`u64`) from the number of enum variants, plus a per-variant `_POS`
-position constant (`i32`) for each variant. A hidden module with assembly
+Attribute macro for instruction accounts enums. Generates a `COUNT` associated
+constant (`u64`) from the number of enum variants, plus a per-variant
+`INSN_ACCTS_*_POS` position constant (`i32`) for each variant. A hidden module with assembly
 constants and `GROUP` is emitted for build-time injection. Assembly comments
 are auto-generated from the variant names.
 
-The count is accessible in Rust as `RegisterMarketAccounts::LEN`.
+The count is accessible in Rust as `Accounts::COUNT`.
 
-<Include rs="interface::market#register_market_accounts" collapsible/>
+<Include rs="interface::market::register#register_market_accounts" collapsible/>
 
 ### `#[frame]`
 
@@ -188,7 +188,7 @@ Sub-field access uses comma-separated form:
 Struct-level `#[relative_offset(NAME, from, to, "doc")]` attributes compute
 the difference between two field offsets.
 
-<Include rs="interface::market#frame_example" collapsed/>
+<Include rs="interface::market::register#frame_example" collapsed/>
 
 ### `#[svm_data]`
 
@@ -208,7 +208,7 @@ state so that `signer_seeds!(field)` inside a
 on a [`#[frame]`](#frame) struct, can auto-discover all seed fields by
 looking up the parent field's type.
 
-<Include rs="interface::market#signer_seeds_example" collapsible/>
+<Include rs="interface::market::register#signer_seeds_example" collapsible/>
 
 ### `cpi_accounts!` {#cpi_accounts}
 
@@ -227,14 +227,14 @@ comments are auto-derived from the type name (`Pubkey` becomes
 Note that `Pubkey` is a local alias for `pinocchio::Address` (see
 [Pubkeys][layout-pubkeys] for the naming convention).
 
-<Include rs="interface::memory#size_of_group_example" collapsible/>
+<Include rs="interface::common::memory#size_of_group_example" collapsible/>
 
 ## Interface
 
 The [`interface`] crate uses the macros to declare all program constants. The
 `INJECTION_GROUPS` slice collects every constant group for the build script.
 
-<Include rs="interface::lib" collapsed/>
+<Include rs="interface::groups" collapsed/>
 
 ## Build crate
 
