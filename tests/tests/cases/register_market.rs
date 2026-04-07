@@ -98,7 +98,7 @@ test_cases! {
     }
 }
 
-const N_ACCOUNTS: usize = Accounts::LEN as usize;
+const N_ACCOUNTS: usize = Accounts::COUNT as usize;
 
 /// Build unique accounts with default (empty) data.
 fn default_accounts() -> (Vec<Pubkey>, Vec<Account>) {

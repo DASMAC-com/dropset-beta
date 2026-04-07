@@ -1,16 +1,20 @@
 use quote::quote;
 
-use crate::common::attrs::extract_doc_comment;
+use heck::ToShoutySnakeCase;
+
+use crate::common::attrs::{extract_attr_string, extract_doc_comment};
 use crate::common::codegen;
 
 /// Expand `#[instruction_data("target")]` on a struct into:
 /// - The original struct
-/// - `impl StructName { pub const LEN: u64 = ...; }`
+/// - `impl StructName { pub const SIZE: u64 = ...; }`
 /// - A hidden module with `GROUP` metadata for assembly injection
 pub fn expand(target: &str, input: &syn::ItemStruct) -> proc_macro2::TokenStream {
     let struct_name = &input.ident;
+    let prefix = extract_attr_string(&input.attrs, "prefix")
+        .unwrap_or_else(|| struct_name.to_string().to_shouty_snake_case());
     let comment = extract_doc_comment(&input.attrs).unwrap_or_default();
-    let doc = "Instruction data length.";
+    let doc = "Instruction data size.";
 
     let len_expr = quote! {{
         const VALUE: u64 = core::mem::size_of::<#struct_name>() as u64;
@@ -21,5 +25,15 @@ pub fn expand(target: &str, input: &syn::ItemStruct) -> proc_macro2::TokenStream
         VALUE
     }};
 
-    codegen::len_group(target, struct_name, &comment, doc, len_expr, quote! { #input })
+    codegen::len_group(
+        target,
+        struct_name,
+        &prefix,
+        &comment,
+        doc,
+        "SIZE",
+        "SIZE",
+        len_expr,
+        quote! { #input },
+    )
 }

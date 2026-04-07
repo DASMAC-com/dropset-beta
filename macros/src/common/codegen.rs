@@ -109,19 +109,23 @@ pub fn with_group(
 pub fn len_group(
     target: &str,
     type_name: &Ident,
+    prefix: &str,
     comment: &str,
     doc: &str,
+    asm_suffix: &str,
+    const_name: &str,
     len_expr: proc_macro2::TokenStream,
     original_item: proc_macro2::TokenStream,
 ) -> proc_macro2::TokenStream {
-    let asm_name = format!("{}_LEN", type_name.to_string().to_shouty_snake_case());
+    let asm_name = format!("{}_{}", prefix, asm_suffix);
     let meta_ident = meta_ident(&asm_name, type_name.span());
+    let const_ident = Ident::new(const_name, type_name.span());
 
     let meta_def = immediate_meta(
         &meta_ident,
         &asm_name,
         doc,
-        quote! { super::#type_name::LEN as i32 },
+        quote! { super::#type_name::#const_ident as i32 },
     );
 
     let body = quote! {
@@ -129,7 +133,7 @@ pub fn len_group(
 
         impl #type_name {
             #[doc = #doc]
-            pub const LEN: u64 = #len_expr;
+            pub const #const_ident: u64 = #len_expr;
         }
     };
 

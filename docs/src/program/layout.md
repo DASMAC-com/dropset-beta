@@ -10,17 +10,63 @@ details on how assembly constants are generated from Rust crates.
 program/src/dropset/
 ├── dropset.s              # Top-level file
 ├── entrypoint.s           # Entrypoint dispatcher
+├── error.s                # Error codes and subroutines
 ├── common/
-│   ├── discriminant.s     # Instruction discriminants
-│   ├── error.s            # Error codes and subroutines
-│   ├── memory.s           # Memory layout constants
+│   ├── account.s          # Runtime account constants
+│   ├── memory.s           # Data and type size constants
 │   ├── pubkey.s           # Pubkey chunk offsets and known addresses
 │   └── token.s            # SPL Token constants
 └── market/
+    ├── market.s           # Market-level constants
+    ├── register.s         # RegisterMarket handler
     ├── init_market_pda.s  # Market PDA initialization
-    ├── init_vault.s       # Vault initialization
-    └── register.s         # RegisterMarket handler
+    └── init_vault.s       # Vault initialization
 ```
+
+## Notation
+
+Algorithm pseudocode (`.tex` files in `docs/algorithms/`) references
+constants and fields using scoped `\texttt{}` names. The scope mirrors
+the interface module path with these rules:
+
+**Enum variants** use Rust `::` syntax:
+
+| Example | Source |
+|---|---|
+| `Discriminant::RegisterMarket` | `entrypoint::Discriminant` |
+| `ErrorCode::InvalidDiscriminant` | `error::ErrorCode` |
+| `Accounts::User` | `market::register::Accounts` |
+
+**Constant group values** use the interface module path with `::`.
+When the group is named `constants`, the group name is elided:
+
+| Example | Rust path | ASM constant |
+|---|---|---|
+| `entrypoint::RETURN_SUCCESS` | `entrypoint::constants::RETURN_SUCCESS` | `RETURN_SUCCESS` |
+| `entrypoint::input_buffer::MARKET_DATA_LEN` | `entrypoint::input_buffer::MARKET_DATA_LEN` | `IB_MARKET_DATA_LEN_OFF` |
+| `common::account::NON_DUP_MARKER` | `common::account::constants::NON_DUP_MARKER` | `ACCT_NON_DUP_MARKER` |
+| `common::memory::LEN_ZERO` | `common::memory::constants::LEN_ZERO` | `DATA_LEN_ZERO` |
+| `common::pubkey::RENT` | `common::pubkey::constants::RENT` | `PUBKEY_RENT_CHUNK_{0..3}` |
+| `common::token::ACCOUNT_SIZE` | `common::token::constants::ACCOUNT_SIZE` | `TOKEN_ACCOUNT_SIZE` |
+| `market::VAULT_INDEX_BASE` | `market::constants::VAULT_INDEX_BASE` | `MKT_VAULT_INDEX_BASE` |
+| `market::register::N_PDA_SIGNERS` | `market::register::constants::N_PDA_SIGNERS` | `RM_N_PDA_SIGNERS` |
+
+**Frame fields** use the module path to the frame, then `.` for field
+access:
+
+| Example | ASM constant |
+|---|---|
+| `market::register::frame.input_shifted` | `RM_FM_INPUT_SHIFTED_OFF` |
+| `market::register::frame.pda` | `RM_FM_PDA_OFF` |
+
+**Type properties** use `Type.property` for intrinsic values:
+
+| Example | Meaning |
+|---|---|
+| `Accounts.count` | Number of instruction accounts |
+| `Data.size` | Instruction data byte size |
+| `EmptyAccount.size` | `size_of::<EmptyAccount>()` |
+| `MarketHeader.size` | `size_of::<MarketHeader>()` |
 
 ## Algorithm conventions
 
@@ -38,31 +84,28 @@ program/src/dropset/
 
 <Include asm="dropset" collapsible/>
 
-## Common
+## Errors
 
-`common/` houses several general constants and subroutines.
-
-### Discriminants
-
-Instruction discriminant constants are injected from the
-[interface][bs-interface] crate's [`#[discriminant_enum]`][bs-discriminant]
-macro:
-
-<Include rs="interface::lib#discriminant_enum" collapsed/>
-<Include asm="common/discriminant" collapsed/>
-
-### Errors
-
-Error codes and subroutines injected via
+Error codes and handler labels injected via
 [`#[error_enum]`][bs-error].
 Each error label sets `r0` to the corresponding error code and exits:
 
-<Include rs="interface::lib#error_enum" collapsed/>
-<Include asm="common/error" collapsed/>
+<Include rs="interface::error#error_enum" collapsed/>
+<Include asm="error" collapsed/>
+
+## Common
+
+`common/` houses shared constants used across all instructions.
+
+### Account
+
+Runtime account layout constants (`ACCT_*`) and CPI flags (`CPI_*`):
+
+<Include asm="common/account" collapsed/>
 
 ### Memory
 
-Data-related constants and [input buffer] offset constants are in `memory.s`:
+Data-related constants and type sizes:
 
 <Include asm="common/memory" collapsed/>
 
@@ -100,7 +143,7 @@ pointer, so reserving the term for struct fields named `address` avoids
 ambiguity.
 :::
 
-<Include rs="interface::pubkey#pubkey_constants" collapsible/>
+<Include rs="interface::common::pubkey#pubkey_constants" collapsible/>
 <Include asm="common/pubkey" collapsed/>
 
 ### Token
@@ -116,7 +159,7 @@ from the [`token`][token-mod] module via [`constant_group!`][bs-constant-group]:
 [bs-interface]: ../development/build-scaffolding#interface
 [bs-discriminant]: ../development/build-scaffolding#discriminant-enum-target
 [bs-error]: ../development/build-scaffolding#error_enum
-[pubkey-mod]: https://github.com/DASMAC-com/dropset-beta/blob/main/interface/src/pubkey.rs
-[token-mod]: https://github.com/DASMAC-com/dropset-beta/blob/main/interface/src/token.rs
+[pubkey-mod]: https://github.com/DASMAC-com/dropset-beta/blob/main/interface/src/common/pubkey.rs
+[token-mod]: https://github.com/DASMAC-com/dropset-beta/blob/main/interface/src/common/token.rs
 [bs-constant-group]: ../development/build-scaffolding#constant_group
 [build scaffolding]: ../development/build-scaffolding

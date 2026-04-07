@@ -1,11 +1,11 @@
 # Instruction data.
 # -------------------------------------------------------------------------
-.equ DATA_LEN, 1 # Instruction data length.
+.equ DATA_SIZE, 1 # Instruction data size.
 # -------------------------------------------------------------------------
 
 # Instruction accounts.
 # -------------------------------------------------------------------------
-.equ ACCOUNTS_LEN, 10 # Accounts number of accounts.
+.equ ACCOUNTS_COUNT, 10 # Accounts number of accounts.
 .equ ACCOUNTS_USER_POS, 0 # User account position.
 .equ ACCOUNTS_MARKET_POS, 1 # Market account position.
 .equ ACCOUNTS_BASE_MINT_POS, 2 # Base Mint account position.
@@ -217,15 +217,15 @@
 # -------------------------------------------------------------------------
 
 register_market:
-    # if input.n_accounts < Accounts.LEN
+    # if input.n_accounts < Accounts.count
     #     return ErrorCode::InvalidNumberOfAccounts
-    jlt r3, ACCOUNTS_LEN, e_invalid_number_of_accounts
-    # if insn_len != Data.LEN
+    jlt r3, ACCOUNTS_COUNT, e_invalid_number_of_accounts
+    # if insn_len != Data.size
     #     return ErrorCode::InvalidInstructionLength
-    jne r4, DATA_LEN, e_invalid_instruction_length
+    jne r4, DATA_SIZE, e_invalid_instruction_length
     # frame.program_id = &insn.program_id
     mov64 r4, r2
-    add64 r4, DATA_LEN
+    add64 r4, DATA_SIZE
     stxdw [r10 + RM_FM_PROGRAM_ID_OFF], r4
     # if input.user.data_len != data.DATA_LEN_ZERO
     #     return ErrorCode::UserHasData

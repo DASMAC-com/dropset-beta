@@ -5,7 +5,7 @@ use pinocchio_token::state::TokenAccount;
 use pinocchio_token_2022::instructions::GetAccountDataSize;
 
 #[svm_data]
-/// CPI instruction data for InitializeAccount2.
+/// CPI instruction data for spl_token::InitializeAccount2.
 pub struct InitializeAccount2 {
     pub discriminant: u8,
     /// In this implementation, the market PDA.

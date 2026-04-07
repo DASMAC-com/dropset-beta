@@ -1,32 +1,33 @@
 use heck::{ToShoutySnakeCase, ToTitleCase};
 use quote::quote;
 
-use crate::common::attrs::extract_doc_comment;
+use crate::common::attrs::{extract_attr_string, extract_doc_comment};
 use crate::common::codegen;
 
 /// Expand `#[instruction_accounts("target")]` on an enum into:
 /// - The original enum
-/// - `impl EnumName { pub const LEN: u64 = ...; }`
-/// - Per-variant position constants (e.g., `ENUM_NAME_VARIANT = 0`)
+/// - `impl EnumName { pub const COUNT: u64 = ...; }`
+/// - Per-variant position constants (e.g., `PREFIX_VARIANT_POS = 0`)
 /// - A hidden module with `GROUP` metadata for assembly injection
 pub fn expand(target: &str, input: &syn::ItemEnum) -> proc_macro2::TokenStream {
     let enum_name = &input.ident;
     let n_variants = input.variants.len();
-    let prefix = enum_name.to_string().to_shouty_snake_case();
+    let prefix = extract_attr_string(&input.attrs, "prefix")
+        .unwrap_or_else(|| enum_name.to_string().to_shouty_snake_case());
 
-    // LEN constant.
-    let len_doc = format!("{} number of accounts.", enum_name);
-    let len_asm = format!("{}_LEN", prefix);
-    let len_meta_ident = codegen::meta_ident(&len_asm, enum_name.span());
-    let len_meta = codegen::immediate_meta(
-        &len_meta_ident,
-        &len_asm,
-        &len_doc,
-        quote! { super::#enum_name::LEN as i32 },
+    // COUNT constant.
+    let count_doc = format!("{} number of accounts.", enum_name);
+    let count_asm = format!("{}_COUNT", prefix);
+    let count_meta_ident = codegen::meta_ident(&count_asm, enum_name.span());
+    let count_meta = codegen::immediate_meta(
+        &count_meta_ident,
+        &count_asm,
+        &count_doc,
+        quote! { super::#enum_name::COUNT as i32 },
     );
 
-    let mut meta_defs = vec![len_meta];
-    let mut meta_idents = vec![len_meta_ident];
+    let mut meta_defs = vec![count_meta];
+    let mut meta_idents = vec![count_meta_ident];
 
     // Per-variant position constants.
     for (i, variant) in input.variants.iter().enumerate() {
@@ -58,8 +59,8 @@ pub fn expand(target: &str, input: &syn::ItemEnum) -> proc_macro2::TokenStream {
         #input
 
         impl #enum_name {
-            #[doc = #len_doc]
-            pub const LEN: u64 = #n_variants as u64;
+            #[doc = #count_doc]
+            pub const COUNT: u64 = #n_variants as u64;
         }
     };
 
