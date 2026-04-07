@@ -2,7 +2,7 @@ init_market_pda:
     # frame.create_account_data.space = MarketHeader.size
     mov64 r7, SIZE_OF_MARKET_HEADER
     stxdw [r10 + RM_FM_CREATE_ACCT_SPACE_UOFF], r7
-    # acct_size = MarketHeader.size + account.STORAGE_OVERHEAD
+    # acct_size = MarketHeader.size + common::account::STORAGE_OVERHEAD
     add64 r7, ACCT_STORAGE_OVERHEAD
     # lamports_per_byte = acct.data.lamports_per_byte
     ldxdw r8, [r9 + ACCT_DATA_OFF]
@@ -33,7 +33,7 @@ init_market_pda:
     # syscall.program_id = &insn.program_id
     mov64 r3, r2
     add64 r3, RM_INSN_DATA_SIZE
-    # syscall.seeds_len = constants.TRY_FIND_MARKET_PDA_SEEDS_LEN
+    # syscall.seeds_len = market::register::TRY_FIND_MARKET_PDA_SEEDS_LEN
     mov64 r2, RM_TRY_FIND_MARKET_PDA_SEEDS_LEN
     # syscall.program_address = &frame.pda
     mov64 r4, r10
@@ -60,7 +60,7 @@ init_market_pda:
     jne r7, r8, e_invalid_market_pubkey
     # frame.pda_seeds[2].addr = &frame.bump
     stxdw [r10 + RM_FM_PDA_SEEDS_IDX_2_ADDR_OFF], r5
-    # frame.pda_seeds.[2].len = u8.size
+    # frame.pda_seeds[2].len = u8.size
     mov64 r7, SIZE_OF_U8
     stxdw [r10 + RM_FM_PDA_SEEDS_IDX_2_LEN_OFF], r7
     # frame.create_account_data.owner = syscall.program_id
@@ -127,7 +127,7 @@ init_market_pda:
     # frame.sol_instruction.accounts = &frame.cpi.account_metas
     add64 r7, RM_FM_CREATE_ACCT_DATA_TO_CPI_ACCT_METAS_REL_OFF_IMM
     stxdw [r10 + RM_FM_SOL_INSN_ACCOUNTS_UOFF], r7
-    # frame.sol_instruction.account_len = constants.CREATE_ACCOUNT_N_ACCOUNTS
+    # frame.sol_instruction.account_len = market::register::CREATE_ACCOUNT_N_ACCOUNTS
     mov64 r7, RM_CREATE_ACCOUNT_N_ACCOUNTS
     stxdw [r10 + RM_FM_SOL_INSN_ACCOUNT_LEN_UOFF], r7
     # frame.sol_instruction.data_len = CreateAccountData.size
@@ -138,14 +138,14 @@ init_market_pda:
     # syscall.account_infos = &frame.cpi.account_infos
     mov64 r2, r10
     add64 r2, RM_FM_CPI_SOL_ACCT_INFO_OFF
-    # syscall.account_infos_len = constants.CREATE_ACCOUNT_N_ACCOUNTS
+    # syscall.account_infos_len = market::register::CREATE_ACCOUNT_N_ACCOUNTS
     mov64 r3, RM_CREATE_ACCOUNT_N_ACCOUNTS
     # syscall.seeds = &frame.signers_seeds
     add64 r4, RM_FM_PDA_TO_SIGNERS_SEEDS_REL_OFF_IMM
-    # syscall.seeds_len = constants.N_PDA_SIGNERS
+    # syscall.seeds_len = market::register::N_PDA_SIGNERS
     mov64 r5, RM_N_PDA_SIGNERS
     call sol_invoke_signed_c
-    # input.market.data.next = input + input_buffer.MARKET_DATA_BYTES
+    # input.market.data.next = input + entrypoint::input_buffer::MARKET_DATA_BYTES
     ldxdw r6, [r10 + RM_FM_INPUT_OFF]
     mov64 r7, r6
     add64 r7, IB_MARKET_DATA_BYTES_OFF

@@ -228,11 +228,11 @@ register_market:
     mov64 r4, r2
     add64 r4, RM_INSN_DATA_SIZE
     stxdw [r10 + RM_FM_PROGRAM_ID_OFF], r4
-    # if input.user.data_len != data.DATA_LEN_ZERO
+    # if input.user.data_len != common::memory::LEN_ZERO
     #     return ErrorCode::UserHasData
     ldxdw r9, [r1 + IB_USER_DATA_LEN_OFF]
     jne r9, DATA_LEN_ZERO, e_user_has_data
-    # if input.market.duplicate != account.NON_DUP_MARKER
+    # if input.market.duplicate != common::account::NON_DUP_MARKER
     #     return ErrorCode::MarketAccountIsDuplicate
     ldxb r9, [r1 + IB_MARKET_DUPLICATE_OFF]
     jne r9, ACCT_NON_DUP_MARKER, e_market_account_is_duplicate
@@ -240,7 +240,7 @@ register_market:
     #     return ErrorCode::MarketHasData
     ldxdw r9, [r1 + IB_MARKET_DATA_LEN_OFF]
     jne r9, DATA_LEN_ZERO, e_market_has_data
-    # if input.base_mint.duplicate != account.NON_DUP_MARKER
+    # if input.base_mint.duplicate != common::account::NON_DUP_MARKER
     #     return ErrorCode::BaseMintIsDuplicate
     ldxb r9, [r1 + RM_BASE_DUPLICATE_OFF]
     jne r9, ACCT_NON_DUP_MARKER, e_base_mint_is_duplicate
@@ -251,7 +251,7 @@ register_market:
     add64 r9, r1
     # frame.input_shifted = input_shifted
     stxdw [r10 + RM_FM_INPUT_SHIFTED_OFF], r9
-    # if input_shifted.quote_mint.duplicate != account.NON_DUP_MARKER
+    # if input_shifted.quote_mint.duplicate != common::account::NON_DUP_MARKER
     #     return ErrorCode::QuoteMintIsDuplicate
     ldxb r8, [r9 + RM_QUOTE_DUPLICATE_OFF]
     jne r8, ACCT_NON_DUP_MARKER, e_quote_mint_is_duplicate
@@ -264,7 +264,7 @@ register_market:
     # acct += quote_mint_padded_data_len + EmptyAccount.size
     add64 r9, r8
     add64 r9, SIZE_OF_EMPTY_ACCOUNT
-    # if acct.duplicate != account.NON_DUP_MARKER
+    # if acct.duplicate != common::account::NON_DUP_MARKER
     #     return ErrorCode::SystemProgramIsDuplicate
     ldxb r7, [r9 + ACCT_DUPLICATE_OFF]
     jne r7, ACCT_NON_DUP_MARKER, e_system_program_is_duplicate
@@ -293,11 +293,11 @@ register_market:
     # acct += system_program_padded_data_len + EmptyAccount.size
     add64 r9, r7
     add64 r9, SIZE_OF_EMPTY_ACCOUNT
-    # if acct.duplicate != account.NON_DUP_MARKER
+    # if acct.duplicate != common::account::NON_DUP_MARKER
     #     return ErrorCode::RentSysvarIsDuplicate
     ldxb r7, [r9 + ACCT_DUPLICATE_OFF]
     jne r7, ACCT_NON_DUP_MARKER, e_rent_sysvar_is_duplicate
-    # if acct.pubkey != pubkey.RENT
+    # if acct.pubkey != common::pubkey::RENT
     #     return ErrorCode::InvalidRentSysvarPubkey
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_0_OFF]
     lddw r8, PUBKEY_RENT_CHUNK_0
@@ -310,7 +310,7 @@ register_market:
     jne r7, r8, e_invalid_rent_sysvar_pubkey
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_3_OFF]
     # region: optimize_example
-    # Optimize: pubkey.RENT chunk 3 hi bits are zero, so mov32
+    # Optimize: common::pubkey::RENT chunk 3 hi bits are zero, so mov32
     # (1 CU) replaces lddw (2 CUs).
     mov32 r8, PUBKEY_RENT_CHUNK_3_LO
     # endregion: optimize_example
@@ -331,7 +331,7 @@ init_market_pda_return:
     # acct += rent_sysvar_padded_data_len + EmptyAccount.size
     add64 r9, r7
     add64 r9, SIZE_OF_EMPTY_ACCOUNT
-    # if acct.duplicate != account.NON_DUP_MARKER
+    # if acct.duplicate != common::account::NON_DUP_MARKER
     #     return ErrorCode::BaseTokenProgramIsDuplicate
     ldxb r7, [r9 + ACCT_DUPLICATE_OFF]
     jne r7, ACCT_NON_DUP_MARKER, e_base_token_program_is_duplicate
@@ -349,8 +349,8 @@ init_market_pda_return:
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_3_OFF]
     ldxdw r1, [r8 + RM_BASE_OWNER_CHUNK_3_OFF]
     jne r7, r1, e_base_token_program_not_base_mint_owner
-    # if acct.pubkey != pubkey.TOKEN_PROGRAM
-    #     if acct.pubkey != pubkey.TOKEN_2022_PROGRAM
+    # if acct.pubkey != common::pubkey::TOKEN_PROGRAM
+    #     if acct.pubkey != common::pubkey::TOKEN_2022_PROGRAM
     #         return ErrorCode::BaseTokenProgramNotTokenProgram
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_0_OFF]
     lddw r1, PUBKEY_TOKEN_PROGRAM_CHUNK_0
@@ -391,15 +391,15 @@ register_market_base_vault:
     # acct += base_token_program_padded_data_len + EmptyAccount.size
     add64 r9, r7
     add64 r9, SIZE_OF_EMPTY_ACCOUNT
-    # if acct.duplicate != account.NON_DUP_MARKER
+    # if acct.duplicate != common::account::NON_DUP_MARKER
     #     return ErrorCode::BaseVaultIsDuplicate
     ldxb r7, [r9 + ACCT_DUPLICATE_OFF]
     jne r7, ACCT_NON_DUP_MARKER, e_base_vault_is_duplicate
-    # if acct.data_len != data.LEN_ZERO
+    # if acct.data_len != common::memory::LEN_ZERO
     #     return ErrorCode::BaseVaultHasData
     ldxdw r7, [r9 + ACCT_DATA_LEN_OFF]
     jne r7, DATA_LEN_ZERO, e_base_vault_has_data
-    # frame.vault_index = market.VAULT_INDEX_BASE
+    # frame.vault_index = market::VAULT_INDEX_BASE
     stb [r10 + RM_FM_VAULT_INDEX_UOFF], MKT_VAULT_INDEX_BASE
     # frame.mint = &input.base_mint
     mov64 r7, r8
@@ -409,7 +409,7 @@ register_market_base_vault:
     mov64 r1, r9
     mov64 r2, r10
     call init_vault
-    # if result != entrypoint.RETURN_SUCCESS
+    # if result != entrypoint::RETURN_SUCCESS
     #     return result
     jne r0, RETURN_SUCCESS, register_market_init_base_vault_failed
     # input.market.data.base_vault_bump = frame.bump
@@ -421,7 +421,7 @@ register_market_init_base_vault_failed:
 register_market_quote_token_program:
     # acct += EmptyAccount.size
     add64 r9, SIZE_OF_EMPTY_ACCOUNT
-    # if acct.duplicate == account.NON_DUP_MARKER
+    # if acct.duplicate == common::account::NON_DUP_MARKER
     ldxb r7, [r9 + ACCT_DUPLICATE_OFF]
     jne r7, ACCT_NON_DUP_MARKER, register_market_base_vault_dup
     # if acct.pubkey != input_shifted.quote_mint.owner
@@ -438,8 +438,8 @@ register_market_quote_token_program:
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_3_OFF]
     ldxdw r2, [r6 + RM_QUOTE_OWNER_CHUNK_3_OFF]
     jne r7, r2, e_non_dup_quote_token_program_not_quote_mint_owner
-    # if acct.pubkey != pubkey.TOKEN_PROGRAM
-    #     if acct.pubkey != pubkey.TOKEN_2022_PROGRAM
+    # if acct.pubkey != common::pubkey::TOKEN_PROGRAM
+    #     if acct.pubkey != common::pubkey::TOKEN_2022_PROGRAM
     #         return ErrorCode::QuoteTokenProgramNotTokenProgram
     ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_0_OFF]
     lddw r2, PUBKEY_TOKEN_PROGRAM_CHUNK_0
@@ -506,15 +506,15 @@ register_market_base_vault_dup:
     # acct += u64.size
     add64 r9, SIZE_OF_U64
 register_market_done_token_programs:
-    # if acct.duplicate != account.NON_DUP_MARKER
+    # if acct.duplicate != common::account::NON_DUP_MARKER
     #     return ErrorCode::QuoteVaultIsDuplicate
     ldxb r7, [r9 + ACCT_DUPLICATE_OFF]
     jne r7, ACCT_NON_DUP_MARKER, e_quote_vault_is_duplicate
-    # if acct.data_len != data.LEN_ZERO
+    # if acct.data_len != common::memory::LEN_ZERO
     #     return ErrorCode::QuoteVaultHasData
     ldxdw r7, [r9 + ACCT_DATA_LEN_OFF]
     jne r7, DATA_LEN_ZERO, e_quote_vault_has_data
-    # frame.vault_index = market.VAULT_INDEX_QUOTE
+    # frame.vault_index = market::VAULT_INDEX_QUOTE
     stb [r10 + RM_FM_VAULT_INDEX_UOFF], MKT_VAULT_INDEX_QUOTE
     # frame.mint = &input_shifted.quote_mint
     mov64 r7, r6

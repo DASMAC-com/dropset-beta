@@ -17,7 +17,7 @@ init_vault:
     # syscall.seeds = &frame.pda_seeds
     mov64 r1, r6
     add64 r1, RM_FM_PDA_SEEDS_OFF
-    # syscall.seeds_len = constants.TRY_FIND_VAULT_PDA_SEEDS_LEN
+    # syscall.seeds_len = market::register::TRY_FIND_VAULT_PDA_SEEDS_LEN
     mov64 r2, RM_TRY_FIND_VAULT_PDA_SEEDS_LEN
     # syscall.program_id = frame.program_id
     ldxdw r3, [r6 + RM_FM_PROGRAM_ID_OFF]
@@ -42,7 +42,7 @@ init_vault:
     ldxdw r2, [r6 + RM_FM_PDA_CHUNK_3_OFF]
     jne r1, r2, init_vault_invalid_pda
     # if !frame.token_program_is_2022
-    #     acct_size = token.ACCOUNT_SIZE
+    #     acct_size = common::token::ACCOUNT_SIZE
     ldxb r1, [r6 + RM_FM_TOKEN_PROGRAM_IS_2022_UOFF]
     jne r1, DATA_BOOL_FALSE, init_vault_get_account_data_size
     mov64 r1, TOKEN_ACCOUNT_SIZE
@@ -83,10 +83,10 @@ init_vault_get_account_data_size:
     mov64 r9, r6
     add64 r9, RM_FM_CPI_IDX_0_ACCT_META_PUBKEY_UOFF
     stxdw [r6 + RM_FM_SOL_INSN_ACCOUNTS_UOFF], r9
-    # frame.sol_instruction.account_len = token.GET_ACCOUNT_DATA_SIZE_N_ACCOUNTS
+    # frame.sol_instruction.account_len = common::token::GET_ACCOUNT_DATA_SIZE_N_ACCOUNTS
     mov64 r9, TOKEN_GET_ACCOUNT_DATA_SIZE_N_ACCOUNTS
     stxdw [r6 + RM_FM_SOL_INSN_ACCOUNT_LEN_UOFF], r9
-    # frame.get_account_data_size_data = token.GET_ACCOUNT_DATA_SIZE_DISC
+    # frame.get_account_data_size_data = common::token::GET_ACCOUNT_DATA_SIZE_DISC
     stb [r6 + RM_FM_GET_ACCOUNT_DATA_SIZE_DATA_UOFF], TOKEN_GET_ACCOUNT_DATA_SIZE_DISC
     # frame.sol_instruction.data = &frame.get_account_data_size_data
     mov64 r9, r6
@@ -101,9 +101,9 @@ init_vault_get_account_data_size:
     # syscall.account_infos = &frame.cpi[0].info
     mov64 r2, r6
     add64 r2, RM_FM_CPI_SOL_ACCT_INFO_OFF
-    # syscall.account_infos_len = token.GET_ACCOUNT_DATA_SIZE_N_ACCOUNTS
+    # syscall.account_infos_len = common::token::GET_ACCOUNT_DATA_SIZE_N_ACCOUNTS
     mov64 r3, TOKEN_GET_ACCOUNT_DATA_SIZE_N_ACCOUNTS
-    # syscall.seeds_len = token.GET_ACCOUNT_DATA_SIZE_N_SEEDS
+    # syscall.seeds_len = common::token::GET_ACCOUNT_DATA_SIZE_N_SEEDS
     mov64 r5, TOKEN_GET_ACCOUNT_DATA_SIZE_N_SEEDS
     call sol_invoke_signed_c
     # syscall.bytes = &frame.token_account_data_size
@@ -120,7 +120,7 @@ init_vault_create_account:
     ldxdw r8, [r6 + RM_FM_TOKEN_ACCOUNT_DATA_SIZE_OFF]
     # frame.create_account_data.space = acct_size
     stxdw [r6 + RM_FM_CREATE_ACCT_SPACE_UOFF], r8
-    # acct_size = acct_size + account.STORAGE_OVERHEAD
+    # acct_size = acct_size + common::account::STORAGE_OVERHEAD
     add64 r8, ACCT_STORAGE_OVERHEAD
     # frame.create_account_data.lamports = acct_size * frame.lamports_per_byte
     ldxdw r9, [r6 + RM_FM_LAMPORTS_PER_BYTE_OFF]
@@ -148,10 +148,10 @@ init_vault_create_account:
     # frame.cpi[1].meta.is_writable = true
     # frame.cpi[1].meta.is_signer = true
     sth [r6 + RM_FM_CPI_IDX_1_ACCT_META_IS_WRITABLE_UOFF], CPI_WRITABLE_SIGNER
-    # frame.cpi[0].info.data_len = data.LEN_ZERO
+    # frame.cpi[0].info.data_len = common::memory::LEN_ZERO
     mov64 r9, DATA_LEN_ZERO
     stxdw [r6 + RM_FM_CPI_IDX_0_ACCT_INFO_DATA_LEN_UOFF], r9
-    # frame.cpi[1].info.data_len = data.LEN_ZERO
+    # frame.cpi[1].info.data_len = common::memory::LEN_ZERO
     stxdw [r6 + RM_FM_CPI_IDX_1_ACCT_INFO_DATA_LEN_UOFF], r9
     # frame.cpi[0].meta.pubkey = &input.user.address
     # frame.cpi[0].info.key = &input.user.address
@@ -193,7 +193,7 @@ init_vault_create_account:
     # frame.sol_instruction.accounts = &frame.cpi.account_metas
     add64 r8, RM_FM_CREATE_ACCT_DATA_TO_CPI_ACCT_METAS_REL_OFF_IMM
     stxdw [r6 + RM_FM_SOL_INSN_ACCOUNTS_UOFF], r8
-    # frame.sol_instruction.account_len = constants.CREATE_ACCOUNT_N_ACCOUNTS
+    # frame.sol_instruction.account_len = market::register::CREATE_ACCOUNT_N_ACCOUNTS
     mov64 r8, RM_CREATE_ACCOUNT_N_ACCOUNTS
     stxdw [r6 + RM_FM_SOL_INSN_ACCOUNT_LEN_UOFF], r8
     # frame.sol_instruction.data_len = CreateAccountData.size
@@ -205,12 +205,12 @@ init_vault_create_account:
     # syscall.account_infos = &frame.cpi.account_infos
     mov64 r2, r6
     add64 r2, RM_FM_CPI_SOL_ACCT_INFO_OFF
-    # syscall.account_infos_len = constants.CREATE_ACCOUNT_N_ACCOUNTS
+    # syscall.account_infos_len = market::register::CREATE_ACCOUNT_N_ACCOUNTS
     mov64 r3, RM_CREATE_ACCOUNT_N_ACCOUNTS
     # syscall.seeds = &frame.signers_seeds
     mov64 r4, r6
     add64 r4, RM_FM_SIGNERS_SEEDS_ADDR_UOFF
-    # syscall.seeds_len = constants.N_PDA_SIGNERS
+    # syscall.seeds_len = market::register::N_PDA_SIGNERS
     mov64 r5, RM_N_PDA_SIGNERS
     call sol_invoke_signed_c
     # frame.cpi[0].meta.pubkey = &acct.address
@@ -285,10 +285,10 @@ init_vault_create_account:
     mov64 r8, r6
     add64 r8, RM_FM_CPI_IDX_0_ACCT_META_PUBKEY_UOFF
     stxdw [r6 + RM_FM_SOL_INSN_ACCOUNTS_UOFF], r8
-    # frame.sol_instruction.account_len = token.INITIALIZE_ACCOUNT_2_N_ACCOUNTS
+    # frame.sol_instruction.account_len = common::token::INITIALIZE_ACCOUNT_2_N_ACCOUNTS
     mov64 r8, TOKEN_INITIALIZE_ACCOUNT_2_N_ACCOUNTS
     stxdw [r6 + RM_FM_SOL_INSN_ACCOUNT_LEN_UOFF], r8
-    # frame.initialize_account_2_data.discriminant = token.INITIALIZE_ACCOUNT_2_DISC
+    # frame.initialize_account_2_data.discriminant = common::token::INITIALIZE_ACCOUNT_2_DISC
     stb [r6 + RM_FM_INIT_ACCT_2_DISC_UOFF], TOKEN_INITIALIZE_ACCOUNT_2_DISC
     # frame.initialize_account_2_data.proprietor = input.market.address
     ldxdw r8, [r6 + RM_FM_INPUT_OFF]
@@ -314,14 +314,14 @@ init_vault_create_account:
     # syscall.account_infos = &frame.cpi.account_infos
     mov64 r2, r6
     add64 r2, RM_FM_CPI_SOL_ACCT_INFO_OFF
-    # syscall.account_infos_len = token.INITIALIZE_ACCOUNT_2_N_ACCOUNTS
+    # syscall.account_infos_len = common::token::INITIALIZE_ACCOUNT_2_N_ACCOUNTS
     mov64 r3, TOKEN_INITIALIZE_ACCOUNT_2_N_ACCOUNTS
-    # syscall.seeds_len = token.INITIALIZE_ACCOUNT_2_N_SEEDS
+    # syscall.seeds_len = common::token::INITIALIZE_ACCOUNT_2_N_SEEDS
     mov64 r5, TOKEN_INITIALIZE_ACCOUNT_2_N_SEEDS
     call sol_invoke_signed_c
     exit
 init_vault_invalid_pda:
-    # if frame.vault_index == market.VAULT_INDEX_BASE
+    # if frame.vault_index == market::VAULT_INDEX_BASE
     #     return ErrorCode::InvalidBaseVaultPubkey
     # else
     #     return ErrorCode::InvalidQuoteVaultPubkey
