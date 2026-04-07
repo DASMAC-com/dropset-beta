@@ -1,4 +1,4 @@
-use crate::svm::memory::constants as memory;
+use crate::common::memory::constants as memory;
 use dropset_macros::{constant_group, svm_data};
 use pinocchio::account::{MAX_PERMITTED_DATA_INCREASE, RuntimeAccount};
 use pinocchio::entrypoint::NON_DUP_MARKER;
@@ -19,7 +19,7 @@ pub type EmptyAccount = FullRuntimeAccount<{ runtime_data_size(memory::LEN_ZERO)
 
 constant_group! {
     #[prefix("ACCT")]
-    #[inject("svm/account")]
+    #[inject("common/account")]
     /// Assorted runtime account constants.
     constants {
         /// Borrow state / duplicate marker.
@@ -49,7 +49,7 @@ constant_group! {
 
 constant_group! {
     #[prefix("CPI")]
-    #[inject("svm/account")]
+    #[inject("common/account")]
     /// CPI-related account constants.
     cpi {
         /// Mask for writable signer (is_writable | is_signer).

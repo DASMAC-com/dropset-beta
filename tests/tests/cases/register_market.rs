@@ -2,8 +2,8 @@ use dropset_interface::entrypoint::input_buffer::MARKET_DATA_BYTES_OFF;
 use dropset_interface::market::register::constants::{VAULT_INDEX_BASE, VAULT_INDEX_QUOTE};
 use dropset_interface::market::register::Accounts;
 use dropset_interface::market::MarketHeader;
-use dropset_interface::svm::pubkey::constants::{CHUNK_0_OFF, CHUNK_1_OFF, CHUNK_2_OFF, CHUNK_3_OFF};
-use dropset_interface::svm::pubkey::{TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID};
+use dropset_interface::common::pubkey::constants::{CHUNK_0_OFF, CHUNK_1_OFF, CHUNK_2_OFF, CHUNK_3_OFF};
+use dropset_interface::common::pubkey::{TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID};
 use dropset_interface::{Discriminant, ErrorCode};
 use dropset_tests::{
     CaseResult, TestCase, TestSetup, check, check_custom, check_with_accounts, find_pda_seed_pair,

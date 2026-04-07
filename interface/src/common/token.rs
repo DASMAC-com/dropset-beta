@@ -14,7 +14,7 @@ pub struct InitializeAccount2 {
 
 constant_group! {
     #[prefix("TOKEN")]
-    #[inject("svm/token")]
+    #[inject("common/token")]
     /// SPL Token constants.
     constants {
         /// Size of a token account (SPL Token and Token 2022 base).

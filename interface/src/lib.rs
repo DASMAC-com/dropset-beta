@@ -4,7 +4,7 @@ pub mod market;
 pub mod order;
 pub mod seat;
 pub mod stack;
-pub mod svm;
+pub mod common;
 
 pub use entrypoint::Discriminant;
 pub use error::ErrorCode;
@@ -18,10 +18,10 @@ pub const INJECTION_GROUPS: &[&dropset_build::ConstantGroup] = &[
     &market::register::accounts::GROUP,
     &market::register::constants::GROUP,
     &market::register::frame::GROUP,
-    &svm::account::constants::GROUP,
-    &svm::account::cpi::GROUP,
-    &svm::memory::size_of::GROUP,
-    &svm::memory::constants::GROUP,
-    &svm::pubkey::constants::GROUP,
-    &svm::token::constants::GROUP,
+    &common::account::constants::GROUP,
+    &common::account::cpi::GROUP,
+    &common::memory::size_of::GROUP,
+    &common::memory::constants::GROUP,
+    &common::pubkey::constants::GROUP,
+    &common::token::constants::GROUP,
 ];

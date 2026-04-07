@@ -2,10 +2,10 @@
 
 # Included in order of dependency.
 .include "error.s"
-.include "svm/account.s"
-.include "svm/memory.s"
-.include "svm/pubkey.s"
-.include "svm/token.s"
+.include "common/account.s"
+.include "common/memory.s"
+.include "common/pubkey.s"
+.include "common/token.s"
 .include "entrypoint.s"
 .include "market/register.s"
 .include "market/init_market_pda.s"

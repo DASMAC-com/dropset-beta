@@ -1,13 +1,13 @@
 use crate::market::MarketHeader;
 use crate::market::register::CreateAccountData;
-use crate::svm::account::EmptyAccount;
-use crate::svm::token::InitializeAccount2;
+use crate::common::account::EmptyAccount;
+use crate::common::token::InitializeAccount2;
 use dropset_macros::{constant_group, size_of_group};
 use pinocchio::Address as Pubkey;
 
 constant_group! {
     #[prefix("DATA")]
-    #[inject("svm/memory")]
+    #[inject("common/memory")]
     /// Common data-related constants.
     constants {
         /// Data length of zero.
@@ -28,7 +28,7 @@ constant_group! {
 
 // region: size_of_group_example
 size_of_group! {
-    #[inject("svm/memory")]
+    #[inject("common/memory")]
     [u8, u64, Pubkey, EmptyAccount, MarketHeader, CreateAccountData, InitializeAccount2]
 }
 // endregion: size_of_group_example

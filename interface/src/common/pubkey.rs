@@ -6,7 +6,7 @@ pub use pinocchio_token_2022::ID as TOKEN_2022_PROGRAM_ID;
 // region: pubkey_constants
 constant_group! {
     #[prefix("PUBKEY")]
-    #[inject("svm/pubkey")]
+    #[inject("common/pubkey")]
     /// Pubkey constants.
     constants {
         /// Offset for the first 8 bytes.

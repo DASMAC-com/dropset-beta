@@ -1,8 +1,8 @@
-use crate::svm::account::EmptyAccount;
-use crate::svm::cpi_bindings::{
+use crate::common::account::EmptyAccount;
+use crate::common::cpi_bindings::{
     SolAccountInfo, SolAccountMeta, SolInstruction, SolSignerSeed, SolSignerSeeds,
 };
-use crate::svm::token::InitializeAccount2;
+use crate::common::token::InitializeAccount2;
 use dropset_macros::{
     constant_group, cpi_accounts, frame, instruction_accounts, instruction_data, signer_seeds,
     svm_data,
