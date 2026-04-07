@@ -1,5 +1,7 @@
 .equ DATA_LEN, 1 # Data instruction data length.
 
+# Instruction accounts.
+# -------------------------------------------------------------------------
 .equ ACCOUNTS_LEN, 10 # Accounts number of accounts.
 .equ ACCOUNTS_USER_POS, 0 # User account position.
 .equ ACCOUNTS_MARKET_POS, 1 # Market account position.
@@ -13,6 +15,7 @@
 # Quote Token Program account position.
 .equ ACCOUNTS_QUOTE_TOKEN_PROGRAM_POS, 8
 .equ ACCOUNTS_QUOTE_VAULT_POS, 9 # Quote Vault account position.
+# -------------------------------------------------------------------------
 
 # Stack frame for REGISTER-MARKET.
 # -------------------------------------------------------------------------
@@ -168,7 +171,7 @@
 .equ RM_FM_CREATE_ACCT_DATA_TO_CPI_ACCT_METAS_REL_OFF_IMM, 264
 # -------------------------------------------------------------------------
 
-# Assorted constants.
+# Market registration-related constants.
 # -------------------------------------------------------------------------
 # From input buffer to base mint duplicate flag.
 .equ RM_BASE_DUPLICATE_OFF, 20680

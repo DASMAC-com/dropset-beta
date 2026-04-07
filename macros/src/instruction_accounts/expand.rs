@@ -1,6 +1,7 @@
 use heck::{ToShoutySnakeCase, ToTitleCase};
 use quote::quote;
 
+use crate::common::attrs::extract_doc_comment;
 use crate::common::codegen;
 
 /// Expand `#[instruction_accounts("target")]` on an enum into:
@@ -62,5 +63,7 @@ pub fn expand(target: &str, input: &syn::ItemEnum) -> proc_macro2::TokenStream {
         }
     };
 
-    codegen::with_group(target, enum_name, "", body, &meta_defs, &meta_idents, &[], &[])
+    let comment = extract_doc_comment(&input.attrs).unwrap_or_default();
+
+    codegen::with_group(target, enum_name, &comment, body, &meta_defs, &meta_idents, &[], &[])
 }

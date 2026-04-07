@@ -11,6 +11,7 @@ use pinocchio::Address as Pubkey;
 use pinocchio::account::RuntimeAccount;
 
 // region: register_market_accounts
+/// Instruction accounts.
 #[instruction_accounts("market/register")]
 pub enum Accounts {
     User,
@@ -47,7 +48,7 @@ pub struct InputBuffer {
 constant_group! {
     #[prefix("RM")]
     #[inject("market/register")]
-    /// Assorted constants.
+    /// Market registration-related constants.
     constants {
         /// From input buffer to base mint duplicate flag.
         BASE_DUPLICATE = offset!(InputBuffer.base_mint.header.borrow_state),
