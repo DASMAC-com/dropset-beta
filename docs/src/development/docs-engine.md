@@ -162,9 +162,9 @@ The manually maintained `algorithms/registry.json` contains three sections:
 - **`algorithms`**: keys are algorithm names (matching `.tex` filenames), each
   value contains an `asm` field pointing to the assembly source (without `.s`
   extension).
-- **`syscalls`**: maps underscore-separated syscall names
+- **`syscalls`**: maps underscore-separated [syscall] names
   (e.g. `sol_try_find_program_address`) to upstream source URLs.
-- **`cpis`**: maps CPI target names in `program::Instruction` form
+- **`cpis`**: maps [CPI] target names in `program::Instruction` form
   (e.g. `system_program::CreateAccount`) to upstream source URLs. These are
   referenced from `.tex` files via
   `\CALL{sol-invoke-signed-c}{program::Instruction}`.
@@ -200,4 +200,6 @@ deps, reverse deps, syscalls, page locations, and associated test cases.
 [algorithm registry]: #algorithm-registry
 [algorithm index]: ../program/algorithm-index
 [`scrollPreserve.js`]: https://github.com/DASMAC-com/dropset-beta/blob/main/docs/.vitepress/theme/scrollPreserve.js
+[syscall]: https://solana.com/docs/core/programs/syscall-reference
+[CPI]: https://solana.com/docs/core/cpi
 [test cases]: tests#verifies-convention

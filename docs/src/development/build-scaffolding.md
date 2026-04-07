@@ -262,7 +262,7 @@ The `INJECTION_GROUPS` slice collects every constant group for the
 ## Build crate
 
 The [`build`] crate has two responsibilities: assembly constant injection and
-CPI bindings generation.
+[CPI] bindings generation.
 
 ### Assembly injection
 
@@ -283,9 +283,9 @@ For example:
 
 <Include asm="entrypoint" collapsible/>
 
-### CPI bindings
+### [CPI] bindings
 
-The `generate_bindings()` function fetches Solana CPI C headers from the
+The `generate_bindings()` function fetches Solana [CPI] C headers from the
 [Agave] repository on GitHub, runs [bindgen] to produce Rust FFI structs, and
 replaces `SolPubkey` references with `Pubkey` (a local alias for
 `pinocchio::Address`). The output is written to `interface/src/cpi_bindings.rs`
@@ -306,6 +306,7 @@ variables set, and commit the updated `cpi_bindings.rs`.
 [`macros`]: https://github.com/DASMAC-com/dropset-beta/tree/main/macros
 [`build`]: https://github.com/DASMAC-com/dropset-beta/tree/main/build
 [proc macros]: https://doc.rust-lang.org/reference/procedural-macros.html
+[CPI]: https://solana.com/docs/core/cpi
 [Agave]: https://github.com/anza-xyz/agave
 [bindgen]: https://rust-lang.github.io/rust-bindgen/
 [layout-pubkeys]: /program/layout#pubkeys
