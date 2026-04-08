@@ -16,7 +16,7 @@ Three custom Vue components are registered globally in the [VitePress theme]:
 ### `<Algorithm>`
 
 Renders a CLRS-style pseudocode specification from a `.tex` file in the
-[`algorithms/`] directory, with a assembly implementation resolved
+[`algorithms/`] directory, with an assembly implementation resolved
 from the [algorithm registry].
 
 <Include vitepress="components/Algorithm" collapsed/>

@@ -104,7 +104,7 @@ variant: a lowercase `e_snake_name:` label that sets `r0` to the corresponding
 `E_` constant and exits. When error labels are present, the build system
 fully regenerates the target assembly file.
 
-<Include rs="interface::error#error_enum" collapsed/>
+<Include rs="interface::error" collapsed/>
 
 ### `#[instruction_data("target")]` {#instruction-data-target}
 
