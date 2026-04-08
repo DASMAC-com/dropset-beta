@@ -125,6 +125,45 @@ and proceed to the **Resolve** section below.
    - New docs pages should be listed.
    - Conventions should not contradict the docs.
 
+### Dependencies and vulnerabilities
+
+1. Check Rust dependency freshness:
+
+   - Read the root `Cargo.toml` where all workspace
+     dependency versions are declared.
+   - For each dependency, check whether a newer
+     version exists on crates.io (use `cargo
+     outdated` if available, otherwise web-search
+     crates.io).
+   - Flag dependencies that are more than one minor
+     version behind.
+
+1. Check workspace dependency inheritance:
+
+   - Read each member `Cargo.toml` (`build/`,
+     `macros/`, `interface/`, `tests/`).
+   - Flag any dependency that specifies a version
+     directly instead of using
+     `{ workspace = true }`.
+
+1. Check docs site dependency freshness:
+
+   - Read `docs/package.json`.
+   - For each dependency, check whether a newer
+     version exists on npm (use `npm outdated
+     --prefix docs` or web-search npmjs.com).
+   - Flag dependencies that are more than one minor
+     version behind.
+
+1. Check for known vulnerabilities:
+
+   - Run `cargo audit` (if installed) or review
+     advisory databases for the Rust dependencies.
+   - Run `npm audit --prefix docs` for the docs
+     site.
+   - Flag any reported vulnerabilities with their
+     severity, affected package, and advisory ID.
+
 ### Documentation structure
 
 1. For each page in `docs/src/`, check whether
