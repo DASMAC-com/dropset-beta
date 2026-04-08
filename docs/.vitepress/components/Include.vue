@@ -128,6 +128,7 @@ onMounted(async () => {
         .slice(start + 1, end)
         .join("\n")
         .trimEnd();
+      ghLink += `#L${start + 2}-L${end}`;
     }
 
     const shiki = await import("shiki");
