@@ -1,7 +1,7 @@
 # Build Scaffolding
 
 Assembly constants (instruction discriminants, error codes, offsets, etc.) are
-defined in Rust in the [`interface`] crate and injected into assembly files at
+defined in Rust in the [`interface`](#interface) crate and injected into assembly files at
 build time. This keeps the assembly source in sync with Rust type layouts and
 avoids hardcoded magic numbers.
 
@@ -9,13 +9,13 @@ avoids hardcoded magic numbers.
 
 Dropset build scaffolding has multiple layers:
 
-1. [`macros`] crate: [proc macros] that turn Rust enums and constant definitions
+1. [`macros`](#macros) crate: [proc macros] that turn Rust enums and constant definitions
    into [`dropset_build::Constant`](#core-types) metadata.
-2. [`interface`] crate: declares the program's constants using those macros.
+2. [`interface`](#interface) crate: declares the program's constants using those macros.
    Injection sites are specified via `#[inject("file")]`, where the target names
    an assembly file (e.g. `#[inject("entrypoint")]` targets
    `program/src/dropset/entrypoint.s`).
-3. [`build`] crate: reads the constant metadata and writes `.equ` directives
+3. [`build`](#build-crate) crate: reads the constant metadata and writes `.equ` directives
    into assembly injection sites.
 
 The workspace-root `build.rs` invokes the injection:
@@ -207,7 +207,8 @@ Note that `Pubkey` is a local alias for `pinocchio::Address` (see
 ## Interface
 
 The [`interface`] crate uses the macros to declare program constants, data
-types, and instruction definitions.
+types, and instruction definitions. These inject into the assembly files
+described in the [program layout].
 
 ```txt
 interface/src/
@@ -280,6 +281,7 @@ To update the bindings for a new Agave version, change the `AGAVE_REV` value in
 variables set, and commit the updated `cpi_bindings.rs`.
 
 [`interface`]: https://github.com/DASMAC-com/dropset-beta/tree/main/interface
+[program layout]: ../program/layout
 [`macros`]: https://github.com/DASMAC-com/dropset-beta/tree/main/macros
 [`build`]: https://github.com/DASMAC-com/dropset-beta/tree/main/build
 [proc macros]: https://doc.rust-lang.org/reference/procedural-macros.html

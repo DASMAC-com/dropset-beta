@@ -5,6 +5,7 @@ built using [multi-file assembly], which allows splitting a single program
 across multiple `.s` files that are joined at build time via `.include`
 directives. See [build scaffolding] for
 details on how assembly constants are generated from Rust crates.
+Algorithm specifications for these files are in the [algorithm index].
 
 ```txt
 program/src/dropset/
@@ -244,6 +245,7 @@ implementation deviates from the specification for performance:
 [bs-instruction-data]: ../development/build-scaffolding#instruction-data-target
 [bs-size-of-group]: ../development/build-scaffolding#size-of-group
 [build scaffolding]: ../development/build-scaffolding
+[algorithm index]: ./algorithm-index
 [CPI]: https://solana.com/docs/core/cpi
 [Syscalls]: https://solana.com/docs/core/programs/syscall-reference
 [algorithm registry]: ../development/docs-engine#algorithm-registry
