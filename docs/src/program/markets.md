@@ -20,11 +20,9 @@ The instruction requires the following accounts:
 
 <Include rs="interface::market::register#register_market_accounts" collapsed/>
 
-## Market registration algorithms
+## REGISTER-MARKET
 
 <AlgorithmIndex root="REGISTER-MARKET"/>
-
-### REGISTER-MARKET
 
 <Algorithm id="REGISTER-MARKET"/>
 
@@ -34,9 +32,11 @@ The instruction requires the following accounts:
 
 ### INIT-MARKET-PDA
 
+<AlgorithmIndex root="INIT-MARKET-PDA"/>
+
 <Algorithm id="INIT-MARKET-PDA"/>
 
-### CREATE-MARKET-ACCOUNT
+#### CREATE-MARKET-ACCOUNT
 
 <Algorithm id="CREATE-MARKET-ACCOUNT"/>
 
@@ -50,17 +50,19 @@ The instruction requires the following accounts:
 
 ### INIT-VAULT
 
+<AlgorithmIndex root="INIT-VAULT"/>
+
 <Algorithm id="INIT-VAULT"/>
 
-### GET-VAULT-SIZE
+#### GET-VAULT-SIZE
 
 <Algorithm id="GET-VAULT-SIZE"/>
 
-### CREATE-VAULT-ACCOUNT
+#### CREATE-VAULT-ACCOUNT
 
 <Algorithm id="CREATE-VAULT-ACCOUNT"/>
 
-### INIT-VAULT-TOKEN-ACCOUNT
+#### INIT-VAULT-TOKEN-ACCOUNT
 
 <Algorithm id="INIT-VAULT-TOKEN-ACCOUNT"/>
 

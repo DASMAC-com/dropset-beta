@@ -17,17 +17,19 @@ program/src/dropset/
 │   ├── pubkey.s           # Pubkey chunk offsets and known addresses
 │   └── token.s            # SPL Token constants
 └── market/
-    ├── market.s               # Market-level constants
-    ├── register.s             # RegisterMarket handler
-    ├── market_pda_prelude.s   # Account validation prelude
-    ├── init_market_pda.s      # Market PDA initialization
-    ├── create_market_account.s # Market account creation CPI
-    ├── init_base_vault.s      # Base vault initialization
-    ├── init_quote_vault.s     # Quote vault initialization
-    ├── init_vault.s               # Vault initialization
-    ├── get_vault_size.s           # Token account size determination
-    ├── create_vault_account.s     # Vault account creation CPI
-    └── init_vault_token_account.s # Vault token account initialization CPI
+    ├── market.s                # Market-level constants
+    ├── register.s              # RegisterMarket handler
+    ├── market_pda_prelude.s    # Account validation prelude
+    ├── init_market_pda/
+    │   ├── init_market_pda.s          # Market PDA initialization
+    │   └── create_market_account.s    # Market account creation CPI
+    ├── init_base_vault.s       # Base vault initialization
+    ├── init_quote_vault.s      # Quote vault initialization
+    └── init_vault/
+        ├── init_vault.s               # Vault initialization
+        ├── get_vault_size.s           # Token account size determination
+        ├── create_vault_account.s     # Vault account creation CPI
+        └── init_vault_token_account.s # Vault token account init CPI
 ```
 
 ## Top-level file
