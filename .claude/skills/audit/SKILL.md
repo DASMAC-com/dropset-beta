@@ -168,9 +168,8 @@ and proceed to the **Resolve** section below.
    - Read the root `Cargo.toml` where all workspace
      dependency versions are declared.
    - For each dependency, check whether a newer
-     version exists on crates.io (use `cargo
-     outdated` if available, otherwise web-search
-     crates.io).
+     version exists on crates.io (use `cargo outdated`
+     if available, otherwise web-search crates.io).
    - Flag dependencies that are more than one minor
      version behind.
 
@@ -185,9 +184,9 @@ and proceed to the **Resolve** section below.
 1. Check docs site dependency freshness:
 
    - Read `docs/package.json`.
-   - For each dependency, check whether a newer
-     version exists on npm (use `npm outdated
-     --prefix docs` or web-search npmjs.com).
+   - For each dependency, check whether a newer version exists
+     on npm (use `npm outdated --prefix docs` or
+     web-search npmjs.com).
    - Flag dependencies that are more than one minor
      version behind.
 
