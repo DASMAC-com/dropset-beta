@@ -1,5 +1,13 @@
 <!-- Auto-generated dependency chart for algorithms. -->
 <template>
+  <ul v-if="!props.root" class="algorithm-tree">
+    <AlgorithmTreeNode
+      v-for="name in roots"
+      :key="name"
+      :name="name"
+      :index="filteredIndex"
+    />
+  </ul>
   <div ref="wrapper" class="algorithm-dep-chart" :class="{ fullscreen }">
     <button class="expand-btn" :title="fullscreen ? 'Exit fullscreen' : 'Fullscreen'" @click="toggle">
       {{ fullscreen ? '✕' : '⛶' }}
@@ -12,6 +20,7 @@
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import algorithmIndex from "../../algorithms/index.json";
 import { syscallRegistry, cpiRegistry } from "./paths.js";
+import AlgorithmTreeNode from "./AlgorithmTreeNode.vue";
 
 const props = defineProps({
   root: { type: String, default: "" },
@@ -53,6 +62,18 @@ const filteredIndex = computed(() => {
     subset[name] = algorithmIndex[name];
   }
   return subset;
+});
+
+// Root algorithms: those with no callers within the filtered set.
+const roots = computed(() => {
+  const index = filteredIndex.value;
+  const called = new Set();
+  for (const entry of Object.values(index)) {
+    for (const dep of entry.calls) {
+      if (index[dep]) called.add(dep);
+    }
+  }
+  return Object.keys(index).filter((name) => !called.has(name));
 });
 
 // Build a Mermaid graph definition from the algorithm index.
@@ -134,6 +155,13 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
+.algorithm-tree {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 1em;
+  font-size: 0.95em;
+}
+
 .algorithm-dep-chart {
   position: relative;
   margin-top: 1em;
