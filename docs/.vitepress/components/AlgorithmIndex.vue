@@ -1,11 +1,15 @@
 <!-- Auto-generated dependency chart for algorithms. -->
 <template>
-  <!-- Mermaid dependency graph, rendered client-side. -->
-  <div ref="chart" class="algorithm-dep-chart" />
+  <div ref="wrapper" class="algorithm-dep-chart" :class="{ fullscreen }">
+    <button class="expand-btn" :title="fullscreen ? 'Exit fullscreen' : 'Fullscreen'" @click="toggle">
+      {{ fullscreen ? '✕' : '⛶' }}
+    </button>
+    <div ref="chart" class="chart-inner" />
+  </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import algorithmIndex from "../../algorithms/index.json";
 import { syscallRegistry, cpiRegistry } from "./paths.js";
 
@@ -14,6 +18,21 @@ const props = defineProps({
 });
 
 const chart = ref(null);
+const wrapper = ref(null);
+const fullscreen = ref(false);
+let pz = null;
+
+function toggle() {
+  if (!document.fullscreenElement) {
+    wrapper.value.requestFullscreen();
+  } else {
+    document.exitFullscreen();
+  }
+}
+
+function onFullscreenChange() {
+  fullscreen.value = !!document.fullscreenElement;
+}
 
 // Collect an algorithm and all its transitive deps (calls only).
 function collectDeps(name, index, result = new Set()) {
@@ -78,6 +97,7 @@ function buildGraph(index) {
 }
 
 onMounted(async () => {
+  document.addEventListener("fullscreenchange", onFullscreenChange);
   try {
     // Render Mermaid dep chart.
     const mermaid = (await import("mermaid")).default;
@@ -90,14 +110,68 @@ onMounted(async () => {
     const chartId = `algo-dep-chart-${props.root || "all"}`;
     const { svg } = await mermaid.render(chartId, graphDef);
     chart.value.innerHTML = svg;
+
+    // Attach pan/zoom to the rendered SVG.
+    const svgEl = chart.value.querySelector("svg");
+    if (svgEl) {
+      svgEl.style.cursor = "grab";
+      const panzoom = (await import("panzoom")).default;
+      pz = panzoom(svgEl, {
+        maxZoom: 5,
+        minZoom: 0.3,
+        smoothScroll: false,
+      });
+    }
   } catch (e) {
     console.error("AlgorithmIndex error:", e);
   }
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener("fullscreenchange", onFullscreenChange);
+  if (pz) pz.dispose();
 });
 </script>
 
 <style scoped>
 .algorithm-dep-chart {
+  position: relative;
   margin-top: 1em;
+  overflow: hidden;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
+}
+
+.algorithm-dep-chart.fullscreen {
+  background: var(--vp-c-bg);
+}
+
+.chart-inner {
+  width: 100%;
+  min-height: 200px;
+}
+
+.expand-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 10;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 6px;
+  background: var(--vp-c-bg);
+  color: var(--vp-c-text-2);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.expand-btn:hover {
+  color: var(--vp-c-text-1);
+  border-color: var(--vp-c-text-3);
 }
 </style>
