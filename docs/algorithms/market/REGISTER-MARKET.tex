@@ -15,7 +15,7 @@
 \PROCEDURE{REGISTER-MARKET}{input, insn, n\_accounts, insn\_len, frame}
   \COMMENT{Validate accounts and initialize frame fields for market PDA creation.}
   \STATE acct = \CALL{MARKET-PDA-PRELUDE}{input, insn, n\_accounts, insn\_len, frame}
-  \COMMENT{Derive market PDA, populate CPI fields, invoke CreateAccount.}
+  \COMMENT{Derive market PDA, invoke system\_program::CreateAccount.}
   \STATE \CALL{INIT-MARKET-PDA}{input, insn, acct, frame}
   \COMMENT{Retrieve input buffer pointers and advance to base token program account.}
   \STATE input = frame.input
