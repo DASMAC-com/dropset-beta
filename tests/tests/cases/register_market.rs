@@ -361,7 +361,7 @@ fn pda_mismatch_accounts(
         Pubkey::find_program_address(&[base_key.as_ref(), quote_key.as_ref()], &setup.program_id);
     // Flip a byte in the target chunk so only that comparison fails.
     let offset = corrupt_chunk * 8;
-    pda.as_mut()[offset] ^= 0xFF;
+    pda.as_mut()[offset] ^= CORRUPT_BYTE_MASK;
     keys[Accounts::Market as usize] = pda;
     let (system_program_pubkey, system_program_account) =
         program::keyed_account_for_system_program();
@@ -396,7 +396,7 @@ fn system_program_mismatch_accounts(
     // Flip a byte in the target chunk so only that comparison fails.
     let mut system_program_key = Pubkey::default();
     let offset = corrupt_chunk * 8;
-    system_program_key.as_mut()[offset] ^= 0xFF;
+    system_program_key.as_mut()[offset] ^= CORRUPT_BYTE_MASK;
     keys[Accounts::SystemProgram as usize] = system_program_key;
     into_metas_and_accounts(keys, accounts)
 }
@@ -421,7 +421,7 @@ fn rent_sysvar_mismatch_accounts(
     keys[Accounts::SystemProgram as usize] = Pubkey::default();
     let mut rent_key = solana_sdk::sysvar::rent::ID;
     // Flip a byte at the given offset so that comparison fails.
-    rent_key.as_mut()[corrupt_byte] ^= 0xFF;
+    rent_key.as_mut()[corrupt_byte] ^= CORRUPT_BYTE_MASK;
     keys[Accounts::RentSysvar as usize] = rent_key;
     into_metas_and_accounts(keys, accounts)
 }
@@ -542,7 +542,7 @@ fn base_vault_mismatch_accounts(
     let base_token_program = Pubkey::from(TOKEN_PROGRAM_ID);
     let (mut keys, accounts) =
         token_program_base_accounts(setup, base_token_program, base_token_program, false);
-    keys[Accounts::BaseVault as usize].as_mut()[corrupt_byte] ^= 0xFF;
+    keys[Accounts::BaseVault as usize].as_mut()[corrupt_byte] ^= CORRUPT_BYTE_MASK;
     writable_metas_and_accounts(keys, accounts)
 }
 
@@ -570,7 +570,7 @@ fn quote_vault_mismatch_accounts(
         &[pda.as_ref(), &[VAULT_INDEX_QUOTE as u8]],
         &setup.program_id,
     );
-    quote_vault_pda.as_mut()[corrupt_byte] ^= 0xFF;
+    quote_vault_pda.as_mut()[corrupt_byte] ^= CORRUPT_BYTE_MASK;
     keys[Accounts::QuoteVault as usize] = quote_vault_pda;
 
     writable_metas_and_accounts(keys, accounts)
@@ -668,6 +668,18 @@ fn check_happy_path(
     }
 }
 
+/// XOR mask applied to a single byte to corrupt a pubkey chunk.
+const CORRUPT_BYTE_MASK: u8 = 0xFF;
+
+/// Arbitrary non-empty data used to make an account "have data"
+/// so that data_len != 0 checks trigger.
+const NON_EMPTY_DATA_LEN: usize = 1;
+
+const CHUNK_0: usize = 0;
+const CHUNK_1: usize = 1;
+const CHUNK_2: usize = 2;
+const CHUNK_3: usize = 3;
+
 const CHUNK_OFFSETS: [usize; 4] = [
     CHUNK_0_OFF as usize,
     CHUNK_1_OFF as usize,
@@ -694,7 +706,7 @@ fn base_owner_mismatch_accounts(
     let (mut keys, accounts) =
         token_program_base_accounts(setup, token_program_id, token_program_id, false);
     let mut bad_key = token_program_id;
-    bad_key.as_mut()[CHUNK_OFFSETS[chunk]] ^= 0xFF;
+    bad_key.as_mut()[CHUNK_OFFSETS[chunk]] ^= CORRUPT_BYTE_MASK;
     keys[Accounts::BaseTokenProgram as usize] = bad_key;
     writable_metas_and_accounts(keys, accounts)
 }
@@ -704,7 +716,7 @@ fn base_program_mismatch_accounts(
     chunk: usize,
 ) -> (Vec<AccountMeta>, Vec<(Pubkey, Account)>) {
     let mut bad_program = Pubkey::from(TOKEN_PROGRAM_ID);
-    bad_program.as_mut()[CHUNK_OFFSETS[chunk]] ^= 0xFF;
+    bad_program.as_mut()[CHUNK_OFFSETS[chunk]] ^= CORRUPT_BYTE_MASK;
     let (keys, accounts) =
         token_program_base_accounts(setup, bad_program, bad_program, false);
     writable_metas_and_accounts(keys, accounts)
@@ -716,7 +728,7 @@ fn quote_program_mismatch_accounts(
 ) -> (Vec<AccountMeta>, Vec<(Pubkey, Account)>) {
     let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
     let mut bad_program = Pubkey::from(TOKEN_PROGRAM_ID);
-    bad_program.as_mut()[CHUNK_OFFSETS[chunk]] ^= 0xFF;
+    bad_program.as_mut()[CHUNK_OFFSETS[chunk]] ^= CORRUPT_BYTE_MASK;
     let (keys, accounts) =
         token_program_base_accounts(setup, token_program_id, bad_program, false);
     writable_metas_and_accounts(keys, accounts)
@@ -731,7 +743,7 @@ fn non_dup_quote_owner_mismatch_accounts(
     let (mut keys, accounts) =
         token_program_base_accounts(setup, token_program_id, token_2022_id, false);
     let mut bad_key = token_2022_id;
-    bad_key.as_mut()[CHUNK_OFFSETS[chunk]] ^= 0xFF;
+    bad_key.as_mut()[CHUNK_OFFSETS[chunk]] ^= CORRUPT_BYTE_MASK;
     keys[Accounts::QuoteTokenProgram as usize] = bad_key;
     writable_metas_and_accounts(keys, accounts)
 }
@@ -747,7 +759,7 @@ fn dup_quote_owner_mismatch_accounts(
         accounts[Accounts::QuoteMint as usize].owner = Pubkey::from(TOKEN_2022_PROGRAM_ID);
     } else {
         let mut bad_owner = token_program_id;
-        bad_owner.as_mut()[CHUNK_OFFSETS[chunk]] ^= 0xFF;
+        bad_owner.as_mut()[CHUNK_OFFSETS[chunk]] ^= CORRUPT_BYTE_MASK;
         accounts[Accounts::QuoteMint as usize].owner = bad_owner;
     }
     keys[Accounts::QuoteTokenProgram as usize] = token_program_id;
@@ -772,7 +784,7 @@ impl TestCase for Case {
             // Verifies: MARKET-PDA-PRELUDE
             Self::UserHasData => {
                 let (keys, mut accounts) = default_accounts();
-                accounts[Accounts::User as usize].data = vec![0u8; 32];
+                accounts[Accounts::User as usize].data = vec![0u8; NON_EMPTY_DATA_LEN];
                 let (metas, accounts) = into_metas_and_accounts(keys, accounts);
                 check_custom(setup, insn, metas, accounts, Some(ErrorCode::UserHasData))
             }
@@ -794,7 +806,7 @@ impl TestCase for Case {
             // Verifies: MARKET-PDA-PRELUDE
             Self::MarketHasData => {
                 let (keys, mut accounts) = default_accounts();
-                accounts[Accounts::Market as usize].data = vec![0u8; 32];
+                accounts[Accounts::Market as usize].data = vec![0u8; NON_EMPTY_DATA_LEN];
                 let (metas, accounts) = into_metas_and_accounts(keys, accounts);
                 check_custom(setup, insn, metas, accounts, Some(ErrorCode::MarketHasData))
             }
@@ -904,7 +916,8 @@ impl TestCase for Case {
             // bits are zero, so mov32 zero-extends and implicitly checks
             // the upper 32 bits)
             Self::InvalidRentSysvarPubkeyChunk3Hi => {
-                let (metas, accounts) = rent_sysvar_mismatch_accounts(setup, 28);
+                let (metas, accounts) =
+                    rent_sysvar_mismatch_accounts(setup, CHUNK_3_OFF as usize + size_of::<u32>());
                 check_custom(
                     setup,
                     insn,
@@ -992,7 +1005,7 @@ impl TestCase for Case {
                     base_token_program,
                     false,
                 );
-                accounts[Accounts::BaseVault as usize].data = vec![0u8; 32];
+                accounts[Accounts::BaseVault as usize].data = vec![0u8; NON_EMPTY_DATA_LEN];
                 let (metas, accounts) = writable_metas_and_accounts(keys, accounts);
                 check_custom(
                     setup,
@@ -1074,28 +1087,37 @@ impl TestCase for Case {
                 )
             }
             // Verifies: INIT-QUOTE-VAULT
-            Self::NonDupQuoteTokenProgramNotQuoteMintOwnerChunk0
-            | Self::NonDupQuoteTokenProgramNotQuoteMintOwnerChunk1
-            | Self::NonDupQuoteTokenProgramNotQuoteMintOwnerChunk2
-            | Self::NonDupQuoteTokenProgramNotQuoteMintOwnerChunk3 => check_chunk_error(
-                setup,
-                insn,
-                (*self as usize - Case::NonDupQuoteTokenProgramNotQuoteMintOwnerChunk0 as usize)
-                    / 2,
-                non_dup_quote_owner_mismatch_accounts,
-                ErrorCode::NonDupQuoteTokenProgramNotQuoteMintOwner,
-            ),
+            Self::NonDupQuoteTokenProgramNotQuoteMintOwnerChunk0 => {
+                check_chunk_error(setup, insn, CHUNK_0, non_dup_quote_owner_mismatch_accounts, ErrorCode::NonDupQuoteTokenProgramNotQuoteMintOwner)
+            }
             // Verifies: INIT-QUOTE-VAULT
-            Self::DupQuoteTokenProgramNotQuoteMintOwnerChunk0
-            | Self::DupQuoteTokenProgramNotQuoteMintOwnerChunk1
-            | Self::DupQuoteTokenProgramNotQuoteMintOwnerChunk2
-            | Self::DupQuoteTokenProgramNotQuoteMintOwnerChunk3 => check_chunk_error(
-                setup,
-                insn,
-                (*self as usize - Case::DupQuoteTokenProgramNotQuoteMintOwnerChunk0 as usize) / 2,
-                dup_quote_owner_mismatch_accounts,
-                ErrorCode::DupQuoteTokenProgramNotQuoteMintOwner,
-            ),
+            Self::DupQuoteTokenProgramNotQuoteMintOwnerChunk0 => {
+                check_chunk_error(setup, insn, CHUNK_0, dup_quote_owner_mismatch_accounts, ErrorCode::DupQuoteTokenProgramNotQuoteMintOwner)
+            }
+            // Verifies: INIT-QUOTE-VAULT
+            Self::NonDupQuoteTokenProgramNotQuoteMintOwnerChunk1 => {
+                check_chunk_error(setup, insn, CHUNK_1, non_dup_quote_owner_mismatch_accounts, ErrorCode::NonDupQuoteTokenProgramNotQuoteMintOwner)
+            }
+            // Verifies: INIT-QUOTE-VAULT
+            Self::DupQuoteTokenProgramNotQuoteMintOwnerChunk1 => {
+                check_chunk_error(setup, insn, CHUNK_1, dup_quote_owner_mismatch_accounts, ErrorCode::DupQuoteTokenProgramNotQuoteMintOwner)
+            }
+            // Verifies: INIT-QUOTE-VAULT
+            Self::NonDupQuoteTokenProgramNotQuoteMintOwnerChunk2 => {
+                check_chunk_error(setup, insn, CHUNK_2, non_dup_quote_owner_mismatch_accounts, ErrorCode::NonDupQuoteTokenProgramNotQuoteMintOwner)
+            }
+            // Verifies: INIT-QUOTE-VAULT
+            Self::DupQuoteTokenProgramNotQuoteMintOwnerChunk2 => {
+                check_chunk_error(setup, insn, CHUNK_2, dup_quote_owner_mismatch_accounts, ErrorCode::DupQuoteTokenProgramNotQuoteMintOwner)
+            }
+            // Verifies: INIT-QUOTE-VAULT
+            Self::NonDupQuoteTokenProgramNotQuoteMintOwnerChunk3 => {
+                check_chunk_error(setup, insn, CHUNK_3, non_dup_quote_owner_mismatch_accounts, ErrorCode::NonDupQuoteTokenProgramNotQuoteMintOwner)
+            }
+            // Verifies: INIT-QUOTE-VAULT
+            Self::DupQuoteTokenProgramNotQuoteMintOwnerChunk3 => {
+                check_chunk_error(setup, insn, CHUNK_3, dup_quote_owner_mismatch_accounts, ErrorCode::DupQuoteTokenProgramNotQuoteMintOwner)
+            }
             // Verifies: INIT-QUOTE-VAULT
             Self::QuoteVaultIsDuplicateDup => {
                 let base_token_program = Pubkey::from(TOKEN_PROGRAM_ID);
@@ -1138,7 +1160,7 @@ impl TestCase for Case {
                     &setup.program_id,
                 );
                 keys[Accounts::QuoteVault as usize] = quote_vault_pda;
-                accounts[Accounts::QuoteVault as usize].data = vec![0u8; 32];
+                accounts[Accounts::QuoteVault as usize].data = vec![0u8; NON_EMPTY_DATA_LEN];
                 let (metas, accounts) = writable_metas_and_accounts(keys, accounts);
                 check_custom(
                     setup,
@@ -1203,7 +1225,7 @@ impl TestCase for Case {
                     &setup.program_id,
                 );
                 keys[Accounts::QuoteVault as usize] = quote_vault_pda;
-                accounts[Accounts::QuoteVault as usize].data = vec![0u8; 32];
+                accounts[Accounts::QuoteVault as usize].data = vec![0u8; NON_EMPTY_DATA_LEN];
                 let (metas, accounts) = writable_metas_and_accounts(keys, accounts);
                 check_custom(
                     setup,
