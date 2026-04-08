@@ -216,7 +216,7 @@ onMounted(async () => {
             ? props.collapsed
             : null;
       const summary = customLabel || label;
-      const startsOpen = props.collapsible !== false;
+      const startsOpen = props.collapsed === false;
       codeBlock.value.innerHTML =
         `<details class="details custom-block"${startsOpen ? " open" : ""}>` +
         `<summary><a href="${ghLink}" target="_blank">${summary}</a></summary>` +

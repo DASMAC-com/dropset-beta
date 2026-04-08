@@ -247,16 +247,15 @@ ones above the first label. Doc comments from the Rust source become assembly
 comments. Groups that carry a doc comment are rendered with a header comment and
 separator lines; groups without a doc comment are separated by a blank line.
 
-When a group contains error labels
-(from [`#[error_enum]`](#error_enum)), the entire target
-file is regenerated with both `.equ` directives and
-error-handler label blocks.
+When a group contains error labels (from [`#[error_enum]`](#error_enum)), the
+entire target file is regenerated with both `.equ` directives and error-handler
+label blocks.
 
 <Include rs="build::inject" collapsed/>
 
 For example:
 
-<Include asm="entrypoint"/>
+<Include asm="entrypoint" collapsed/>
 
 ### [CPI] bindings
 
