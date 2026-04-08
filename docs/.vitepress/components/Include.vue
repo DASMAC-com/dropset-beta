@@ -104,7 +104,7 @@ if (isVitepress) {
   const asmFile = fileSpec;
   loader = asmModules[`${ASM_BASE}${asmFile}.s`];
   if (!loader) throw new Error(`Unknown assembly file: ${asmFile}`);
-  label = region ? `${asmFile}.s#${region}` : `${asmFile}.s`;
+  label = `${asmFile}.s`;
   ghLink = `${GH_BASE}${asmFile}.s`;
 }
 
@@ -131,7 +131,9 @@ onMounted(async () => {
         .join("\n")
         .trimEnd();
       const toGitHub = (zeroIdx) => zeroIdx + 1;
-      ghLink += `#L${toGitHub(firstContentLine)}-L${toGitHub(lastContentLine)}`;
+      const lineRange = `${toGitHub(firstContentLine)}-${toGitHub(lastContentLine)}`;
+      label += `#${lineRange}`;
+      ghLink += `#L${lineRange.replace("-", "-L")}`;
     }
 
     const shiki = await import("shiki");
