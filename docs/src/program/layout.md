@@ -229,7 +229,7 @@ should not appear as inline ASM comments.
 Optimization notes use `# Optimize:` to explain when the
 implementation deviates from the specification for performance:
 
-<Include asm="market/register#optimize_example" collapsible/>
+<Include asm="market/market_pda_prelude#optimize_example" collapsible/>
 
 [`program/src/dropset/`]: https://github.com/DASMAC-com/dropset-beta/tree/main/program/src/dropset
 [multi-file assembly]: https://github.com/blueshift-gg/sbpf/pull/109
