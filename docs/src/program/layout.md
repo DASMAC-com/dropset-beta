@@ -204,6 +204,12 @@ their keys in the [algorithm registry].
   would clobber caller-saved registers. The stored value is available after
   the call returns.
 
+Algorithm specifications should be kept under 50 lines of
+statements per procedure or function. When a specification
+grows beyond this, extract a logically self-contained section
+into its own procedure with explicit `\REQUIRE` and `\ENSURE`
+postconditions.
+
 ### Assembly comments {#assembly-comments}
 
 There are two kinds of assembly comments:
