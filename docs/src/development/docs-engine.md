@@ -66,14 +66,14 @@ link to the file on GitHub. Supports assembly (`.s`), config/root files
 
 <Include vitepress="components/Include" collapsed/>
 
-| Prop          | Type              | Required | Description                                                                            |
-| ------------- | ----------------- | -------- | -------------------------------------------------------------------------------------- |
-| `asm`         | `String`          | no       | Assembly file name (without `.s` extension)                                            |
-| `cfg`         | `String`          | no       | Config/root file path from repo root (e.g. `Makefile`, `.github/workflows/test.yml`)   |
-| `rs`          | `String`          | no       | Rust file in `crate::module` syntax (e.g. `interface::common::pubkey`)                 |
-| `vitepress`   | `String`          | no       | VitePress file path (e.g. `components/Algorithm`, `theme/index`)                       |
-| `collapsible` | `Boolean\|String` | no       | Wrap in a `<details>` block, open by default (default: `true`). String value overrides the summary label |
-| `collapsed`   | `Boolean\|String` | no       | Same as `collapsible` but closed by default                                                              |
+| Prop          | Type              | Required | Description                                                                          |
+| ------------- | ----------------- | -------- | ------------------------------------------------------------------------------------ |
+| `asm`         | `String`          | no       | Assembly file name (without `.s` extension)                                          |
+| `cfg`         | `String`          | no       | Config/root file path from repo root (e.g. `Makefile`, `.github/workflows/test.yml`) |
+| `rs`          | `String`          | no       | Rust file in `crate::module` syntax (e.g. `interface::common::pubkey`)               |
+| `vitepress`   | `String`          | no       | VitePress file path (e.g. `components/Algorithm`, `theme/index`)                     |
+| `collapsible` | `Boolean\|String` | no       | Wrap in `<details>`, open by default. String overrides the summary label             |
+| `collapsed`   | `Boolean\|String` | no       | Same as `collapsible` but closed by default                                          |
 
 Usage:
 

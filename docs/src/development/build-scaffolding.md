@@ -1,22 +1,25 @@
 # Build Scaffolding
 
-Assembly constants (instruction discriminants, error codes, offsets, etc.) are
-defined in Rust in the [`interface`](#interface) crate and injected into assembly files at
-build time. This keeps the assembly source in sync with Rust type layouts and
-avoids hardcoded magic numbers.
+Assembly constants (instruction discriminants, error codes, offsets,
+etc.) are defined in Rust in the [`interface`](#interface) crate
+and injected into assembly files at build time. This keeps the
+assembly source in sync with Rust type layouts and avoids hardcoded
+magic numbers.
 
 ## Overview
 
 Dropset build scaffolding has multiple layers:
 
-1. [`macros`](#macros) crate: [proc macros] that turn Rust enums and constant definitions
-   into [`dropset_build::Constant`](#core-types) metadata.
-2. [`interface`](#interface) crate: declares the program's constants using those macros.
-   Injection sites are specified via `#[inject("file")]`, where the target names
-   an assembly file (e.g. `#[inject("entrypoint")]` targets
+1. [`macros`](#macros) crate: [proc macros] that turn Rust enums
+   and constant definitions into
+   [`dropset_build::Constant`](#core-types) metadata.
+2. [`interface`](#interface) crate: declares the program's
+   constants using those macros. Injection sites are specified via
+   `#[inject("file")]`, where the target names an assembly file
+   (e.g. `#[inject("entrypoint")]` targets
    `program/src/dropset/entrypoint.s`).
-3. [`build`](#build-crate) crate: reads the constant metadata and writes `.equ` directives
-   into assembly injection sites.
+3. [`build`](#build-crate) crate: reads the constant metadata and
+   writes `.equ` directives into assembly injection sites.
 
 The workspace-root `build.rs` invokes the injection:
 

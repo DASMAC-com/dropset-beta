@@ -126,10 +126,7 @@ onMounted(async () => {
       if (end === -1) throw new Error(`Region end not found: ${endTag}`);
       const firstContentLine = start + 1;
       const lastContentLine = end - 1;
-      code = lines
-        .slice(firstContentLine, end)
-        .join("\n")
-        .trimEnd();
+      code = lines.slice(firstContentLine, end).join("\n").trimEnd();
       const toGitHub = (zeroIdx) => zeroIdx + 1;
       const lineRange = `${toGitHub(firstContentLine)}-${toGitHub(lastContentLine)}`;
       label += `#${lineRange}`;
