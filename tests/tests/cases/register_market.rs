@@ -1544,8 +1544,15 @@ impl TestCase for Case {
                 )
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: MARKET-PDA-PRELUDE
             // Verifies: INIT-MARKET-PDA
+            // Verifies: CREATE-MARKET-ACCOUNT
+            // Verifies: INIT-BASE-VAULT
+            // Verifies: INIT-QUOTE-VAULT
             // Verifies: INIT-VAULT
+            // Verifies: GET-VAULT-SIZE
+            // Verifies: CREATE-VAULT-ACCOUNT
+            // Verifies: INIT-VAULT-TOKEN-ACCOUNT
             Self::CreateAccountHappyPathQuoteDup => {
                 let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
                 let (metas, accounts) =
@@ -1635,8 +1642,15 @@ impl TestCase for Case {
                 }
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: MARKET-PDA-PRELUDE
             // Verifies: INIT-MARKET-PDA
+            // Verifies: CREATE-MARKET-ACCOUNT
+            // Verifies: INIT-BASE-VAULT
+            // Verifies: INIT-QUOTE-VAULT
             // Verifies: INIT-VAULT
+            // Verifies: GET-VAULT-SIZE
+            // Verifies: CREATE-VAULT-ACCOUNT
+            // Verifies: INIT-VAULT-TOKEN-ACCOUNT
             Self::CreateAccountHappyPathQuoteNonDup => {
                 let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
                 let token_2022_id = Pubkey::from(TOKEN_2022_PROGRAM_ID);
@@ -1726,8 +1740,15 @@ impl TestCase for Case {
                 }
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: MARKET-PDA-PRELUDE
             // Verifies: INIT-MARKET-PDA
+            // Verifies: CREATE-MARKET-ACCOUNT
+            // Verifies: INIT-BASE-VAULT
+            // Verifies: INIT-QUOTE-VAULT
             // Verifies: INIT-VAULT
+            // Verifies: GET-VAULT-SIZE
+            // Verifies: CREATE-VAULT-ACCOUNT
+            // Verifies: INIT-VAULT-TOKEN-ACCOUNT
             Self::CreateAccountHappyPathToken2022QuoteNonDup => {
                 let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
                 let token_2022_id = Pubkey::from(TOKEN_2022_PROGRAM_ID);
@@ -1817,8 +1838,15 @@ impl TestCase for Case {
                 }
             }
             // Verifies: REGISTER-MARKET
+            // Verifies: MARKET-PDA-PRELUDE
             // Verifies: INIT-MARKET-PDA
+            // Verifies: CREATE-MARKET-ACCOUNT
+            // Verifies: INIT-BASE-VAULT
+            // Verifies: INIT-QUOTE-VAULT
             // Verifies: INIT-VAULT
+            // Verifies: GET-VAULT-SIZE
+            // Verifies: CREATE-VAULT-ACCOUNT
+            // Verifies: INIT-VAULT-TOKEN-ACCOUNT
             Self::CreateAccountHappyPathToken2022QuoteDup => {
                 let token_2022_id = Pubkey::from(TOKEN_2022_PROGRAM_ID);
                 let (metas, accounts) = happy_path_accounts(setup, token_2022_id, token_2022_id);
