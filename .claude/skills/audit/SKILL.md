@@ -103,6 +103,17 @@ and proceed to the **Resolve** section below.
      are unqualified, CPI targets use
      `program::InstructionName` form).
 
+1. Check test coverage for algorithms:
+
+   - Run `buildAlgorithmIndex` (or read
+     `docs/algorithms/index.json` if already
+     built) to get the generated index, which
+     maps each algorithm to its `tests` array
+     via `// Verifies:` tags in test case files
+     under `tests/tests/cases/`.
+   - Flag any algorithm whose `tests` array is
+     missing or empty.
+
 ### Notation compliance
 
 1. Read the notation spec in
