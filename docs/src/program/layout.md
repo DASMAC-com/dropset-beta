@@ -8,23 +8,23 @@ details on how assembly constants are generated from Rust crates.
 
 ```txt
 program/src/dropset/
-├── dropset.s              # Top-level file
-├── entrypoint.s           # Entrypoint dispatcher
-├── error.s                # Error codes and subroutines
+├── dropset.s                          # File include orchestrator
+├── entrypoint.s                       # Entrypoint dispatcher
+├── error.s                            # Error codes and subroutines
 ├── common/
-│   ├── account.s          # Runtime account constants
-│   ├── memory.s           # Data and type size constants
-│   ├── pubkey.s           # Pubkey chunk offsets and known addresses
-│   └── token.s            # SPL Token constants
+│   ├── account.s                      # Runtime account constants
+│   ├── memory.s                       # Data and type size constants
+│   ├── pubkey.s                       # Pubkey chunk offsets, known addresses
+│   └── token.s                        # SPL Token constants
 └── market/
-    ├── market.s                # Market-level constants
-    ├── register.s              # RegisterMarket handler
-    ├── market_pda_prelude.s    # Account validation prelude
+    ├── market.s                       # Market-level constants
+    ├── register.s                     # RegisterMarket handler
+    ├── market_pda_prelude.s           # Account validation prelude
     ├── init_market_pda/
     │   ├── init_market_pda.s          # Market PDA initialization
     │   └── create_market_account.s    # Market account creation CPI
-    ├── init_base_vault.s       # Base vault initialization
-    ├── init_quote_vault.s      # Quote vault initialization
+    ├── init_base_vault.s              # Base vault initialization
+    ├── init_quote_vault.s             # Quote vault initialization
     └── init_vault/
         ├── init_vault.s               # Vault initialization
         ├── get_vault_size.s           # Token account size determination
