@@ -10,7 +10,13 @@
   \REQUIRE frame.token\_program\_id
   \REQUIRE frame.system\_program\_id
   \REQUIRE frame.input
-  \REQUIRE frame.signers\_seeds
+  \REQUIRE frame.pda\_seeds[0].len = \texttt{Address.size}
+  \REQUIRE frame.pda\_seeds[2].addr = \&frame.bump
+  \REQUIRE frame.pda\_seeds[2].len = \texttt{u8.size}
+  \REQUIRE frame.signers\_seeds.addr = \&frame.pda\_seeds
+  \REQUIRE frame.signers\_seeds.len = \texttt{frame.pda\_seeds.n\_seeds}
+  \REQUIRE input.user.data\_len = \texttt{common::memory::LEN\_ZERO}
+  \REQUIRE acct.data\_len = \texttt{common::memory::LEN\_ZERO}
   \REQUIRE frame.cpi[0].info.executable = \texttt{false}
 \PROCEDURE{CREATE-VAULT-ACCOUNT}{frame, acct}
   \COMMENT{Prepare system\_program::CreateAccount instruction fields.}
