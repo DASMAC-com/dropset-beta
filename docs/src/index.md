@@ -34,8 +34,8 @@ targets are linked to their upstream source definitions via a centralized
 Assembly constants (offsets, error codes, discriminants) are defined in Rust
 and [injected into assembly][build scaffolding] at build time. The
 [interface] crate declares program constants, data types, and instruction
-definitions using proc macros. A scoped [notation] convention connects the
-algorithm specifications, Rust interface, and assembly constant names. See
+definitions using macros. A scoped [notation] convention connects the algorithm
+specifications, Rust interface, and assembly constant names. See
 [program layout] for more details about the file structure.
 
 ## Contributing

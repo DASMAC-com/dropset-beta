@@ -1,26 +1,29 @@
 # Build Scaffolding
 
-Assembly constants (instruction discriminants, error codes, offsets, etc.) are
-defined in Rust in the [`interface`] crate and injected into assembly files at
-build time. This keeps the assembly source in sync with Rust type layouts and
-avoids hardcoded magic numbers.
+Assembly constants (instruction discriminants, error codes, offsets,
+etc.) are defined in Rust in the [`interface`](#interface) crate
+and injected into assembly files at build time. This keeps the
+assembly source in sync with Rust type layouts and avoids hardcoded
+magic numbers.
 
 ## Overview
 
 Dropset build scaffolding has multiple layers:
 
-1. [`macros`] crate: [proc macros] that turn Rust enums and constant definitions
-   into [`dropset_build::Constant`](#core-types) metadata.
-2. [`interface`] crate: declares the program's constants using those macros.
-   Injection sites are specified via `#[inject("file")]`, where the target names
-   an assembly file (e.g. `#[inject("entrypoint")]` targets
+1. [`macros`](#macros) crate: [proc macros] that turn Rust enums
+   and constant definitions into
+   [`dropset_build::Constant`](#core-types) metadata.
+2. [`interface`](#interface) crate: declares the program's
+   constants using those macros. Injection sites are specified via
+   `#[inject("file")]`, where the target names an assembly file
+   (e.g. `#[inject("entrypoint")]` targets
    `program/src/dropset/entrypoint.s`).
-3. [`build`] crate: reads the constant metadata and writes `.equ` directives
-   into assembly injection sites.
+3. [`build`](#build-crate) crate: reads the constant metadata and
+   writes `.equ` directives into assembly injection sites.
 
 The workspace-root `build.rs` invokes the injection:
 
-<Include rs="root::build" collapsible/>
+<Include rs="root::build"/>
 
 <span id="core-types"></span>
 
@@ -71,7 +74,7 @@ Frame-relative constant kinds (e.g. `signer_seeds!`, `cpi_accounts!`,
 `sol_instruction!`, `unaligned_offset!`) are only available via
 [`#[frame]`](#frame) field attributes, not directly in `constant_group!`.
 
-<Include rs="interface::entrypoint#constant_group_example" collapsible/>
+<Include rs="interface::entrypoint#constant_group_example"/>
 
 <Include rs="interface::market::register#register_market_stack" collapsed/>
 
@@ -104,7 +107,7 @@ variant: a lowercase `e_snake_name:` label that sets `r0` to the corresponding
 `E_` constant and exits. When error labels are present, the build system
 fully regenerates the target assembly file.
 
-<Include rs="interface::error#error_enum" collapsed/>
+<Include rs="interface::error" collapsed/>
 
 ### `#[instruction_data("target")]` {#instruction-data-target}
 
@@ -117,7 +120,7 @@ build-time injection. The target string names the assembly file
 
 The size is accessible in Rust as `Data::SIZE`.
 
-<Include rs="interface::market::register#register_market_data" collapsible/>
+<Include rs="interface::market::register#register_market_data"/>
 
 ### `#[instruction_accounts("target")]`
 
@@ -130,7 +133,7 @@ are auto-generated from the variant names.
 
 The count is accessible in Rust as `Accounts::COUNT`.
 
-<Include rs="interface::market::register#register_market_accounts" collapsible/>
+<Include rs="interface::market::register#register_market_accounts"/>
 
 ### `#[frame]`
 
@@ -172,7 +175,7 @@ to the struct so its layout matches the SVM memory map exactly. Use this for
 any struct that maps directly to an onchain memory region (account data,
 input buffer segments, tree nodes).
 
-<Include rs="interface::market#market_header" collapsible/>
+<Include rs="interface::market#market_header"/>
 
 ### `signer_seeds!` {#signer_seeds}
 
@@ -183,7 +186,7 @@ state so that `signer_seeds!(field)` inside a
 on a [`#[frame]`](#frame) struct, can auto-discover all seed fields by
 looking up the parent field's type.
 
-<Include rs="interface::market::register#signer_seeds_example" collapsible/>
+<Include rs="interface::market::register#signer_seeds_example"/>
 
 ### `cpi_accounts!` {#cpi_accounts}
 
@@ -202,12 +205,13 @@ comments are auto-derived from the type name (`Pubkey` becomes
 Note that `Pubkey` is a local alias for `pinocchio::Address` (see
 [Pubkeys][layout-pubkeys] for the naming convention).
 
-<Include rs="interface::common::memory#size_of_group_example" collapsible/>
+<Include rs="interface::common::memory#size_of_group_example"/>
 
 ## Interface
 
 The [`interface`] crate uses the macros to declare program constants, data
-types, and instruction definitions.
+types, and instruction definitions. These inject into the assembly files
+described in the [program layout].
 
 ```txt
 interface/src/
@@ -242,21 +246,23 @@ The [`build`] crate has two responsibilities: assembly constant injection and
 ### Assembly injection
 
 The `inject()` function writes `.equ` directives into assembly files. For each
-target file, it wipes all existing `.equ` directives and injects the generated
-ones above the first label. Doc comments from the Rust source become assembly
-comments. Groups that carry a doc comment are rendered with a header comment and
-separator lines; groups without a doc comment are separated by a blank line.
-
-When a group contains error labels
-(from [`#[error_enum]`](#error_enum)), the entire target
-file is regenerated with both `.equ` directives and
-error-handler label blocks.
+target file, it replaces everything above the first label with the generated
+directives. Doc comments from the Rust source become assembly comments. Groups
+that carry a doc comment are rendered with a header comment and separator lines;
+groups without a doc comment are separated by a blank line.
 
 <Include rs="build::inject" collapsed/>
 
-For example:
+For example, `entrypoint.s` receives only `.equ` directives:
 
-<Include asm="entrypoint" collapsible/>
+<Include asm="entrypoint" collapsed/>
+
+When a group contains error labels (from [`#[error_enum]`](#error_enum)), the
+entire target file is regenerated with both `.equ` directives and error-handler
+label blocks. For example, `error.s` receives both:
+
+<Include rs="interface::error" collapsed/>
+<Include asm="error" collapsed/>
 
 ### [CPI] bindings
 
@@ -278,6 +284,7 @@ To update the bindings for a new Agave version, change the `AGAVE_REV` value in
 variables set, and commit the updated `cpi_bindings.rs`.
 
 [`interface`]: https://github.com/DASMAC-com/dropset-beta/tree/main/interface
+[program layout]: ../program/layout
 [`macros`]: https://github.com/DASMAC-com/dropset-beta/tree/main/macros
 [`build`]: https://github.com/DASMAC-com/dropset-beta/tree/main/build
 [proc macros]: https://doc.rust-lang.org/reference/procedural-macros.html

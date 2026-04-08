@@ -5,6 +5,7 @@ built using [multi-file assembly], which allows splitting a single program
 across multiple `.s` files that are joined at build time via `.include`
 directives. See [build scaffolding] for
 details on how assembly constants are generated from Rust crates.
+Algorithm specifications for these files are in the [algorithm index].
 
 ```txt
 program/src/dropset/
@@ -36,7 +37,7 @@ program/src/dropset/
 
 `dropset.s` file declares the global entrypoint and includes all other files.
 
-<Include asm="dropset" collapsible/>
+<Include asm="dropset"/>
 
 ## Errors
 
@@ -44,7 +45,7 @@ Error codes and handler labels injected via
 [`#[error_enum]`][bs-error].
 Each error label sets `r0` to the corresponding error code and exits:
 
-<Include rs="interface::error#error_enum" collapsed/>
+<Include rs="interface::error" collapsed/>
 <Include asm="error" collapsed/>
 
 ## Common
@@ -97,7 +98,7 @@ pointer, so reserving the term for struct fields named `address` avoids
 ambiguity.
 :::
 
-<Include rs="interface::common::pubkey#pubkey_constants" collapsible/>
+<Include rs="interface::common::pubkey#pubkey_constants"/>
 <Include asm="common/pubkey" collapsed/>
 
 ### Token
@@ -105,7 +106,7 @@ ambiguity.
 SPL Token constants (account size, instruction discriminants) are injected
 from the [`token`][token-mod] module via [`constant_group!`][bs-constant-group]:
 
-<Include asm="common/token" collapsible/>
+<Include asm="common/token"/>
 
 ## Notation
 
@@ -229,7 +230,7 @@ should not appear as inline ASM comments.
 Optimization notes use `# Optimize:` to explain when the
 implementation deviates from the specification for performance:
 
-<Include asm="market/market_pda_prelude#optimize_example" collapsible/>
+<Include asm="market/market_pda_prelude#optimize_example"/>
 
 [`program/src/dropset/`]: https://github.com/DASMAC-com/dropset-beta/tree/main/program/src/dropset
 [multi-file assembly]: https://github.com/blueshift-gg/sbpf/pull/109
@@ -244,6 +245,7 @@ implementation deviates from the specification for performance:
 [bs-instruction-data]: ../development/build-scaffolding#instruction-data-target
 [bs-size-of-group]: ../development/build-scaffolding#size-of-group
 [build scaffolding]: ../development/build-scaffolding
+[algorithm index]: ./algorithm-index
 [CPI]: https://solana.com/docs/core/cpi
 [Syscalls]: https://solana.com/docs/core/programs/syscall-reference
 [algorithm registry]: ../development/docs-engine#algorithm-registry

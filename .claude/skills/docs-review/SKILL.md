@@ -53,6 +53,27 @@ gaps, outdated content, and stale comments.
    - `<Include>` and `<Algorithm>` component
      attributes should resolve correctly.
 
+1. Verify that all directory trees in the docs are
+   current. For each tree, list the actual files on
+   disk and compare against the rendered tree. Flag
+   any missing, extra, or renamed entries.
+
+   Known directory trees:
+
+   - `docs/src/program/layout.md` —
+     `program/src/dropset/` assembly files
+   - `docs/src/program/algorithm-index.md` —
+     `docs/algorithms/` `.tex` specs
+   - `docs/src/development/ci.md` —
+     `cfg/` configuration files
+   - `docs/src/development/build-scaffolding.md` —
+     `interface/src/` Rust crate
+   - `docs/src/development/tests.md` —
+     `tests/` test suite
+
+   If a tree has been added, moved, or removed in
+   this PR, update this list in the skill file.
+
 1. Check that `CLAUDE.md` is current with `docs/`:
 
    - Every docs page listed in the Documentation

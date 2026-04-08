@@ -22,7 +22,7 @@ const props = defineProps({
   cfg: { type: String, default: "" },
   rs: { type: String, default: "" },
   vitepress: { type: String, default: "" },
-  collapsible: { type: [Boolean, String], default: false },
+  collapsible: { type: [Boolean, String], default: true },
   collapsed: { type: [Boolean, String], default: false },
 });
 
@@ -104,7 +104,7 @@ if (isVitepress) {
   const asmFile = fileSpec;
   loader = asmModules[`${ASM_BASE}${asmFile}.s`];
   if (!loader) throw new Error(`Unknown assembly file: ${asmFile}`);
-  label = region ? `${asmFile}.s#${region}` : `${asmFile}.s`;
+  label = `${asmFile}.s`;
   ghLink = `${GH_BASE}${asmFile}.s`;
 }
 
@@ -124,10 +124,13 @@ onMounted(async () => {
       const end = lines.findIndex((l) => l.trim() === endTag);
       if (start === -1) throw new Error(`Region start not found: ${startTag}`);
       if (end === -1) throw new Error(`Region end not found: ${endTag}`);
-      code = lines
-        .slice(start + 1, end)
-        .join("\n")
-        .trimEnd();
+      const firstContentLine = start + 1;
+      const lastContentLine = end - 1;
+      code = lines.slice(firstContentLine, end).join("\n").trimEnd();
+      const toGitHub = (zeroIdx) => zeroIdx + 1;
+      const lineRange = `${toGitHub(firstContentLine)}-${toGitHub(lastContentLine)}`;
+      label += `#${lineRange}`;
+      ghLink += `#L${lineRange.replace("-", "-L")}`;
     }
 
     const shiki = await import("shiki");
@@ -210,7 +213,7 @@ onMounted(async () => {
             ? props.collapsed
             : null;
       const summary = customLabel || label;
-      const startsOpen = props.collapsible !== false;
+      const startsOpen = props.collapsed === false;
       codeBlock.value.innerHTML =
         `<details class="details custom-block"${startsOpen ? " open" : ""}>` +
         `<summary><a href="${ghLink}" target="_blank">${summary}</a></summary>` +
