@@ -1,4 +1,4 @@
-<!-- Auto-generated list of all algorithms with dependency chart. -->
+<!-- Auto-generated dependency chart for algorithms. -->
 <template>
   <!-- Mermaid dependency graph, rendered client-side. -->
   <div ref="chart" class="algorithm-dep-chart" />
