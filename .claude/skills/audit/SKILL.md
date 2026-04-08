@@ -103,6 +103,31 @@ and proceed to the **Resolve** section below.
      are unqualified, CPI targets use
      `program::InstructionName` form).
 
+### Notation compliance
+
+1. Read the notation spec in
+   `docs/src/program/layout.md#notation`. Then
+   check every `.tex` file in `docs/algorithms/`
+   and every `.s` file in `program/src/dropset/`:
+
+   - `\texttt{}` references in `.tex` files and
+     inline `#` comments in `.s` files must follow
+     the notation spec:
+     - Module paths and enum variants use `::`.
+     - Field access and type properties use `.`.
+     - Type names are unqualified (no module prefix
+       for globally unique types like `MarketHeader`,
+       or instruction-scoped types like `Accounts`).
+     - Constants use their full interface module
+       path with the `constants` group name elided.
+     - CPI targets use `program::InstructionName`
+       form.
+     - Syscalls use underscore-separated names.
+   - Flag any reference that deviates from these
+     rules (e.g. dot where `::` is expected,
+     qualified type names, missing module path on
+     constants, wrong CPI target form).
+
 ### Documentation freshness
 
 1. For each page in `docs/src/`, read the page
