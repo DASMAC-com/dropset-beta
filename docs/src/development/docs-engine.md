@@ -16,7 +16,7 @@ Three custom Vue components are registered globally in the [VitePress theme]:
 ### `<Algorithm>`
 
 Renders a CLRS-style pseudocode specification from a `.tex` file in the
-[`algorithms/`] directory, with a collapsible assembly implementation resolved
+[`algorithms/`] directory, with a assembly implementation resolved
 from the [algorithm registry].
 
 <Include vitepress="components/Algorithm" collapsed/>
@@ -72,14 +72,14 @@ link to the file on GitHub. Supports assembly (`.s`), config/root files
 | `cfg`         | `String`          | no       | Config/root file path from repo root (e.g. `Makefile`, `.github/workflows/test.yml`)   |
 | `rs`          | `String`          | no       | Rust file in `crate::module` syntax (e.g. `interface::common::pubkey`)                 |
 | `vitepress`   | `String`          | no       | VitePress file path (e.g. `components/Algorithm`, `theme/index`)                       |
-| `collapsible` | `Boolean\|String` | no       | Wrap in a `<details>` block, open by default. String value overrides the summary label |
-| `collapsed`   | `Boolean\|String` | no       | Same as `collapsible` but closed by default                                            |
+| `collapsible` | `Boolean\|String` | no       | Wrap in a `<details>` block, open by default (default: `true`). String value overrides the summary label |
+| `collapsed`   | `Boolean\|String` | no       | Same as `collapsible` but closed by default                                                              |
 
 Usage:
 
 ```md
-<!-- Assembly file, collapsible and open -->
-<Include asm="dropset" collapsible/>
+<!-- Assembly file (collapsible and open by default) -->
+<Include asm="dropset"/>
 
 <!-- Rust file (nested modules use :: separators) -->
 <Include rs="interface::common::pubkey" collapsed/>
@@ -93,7 +93,7 @@ Usage:
 <Include cfg="cfg/lychee.toml" collapsed/>
 
 <!-- Named region within a file -->
-<Include asm="entrypoint#some-region" collapsible/>
+<Include asm="entrypoint#some-region"/>
 ```
 
 ### `<AlgorithmIndex>`

@@ -20,7 +20,7 @@ Dropset build scaffolding has multiple layers:
 
 The workspace-root `build.rs` invokes the injection:
 
-<Include rs="root::build" collapsible/>
+<Include rs="root::build"/>
 
 <span id="core-types"></span>
 
@@ -71,7 +71,7 @@ Frame-relative constant kinds (e.g. `signer_seeds!`, `cpi_accounts!`,
 `sol_instruction!`, `unaligned_offset!`) are only available via
 [`#[frame]`](#frame) field attributes, not directly in `constant_group!`.
 
-<Include rs="interface::entrypoint#constant_group_example" collapsible/>
+<Include rs="interface::entrypoint#constant_group_example"/>
 
 <Include rs="interface::market::register#register_market_stack" collapsed/>
 
@@ -117,7 +117,7 @@ build-time injection. The target string names the assembly file
 
 The size is accessible in Rust as `Data::SIZE`.
 
-<Include rs="interface::market::register#register_market_data" collapsible/>
+<Include rs="interface::market::register#register_market_data"/>
 
 ### `#[instruction_accounts("target")]`
 
@@ -130,7 +130,7 @@ are auto-generated from the variant names.
 
 The count is accessible in Rust as `Accounts::COUNT`.
 
-<Include rs="interface::market::register#register_market_accounts" collapsible/>
+<Include rs="interface::market::register#register_market_accounts"/>
 
 ### `#[frame]`
 
@@ -172,7 +172,7 @@ to the struct so its layout matches the SVM memory map exactly. Use this for
 any struct that maps directly to an onchain memory region (account data,
 input buffer segments, tree nodes).
 
-<Include rs="interface::market#market_header" collapsible/>
+<Include rs="interface::market#market_header"/>
 
 ### `signer_seeds!` {#signer_seeds}
 
@@ -183,7 +183,7 @@ state so that `signer_seeds!(field)` inside a
 on a [`#[frame]`](#frame) struct, can auto-discover all seed fields by
 looking up the parent field's type.
 
-<Include rs="interface::market::register#signer_seeds_example" collapsible/>
+<Include rs="interface::market::register#signer_seeds_example"/>
 
 ### `cpi_accounts!` {#cpi_accounts}
 
@@ -202,7 +202,7 @@ comments are auto-derived from the type name (`Pubkey` becomes
 Note that `Pubkey` is a local alias for `pinocchio::Address` (see
 [Pubkeys][layout-pubkeys] for the naming convention).
 
-<Include rs="interface::common::memory#size_of_group_example" collapsible/>
+<Include rs="interface::common::memory#size_of_group_example"/>
 
 ## Interface
 
@@ -256,7 +256,7 @@ error-handler label blocks.
 
 For example:
 
-<Include asm="entrypoint" collapsible/>
+<Include asm="entrypoint"/>
 
 ### [CPI] bindings
 

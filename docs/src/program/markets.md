@@ -5,7 +5,7 @@ Because the market account is at a fixed position in the
 offset from `r1`. The `MarketHeader` sits at the start of market account data
 and stores absolute pointers into the market's memory map:
 
-<Include rs="interface::market#market_header" collapsible/>
+<Include rs="interface::market#market_header"/>
 
 These absolute pointers are initialized during market registration, eliminating
 input buffer pointer arithmetic overhead when accessing market data structures.
@@ -14,11 +14,11 @@ input buffer pointer arithmetic overhead when accessing market data structures.
 
 Market registration accepts only the discriminant byte as instruction data:
 
-<Include rs="interface::market::register#register_market_data" collapsible/>
+<Include rs="interface::market::register#register_market_data"/>
 
 The instruction requires the following accounts:
 
-<Include rs="interface::market::register#register_market_accounts" collapsible/>
+<Include rs="interface::market::register#register_market_accounts"/>
 
 ## REGISTER-MARKET
 

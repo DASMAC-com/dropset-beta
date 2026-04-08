@@ -22,7 +22,7 @@ const props = defineProps({
   cfg: { type: String, default: "" },
   rs: { type: String, default: "" },
   vitepress: { type: String, default: "" },
-  collapsible: { type: [Boolean, String], default: false },
+  collapsible: { type: [Boolean, String], default: true },
   collapsed: { type: [Boolean, String], default: false },
 });
 

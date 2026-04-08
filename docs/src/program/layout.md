@@ -36,7 +36,7 @@ program/src/dropset/
 
 `dropset.s` file declares the global entrypoint and includes all other files.
 
-<Include asm="dropset" collapsible/>
+<Include asm="dropset"/>
 
 ## Errors
 
@@ -97,7 +97,7 @@ pointer, so reserving the term for struct fields named `address` avoids
 ambiguity.
 :::
 
-<Include rs="interface::common::pubkey#pubkey_constants" collapsible/>
+<Include rs="interface::common::pubkey#pubkey_constants"/>
 <Include asm="common/pubkey" collapsed/>
 
 ### Token
@@ -105,7 +105,7 @@ ambiguity.
 SPL Token constants (account size, instruction discriminants) are injected
 from the [`token`][token-mod] module via [`constant_group!`][bs-constant-group]:
 
-<Include asm="common/token" collapsible/>
+<Include asm="common/token"/>
 
 ## Notation
 
@@ -229,7 +229,7 @@ should not appear as inline ASM comments.
 Optimization notes use `# Optimize:` to explain when the
 implementation deviates from the specification for performance:
 
-<Include asm="market/market_pda_prelude#optimize_example" collapsible/>
+<Include asm="market/market_pda_prelude#optimize_example"/>
 
 [`program/src/dropset/`]: https://github.com/DASMAC-com/dropset-beta/tree/main/program/src/dropset
 [multi-file assembly]: https://github.com/blueshift-gg/sbpf/pull/109

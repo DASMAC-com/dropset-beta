@@ -51,7 +51,7 @@ which auto-generates an `ALL` slice and a `CaseName` impl that derives
 snake_case display names from the variant identifiers. The file then implements
 `TestCase` with only a `run()` method.
 
-<Include rs="test-cases::cases/entrypoint" collapsible/>
+<Include rs="test-cases::cases/entrypoint"/>
 
 ### `// Verifies:` convention
 
@@ -103,7 +103,7 @@ account data or duplicate keys.
 
 ### `test_cases!` macro and `TestCase` trait
 
-<Include rs="tests::lib#test_case" collapsible/>
+<Include rs="tests::lib#test_case"/>
 
 Wrap your case enum in `test_cases!` to auto-generate the `ALL` slice and
 `CaseName` impl (snake_case names derived from variant identifiers). Then
