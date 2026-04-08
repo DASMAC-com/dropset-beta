@@ -8,6 +8,10 @@
       "asm": "market/init_market_pda",
       "tex": "market/INIT-MARKET-PDA"
     },
+    "MARKET-PDA-PRELUDE": {
+      "asm": "market/register",
+      "tex": "market/MARKET-PDA-PRELUDE"
+    },
     "INIT-VAULT": {
       "asm": "market/init_vault",
       "tex": "market/INIT-VAULT"

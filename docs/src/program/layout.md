@@ -178,10 +178,21 @@ their keys in the [algorithm registry].
 
 ### Algorithm conventions
 
-- `procedure`: a label that does not return (no stack push); control flow
-  exits via `exit` or jumps to another procedure.
-- `function`: a label that pushes onto the call stack and returns to the
-  caller.
+- `procedure`: a label reached via jump (no stack push).
+  Register and frame values set by the procedure persist in
+  the caller's scope. When a procedure exposes a register
+  via `\ENSURE`, the caller may assign it for readability
+  (e.g. `acct = \CALL{PROCEDURE}{...}`). Error paths use
+  `\RETURN ErrorCode::*`, which maps to an error handler
+  label (`mov32 r0, E_*; exit`) that returns directly to
+  the runtime.
+- `function`: a label reached via `call` (pushes onto the
+  call stack). `exit` returns to the caller with `r0` as
+  the return value. Error paths use `\RETURN ErrorCode::*`
+  via error handler labels, which set `r0` and `exit` back
+  to the caller (not the runtime). The caller must check
+  `r0` to detect errors
+  (e.g. `result = \CALL{FUNCTION}{...}`).
 - `Store(var)`: saves `var` to a callee-saved register before a call that
   would clobber caller-saved registers. The stored value is available after
   the call returns.

@@ -13,58 +13,8 @@
   \INPUT $r_{10}$ = frame
   \REQUIRE insn.discriminant == \texttt{Discriminant::RegisterMarket}
 \PROCEDURE{REGISTER-MARKET}{input, insn, n\_accounts, insn\_len, frame}
-  \COMMENT{Check number of accounts and instruction data length.}
-  \IF{n\_accounts $<$ \texttt{Accounts.count}}
-    \RETURN \texttt{ErrorCode::InvalidNumberOfAccounts}
-  \ENDIF
-  \IF{insn\_len $\neq$ \texttt{Data.size}}
-    \RETURN \texttt{ErrorCode::InvalidInstructionLength}
-  \ENDIF
-  \STATE frame.program\_id = \&insn.program\_id
-  \COMMENT{Check user, market accounts.}
-  \IF{input.user.data\_len $\neq$ 0}
-    \RETURN \texttt{ErrorCode::UserHasData}
-  \ENDIF
-  \IF{input.market.duplicate $\neq$ \texttt{common::account::NON\_DUP\_MARKER}}
-    \RETURN \texttt{ErrorCode::MarketAccountIsDuplicate}
-  \ENDIF
-  \IF{input.market.data\_len $\neq$ 0}
-    \RETURN \texttt{ErrorCode::MarketHasData}
-  \ENDIF
-  \COMMENT{Check base mint account.}
-  \IF{input.base\_mint.duplicate $\neq$ \texttt{common::account::NON\_DUP\_MARKER}}
-    \RETURN \texttt{ErrorCode::BaseMintIsDuplicate}
-  \ENDIF
-  \COMMENT{Increment input buffer by base mint padded data length for quote offsets.}
-  \STATE input\_shifted = input + input.base\_mint.padded\_data\_len
-  \STATE frame.input\_shifted = input\_shifted
-  \COMMENT{Check quote mint account.}
-  \IF{input\_shifted.quote\_mint.duplicate $\neq$ \texttt{common::account::NON\_DUP\_MARKER}}
-    \RETURN \texttt{ErrorCode::QuoteMintIsDuplicate}
-  \ENDIF
-  \COMMENT{Advance to System Program account.}
-  \STATE quote\_mint\_padded\_data\_len = input\_shifted.quote\_mint.padded\_data\_len
-  \STATE acct = \&input\_shifted.quote\_mint
-  \STATE acct += quote\_mint\_padded\_data\_len + \texttt{EmptyAccount.size}
-  \COMMENT{Check System Program account.}
-  \IF{acct.duplicate $\neq$ \texttt{common::account::NON\_DUP\_MARKER}}
-    \RETURN \texttt{ErrorCode::SystemProgramIsDuplicate}
-  \ENDIF
-  \IF{acct.address $\neq$ frame.system\_program\_pubkey}
-    \RETURN \texttt{ErrorCode::InvalidSystemProgramPubkey}
-  \ENDIF
-  \STATE frame.system\_program\_id = \&acct.address
-  \COMMENT{Advance to Rent sysvar account.}
-  \STATE system\_program\_padded\_data\_len = acct.padded\_data\_len
-  \STATE acct += system\_program\_padded\_data\_len + \texttt{EmptyAccount.size}
-  \COMMENT{Check Rent sysvar account.}
-  \IF{acct.duplicate $\neq$ \texttt{common::account::NON\_DUP\_MARKER}}
-    \RETURN \texttt{ErrorCode::RentSysvarIsDuplicate}
-  \ENDIF
-  \IF{acct.address $\neq$ \texttt{common::pubkey::RENT}}
-    \RETURN \texttt{ErrorCode::InvalidRentSysvarPubkey}
-  \ENDIF
-  \STATE frame.rent = acct
+  \COMMENT{Validate accounts and initialize frame fields for market PDA creation.}
+  \STATE acct = \CALL{MARKET-PDA-PRELUDE}{input, insn, n\_accounts, insn\_len, frame}
   \COMMENT{Derive market PDA, populate CPI fields, invoke CreateAccount.}
   \STATE \CALL{INIT-MARKET-PDA}{input, insn, acct, frame}
   \COMMENT{Retrieve input buffer pointers and advance to base token program account.}

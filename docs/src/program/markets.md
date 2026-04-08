@@ -28,6 +28,10 @@ The instruction requires the following accounts:
 
 <Algorithm id="REGISTER-MARKET"/>
 
+### MARKET-PDA-PRELUDE
+
+<Algorithm id="MARKET-PDA-PRELUDE"/>
+
 ### INIT-MARKET-PDA
 
 <Algorithm id="INIT-MARKET-PDA"/>
