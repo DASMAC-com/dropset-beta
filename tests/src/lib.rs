@@ -232,8 +232,13 @@ pub fn check_chunk_error(
     setup: &TestSetup,
     insn: &[u8],
     chunk: usize,
-    build: impl Fn(&TestSetup, usize)
-        -> (Vec<solana_sdk::instruction::AccountMeta>, Vec<(Pubkey, solana_account::Account)>),
+    build: impl Fn(
+        &TestSetup,
+        usize,
+    ) -> (
+        Vec<solana_sdk::instruction::AccountMeta>,
+        Vec<(Pubkey, solana_account::Account)>,
+    ),
     error: dropset_interface::ErrorCode,
 ) -> CaseResult {
     let (metas, accounts) = build(setup, chunk);

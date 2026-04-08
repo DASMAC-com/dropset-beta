@@ -585,8 +585,7 @@ fn check_happy_path(
     expected_base_vault_size: usize,
     expected_quote_vault_size: usize,
 ) -> CaseResult {
-    let (metas, accounts) =
-        happy_path_accounts(setup, base_token_program, quote_token_program);
+    let (metas, accounts) = happy_path_accounts(setup, base_token_program, quote_token_program);
     let instruction = Instruction::new_with_bytes(setup.program_id, insn, metas);
     let result = setup.mollusk.process_instruction(&instruction, &accounts);
 
@@ -669,7 +668,6 @@ fn check_happy_path(
     }
 }
 
-
 fn base_owner_mismatch_accounts(
     setup: &TestSetup,
     chunk: usize,
@@ -689,8 +687,7 @@ fn base_program_mismatch_accounts(
 ) -> (Vec<AccountMeta>, Vec<(Pubkey, Account)>) {
     let mut bad_program = Pubkey::from(TOKEN_PROGRAM_ID);
     bad_program.as_mut()[CHUNK_OFFSETS[chunk]] ^= CORRUPT_BYTE_MASK;
-    let (keys, accounts) =
-        token_program_base_accounts(setup, bad_program, bad_program, false);
+    let (keys, accounts) = token_program_base_accounts(setup, bad_program, bad_program, false);
     writable_metas_and_accounts(keys, accounts)
 }
 
@@ -701,8 +698,7 @@ fn quote_program_mismatch_accounts(
     let token_program_id = Pubkey::from(TOKEN_PROGRAM_ID);
     let mut bad_program = Pubkey::from(TOKEN_PROGRAM_ID);
     bad_program.as_mut()[CHUNK_OFFSETS[chunk]] ^= CORRUPT_BYTE_MASK;
-    let (keys, accounts) =
-        token_program_base_accounts(setup, token_program_id, bad_program, false);
+    let (keys, accounts) = token_program_base_accounts(setup, token_program_id, bad_program, false);
     writable_metas_and_accounts(keys, accounts)
 }
 
@@ -1059,37 +1055,69 @@ impl TestCase for Case {
                 )
             }
             // Verifies: INIT-QUOTE-VAULT
-            Self::NonDupQuoteTokenProgramNotQuoteMintOwnerChunk0 => {
-                check_chunk_error(setup, insn, CHUNK_0, non_dup_quote_owner_mismatch_accounts, ErrorCode::NonDupQuoteTokenProgramNotQuoteMintOwner)
-            }
+            Self::NonDupQuoteTokenProgramNotQuoteMintOwnerChunk0 => check_chunk_error(
+                setup,
+                insn,
+                CHUNK_0,
+                non_dup_quote_owner_mismatch_accounts,
+                ErrorCode::NonDupQuoteTokenProgramNotQuoteMintOwner,
+            ),
             // Verifies: INIT-QUOTE-VAULT
-            Self::DupQuoteTokenProgramNotQuoteMintOwnerChunk0 => {
-                check_chunk_error(setup, insn, CHUNK_0, dup_quote_owner_mismatch_accounts, ErrorCode::DupQuoteTokenProgramNotQuoteMintOwner)
-            }
+            Self::DupQuoteTokenProgramNotQuoteMintOwnerChunk0 => check_chunk_error(
+                setup,
+                insn,
+                CHUNK_0,
+                dup_quote_owner_mismatch_accounts,
+                ErrorCode::DupQuoteTokenProgramNotQuoteMintOwner,
+            ),
             // Verifies: INIT-QUOTE-VAULT
-            Self::NonDupQuoteTokenProgramNotQuoteMintOwnerChunk1 => {
-                check_chunk_error(setup, insn, CHUNK_1, non_dup_quote_owner_mismatch_accounts, ErrorCode::NonDupQuoteTokenProgramNotQuoteMintOwner)
-            }
+            Self::NonDupQuoteTokenProgramNotQuoteMintOwnerChunk1 => check_chunk_error(
+                setup,
+                insn,
+                CHUNK_1,
+                non_dup_quote_owner_mismatch_accounts,
+                ErrorCode::NonDupQuoteTokenProgramNotQuoteMintOwner,
+            ),
             // Verifies: INIT-QUOTE-VAULT
-            Self::DupQuoteTokenProgramNotQuoteMintOwnerChunk1 => {
-                check_chunk_error(setup, insn, CHUNK_1, dup_quote_owner_mismatch_accounts, ErrorCode::DupQuoteTokenProgramNotQuoteMintOwner)
-            }
+            Self::DupQuoteTokenProgramNotQuoteMintOwnerChunk1 => check_chunk_error(
+                setup,
+                insn,
+                CHUNK_1,
+                dup_quote_owner_mismatch_accounts,
+                ErrorCode::DupQuoteTokenProgramNotQuoteMintOwner,
+            ),
             // Verifies: INIT-QUOTE-VAULT
-            Self::NonDupQuoteTokenProgramNotQuoteMintOwnerChunk2 => {
-                check_chunk_error(setup, insn, CHUNK_2, non_dup_quote_owner_mismatch_accounts, ErrorCode::NonDupQuoteTokenProgramNotQuoteMintOwner)
-            }
+            Self::NonDupQuoteTokenProgramNotQuoteMintOwnerChunk2 => check_chunk_error(
+                setup,
+                insn,
+                CHUNK_2,
+                non_dup_quote_owner_mismatch_accounts,
+                ErrorCode::NonDupQuoteTokenProgramNotQuoteMintOwner,
+            ),
             // Verifies: INIT-QUOTE-VAULT
-            Self::DupQuoteTokenProgramNotQuoteMintOwnerChunk2 => {
-                check_chunk_error(setup, insn, CHUNK_2, dup_quote_owner_mismatch_accounts, ErrorCode::DupQuoteTokenProgramNotQuoteMintOwner)
-            }
+            Self::DupQuoteTokenProgramNotQuoteMintOwnerChunk2 => check_chunk_error(
+                setup,
+                insn,
+                CHUNK_2,
+                dup_quote_owner_mismatch_accounts,
+                ErrorCode::DupQuoteTokenProgramNotQuoteMintOwner,
+            ),
             // Verifies: INIT-QUOTE-VAULT
-            Self::NonDupQuoteTokenProgramNotQuoteMintOwnerChunk3 => {
-                check_chunk_error(setup, insn, CHUNK_3, non_dup_quote_owner_mismatch_accounts, ErrorCode::NonDupQuoteTokenProgramNotQuoteMintOwner)
-            }
+            Self::NonDupQuoteTokenProgramNotQuoteMintOwnerChunk3 => check_chunk_error(
+                setup,
+                insn,
+                CHUNK_3,
+                non_dup_quote_owner_mismatch_accounts,
+                ErrorCode::NonDupQuoteTokenProgramNotQuoteMintOwner,
+            ),
             // Verifies: INIT-QUOTE-VAULT
-            Self::DupQuoteTokenProgramNotQuoteMintOwnerChunk3 => {
-                check_chunk_error(setup, insn, CHUNK_3, dup_quote_owner_mismatch_accounts, ErrorCode::DupQuoteTokenProgramNotQuoteMintOwner)
-            }
+            Self::DupQuoteTokenProgramNotQuoteMintOwnerChunk3 => check_chunk_error(
+                setup,
+                insn,
+                CHUNK_3,
+                dup_quote_owner_mismatch_accounts,
+                ErrorCode::DupQuoteTokenProgramNotQuoteMintOwner,
+            ),
             // Verifies: INIT-QUOTE-VAULT
             Self::QuoteVaultIsDuplicateDup => {
                 let base_token_program = Pubkey::from(TOKEN_PROGRAM_ID);
@@ -1241,9 +1269,7 @@ impl TestCase for Case {
             // Verifies: INIT-VAULT-TOKEN-ACCOUNT
             Self::CreateAccountHappyPathQuoteDup => {
                 let tp = Pubkey::from(TOKEN_PROGRAM_ID);
-                check_happy_path(
-                    setup, insn, tp, tp, TOKEN_ACCOUNT_SIZE, TOKEN_ACCOUNT_SIZE,
-                )
+                check_happy_path(setup, insn, tp, tp, TOKEN_ACCOUNT_SIZE, TOKEN_ACCOUNT_SIZE)
             }
             // Verifies: REGISTER-MARKET
             // Verifies: MARKET-PDA-PRELUDE
@@ -1294,7 +1320,12 @@ impl TestCase for Case {
             Self::CreateAccountHappyPathToken2022QuoteDup => {
                 let t22 = Pubkey::from(TOKEN_2022_PROGRAM_ID);
                 check_happy_path(
-                    setup, insn, t22, t22, TOKEN_2022_ACCOUNT_SIZE_A, TOKEN_2022_ACCOUNT_SIZE_B,
+                    setup,
+                    insn,
+                    t22,
+                    t22,
+                    TOKEN_2022_ACCOUNT_SIZE_A,
+                    TOKEN_2022_ACCOUNT_SIZE_B,
                 )
             }
         }
