@@ -17,48 +17,8 @@
   \STATE acct = \CALL{MARKET-PDA-PRELUDE}{input, insn, n\_accounts, insn\_len, frame}
   \COMMENT{Derive market PDA, invoke system\_program::CreateAccount.}
   \STATE \CALL{INIT-MARKET-PDA}{input, insn, acct, frame}
-  \COMMENT{Retrieve input buffer pointers and advance to base token program account.}
-  \STATE input = frame.input
-  \STATE input\_shifted = frame.input\_shifted
-  \STATE rent\_sysvar\_padded\_data\_len = acct.padded\_data\_len
-  \STATE acct += rent\_sysvar\_padded\_data\_len + \texttt{EmptyAccount.size}
-  \COMMENT{Check base token program account.}
-  \IF{acct.duplicate $\neq$ \texttt{common::account::NON\_DUP\_MARKER}}
-    \RETURN \texttt{ErrorCode::BaseTokenProgramIsDuplicate}
-  \ENDIF
-  \COMMENT{Verify base token program owns the base mint.}
-  \IF{acct.address $\neq$ input.base\_mint.owner}
-    \RETURN \texttt{ErrorCode::BaseTokenProgramNotBaseMintOwner}
-  \ENDIF
-  \COMMENT{Verify base token program is Token Program or Token 2022.}
-  \IF{acct.address $\neq$ \texttt{common::pubkey::TOKEN\_PROGRAM}}
-    \IF{acct.address $\neq$ \texttt{common::pubkey::TOKEN\_2022\_PROGRAM}}
-      \RETURN \texttt{ErrorCode::BaseTokenProgramNotTokenProgram}
-    \ENDIF
-    \STATE frame.token\_program\_is\_2022 = \texttt{true}
-  \ENDIF
-  \STATE frame.token\_program\_id = \&acct.address
-  \COMMENT{Advance to base vault account.}
-  \STATE base\_token\_program\_padded\_data\_len = acct.padded\_data\_len
-  \STATE acct += base\_token\_program\_padded\_data\_len + \texttt{EmptyAccount.size}
-  \COMMENT{Check base vault account.}
-  \IF{acct.duplicate $\neq$ \texttt{common::account::NON\_DUP\_MARKER}}
-    \RETURN \texttt{ErrorCode::BaseVaultIsDuplicate}
-  \ENDIF
-  \IF{acct.data\_len $\neq$ \texttt{common::memory::LEN\_ZERO}}
-    \RETURN \texttt{ErrorCode::BaseVaultHasData}
-  \ENDIF
-  \COMMENT{Initialize base vault account.}
-  \STATE frame.vault\_index = \texttt{market::VAULT\_INDEX\_BASE}
-  \STATE frame.mint = \&input.base\_mint
-  \STATE result = \CALL{INIT-VAULT}{acct, frame}
-  \IF{result $\neq$ \texttt{entrypoint::RETURN\_SUCCESS}}
-    \RETURN result
-  \ENDIF
-  \COMMENT{Store derived bump in market account data.}
-  \STATE input.market.data.base\_vault\_bump = frame.bump
-  \COMMENT{Advance to quote token program account.}
-  \STATE acct += \texttt{EmptyAccount.size}
+  \COMMENT{Validate base token program, initialize base vault.}
+  \STATE input\_shifted = \CALL{INIT-BASE-VAULT}{acct, frame}
   \COMMENT{Check quote token program account.}
   \IF{acct.duplicate == \texttt{common::account::NON\_DUP\_MARKER}}
     \COMMENT{Non-duplicate; verify quote token program owns the quote mint.}

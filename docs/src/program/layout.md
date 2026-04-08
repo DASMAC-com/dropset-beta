@@ -17,10 +17,12 @@ program/src/dropset/
 │   ├── pubkey.s           # Pubkey chunk offsets and known addresses
 │   └── token.s            # SPL Token constants
 └── market/
-    ├── market.s           # Market-level constants
-    ├── register.s         # RegisterMarket handler
-    ├── init_market_pda.s  # Market PDA initialization
-    └── init_vault.s       # Vault initialization
+    ├── market.s               # Market-level constants
+    ├── register.s             # RegisterMarket handler
+    ├── market_pda_prelude.s   # Account validation prelude
+    ├── init_market_pda.s      # Market PDA initialization
+    ├── init_base_vault.s      # Base vault initialization
+    └── init_vault.s           # Vault initialization
 ```
 
 ## Top-level file

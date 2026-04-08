@@ -4,6 +4,10 @@
       "asm": "entrypoint",
       "tex": "ENTRYPOINT"
     },
+    "INIT-BASE-VAULT": {
+      "asm": "market/init_base_vault",
+      "tex": "market/INIT-BASE-VAULT"
+    },
     "INIT-MARKET-PDA": {
       "asm": "market/init_market_pda",
       "tex": "market/INIT-MARKET-PDA"
