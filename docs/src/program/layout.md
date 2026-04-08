@@ -45,7 +45,7 @@ Error codes and handler labels injected via
 [`#[error_enum]`][bs-error].
 Each error label sets `r0` to the corresponding error code and exits:
 
-<Include rs="interface::error#error_enum" collapsed/>
+<Include rs="interface::error" collapsed/>
 <Include asm="error" collapsed/>
 
 ## Common
