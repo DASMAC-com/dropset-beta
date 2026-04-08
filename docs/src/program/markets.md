@@ -24,15 +24,15 @@ The instruction requires the following accounts:
 
 <AlgorithmIndex root="REGISTER-MARKET"/>
 
-### Main handler
+### REGISTER-MARKET
 
 <Algorithm id="REGISTER-MARKET"/>
 
-### Market PDA initialization
+### INIT-MARKET-PDA
 
 <Algorithm id="INIT-MARKET-PDA"/>
 
-### Vault initialization
+### INIT-VAULT
 
 <Algorithm id="INIT-VAULT"/>
 
