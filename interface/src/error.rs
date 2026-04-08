@@ -1,6 +1,5 @@
 use dropset_macros::error_enum;
 
-// region: error_enum
 #[error_enum("error")]
 pub enum ErrorCode {
     /// The instruction's discriminant does not match any known variant.
@@ -56,4 +55,3 @@ pub enum ErrorCode {
     /// The quote vault account already has data.
     QuoteVaultHasData,
 }
-// endregion: error_enum

@@ -242,20 +242,23 @@ The [`build`] crate has two responsibilities: assembly constant injection and
 ### Assembly injection
 
 The `inject()` function writes `.equ` directives into assembly files. For each
-target file, it wipes all existing `.equ` directives and injects the generated
-ones above the first label. Doc comments from the Rust source become assembly
-comments. Groups that carry a doc comment are rendered with a header comment and
-separator lines; groups without a doc comment are separated by a blank line.
-
-When a group contains error labels (from [`#[error_enum]`](#error_enum)), the
-entire target file is regenerated with both `.equ` directives and error-handler
-label blocks.
+target file, it replaces everything above the first label with the generated
+directives. Doc comments from the Rust source become assembly comments. Groups
+that carry a doc comment are rendered with a header comment and separator lines;
+groups without a doc comment are separated by a blank line.
 
 <Include rs="build::inject" collapsed/>
 
-For example:
+For example, `entrypoint.s` receives only `.equ` directives:
 
 <Include asm="entrypoint" collapsed/>
+
+When a group contains error labels (from [`#[error_enum]`](#error_enum)), the
+entire target file is regenerated with both `.equ` directives and error-handler
+label blocks. For example, `error.s` receives both:
+
+<Include rs="interface::error" collapsed/>
+<Include asm="error" collapsed/>
 
 ### [CPI] bindings
 
