@@ -18,6 +18,7 @@
   \REQUIRE input.user.data\_len = \texttt{common::memory::LEN\_ZERO}
   \REQUIRE acct.data\_len = \texttt{common::memory::LEN\_ZERO}
   \REQUIRE frame.cpi[0].info.executable = \texttt{false}
+  \ENSURE $r_0$ = \texttt{sol\_invoke\_signed\_c} return code
 \PROCEDURE{CREATE-VAULT-ACCOUNT}{frame, acct}
   \COMMENT{Prepare system\_program::CreateAccount instruction fields.}
   \STATE acct\_size = frame.token\_account\_data\_size

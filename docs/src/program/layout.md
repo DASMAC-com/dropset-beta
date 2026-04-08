@@ -184,7 +184,9 @@ intrinsic values:
 `system_program::CreateAccount`, `spl_token::InitializeAccount2`).
 [Syscalls] use underscore-separated names (e.g.
 `sol_try_find_program_address`, `sol_invoke_signed_c`). Both match
-their keys in the [algorithm registry].
+their keys in the [algorithm registry]. In `\texttt{}` references
+and ASM comments, underscores are used. In `\CALL` arguments,
+hyphens replace underscores (TeX rendering requirement).
 
 ### Algorithm conventions
 

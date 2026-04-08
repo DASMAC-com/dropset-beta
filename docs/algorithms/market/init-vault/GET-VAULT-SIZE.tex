@@ -43,8 +43,6 @@
     \STATE syscall.program\_id = \&frame.get\_return\_data\_program\_id
     \STATE \CALL{sol-get-return-data}{}
     \STATE acct\_size = frame.token\_account\_data\_size
-    \COMMENT{Override default return data nonzero return code.}
-    \STATE result = \texttt{entrypoint::RETURN\_SUCCESS}
   \ELSE
     \STATE acct\_size = \texttt{common::token::ACCOUNT\_SIZE}
   \ENDIF

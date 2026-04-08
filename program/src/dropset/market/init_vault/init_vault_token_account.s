@@ -90,7 +90,7 @@ init_vault_token_account:
     mov64 r8, r6
     add64 r8, RM_FM_INIT_ACCT_2_DATA_OFF
     stxdw [r6 + RM_FM_SOL_INSN_DATA_UOFF], r8
-    # frame.sol_instruction.data_len = spl_token::InitializeAccount2.size
+    # frame.sol_instruction.data_len = InitializeAccount2.size
     mov64 r8, SIZE_OF_INITIALIZE_ACCOUNT2
     stxdw [r6 + RM_FM_SOL_INSN_DATA_LEN_UOFF], r8
     # syscall.instruction = &frame.sol_instruction
