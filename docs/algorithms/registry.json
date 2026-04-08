@@ -4,6 +4,10 @@
       "asm": "entrypoint",
       "tex": "ENTRYPOINT"
     },
+    "CREATE-MARKET-ACCOUNT": {
+      "asm": "market/create_market_account",
+      "tex": "market/CREATE-MARKET-ACCOUNT"
+    },
     "INIT-BASE-VAULT": {
       "asm": "market/init_base_vault",
       "tex": "market/INIT-BASE-VAULT"

@@ -21,6 +21,7 @@ program/src/dropset/
     ├── register.s             # RegisterMarket handler
     ├── market_pda_prelude.s   # Account validation prelude
     ├── init_market_pda.s      # Market PDA initialization
+    ├── create_market_account.s # Market account creation CPI
     ├── init_base_vault.s      # Base vault initialization
     ├── init_quote_vault.s     # Quote vault initialization
     └── init_vault.s           # Vault initialization

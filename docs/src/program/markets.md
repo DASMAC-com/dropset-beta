@@ -36,6 +36,10 @@ The instruction requires the following accounts:
 
 <Algorithm id="INIT-MARKET-PDA"/>
 
+### CREATE-MARKET-ACCOUNT
+
+<Algorithm id="CREATE-MARKET-ACCOUNT"/>
+
 ### INIT-BASE-VAULT
 
 <Algorithm id="INIT-BASE-VAULT"/>

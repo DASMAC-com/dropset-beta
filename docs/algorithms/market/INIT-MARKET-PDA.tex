@@ -17,10 +17,6 @@
   \ENSURE $r_9$ = acct
   \ENSURE frame.input = input
   \ENSURE frame.lamports\_per\_byte = acct.data.lamports\_per\_byte
-  \ENSURE frame.signers\_seeds.addr = \&frame.pda\_seeds
-  \ENSURE frame.signers\_seeds.len = \texttt{frame.pda\_seeds.n\_seeds}
-  \ENSURE input.market.data.next = input + \texttt{entrypoint::input\_buffer::MARKET\_DATA\_BYTES}
-  \ENSURE input.market.data.bump = frame.bump
 \PROCEDURE{INIT-MARKET-PDA}{input, insn, acct, frame}
   \COMMENT{Prepare CreateAccount instruction lamports, space fields.}
   \STATE frame.create\_account\_data.space = \texttt{MarketHeader.size}
@@ -51,47 +47,8 @@
   \STATE frame.pda\_seeds[2].len = \texttt{u8.size}
   \COMMENT{Populate system\_program::CreateAccount CPI instruction data owner field.}
   \STATE frame.create\_account\_data.owner = syscall.program\_id
-  \COMMENT{Assign CPI account fields via immediates.}
-  \STATE frame.cpi[0].info.is\_signer = \texttt{true}
-  \STATE frame.cpi[0].info.is\_writable = \texttt{true}
-  \STATE frame.cpi[0].meta.is\_signer = \texttt{true}
-  \STATE frame.cpi[0].meta.is\_writable = \texttt{true}
-  \STATE frame.cpi[1].info.is\_signer = \texttt{true}
-  \STATE frame.cpi[1].info.is\_writable = \texttt{true}
-  \STATE frame.cpi[1].meta.is\_signer = \texttt{true}
-  \STATE frame.cpi[1].meta.is\_writable = \texttt{true}
-  \COMMENT{Assign CPI account fields via pointers.}
-  \STATE frame.cpi[0].meta.pubkey = \&input.user.address
-  \STATE frame.cpi[0].info.key = \&input.user.address
-  \STATE frame.cpi[0].info.owner = \&input.user.owner
-  \STATE frame.cpi[0].info.lamports = \&input.user.lamports
-  \STATE frame.cpi[0].info.data = \&input.user.data
-  \STATE frame.cpi[1].meta.pubkey = \&input.market.address
-  \STATE frame.cpi[1].info.key = \&input.market.address
-  \STATE frame.cpi[1].info.owner = \&input.market.owner
-  \STATE frame.cpi[1].info.lamports = \&input.market.lamports
-  \STATE frame.cpi[1].info.data = \&input.market.data
-  \COMMENT{Populate signers seeds for CPI.}
-  \STATE frame.signers\_seeds.addr = \&frame.pda\_seeds
-  \STATE frame.signers\_seeds.len = \texttt{frame.pda\_seeds.n\_seeds}
-  \COMMENT{Populate SolInstruction for system\_program::CreateAccount CPI.}
-  \STATE frame.sol\_instruction.program\_id = frame.system\_program\_id
-  \STATE frame.sol\_instruction.accounts = \&frame.cpi.account\_metas
-  \STATE frame.sol\_instruction.account\_len =
-    \texttt{market::register::CREATE\_ACCOUNT\_N\_ACCOUNTS}
-  \STATE frame.sol\_instruction.data = \&frame.create\_account\_data
-  \STATE frame.sol\_instruction.data\_len = \texttt{CreateAccountData.size}
-  \COMMENT{Invoke system\_program::CreateAccount CPI.}
-  \STATE syscall.instruction = \&frame.sol\_instruction
-  \STATE syscall.account\_infos = \&frame.cpi.account\_infos
-  \STATE syscall.account\_infos\_len =
-    \texttt{market::register::CREATE\_ACCOUNT\_N\_ACCOUNTS}
-  \STATE syscall.seeds = \&frame.signers\_seeds
-  \STATE syscall.seeds\_len = \texttt{market::register::N\_PDA\_SIGNERS}
-  \STATE \CALL{sol-invoke-signed-c}{system-program::CreateAccount}
-  \COMMENT{Initialize market header next pointer and store derived bump.}
-  \STATE input.market.data.next = input + \texttt{entrypoint::input\_buffer::MARKET\_DATA\_BYTES}
-  \STATE input.market.data.bump = frame.bump
+  \COMMENT{Populate CPI fields, call system\_program::CreateAccount, set market header.}
+  \STATE \CALL{CREATE-MARKET-ACCOUNT}{frame}
 \ENDPROCEDURE
 \end{algorithmic}
 \end{algorithm}

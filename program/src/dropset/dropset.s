@@ -13,4 +13,5 @@
 .include "market/init_base_vault.s"
 .include "market/init_quote_vault.s"
 .include "market/init_market_pda.s"
+.include "market/create_market_account.s"
 .include "market/init_vault.s"
