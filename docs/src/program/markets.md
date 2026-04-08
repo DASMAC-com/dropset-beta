@@ -18,7 +18,7 @@ Market registration accepts only the discriminant byte as instruction data:
 
 The instruction requires the following accounts:
 
-<Include rs="interface::market::register#register_market_accounts" collapsed/>
+<Include rs="interface::market::register#register_market_accounts" collapsible/>
 
 ## REGISTER-MARKET
 
