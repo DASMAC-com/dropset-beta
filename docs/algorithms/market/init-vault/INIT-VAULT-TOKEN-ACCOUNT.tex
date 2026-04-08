@@ -1,0 +1,63 @@
+\begin{algorithm}
+\caption{INIT-VAULT-TOKEN-ACCOUNT}
+\begin{algorithmic}
+  \COMMENT{Pointer to stack frame (callee-saved).}
+  \INPUT $r_6$ = frame
+  \COMMENT{Pointer to vault account (callee-saved).}
+  \INPUT $r_7$ = acct
+  \REQUIRE frame.mint
+  \REQUIRE frame.rent
+  \REQUIRE frame.input
+  \REQUIRE frame.token\_program\_id
+  \REQUIRE frame.cpi[2].info.is\_signer = \texttt{false}
+  \REQUIRE frame.cpi[2].info.is\_writable = \texttt{false}
+  \REQUIRE frame.cpi[2].meta.is\_signer = \texttt{false}
+  \REQUIRE frame.cpi[2].meta.is\_writable = \texttt{false}
+\PROCEDURE{INIT-VAULT-TOKEN-ACCOUNT}{frame, acct}
+  \COMMENT{Assign CPI account fields for vault.}
+  \STATE frame.cpi[0].meta.pubkey = \&acct.address
+  \STATE frame.cpi[0].info.key = \&acct.address
+  \STATE frame.cpi[0].info.owner = \&acct.owner
+  \STATE frame.cpi[0].info.lamports = \&acct.lamports
+  \STATE frame.cpi[0].info.data = \&acct.data
+  \STATE frame.cpi[0].info.data\_len = acct.data\_len
+  \COMMENT{Assign CPI account fields for mint.}
+  \STATE mint = frame.mint
+  \STATE frame.cpi[1].info.is\_signer = \texttt{false}
+  \STATE frame.cpi[1].info.is\_writable = \texttt{false}
+  \STATE frame.cpi[1].meta.is\_signer = \texttt{false}
+  \STATE frame.cpi[1].meta.is\_writable = \texttt{false}
+  \STATE frame.cpi[1].meta.pubkey = \&mint.address
+  \STATE frame.cpi[1].info.key = \&mint.address
+  \STATE frame.cpi[1].info.owner = \&mint.owner
+  \STATE frame.cpi[1].info.lamports = \&mint.lamports
+  \STATE frame.cpi[1].info.data = \&mint.data
+  \STATE frame.cpi[1].info.data\_len = mint.data\_len
+  \COMMENT{Assign CPI account fields for Rent sysvar.}
+  \STATE rent = frame.rent
+  \STATE frame.cpi[2].meta.pubkey = \&rent.address
+  \STATE frame.cpi[2].info.key = \&rent.address
+  \STATE frame.cpi[2].info.owner = \&rent.owner
+  \STATE frame.cpi[2].info.lamports = \&rent.lamports
+  \STATE frame.cpi[2].info.data = \&rent.data
+  \STATE frame.cpi[2].info.data\_len = rent.data\_len
+  \COMMENT{Populate SolInstruction for spl\_token::InitializeAccount2.}
+  \STATE frame.sol\_instruction.program\_id = frame.token\_program\_id
+  \STATE frame.sol\_instruction.accounts = \&frame.cpi.account\_metas
+  \STATE frame.sol\_instruction.account\_len =
+    \texttt{common::token::INITIALIZE\_ACCOUNT\_2\_N\_ACCOUNTS}
+  \STATE frame.initialize\_account\_2\_data.discriminant =
+    \texttt{common::token::INITIALIZE\_ACCOUNT\_2\_DISC}
+  \STATE frame.initialize\_account\_2\_data.proprietor = input.market.address
+  \STATE frame.sol\_instruction.data = \&frame.initialize\_account\_2\_data
+  \STATE frame.sol\_instruction.data\_len = \texttt{InitializeAccount2.size}
+  \COMMENT{Invoke spl\_token::InitializeAccount2 CPI.}
+  \STATE syscall.instruction = \&frame.sol\_instruction
+  \STATE syscall.account\_infos = \&frame.cpi.account\_infos
+  \STATE syscall.account\_infos\_len =
+    \texttt{common::token::INITIALIZE\_ACCOUNT\_2\_N\_ACCOUNTS}
+  \STATE syscall.seeds\_len = \texttt{common::token::INITIALIZE\_ACCOUNT\_2\_N\_SEEDS}
+  \STATE \CALL{sol-invoke-signed-c}{spl-token::InitializeAccount2}
+\ENDPROCEDURE
+\end{algorithmic}
+\end{algorithm}

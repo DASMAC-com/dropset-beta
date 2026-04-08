@@ -1,10 +1,5 @@
 <!-- Auto-generated list of all algorithms with dependency chart. -->
 <template>
-  <ul v-if="algorithms.length" class="algorithm-index">
-    <li v-for="algo in algorithms" :key="algo.name">
-      <a :href="algo.href">{{ algo.name }}</a>
-    </li>
-  </ul>
   <!-- Mermaid dependency graph, rendered client-side. -->
   <div ref="chart" class="algorithm-dep-chart" />
 </template>
@@ -40,16 +35,6 @@ const filteredIndex = computed(() => {
   }
   return subset;
 });
-
-// Build algorithm list from the (possibly filtered) index.
-const algorithms = computed(() =>
-  Object.keys(filteredIndex.value)
-    .map((name) => ({
-      name,
-      href: `${algorithmIndex[name].page || "/"}#algo-ref-${name}`,
-    }))
-    .sort((a, b) => a.name.localeCompare(b.name)),
-);
 
 // Build a Mermaid graph definition from the algorithm index.
 function buildGraph(index) {

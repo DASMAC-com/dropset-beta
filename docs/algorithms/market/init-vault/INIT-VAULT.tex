@@ -1,0 +1,67 @@
+\begin{algorithm}
+\caption{INIT-VAULT}
+\begin{algorithmic}
+  \COMMENT{Pointer to vault account.}
+  \INPUT $r_1$ = acct
+  \COMMENT{Pointer to REGISTER-MARKET stack frame.}
+  \INPUT $r_2$ = frame
+  \REQUIRE frame.vault\_index $\in$ \{
+    \texttt{market::VAULT\_INDEX\_BASE},
+    \texttt{market::VAULT\_INDEX\_QUOTE}
+  \}
+  \REQUIRE frame.token\_program\_is\_2022 $\in$ \{
+    \texttt{true},
+    \texttt{false}
+  \}
+  \REQUIRE frame.mint $\in$ \{
+    input.base\_mint,
+    input\_shifted.quote\_mint
+  \}
+  \REQUIRE frame.token\_program\_id
+  \REQUIRE frame.program\_id
+  \REQUIRE frame.input
+  \REQUIRE frame.rent
+  \REQUIRE frame.lamports\_per\_byte
+  \REQUIRE frame.pda\_seeds[0].len = \texttt{Address.size}
+  \REQUIRE frame.pda\_seeds[2].addr = \&frame.bump
+  \REQUIRE frame.pda\_seeds[2].len = \texttt{u8.size}
+  \REQUIRE frame.system\_program\_id = \&input.system\_program.address
+  \REQUIRE frame.signers\_seeds.addr = \&frame.pda\_seeds
+  \REQUIRE frame.signers\_seeds.len = \texttt{frame.pda\_seeds.n\_seeds}
+  \REQUIRE input.user.data\_len = \texttt{common::memory::LEN\_ZERO}
+  \REQUIRE acct.data\_len = \texttt{common::memory::LEN\_ZERO}
+  \REQUIRE frame.cpi[0].info.executable = \texttt{false}
+  \REQUIRE frame.cpi[2].info.is\_signer = \texttt{false}
+  \REQUIRE frame.cpi[2].info.is\_writable = \texttt{false}
+  \REQUIRE frame.cpi[2].meta.is\_signer = \texttt{false}
+  \REQUIRE frame.cpi[2].meta.is\_writable = \texttt{false}
+\FUNCTION{INIT-VAULT}{acct, frame}
+  \STATE \CALL{Store}{frame}
+  \STATE \CALL{Store}{acct}
+  \COMMENT{Derive vault PDA.}
+  \STATE frame.pda\_seeds[0].addr = \&input.market.address
+  \STATE frame.pda\_seeds[1].addr = \&frame.vault\_index
+  \STATE frame.pda\_seeds[1].len = \texttt{u8.size}
+  \STATE syscall.seeds = \&frame.pda\_seeds
+  \STATE syscall.seeds\_len = \texttt{market::register::TRY\_FIND\_VAULT\_PDA\_SEEDS\_LEN}
+  \STATE syscall.program\_id = frame.program\_id
+  \STATE syscall.program\_address = \&frame.pda
+  \STATE syscall.bump\_seed = \&frame.bump
+  \STATE \CALL{sol-try-find-program-address}{}
+  \COMMENT{Verify vault address matches derived PDA.}
+  \IF{acct.address $\neq$ frame.pda}
+    \IF{frame.vault\_index == \texttt{market::VAULT\_INDEX\_BASE}}
+      \RETURN \texttt{ErrorCode::InvalidBaseVaultPubkey}
+    \ELSE
+      \RETURN \texttt{ErrorCode::InvalidQuoteVaultPubkey}
+    \ENDIF
+  \ENDIF
+  \COMMENT{Determine token account size.}
+  \STATE acct\_size = \CALL{GET-VAULT-SIZE}{frame}
+  \COMMENT{Create vault account via system\_program::CreateAccount.}
+  \STATE \CALL{CREATE-VAULT-ACCOUNT}{frame, acct}
+  \COMMENT{Initialize vault token account via spl\_token::InitializeAccount2.}
+  \STATE \CALL{INIT-VAULT-TOKEN-ACCOUNT}{frame, acct}
+\ENDFUNCTION
+\end{algorithmic}
+\end{algorithm}

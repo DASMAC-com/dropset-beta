@@ -18,22 +18,52 @@ Market registration accepts only the discriminant byte as instruction data:
 
 The instruction requires the following accounts:
 
-<Include rs="interface::market::register#register_market_accounts" collapsed/>
+<Include rs="interface::market::register#register_market_accounts" collapsible/>
 
-## Market registration algorithms
+## REGISTER-MARKET
 
 <AlgorithmIndex root="REGISTER-MARKET"/>
 
-### Main handler
-
 <Algorithm id="REGISTER-MARKET"/>
 
-### Market PDA initialization
+### MARKET-PDA-PRELUDE
+
+<Algorithm id="MARKET-PDA-PRELUDE"/>
+
+### INIT-MARKET-PDA
+
+<AlgorithmIndex root="INIT-MARKET-PDA"/>
 
 <Algorithm id="INIT-MARKET-PDA"/>
 
-### Vault initialization
+#### CREATE-MARKET-ACCOUNT
+
+<Algorithm id="CREATE-MARKET-ACCOUNT"/>
+
+### INIT-BASE-VAULT
+
+<Algorithm id="INIT-BASE-VAULT"/>
+
+### INIT-QUOTE-VAULT
+
+<Algorithm id="INIT-QUOTE-VAULT"/>
+
+### INIT-VAULT
+
+<AlgorithmIndex root="INIT-VAULT"/>
 
 <Algorithm id="INIT-VAULT"/>
+
+#### GET-VAULT-SIZE
+
+<Algorithm id="GET-VAULT-SIZE"/>
+
+#### CREATE-VAULT-ACCOUNT
+
+<Algorithm id="CREATE-VAULT-ACCOUNT"/>
+
+#### INIT-VAULT-TOKEN-ACCOUNT
+
+<Algorithm id="INIT-VAULT-TOKEN-ACCOUNT"/>
 
 [input buffer]: inputs#input-buffer

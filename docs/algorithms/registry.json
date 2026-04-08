@@ -1,16 +1,44 @@
 {
   "algorithms": {
+    "CREATE-MARKET-ACCOUNT": {
+      "asm": "market/init_market_pda/create_market_account",
+      "tex": "market/init-market-pda/CREATE-MARKET-ACCOUNT"
+    },
+    "CREATE-VAULT-ACCOUNT": {
+      "asm": "market/init_vault/create_vault_account",
+      "tex": "market/init-vault/CREATE-VAULT-ACCOUNT"
+    },
     "ENTRYPOINT": {
       "asm": "entrypoint",
       "tex": "ENTRYPOINT"
     },
+    "GET-VAULT-SIZE": {
+      "asm": "market/init_vault/get_vault_size",
+      "tex": "market/init-vault/GET-VAULT-SIZE"
+    },
+    "INIT-BASE-VAULT": {
+      "asm": "market/init_base_vault",
+      "tex": "market/INIT-BASE-VAULT"
+    },
     "INIT-MARKET-PDA": {
-      "asm": "market/init_market_pda",
-      "tex": "market/INIT-MARKET-PDA"
+      "asm": "market/init_market_pda/init_market_pda",
+      "tex": "market/init-market-pda/INIT-MARKET-PDA"
+    },
+    "INIT-QUOTE-VAULT": {
+      "asm": "market/init_quote_vault",
+      "tex": "market/INIT-QUOTE-VAULT"
     },
     "INIT-VAULT": {
-      "asm": "market/init_vault",
-      "tex": "market/INIT-VAULT"
+      "asm": "market/init_vault/init_vault",
+      "tex": "market/init-vault/INIT-VAULT"
+    },
+    "INIT-VAULT-TOKEN-ACCOUNT": {
+      "asm": "market/init_vault/init_vault_token_account",
+      "tex": "market/init-vault/INIT-VAULT-TOKEN-ACCOUNT"
+    },
+    "MARKET-PDA-PRELUDE": {
+      "asm": "market/register",
+      "tex": "market/MARKET-PDA-PRELUDE"
     },
     "REGISTER-MARKET": {
       "asm": "market/register",

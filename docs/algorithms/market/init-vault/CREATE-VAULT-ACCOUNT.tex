@@ -1,0 +1,68 @@
+\begin{algorithm}
+\caption{CREATE-VAULT-ACCOUNT}
+\begin{algorithmic}
+  \COMMENT{Pointer to stack frame (callee-saved).}
+  \INPUT $r_6$ = frame
+  \COMMENT{Pointer to vault account (callee-saved).}
+  \INPUT $r_7$ = acct
+  \REQUIRE frame.token\_account\_data\_size
+  \REQUIRE frame.lamports\_per\_byte
+  \REQUIRE frame.token\_program\_id
+  \REQUIRE frame.system\_program\_id
+  \REQUIRE frame.input
+  \REQUIRE frame.pda\_seeds[0].len = \texttt{Address.size}
+  \REQUIRE frame.pda\_seeds[2].addr = \&frame.bump
+  \REQUIRE frame.pda\_seeds[2].len = \texttt{u8.size}
+  \REQUIRE frame.signers\_seeds.addr = \&frame.pda\_seeds
+  \REQUIRE frame.signers\_seeds.len = \texttt{frame.pda\_seeds.n\_seeds}
+  \REQUIRE input.user.data\_len = \texttt{common::memory::LEN\_ZERO}
+  \REQUIRE acct.data\_len = \texttt{common::memory::LEN\_ZERO}
+  \REQUIRE frame.cpi[0].info.executable = \texttt{false}
+\PROCEDURE{CREATE-VAULT-ACCOUNT}{frame, acct}
+  \COMMENT{Prepare system\_program::CreateAccount instruction fields.}
+  \STATE acct\_size = frame.token\_account\_data\_size
+  \STATE frame.create\_account\_data.space = acct\_size
+  \STATE acct\_size = acct\_size + \texttt{common::account::STORAGE\_OVERHEAD}
+  \STATE frame.create\_account\_data.lamports =
+    acct\_size $\times$ frame.lamports\_per\_byte
+  \STATE frame.create\_account\_data.owner = frame.token\_program\_id
+  \COMMENT{Assign CPI account fields via immediates.}
+  \STATE frame.cpi[0].info.is\_signer = \texttt{true}
+  \STATE frame.cpi[0].info.is\_writable = \texttt{true}
+  \STATE frame.cpi[0].meta.is\_signer = \texttt{true}
+  \STATE frame.cpi[0].meta.is\_writable = \texttt{true}
+  \STATE frame.cpi[1].info.is\_signer = \texttt{true}
+  \STATE frame.cpi[1].info.is\_writable = \texttt{true}
+  \STATE frame.cpi[1].meta.is\_signer = \texttt{true}
+  \STATE frame.cpi[1].meta.is\_writable = \texttt{true}
+  \STATE frame.cpi[0].info.data\_len = \texttt{common::memory::LEN\_ZERO}
+  \STATE frame.cpi[1].info.data\_len = \texttt{common::memory::LEN\_ZERO}
+  \COMMENT{Assign CPI account fields via pointers.}
+  \STATE frame.cpi[0].meta.pubkey = \&input.user.address
+  \STATE frame.cpi[0].info.key = \&input.user.address
+  \STATE frame.cpi[0].info.owner = \&input.user.owner
+  \STATE frame.cpi[0].info.lamports = \&input.user.lamports
+  \STATE frame.cpi[0].info.data = \&input.user.data
+  \STATE frame.cpi[1].meta.pubkey = \&acct.address
+  \STATE frame.cpi[1].info.key = \&acct.address
+  \STATE frame.cpi[1].info.owner = \&acct.owner
+  \STATE frame.cpi[1].info.lamports = \&acct.lamports
+  \STATE frame.cpi[1].info.data = \&acct.data
+  \COMMENT{Populate SolInstruction for system\_program::CreateAccount CPI.}
+  \STATE frame.sol\_instruction.program\_id = frame.system\_program\_id
+  \STATE frame.sol\_instruction.accounts = \&frame.cpi.account\_metas
+  \STATE frame.sol\_instruction.account\_len =
+    \texttt{market::register::CREATE\_ACCOUNT\_N\_ACCOUNTS}
+  \STATE frame.sol\_instruction.data = \&frame.create\_account\_data
+  \STATE frame.sol\_instruction.data\_len = \texttt{CreateAccountData.size}
+  \COMMENT{Invoke system\_program::CreateAccount CPI.}
+  \STATE syscall.instruction = \&frame.sol\_instruction
+  \STATE syscall.account\_infos = \&frame.cpi.account\_infos
+  \STATE syscall.account\_infos\_len =
+    \texttt{market::register::CREATE\_ACCOUNT\_N\_ACCOUNTS}
+  \STATE syscall.seeds = \&frame.signers\_seeds
+  \STATE syscall.seeds\_len = \texttt{market::register::N\_PDA\_SIGNERS}
+  \STATE \CALL{sol-invoke-signed-c}{system-program::CreateAccount}
+\ENDPROCEDURE
+\end{algorithmic}
+\end{algorithm}

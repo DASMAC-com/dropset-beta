@@ -18,6 +18,7 @@ corresponding `.s` implementations.
 functions linked to their upstream source.
 [CPI] targets (blue) are
 cross-program invocations linked to their instruction definitions.
+Click any algorithm node to jump to its listing.
 External nodes link to source via the [algorithm registry].
 
 [Syscalls]: https://solana.com/docs/core/programs/syscall-reference

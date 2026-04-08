@@ -8,19 +8,28 @@ details on how assembly constants are generated from Rust crates.
 
 ```txt
 program/src/dropset/
-├── dropset.s              # Top-level file
-├── entrypoint.s           # Entrypoint dispatcher
-├── error.s                # Error codes and subroutines
+├── dropset.s                          # File include orchestrator
+├── entrypoint.s                       # Entrypoint dispatcher
+├── error.s                            # Error codes and subroutines
 ├── common/
-│   ├── account.s          # Runtime account constants
-│   ├── memory.s           # Data and type size constants
-│   ├── pubkey.s           # Pubkey chunk offsets and known addresses
-│   └── token.s            # SPL Token constants
+│   ├── account.s                      # Runtime account constants
+│   ├── memory.s                       # Data and type size constants
+│   ├── pubkey.s                       # Pubkey chunk offsets, known addresses
+│   └── token.s                        # SPL Token constants
 └── market/
-    ├── market.s           # Market-level constants
-    ├── register.s         # RegisterMarket handler
-    ├── init_market_pda.s  # Market PDA initialization
-    └── init_vault.s       # Vault initialization
+    ├── market.s                       # Market-level constants
+    ├── register.s                     # RegisterMarket handler
+    ├── market_pda_prelude.s           # Account validation prelude
+    ├── init_market_pda/
+    │   ├── init_market_pda.s          # Market PDA initialization
+    │   └── create_market_account.s    # Market account creation CPI
+    ├── init_base_vault.s              # Base vault initialization
+    ├── init_quote_vault.s             # Quote vault initialization
+    └── init_vault/
+        ├── init_vault.s               # Vault initialization
+        ├── get_vault_size.s           # Token account size determination
+        ├── create_vault_account.s     # Vault account creation CPI
+        └── init_vault_token_account.s # Vault token account init CPI
 ```
 
 ## Top-level file
@@ -178,13 +187,30 @@ their keys in the [algorithm registry].
 
 ### Algorithm conventions
 
-- `procedure`: a label that does not return (no stack push); control flow
-  exits via `exit` or jumps to another procedure.
-- `function`: a label that pushes onto the call stack and returns to the
-  caller.
+- `procedure`: a label reached via jump (no stack push).
+  Register and frame values set by the procedure persist in
+  the caller's scope. When a procedure exposes a register
+  via `\ENSURE`, the caller may assign it for readability
+  (e.g. `acct = \CALL{PROCEDURE}{...}`). Error paths use
+  `\RETURN ErrorCode::*`, which maps to an error handler
+  label (`mov32 r0, E_*; exit`) that returns directly to
+  the runtime.
+- `function`: a label reached via `call` (pushes onto the
+  call stack). `exit` returns to the caller with `r0` as
+  the return value. Error paths use `\RETURN ErrorCode::*`
+  via error handler labels, which set `r0` and `exit` back
+  to the caller (not the runtime). The caller must check
+  `r0` to detect errors
+  (e.g. `result = \CALL{FUNCTION}{...}`).
 - `Store(var)`: saves `var` to a callee-saved register before a call that
   would clobber caller-saved registers. The stored value is available after
   the call returns.
+
+Algorithm specifications should be kept under 50 lines of
+statements per procedure or function. When a specification
+grows beyond this, extract a logically self-contained section
+into its own procedure with explicit `\REQUIRE` and `\ENSURE`
+postconditions.
 
 ### Assembly comments {#assembly-comments}
 
@@ -203,7 +229,7 @@ should not appear as inline ASM comments.
 Optimization notes use `# Optimize:` to explain when the
 implementation deviates from the specification for performance:
 
-<Include asm="market/register#optimize_example" collapsible/>
+<Include asm="market/market_pda_prelude#optimize_example" collapsible/>
 
 [`program/src/dropset/`]: https://github.com/DASMAC-com/dropset-beta/tree/main/program/src/dropset
 [multi-file assembly]: https://github.com/blueshift-gg/sbpf/pull/109
