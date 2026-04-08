@@ -22,6 +22,7 @@ program/src/dropset/
     ├── market_pda_prelude.s   # Account validation prelude
     ├── init_market_pda.s      # Market PDA initialization
     ├── init_base_vault.s      # Base vault initialization
+    ├── init_quote_vault.s     # Quote vault initialization
     └── init_vault.s           # Vault initialization
 ```
 

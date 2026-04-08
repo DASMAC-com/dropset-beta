@@ -1,0 +1,68 @@
+\begin{algorithm}
+\caption{INIT-QUOTE-VAULT}
+\begin{algorithmic}
+  \COMMENT{Pointer to quote token program account.}
+  \INPUT $r_9$ = acct
+  \COMMENT{Pointer to stack frame.}
+  \INPUT $r_{10}$ = frame
+  \COMMENT{Pointer to input buffer.}
+  \INPUT $r_8$ = input
+  \COMMENT{Pointer to shifted input buffer for quote mint offsets.}
+  \INPUT $r_6$ = input\_shifted
+  \REQUIRE frame.lamports\_per\_byte
+  \REQUIRE frame.system\_program\_id
+  \REQUIRE frame.signers\_seeds.addr = \&frame.pda\_seeds
+  \REQUIRE frame.signers\_seeds.len = \texttt{frame.pda\_seeds.n\_seeds}
+  \REQUIRE frame.pda\_seeds[0].len = \texttt{Address.size}
+  \REQUIRE frame.pda\_seeds[2].addr = \&frame.bump
+  \REQUIRE frame.pda\_seeds[2].len = \texttt{u8.size}
+  \REQUIRE frame.rent
+  \ENSURE input.market.data.quote\_vault\_bump = frame.bump
+\PROCEDURE{INIT-QUOTE-VAULT}{acct, frame, input, input\_shifted}
+  \COMMENT{Check quote token program account.}
+  \IF{acct.duplicate == \texttt{common::account::NON\_DUP\_MARKER}}
+    \COMMENT{Non-duplicate; verify quote token program owns the quote mint.}
+    \IF{acct.address $\neq$ input\_shifted.quote\_mint.owner}
+      \RETURN \texttt{ErrorCode::NonDupQuoteTokenProgramNotQuoteMintOwner}
+    \ENDIF
+    \COMMENT{Verify quote token program is Token Program or Token 2022.}
+    \IF{acct.address $\neq$ \texttt{common::pubkey::TOKEN\_PROGRAM}}
+      \IF{acct.address $\neq$ \texttt{common::pubkey::TOKEN\_2022\_PROGRAM}}
+        \RETURN \texttt{ErrorCode::QuoteTokenProgramNotTokenProgram}
+      \ENDIF
+      \STATE frame.token\_program\_is\_2022 = \texttt{true}
+    \ELSE
+      \STATE frame.token\_program\_is\_2022 = \texttt{false}
+    \ENDIF
+    \STATE frame.token\_program\_id = \&acct.address
+    \COMMENT{Advance to quote vault account.}
+    \STATE quote\_token\_program\_padded\_data\_len = acct.padded\_data\_len
+    \STATE acct += quote\_token\_program\_padded\_data\_len + \texttt{EmptyAccount.size}
+  \ELSE
+    \COMMENT{Duplicate; verify position is base token program.}
+    \IF{acct.duplicate $\neq$ \texttt{Accounts::BaseTokenProgram}}
+      \RETURN \texttt{ErrorCode::InvalidQuoteTokenProgramDuplicate}
+    \ENDIF
+    \COMMENT{Verify duplicate owns the quote mint.}
+    \IF{input.base\_mint.owner $\neq$ input\_shifted.quote\_mint.owner}
+      \RETURN \texttt{ErrorCode::DupQuoteTokenProgramNotQuoteMintOwner}
+    \ENDIF
+    \COMMENT{Advance to quote vault account.}
+    \STATE acct += \texttt{u64.size}
+  \ENDIF
+  \COMMENT{Check quote vault account.}
+  \IF{acct.duplicate $\neq$ \texttt{common::account::NON\_DUP\_MARKER}}
+    \RETURN \texttt{ErrorCode::QuoteVaultIsDuplicate}
+  \ENDIF
+  \IF{acct.data\_len $\neq$ \texttt{common::memory::LEN\_ZERO}}
+    \RETURN \texttt{ErrorCode::QuoteVaultHasData}
+  \ENDIF
+  \COMMENT{Initialize quote vault account.}
+  \STATE frame.vault\_index = \texttt{market::VAULT\_INDEX\_QUOTE}
+  \STATE frame.mint = \&input\_shifted.quote\_mint
+  \STATE \CALL{INIT-VAULT}{acct, frame}
+  \COMMENT{Store derived bump in market account data.}
+  \STATE input.market.data.quote\_vault\_bump = frame.bump
+\ENDPROCEDURE
+\end{algorithmic}
+\end{algorithm}

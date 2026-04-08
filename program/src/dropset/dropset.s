@@ -11,5 +11,6 @@
 .include "market/register.s"
 .include "market/market_pda_prelude.s"
 .include "market/init_base_vault.s"
+.include "market/init_quote_vault.s"
 .include "market/init_market_pda.s"
 .include "market/init_vault.s"

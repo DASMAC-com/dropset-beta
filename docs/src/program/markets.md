@@ -40,6 +40,10 @@ The instruction requires the following accounts:
 
 <Algorithm id="INIT-BASE-VAULT"/>
 
+### INIT-QUOTE-VAULT
+
+<Algorithm id="INIT-QUOTE-VAULT"/>
+
 ### INIT-VAULT
 
 <Algorithm id="INIT-VAULT"/>

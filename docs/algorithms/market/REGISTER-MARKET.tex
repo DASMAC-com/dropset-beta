@@ -19,50 +19,8 @@
   \STATE \CALL{INIT-MARKET-PDA}{input, insn, acct, frame}
   \COMMENT{Validate base token program, initialize base vault.}
   \STATE input\_shifted = \CALL{INIT-BASE-VAULT}{acct, frame}
-  \COMMENT{Check quote token program account.}
-  \IF{acct.duplicate == \texttt{common::account::NON\_DUP\_MARKER}}
-    \COMMENT{Non-duplicate; verify quote token program owns the quote mint.}
-    \IF{acct.address $\neq$ input\_shifted.quote\_mint.owner}
-      \RETURN \texttt{ErrorCode::NonDupQuoteTokenProgramNotQuoteMintOwner}
-    \ENDIF
-    \COMMENT{Verify quote token program is Token Program or Token 2022.}
-    \IF{acct.address $\neq$ \texttt{common::pubkey::TOKEN\_PROGRAM}}
-      \IF{acct.address $\neq$ \texttt{common::pubkey::TOKEN\_2022\_PROGRAM}}
-        \RETURN \texttt{ErrorCode::QuoteTokenProgramNotTokenProgram}
-      \ENDIF
-      \STATE frame.token\_program\_is\_2022 = \texttt{true}
-    \ELSE
-      \STATE frame.token\_program\_is\_2022 = \texttt{false}
-    \ENDIF
-    \STATE frame.token\_program\_id = \&acct.address
-    \COMMENT{Advance to quote vault account.}
-    \STATE quote\_token\_program\_padded\_data\_len = acct.padded\_data\_len
-    \STATE acct += quote\_token\_program\_padded\_data\_len + \texttt{EmptyAccount.size}
-  \ELSE
-    \COMMENT{Duplicate; verify position is base token program.}
-    \IF{acct.duplicate $\neq$ \texttt{Accounts::BaseTokenProgram}}
-      \RETURN \texttt{ErrorCode::InvalidQuoteTokenProgramDuplicate}
-    \ENDIF
-    \COMMENT{Verify duplicate owns the quote mint.}
-    \IF{input.base\_mint.owner $\neq$ input\_shifted.quote\_mint.owner}
-      \RETURN \texttt{ErrorCode::DupQuoteTokenProgramNotQuoteMintOwner}
-    \ENDIF
-    \COMMENT{Advance to quote vault account.}
-    \STATE acct += \texttt{u64.size}
-  \ENDIF
-  \COMMENT{Check quote vault account.}
-  \IF{acct.duplicate $\neq$ \texttt{common::account::NON\_DUP\_MARKER}}
-    \RETURN \texttt{ErrorCode::QuoteVaultIsDuplicate}
-  \ENDIF
-  \IF{acct.data\_len $\neq$ \texttt{common::memory::LEN\_ZERO}}
-    \RETURN \texttt{ErrorCode::QuoteVaultHasData}
-  \ENDIF
-  \COMMENT{Initialize quote vault account.}
-  \STATE frame.vault\_index = \texttt{market::VAULT\_INDEX\_QUOTE}
-  \STATE frame.mint = \&input\_shifted.quote\_mint
-  \STATE \CALL{INIT-VAULT}{acct, frame}
-  \COMMENT{Store derived bump in market account data.}
-  \STATE input.market.data.quote\_vault\_bump = frame.bump
+  \COMMENT{Validate quote token program, initialize quote vault.}
+  \STATE \CALL{INIT-QUOTE-VAULT}{acct, frame, input, input\_shifted}
 \ENDPROCEDURE
 \end{algorithmic}
 \end{algorithm}

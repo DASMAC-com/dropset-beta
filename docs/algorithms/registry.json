@@ -12,6 +12,10 @@
       "asm": "market/init_market_pda",
       "tex": "market/INIT-MARKET-PDA"
     },
+    "INIT-QUOTE-VAULT": {
+      "asm": "market/init_quote_vault",
+      "tex": "market/INIT-QUOTE-VAULT"
+    },
     "MARKET-PDA-PRELUDE": {
       "asm": "market/register",
       "tex": "market/MARKET-PDA-PRELUDE"
