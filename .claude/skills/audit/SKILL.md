@@ -103,6 +103,42 @@ and proceed to the **Resolve** section below.
      are unqualified, CPI targets use
      `program::InstructionName` form).
 
+1. Check test coverage for algorithms:
+
+   - Run `buildAlgorithmIndex` (or read
+     `docs/algorithms/index.json` if already
+     built) to get the generated index, which
+     maps each algorithm to its `tests` array
+     via `// Verifies:` tags in test case files
+     under `tests/tests/cases/`.
+   - Flag any algorithm whose `tests` array is
+     missing or empty.
+
+### Notation compliance
+
+1. Read the notation spec in
+   `docs/src/program/layout.md#notation`. Then
+   check every `.tex` file in `docs/algorithms/`
+   and every `.s` file in `program/src/dropset/`:
+
+   - `\texttt{}` references in `.tex` files and
+     inline `#` comments in `.s` files must follow
+     the notation spec:
+     - Module paths and enum variants use `::`.
+     - Field access and type properties use `.`.
+     - Type names are unqualified (no module prefix
+       for globally unique types like `MarketHeader`,
+       or instruction-scoped types like `Accounts`).
+     - Constants use their full interface module
+       path with the `constants` group name elided.
+     - CPI targets use `program::InstructionName`
+       form.
+     - Syscalls use underscore-separated names.
+   - Flag any reference that deviates from these
+     rules (e.g. dot where `::` is expected,
+     qualified type names, missing module path on
+     constants, wrong CPI target form).
+
 ### Documentation freshness
 
 1. For each page in `docs/src/`, read the page
@@ -124,6 +160,44 @@ and proceed to the **Resolve** section below.
      section of `CLAUDE.md` should still exist.
    - New docs pages should be listed.
    - Conventions should not contradict the docs.
+
+### Dependencies and vulnerabilities
+
+1. Check Rust dependency freshness:
+
+   - Read the root `Cargo.toml` where all workspace
+     dependency versions are declared.
+   - For each dependency, check whether a newer
+     version exists on crates.io (use `cargo outdated`
+     if available, otherwise web-search crates.io).
+   - Flag dependencies that are more than one minor
+     version behind.
+
+1. Check workspace dependency inheritance:
+
+   - Read each member `Cargo.toml` (`build/`,
+     `macros/`, `interface/`, `tests/`).
+   - Flag any dependency that specifies a version
+     directly instead of using
+     `{ workspace = true }`.
+
+1. Check docs site dependency freshness:
+
+   - Read `docs/package.json`.
+   - For each dependency, check whether a newer version exists
+     on npm (use `npm outdated --prefix docs` or
+     web-search npmjs.com).
+   - Flag dependencies that are more than one minor
+     version behind.
+
+1. Check for known vulnerabilities:
+
+   - Run `cargo audit` (if installed) or review
+     advisory databases for the Rust dependencies.
+   - Run `npm audit --prefix docs` for the docs
+     site.
+   - Flag any reported vulnerabilities with their
+     severity, affected package, and advisory ID.
 
 ### Documentation structure
 

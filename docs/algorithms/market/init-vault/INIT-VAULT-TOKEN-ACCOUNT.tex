@@ -13,6 +13,7 @@
   \REQUIRE frame.cpi[2].info.is\_writable = \texttt{false}
   \REQUIRE frame.cpi[2].meta.is\_signer = \texttt{false}
   \REQUIRE frame.cpi[2].meta.is\_writable = \texttt{false}
+  \ENSURE $r_0$ = \texttt{sol\_invoke\_signed\_c} return code
 \PROCEDURE{INIT-VAULT-TOKEN-ACCOUNT}{frame, acct}
   \COMMENT{Assign CPI account fields for vault.}
   \STATE frame.cpi[0].meta.pubkey = \&acct.address
