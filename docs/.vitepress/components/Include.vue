@@ -124,11 +124,14 @@ onMounted(async () => {
       const end = lines.findIndex((l) => l.trim() === endTag);
       if (start === -1) throw new Error(`Region start not found: ${startTag}`);
       if (end === -1) throw new Error(`Region end not found: ${endTag}`);
+      const firstContentLine = start + 1;
+      const lastContentLine = end - 1;
       code = lines
-        .slice(start + 1, end)
+        .slice(firstContentLine, end)
         .join("\n")
         .trimEnd();
-      ghLink += `#L${start + 2}-L${end}`;
+      const toGitHub = (zeroIdx) => zeroIdx + 1;
+      ghLink += `#L${toGitHub(firstContentLine)}-L${toGitHub(lastContentLine)}`;
     }
 
     const shiki = await import("shiki");
