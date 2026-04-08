@@ -9,5 +9,6 @@
 .include "entrypoint.s"
 .include "market/market.s"
 .include "market/register.s"
+.include "market/market_pda_prelude.s"
 .include "market/init_market_pda.s"
 .include "market/init_vault.s"
