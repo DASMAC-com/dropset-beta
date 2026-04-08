@@ -1,0 +1,53 @@
+\begin{algorithm}
+\caption{GET-VAULT-SIZE}
+\begin{algorithmic}
+  \COMMENT{Pointer to stack frame (callee-saved).}
+  \INPUT $r_6$ = frame
+  \REQUIRE frame.token\_program\_is\_2022
+  \REQUIRE frame.mint
+  \REQUIRE frame.token\_program\_id
+  \ENSURE frame.token\_account\_data\_size = acct\_size
+\PROCEDURE{GET-VAULT-SIZE}{frame}
+  \COMMENT{Determine token account size.}
+  \IF{frame.token\_program\_is\_2022}
+    \COMMENT{Set up mint as CPI account.}
+    \STATE frame.cpi[0].info.is\_signer = \texttt{false}
+    \STATE frame.cpi[0].info.is\_writable = \texttt{false}
+    \STATE frame.cpi[0].meta.is\_signer = \texttt{false}
+    \STATE frame.cpi[0].meta.is\_writable = \texttt{false}
+    \STATE frame.cpi[0].meta.pubkey = \&mint.address
+    \STATE frame.cpi[0].info.key = \&mint.address
+    \STATE frame.cpi[0].info.owner = \&mint.owner
+    \STATE frame.cpi[0].info.lamports = \&mint.lamports
+    \STATE frame.cpi[0].info.data\_len = mint.data\_len
+    \STATE frame.cpi[0].info.data = \&mint.data
+    \COMMENT{Populate SolInstruction for GetAccountDataSize CPI.}
+    \STATE frame.sol\_instruction.program\_id = frame.token\_program\_id
+    \STATE frame.sol\_instruction.accounts = \&frame.cpi[0].meta
+    \STATE frame.sol\_instruction.account\_len =
+      \texttt{common::token::GET\_ACCOUNT\_DATA\_SIZE\_N\_ACCOUNTS}
+    \STATE frame.get\_account\_data\_size\_data =
+      \texttt{common::token::GET\_ACCOUNT\_DATA\_SIZE\_DISC}
+    \STATE frame.sol\_instruction.data = \&frame.get\_account\_data\_size\_data
+    \STATE frame.sol\_instruction.data\_len = \texttt{u8.size}
+    \COMMENT{Invoke GetAccountDataSize CPI.}
+    \STATE syscall.instruction = \&frame.sol\_instruction
+    \STATE syscall.account\_infos = \&frame.cpi[0].info
+    \STATE syscall.account\_infos\_len =
+      \texttt{common::token::GET\_ACCOUNT\_DATA\_SIZE\_N\_ACCOUNTS}
+    \STATE syscall.seeds\_len = \texttt{common::token::GET\_ACCOUNT\_DATA\_SIZE\_N\_SEEDS}
+    \STATE \CALL{sol-invoke-signed-c}{spl-token-2022::GetAccountDataSize}
+    \COMMENT{Get return data.}
+    \STATE syscall.bytes = \&frame.token\_account\_data\_size
+    \STATE syscall.bytes\_len = \texttt{u64.size}
+    \STATE syscall.program\_id = \&frame.get\_return\_data\_program\_id
+    \STATE \CALL{sol-get-return-data}{}
+    \STATE acct\_size = frame.token\_account\_data\_size
+    \COMMENT{Override default return data nonzero return code.}
+    \STATE result = \texttt{entrypoint::RETURN\_SUCCESS}
+  \ELSE
+    \STATE acct\_size = \texttt{common::token::ACCOUNT\_SIZE}
+  \ENDIF
+\ENDPROCEDURE
+\end{algorithmic}
+\end{algorithm}

@@ -48,6 +48,10 @@ The instruction requires the following accounts:
 
 <Algorithm id="INIT-QUOTE-VAULT"/>
 
+### GET-VAULT-SIZE
+
+<Algorithm id="GET-VAULT-SIZE"/>
+
 ### INIT-VAULT
 
 <Algorithm id="INIT-VAULT"/>

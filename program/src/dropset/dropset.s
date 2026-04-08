@@ -15,3 +15,4 @@
 .include "market/init_market_pda.s"
 .include "market/create_market_account.s"
 .include "market/init_vault.s"
+.include "market/get_vault_size.s"

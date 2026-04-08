@@ -8,6 +8,10 @@
       "asm": "market/create_market_account",
       "tex": "market/CREATE-MARKET-ACCOUNT"
     },
+    "GET-VAULT-SIZE": {
+      "asm": "market/get_vault_size",
+      "tex": "market/GET-VAULT-SIZE"
+    },
     "INIT-BASE-VAULT": {
       "asm": "market/init_base_vault",
       "tex": "market/INIT-BASE-VAULT"
