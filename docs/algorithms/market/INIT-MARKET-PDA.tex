@@ -49,7 +49,7 @@
   \COMMENT{Populate bump signer seed from derived bump.}
   \STATE frame.pda\_seeds[2].addr = \&syscall.bump\_seed
   \STATE frame.pda\_seeds[2].len = \texttt{u8.size}
-  \COMMENT{Populate CreateAccount CPI instruction data owner field.}
+  \COMMENT{Populate system\_program::CreateAccount CPI instruction data owner field.}
   \STATE frame.create\_account\_data.owner = syscall.program\_id
   \COMMENT{Assign CPI account fields via immediates.}
   \STATE frame.cpi[0].info.is\_signer = \texttt{true}
@@ -74,14 +74,14 @@
   \COMMENT{Populate signers seeds for CPI.}
   \STATE frame.signers\_seeds.addr = \&frame.pda\_seeds
   \STATE frame.signers\_seeds.len = \texttt{frame.pda\_seeds.n\_seeds}
-  \COMMENT{Populate SolInstruction for CreateAccount CPI.}
+  \COMMENT{Populate SolInstruction for system\_program::CreateAccount CPI.}
   \STATE frame.sol\_instruction.program\_id = frame.system\_program\_id
   \STATE frame.sol\_instruction.accounts = \&frame.cpi.account\_metas
   \STATE frame.sol\_instruction.account\_len =
     \texttt{market::register::CREATE\_ACCOUNT\_N\_ACCOUNTS}
   \STATE frame.sol\_instruction.data = \&frame.create\_account\_data
   \STATE frame.sol\_instruction.data\_len = \texttt{CreateAccountData.size}
-  \COMMENT{Invoke CreateAccount CPI.}
+  \COMMENT{Invoke system\_program::CreateAccount CPI.}
   \STATE syscall.instruction = \&frame.sol\_instruction
   \STATE syscall.account\_infos = \&frame.cpi.account\_infos
   \STATE syscall.account\_infos\_len =
