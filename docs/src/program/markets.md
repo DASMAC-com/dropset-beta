@@ -48,12 +48,20 @@ The instruction requires the following accounts:
 
 <Algorithm id="INIT-QUOTE-VAULT"/>
 
+### INIT-VAULT
+
+<Algorithm id="INIT-VAULT"/>
+
 ### GET-VAULT-SIZE
 
 <Algorithm id="GET-VAULT-SIZE"/>
 
-### INIT-VAULT
+### CREATE-VAULT-ACCOUNT
 
-<Algorithm id="INIT-VAULT"/>
+<Algorithm id="CREATE-VAULT-ACCOUNT"/>
+
+### INIT-VAULT-TOKEN-ACCOUNT
+
+<Algorithm id="INIT-VAULT-TOKEN-ACCOUNT"/>
 
 [input buffer]: inputs#input-buffer

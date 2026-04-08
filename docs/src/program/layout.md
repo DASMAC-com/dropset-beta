@@ -24,8 +24,10 @@ program/src/dropset/
     ├── create_market_account.s # Market account creation CPI
     ├── init_base_vault.s      # Base vault initialization
     ├── init_quote_vault.s     # Quote vault initialization
-    ├── init_vault.s           # Vault initialization
-    └── get_vault_size.s       # Token account size determination
+    ├── init_vault.s               # Vault initialization
+    ├── get_vault_size.s           # Token account size determination
+    ├── create_vault_account.s     # Vault account creation CPI
+    └── init_vault_token_account.s # Vault token account initialization CPI
 ```
 
 ## Top-level file

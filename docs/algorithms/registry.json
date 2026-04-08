@@ -8,6 +8,10 @@
       "asm": "market/create_market_account",
       "tex": "market/CREATE-MARKET-ACCOUNT"
     },
+    "CREATE-VAULT-ACCOUNT": {
+      "asm": "market/create_vault_account",
+      "tex": "market/CREATE-VAULT-ACCOUNT"
+    },
     "GET-VAULT-SIZE": {
       "asm": "market/get_vault_size",
       "tex": "market/GET-VAULT-SIZE"
@@ -15,6 +19,10 @@
     "INIT-BASE-VAULT": {
       "asm": "market/init_base_vault",
       "tex": "market/INIT-BASE-VAULT"
+    },
+    "INIT-VAULT-TOKEN-ACCOUNT": {
+      "asm": "market/init_vault_token_account",
+      "tex": "market/INIT-VAULT-TOKEN-ACCOUNT"
     },
     "INIT-MARKET-PDA": {
       "asm": "market/init_market_pda",

@@ -16,3 +16,5 @@
 .include "market/create_market_account.s"
 .include "market/init_vault.s"
 .include "market/get_vault_size.s"
+.include "market/create_vault_account.s"
+.include "market/init_vault_token_account.s"
