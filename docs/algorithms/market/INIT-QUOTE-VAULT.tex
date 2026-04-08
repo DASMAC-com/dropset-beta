@@ -1,14 +1,14 @@
 \begin{algorithm}
 \caption{INIT-QUOTE-VAULT}
 \begin{algorithmic}
+  \COMMENT{Pointer to shifted input buffer for quote mint offsets.}
+  \INPUT $r_6$ = input\_shifted
+  \COMMENT{Pointer to input buffer.}
+  \INPUT $r_8$ = input
   \COMMENT{Pointer to quote token program account.}
   \INPUT $r_9$ = acct
   \COMMENT{Pointer to stack frame.}
   \INPUT $r_{10}$ = frame
-  \COMMENT{Pointer to input buffer.}
-  \INPUT $r_8$ = input
-  \COMMENT{Pointer to shifted input buffer for quote mint offsets.}
-  \INPUT $r_6$ = input\_shifted
   \REQUIRE frame.lamports\_per\_byte
   \REQUIRE frame.system\_program\_id
   \REQUIRE frame.signers\_seeds.addr = \&frame.pda\_seeds

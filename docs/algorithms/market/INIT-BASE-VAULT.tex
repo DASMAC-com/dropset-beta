@@ -15,12 +15,12 @@
   \REQUIRE frame.pda\_seeds[2].addr = \&frame.bump
   \REQUIRE frame.pda\_seeds[2].len = \texttt{u8.size}
   \REQUIRE frame.rent
-  \COMMENT{Pointer to quote token program account.}
-  \ENSURE $r_9$ = acct
-  \COMMENT{Pointer to input buffer.}
-  \ENSURE $r_8$ = input
   \COMMENT{Pointer to shifted input buffer for quote mint offsets.}
   \ENSURE $r_6$ = input\_shifted
+  \COMMENT{Pointer to input buffer.}
+  \ENSURE $r_8$ = input
+  \COMMENT{Pointer to quote token program account.}
+  \ENSURE $r_9$ = acct
   \ENSURE frame.token\_program\_id
   \ENSURE frame.token\_program\_is\_2022
   \ENSURE input.market.data.base\_vault\_bump = frame.bump
