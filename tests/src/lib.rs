@@ -205,6 +205,41 @@ pub fn find_pda_seed_pair(program_id: &Pubkey) -> (Pubkey, Pubkey) {
     }
 }
 
+/// XOR mask applied to a single byte to corrupt a pubkey chunk.
+pub const CORRUPT_BYTE_MASK: u8 = 0xFF;
+
+/// Arbitrary non-empty data length used to make an account "have data"
+/// so that data_len != 0 checks trigger.
+pub const NON_EMPTY_DATA_LEN: usize = 1;
+
+/// Chunk indices for 8-byte pubkey comparisons.
+pub const CHUNK_0: usize = 0;
+pub const CHUNK_1: usize = 1;
+pub const CHUNK_2: usize = 2;
+pub const CHUNK_3: usize = 3;
+
+/// Maps a chunk index to the byte offset within a 32-byte pubkey.
+pub const CHUNK_OFFSETS: [usize; 4] = [
+    dropset_interface::common::pubkey::constants::CHUNK_0_OFF as usize,
+    dropset_interface::common::pubkey::constants::CHUNK_1_OFF as usize,
+    dropset_interface::common::pubkey::constants::CHUNK_2_OFF as usize,
+    dropset_interface::common::pubkey::constants::CHUNK_3_OFF as usize,
+];
+
+/// Build accounts with a chunk-corrupted pubkey, then check against an
+/// expected error code. Used to verify 8-byte pubkey chunk comparisons.
+pub fn check_chunk_error(
+    setup: &TestSetup,
+    insn: &[u8],
+    chunk: usize,
+    build: impl Fn(&TestSetup, usize)
+        -> (Vec<solana_sdk::instruction::AccountMeta>, Vec<(Pubkey, solana_account::Account)>),
+    error: dropset_interface::ErrorCode,
+) -> CaseResult {
+    let (metas, accounts) = build(setup, chunk);
+    check_custom(setup, insn, metas, accounts, Some(error))
+}
+
 /// Runs all cases, prints a CU table, and panics if any case failed.
 pub fn run_and_report<T: TestCase>(heading: &str, cases: &[T], setup: &TestSetup) {
     let mut failures = Vec::new();

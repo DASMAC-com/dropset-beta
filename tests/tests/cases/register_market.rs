@@ -8,8 +8,9 @@ use dropset_interface::market::constants::{VAULT_INDEX_BASE, VAULT_INDEX_QUOTE};
 use dropset_interface::market::register::Accounts;
 use dropset_interface::{Discriminant, ErrorCode};
 use dropset_tests::{
-    CaseResult, TestCase, TestSetup, check, check_custom, check_with_accounts, find_pda_seed_pair,
-    test_cases,
+    CHUNK_0, CHUNK_1, CHUNK_2, CHUNK_3, CHUNK_OFFSETS, CORRUPT_BYTE_MASK, CaseResult,
+    NON_EMPTY_DATA_LEN, TestCase, TestSetup, check, check_chunk_error, check_custom,
+    check_with_accounts, find_pda_seed_pair, test_cases,
 };
 use mollusk_svm::program;
 use mollusk_svm::result::ProgramResult as MolluskResult;
@@ -668,35 +669,6 @@ fn check_happy_path(
     }
 }
 
-/// XOR mask applied to a single byte to corrupt a pubkey chunk.
-const CORRUPT_BYTE_MASK: u8 = 0xFF;
-
-/// Arbitrary non-empty data used to make an account "have data"
-/// so that data_len != 0 checks trigger.
-const NON_EMPTY_DATA_LEN: usize = 1;
-
-const CHUNK_0: usize = 0;
-const CHUNK_1: usize = 1;
-const CHUNK_2: usize = 2;
-const CHUNK_3: usize = 3;
-
-const CHUNK_OFFSETS: [usize; 4] = [
-    CHUNK_0_OFF as usize,
-    CHUNK_1_OFF as usize,
-    CHUNK_2_OFF as usize,
-    CHUNK_3_OFF as usize,
-];
-
-fn check_chunk_error(
-    setup: &TestSetup,
-    insn: &[u8],
-    chunk: usize,
-    build: impl Fn(&TestSetup, usize) -> (Vec<AccountMeta>, Vec<(Pubkey, Account)>),
-    error: ErrorCode,
-) -> CaseResult {
-    let (metas, accounts) = build(setup, chunk);
-    check_custom(setup, insn, metas, accounts, Some(error))
-}
 
 fn base_owner_mismatch_accounts(
     setup: &TestSetup,
