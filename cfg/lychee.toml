@@ -4,5 +4,9 @@
 #
 # GitHub blob links to this repo will 404 for new or renamed files
 # until the PR merges to main. Exclude them.
+#
+# GitHub line-range fragments (#L74-L83) are JavaScript-driven
+# highlights, not real HTML IDs. Lychee's fragment checker cannot
+# resolve them, so exclude GitHub blob links with #L fragments.
 
-exclude = ['#algo-ref-', 'https://github.com/DASMAC-com/dropset-beta/blob/']
+exclude = ['#algo-ref-', 'https://github.com/DASMAC-com/dropset-beta/blob/', 'https://github\.com/.+#L\d+']
