@@ -9,8 +9,12 @@
     />
   </ul>
   <div ref="wrapper" class="algorithm-dep-chart" :class="{ fullscreen }">
-    <button class="expand-btn" :title="fullscreen ? 'Exit fullscreen' : 'Fullscreen'" @click="toggle">
-      {{ fullscreen ? '✕' : '⛶' }}
+    <button
+      class="expand-btn"
+      :title="fullscreen ? 'Exit fullscreen' : 'Fullscreen'"
+      @click="toggle"
+    >
+      {{ fullscreen ? "✕" : "⛶" }}
     </button>
     <div ref="chart" class="chart-inner" />
   </div>
@@ -195,7 +199,9 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: color 0.2s, border-color 0.2s;
+  transition:
+    color 0.2s,
+    border-color 0.2s;
 }
 
 .expand-btn:hover {

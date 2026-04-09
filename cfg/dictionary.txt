@@ -22,6 +22,7 @@ mollusk
 nocapture
 npmjs
 oneline
+panzoom
 postconditions
 pubkeys
 punc
