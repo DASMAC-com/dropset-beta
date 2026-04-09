@@ -16,11 +16,13 @@ clean:
 
 # Run test cases.
 test: asm
-	cd tests && DROPSET_DEPLOY_DIR=../$(DEPLOY_DIR) RUST_LOG=none cargo test -- --nocapture
+	cd tests \
+		&& RUSTFLAGS='-Dwarnings' RUST_LOG=none \
+		DROPSET_DEPLOY_DIR=../$(DEPLOY_DIR) cargo test -- --nocapture
 
 # Assemble the program (runs build.rs injection first).
 asm:
-	cargo check
+	RUSTFLAGS='-Dwarnings' cargo check
 	cd program && sbpf build --arch $(SBPF_ARCH) --deploy-dir ../$(DEPLOY_DIR)
 
 # Build docs (clean install + VitePress production build).
