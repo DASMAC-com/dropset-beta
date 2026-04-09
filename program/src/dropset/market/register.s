@@ -1,4 +1,4 @@
-# Instruction accounts.
+# RegisterMarket Instruction accounts.
 # -------------------------------------------------------------------------
 .equ RM_INSN_ACCTS_COUNT, 10 # Number of accounts.
 .equ RM_INSN_ACCTS_USER_POS, 0 # User account position.
@@ -15,7 +15,7 @@
 .equ RM_INSN_ACCTS_QUOTE_VAULT_POS, 9 # Quote Vault account position.
 # -------------------------------------------------------------------------
 
-# Instruction data.
+# RegisterMarket Instruction data.
 # -------------------------------------------------------------------------
 .equ RM_INSN_DATA_SIZE, 1 # Instruction data size.
 # -------------------------------------------------------------------------

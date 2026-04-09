@@ -11,7 +11,7 @@ use pinocchio::Address as Pubkey;
 use pinocchio::account::RuntimeAccount;
 
 // region: register_market_accounts
-/// Instruction accounts.
+/// RegisterMarket Instruction accounts.
 #[instruction_accounts("market/register")]
 #[prefix("RM")]
 pub enum Accounts {
@@ -29,7 +29,7 @@ pub enum Accounts {
 // endregion: register_market_accounts
 
 // region: register_market_data
-/// Instruction data.
+/// RegisterMarket Instruction data.
 #[instruction_data("market/register")]
 #[prefix("RM")]
 pub struct Data {

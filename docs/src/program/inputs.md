@@ -8,6 +8,13 @@ the instruction discriminant to the appropriate handler.
 
 <Algorithm id="ENTRYPOINT"/>
 
+## Discriminants
+
+Each instruction is identified by a `u8` discriminant, the first byte of the
+instruction data buffer. The `Discriminant` enum defines the mapping:
+
+<Include rs="interface::entrypoint#discriminant_enum"/>
+
 ## Input buffer
 
 The Solana runtime serializes accounts and instruction data into a contiguous
