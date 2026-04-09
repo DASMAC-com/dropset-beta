@@ -98,27 +98,36 @@ Usage:
 
 ### `<AlgorithmIndex>`
 
-Renders a listing of all algorithms with a left-to-right Mermaid dependency
-graph. It reads from the build-time `algorithms/index.json` file and the
-[algorithm registry]. Algorithms are green, syscalls are grey, and CPI targets
-are blue. All external nodes (syscalls and CPIs) use stadium shapes and link to
-their upstream source definitions.
+Renders an interactive left-to-right [Mermaid] dependency graph from the
+build-time `algorithms/index.json` file and the [algorithm registry]. Algorithms
+are green, syscalls are grey, and CPI targets are blue. All external nodes
+(syscalls and CPIs) use stadium shapes and link to their upstream source
+definitions. The graph supports pan (click and drag), zoom (scroll wheel), and a
+fullscreen button in the top-right corner, powered by the [panzoom] library.
 
-| Prop   | Type     | Required | Description                                                       |
-| ------ | -------- | -------- | ----------------------------------------------------------------- |
-| `root` | `String` | no       | Algorithm name to scope the graph to (shows only its dep subtree) |
+When no `root` prop is provided, a call tree (nested list) is rendered above the
+graph showing every algorithm indented by its position in the call hierarchy.
+Each entry links to the algorithm's spec listing. The tree is built from the
+recursive `<AlgorithmTreeNode>` component. When `root` is set, the tree is
+hidden and only the scoped dependency graph is shown.
+
+| Prop   | Type     | Required | Description                                                                                        |
+| ------ | -------- | -------- | -------------------------------------------------------------------------------------------------- |
+| `root` | `String` | no       | Algorithm name to scope the graph to (shows only its dep subtree and hides the call tree above it) |
 
 Usage:
 
 ```md
-<!-- Full index (all algorithms) -->
+<!-- Full index with call tree + graph -->
 <AlgorithmIndex/>
 
-<!-- Scoped to one algorithm and its transitive dependencies -->
+<!-- Scoped to one algorithm (graph only, no call tree) -->
 <AlgorithmIndex root="REGISTER-MARKET"/>
 ```
 
 <Include vitepress="components/AlgorithmIndex" collapsed/>
+
+<Include vitepress="components/AlgorithmTreeNode" collapsed/>
 
 ### Scroll preservation
 
@@ -188,6 +197,7 @@ deps, reverse deps, syscalls, page locations, and associated test cases.
 [algorithm registry]: #algorithm-registry
 [algorithm index]: ../program/algorithm-index
 [`scrollPreserve.js`]: https://github.com/DASMAC-com/dropset-beta/blob/main/docs/.vitepress/theme/scrollPreserve.js
+[panzoom]: https://github.com/anvaka/panzoom
 [syscall]: https://solana.com/docs/core/programs/syscall-reference
 [CPI]: https://solana.com/docs/core/cpi
 [test cases]: tests#verifies-convention
