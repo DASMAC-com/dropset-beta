@@ -51,7 +51,7 @@ lookups.
 ### INIT-MARKET-PDA
 
 Derives the market PDA from the base and quote mint addresses via
-[`sol_try_find_program_address`], verifies the provided market account matches,
+`sol_try_find_program_address`, verifies the provided market account matches,
 then delegates to [CREATE-MARKET-ACCOUNT](#create-market-account).
 
 <AlgorithmIndex root="INIT-MARKET-PDA"/>
@@ -60,7 +60,7 @@ then delegates to [CREATE-MARKET-ACCOUNT](#create-market-account).
 
 #### CREATE-MARKET-ACCOUNT
 
-Issues a [`system_program::CreateAccount`] CPI with the derived PDA
+Issues a `system_program::CreateAccount` CPI with the derived PDA
 signer seeds, then initializes the market header's `next` pointer and
 stores the bump seed.
 
@@ -98,33 +98,28 @@ verifies the provided vault account matches, then calls
 
 #### GET-VAULT-SIZE
 
-For Token 2022, invokes [`spl_token_2022::GetAccountDataSize`] and
-reads the return data via [`sol_get_return_data`]. For the standard
+For Token 2022, invokes `spl_token_2022::GetAccountDataSize` and
+reads the return data via `sol_get_return_data`. For the standard
 Token Program, uses the fixed `ACCOUNT_SIZE` constant.
 
 <Algorithm id="GET-VAULT-SIZE"/>
 
 #### CREATE-VAULT-ACCOUNT
 
-Issues a [`system_program::CreateAccount`] CPI with the vault PDA signer seeds,
+Issues a `system_program::CreateAccount` CPI with the vault PDA signer seeds,
 setting the token program as the owner.
 
 <Algorithm id="CREATE-VAULT-ACCOUNT"/>
 
 #### INIT-VAULT-TOKEN-ACCOUNT
 
-Invokes [`spl_token::InitializeAccount2`] to initialize the vault as a token
+Invokes `spl_token::InitializeAccount2` to initialize the vault as a token
 account for the given mint, with the market as the account owner.
 
 <Algorithm id="INIT-VAULT-TOKEN-ACCOUNT"/>
 
 [input buffer]: inputs#input-buffer
 [System Program]: https://solana.com/docs/core/programs/builtin-programs#the-system-program
-[`sol_try_find_program_address`]: https://github.com/anza-xyz/agave/blob/v4.0.0-beta.5/platform-tools-sdk/sbf/c/inc/sol/inc/pubkey.inc#L74-L83
-[`system_program::CreateAccount`]: https://github.com/anza-xyz/solana-sdk/blob/sdk@v4.0.1/system-interface/src/instruction.rs#L93-L107
-[`spl_token_2022::GetAccountDataSize`]: https://github.com/solana-program/token-2022/blob/interface@v2.1.0/interface/src/instruction.rs#L487-L499
-[`sol_get_return_data`]: https://github.com/anza-xyz/agave/blob/v4.0.0-beta.5/platform-tools-sdk/sbf/c/inc/sol/inc/return_data.inc#L27-L35
-[`spl_token::InitializeAccount2`]: https://github.com/solana-program/token/blob/program@v9.0.0/interface/src/instruction.rs#L352-L365
 [Rent]: https://docs.rs/pinocchio/0.11.0/pinocchio/sysvars/rent/struct.Rent.html
 [Token Program]: https://github.com/solana-program/token
 [Token 2022]: https://github.com/solana-program/token-2022
