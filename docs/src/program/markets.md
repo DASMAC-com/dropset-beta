@@ -21,9 +21,10 @@ All relevant information is derived from the accounts:
 
 <Include rs="interface::market::register#register_market_accounts"/>
 
-The entrypoint dispatches to [REGISTER-MARKET](#register-market), which validates the provided
-accounts, derives and creates the market PDA, then initializes the base and
-quote token vaults.
+The entrypoint dispatches to
+[REGISTER-MARKET](#register-market), which validates the provided accounts,
+derives and creates the market PDA, then initializes the base and quote
+token vaults.
 
 ## REGISTER-MARKET
 
@@ -59,16 +60,18 @@ then delegates to [CREATE-MARKET-ACCOUNT](#create-market-account).
 
 #### CREATE-MARKET-ACCOUNT
 
-Issues a [`system_program::CreateAccount`] CPI with the derived PDA signer seeds,
-then initializes the market header's `next` pointer and stores the bump seed.
+Issues a [`system_program::CreateAccount`] CPI with the derived PDA
+signer seeds, then initializes the market header's `next` pointer and
+stores the bump seed.
 
 <Algorithm id="CREATE-MARKET-ACCOUNT"/>
 
 ### INIT-BASE-VAULT
 
-Locates and validates the base token program account ([Token Program] or [Token
-2022]), verifies it owns the base mint, then delegates to [INIT-VAULT](#init-vault). Stores the
-derived base vault bump in the market header.
+Locates and validates the base token program account
+([Token Program] or [Token 2022]), verifies it owns the base mint,
+then delegates to [INIT-VAULT](#init-vault). Stores the derived base
+vault bump in the market header.
 
 <Algorithm id="INIT-BASE-VAULT"/>
 
@@ -76,8 +79,8 @@ derived base vault bump in the market header.
 
 Handles both distinct and duplicate quote token program accounts. When the quote
 token program matches the base token program, the duplicate path verifies both
-mints are owned by the same program. Delegates to [INIT-VAULT](#init-vault) and stores the
-quote vault bump.
+mints are owned by the same program. Delegates to
+[INIT-VAULT](#init-vault) and stores the quote vault bump.
 
 <Algorithm id="INIT-QUOTE-VAULT"/>
 
@@ -95,9 +98,9 @@ verifies the provided vault account matches, then calls
 
 #### GET-VAULT-SIZE
 
-For Token 2022, invokes [`spl_token_2022::GetAccountDataSize`] and reads the
-return data via [`sol_get_return_data`]. For the standard Token Program, uses the
-fixed `ACCOUNT_SIZE` constant.
+For Token 2022, invokes [`spl_token_2022::GetAccountDataSize`] and
+reads the return data via [`sol_get_return_data`]. For the standard
+Token Program, uses the fixed `ACCOUNT_SIZE` constant.
 
 <Algorithm id="GET-VAULT-SIZE"/>
 
