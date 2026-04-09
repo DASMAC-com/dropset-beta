@@ -12,11 +12,12 @@ input buffer pointer arithmetic overhead when accessing market data structures.
 
 ## Registration
 
-Market registration accepts only the discriminant byte as instruction data:
+Market registration accepts only the [`RegisterMarket`](inputs.md#discriminants)
+discriminant byte as instruction data:
 
 <Include rs="interface::market::register#register_market_data"/>
 
-The instruction requires the following accounts:
+All relevant information is derived from the accounts:
 
 <Include rs="interface::market::register#register_market_accounts"/>
 
