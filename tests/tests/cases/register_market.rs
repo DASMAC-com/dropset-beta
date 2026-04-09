@@ -1,6 +1,4 @@
-use dropset_interface::common::pubkey::constants::{
-    CHUNK_0_OFF, CHUNK_1_OFF, CHUNK_2_OFF, CHUNK_3_OFF,
-};
+use dropset_interface::common::pubkey::constants::CHUNK_3_OFF;
 use dropset_interface::common::pubkey::{TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID};
 use dropset_interface::entrypoint::input_buffer::MARKET_DATA_BYTES_OFF;
 use dropset_interface::market::MarketHeader;
