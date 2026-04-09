@@ -65,7 +65,7 @@ gaps, outdated content, and stale comments.
    - `docs/src/program/algorithm-index.md` —
      `docs/algorithms/` `.tex` specs
    - `docs/src/development/ci.md` —
-     `cfg/` configuration files
+     `.github/workflows/` and `cfg/` files
    - `docs/src/development/build-scaffolding.md` —
      `interface/src/` Rust crate
    - `docs/src/development/tests.md` —

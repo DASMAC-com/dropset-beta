@@ -4,6 +4,16 @@ Local development is driven by the root [Makefile][makefile], and pull request
 checks are handled by [GitHub Actions] workflows that mirror
 the same targets.
 
+```txt
+.github/workflows/
+├── bindings.yml      # CPI binding freshness check
+├── build-docs.yml    # VitePress build + link check
+├── deploy-docs.yml   # GitHub Pages deploy
+├── lint.yml          # Pre-commit + Prettier
+├── semantic-pr.yml   # Conventional Commits enforcement
+└── test.yml          # Assemble + Mollusk tests
+```
+
 ## Makefile
 
 The root `Makefile` contains relevant common operations. Run `make` with no
