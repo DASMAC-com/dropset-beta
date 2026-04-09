@@ -197,7 +197,7 @@ deps, reverse deps, syscalls, page locations, and associated test cases.
 [algorithm registry]: #algorithm-registry
 [algorithm index]: ../program/algorithm-index
 [`scrollPreserve.js`]: https://github.com/DASMAC-com/dropset-beta/blob/main/docs/.vitepress/theme/scrollPreserve.js
-[panzoom]: https://github.com/nickinchina/panzoom
+[panzoom]: https://github.com/anvaka/panzoom
 [syscall]: https://solana.com/docs/core/programs/syscall-reference
 [CPI]: https://solana.com/docs/core/cpi
 [test cases]: tests#verifies-convention
