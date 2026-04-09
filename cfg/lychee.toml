@@ -9,4 +9,8 @@
 # highlights, not real HTML IDs. Lychee's fragment checker cannot
 # resolve them, so exclude GitHub blob links with #L fragments.
 
-exclude = ['#algo-ref-', 'https://github.com/DASMAC-com/dropset-beta/blob/', 'https://github\.com/.+#L\d+']
+exclude = [
+  '#algo-ref-',
+  'https://github.com/DASMAC-com/dropset-beta/blob/',
+  'https://github\.com/.+#L\d+'
+]
