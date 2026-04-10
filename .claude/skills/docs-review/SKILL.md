@@ -53,6 +53,17 @@ gaps, outdated content, and stale comments.
    - `<Include>` and `<Algorithm>` component
      attributes should resolve correctly.
 
+1. Verify that sector layout diagrams in
+   `docs/src/program/sectors.md` are consistent with
+   their data structures. For each node type (Order,
+   Seat, StackNode), compare the fields shown in the
+   ASCII diagram against the fields in the corresponding
+   struct definition (in `interface/src/order/mod.rs`,
+   `interface/src/seat/mod.rs`,
+   `interface/src/stack/mod.rs`). Flag any field that
+   is missing from the diagram, present in the diagram
+   but not the struct, or in the wrong order.
+
 1. Verify that all directory trees in the docs are
    current. For each tree, list the actual files on
    disk and compare against the rendered tree. Flag
