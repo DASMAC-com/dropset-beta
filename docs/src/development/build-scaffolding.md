@@ -139,7 +139,7 @@ The count is accessible in Rust as `Accounts::COUNT`.
 
 Attribute macro for stack frame structs. Applies `#[repr(C, align(8))]`
 (aligned to `BPF_ALIGN_OF_U128`) and asserts at compile time that the struct
-fits within one SBPF stack frame (4096 bytes). Also registers field-to-type
+fits within one SBPF stack frame. Also registers field-to-type
 mappings and the struct's doc comment in proc-macro shared state so that
 [`constant_group!`](#constant_group) can auto-discover frame fields and
 derive its header comment.
