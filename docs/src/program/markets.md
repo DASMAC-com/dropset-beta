@@ -37,7 +37,7 @@ so their positions cannot be determined statically.
 with a dynamic offset: after reading
 `input.base_mint.data_len`, it computes
 
-```
+```rs
 frame.input_shifted = input + padded(input.base_mint.data_len)
 ```
 
