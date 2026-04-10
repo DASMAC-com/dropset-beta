@@ -2,8 +2,21 @@ use crate::common::account::EmptyAccount;
 use crate::common::token::InitializeAccount2;
 use crate::market::MarketHeader;
 use crate::market::register::CreateAccountData;
-use dropset_macros::{constant_group, size_of_group};
+use dropset_macros::{constant_group, discriminant_enum, size_of_group};
 use pinocchio::Address as Pubkey;
+
+// region: node_tag
+/// Discriminant tag for nodes in the market memory map.
+#[discriminant_enum("common/memory", "NODE_TAG")]
+pub enum NodeTag {
+    /// Seat node.
+    Seat,
+    /// Order node.
+    Order,
+    /// Stack node (free list).
+    StackNode,
+}
+// endregion: node_tag
 
 constant_group! {
     #[prefix("DATA")]

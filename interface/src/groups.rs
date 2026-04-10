@@ -12,6 +12,7 @@ pub const INJECTION_GROUPS: &[&dropset_build::ConstantGroup] = &[
     &crate::common::account::cpi::GROUP,
     &crate::common::memory::size_of::GROUP,
     &crate::common::memory::constants::GROUP,
+    &crate::common::memory::node_tag::GROUP,
     &crate::common::pubkey::constants::GROUP,
     &crate::common::token::constants::GROUP,
 ];

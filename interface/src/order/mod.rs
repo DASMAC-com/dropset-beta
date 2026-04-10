@@ -1,4 +1,6 @@
 use dropset_macros::svm_data;
 
 #[svm_data]
-pub struct Order {}
+pub struct Order {
+    pub tag: u8,
+}

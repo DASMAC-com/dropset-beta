@@ -16,3 +16,10 @@
 .equ DATA_BOOL_FALSE, 0 # Boolean false value.
 .equ DATA_BOOL_TRUE, 1 # Boolean true value.
 # -------------------------------------------------------------------------
+
+# Discriminant tag for nodes in the market memory map.
+# -------------------------------------------------------------------------
+.equ NODE_TAG_SEAT, 0 # Seat node.
+.equ NODE_TAG_ORDER, 1 # Order node.
+.equ NODE_TAG_STACK_NODE, 2 # Stack node (free list).
+# -------------------------------------------------------------------------

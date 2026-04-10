@@ -86,30 +86,42 @@ pub fn cpi_accounts(input: TokenStream) -> TokenStream {
     TokenStream::from(cpi_accounts::expand(&input))
 }
 
-/// Attribute macro for instruction discriminant enums.
+/// Attribute macro for discriminant enums.
 ///
 /// Re-emits the enum with `#[repr(u8)]` and explicit discriminant values,
 /// numbered from 0. Generates a `From<Enum> for u8` impl and a hidden module
-/// with `DISC_`-prefixed assembly constants.
+/// with assembly constants prefixed by the given prefix (defaults to `DISC`).
 ///
 /// ```ignore
-/// #[discriminant_enum("discriminant")]
+/// #[discriminant_enum("entrypoint")]
 /// pub enum Discriminant {
 ///     /// Register a new market.
 ///     RegisterMarket,
 /// }
+///
+/// #[discriminant_enum("market", "DISC_NODE")]
+/// pub enum NodeTag {
+///     /// Seat node.
+///     Seat,
+/// }
 /// ```
 #[proc_macro_attribute]
 pub fn discriminant_enum(attr: TokenStream, item: TokenStream) -> TokenStream {
-    let target = parse_macro_input!(attr as LitStr);
+    let parser = |input: syn::parse::ParseStream| {
+        let target: LitStr = input.parse()?;
+        let prefix = if input.peek(syn::Token![,]) {
+            let _: syn::Token![,] = input.parse()?;
+            let p: LitStr = input.parse()?;
+            p.value()
+        } else {
+            "DISC".to_string()
+        };
+        Ok((target.value(), prefix))
+    };
+    let (target, prefix) = parse_macro_input!(attr with parser);
     let input = parse_macro_input!(item as syn::ItemEnum);
     TokenStream::from(enum_to_asm::expand(
-        &target.value(),
-        "DISC",
-        0,
-        "u8",
-        &input,
-        false,
+        &target, &prefix, 0, "u8", &input, false,
     ))
 }
 
