@@ -29,30 +29,24 @@ accounts:
 
 <Include rs="interface::market::register#register_input_buffer"/>
 
-All fields through `market` sit at compile-time-known
-offsets from `r1` (see [InputBufferHeader]).
-The mint accounts that follow have variable-length data,
+All fields through `Market` sit at compile-time-known
+offsets from `r1` (see [`InputBufferHeader`]).
+`BaseMint` and `QuoteMint` have variable-length data,
 so their positions cannot be determined statically.
-The assembly handles this with a dynamic offset: after
-reading `base_mint.data_len`, it computes
+[MARKET-PDA-PRELUDE](#market-pda-prelude) handles this
+with a dynamic offset: after reading
+`input.base_mint.data_len`, it computes
 
 ```
-input_shifted = input + padded(base_mint.data_len)
+frame.input_shifted = input + padded(input.base_mint.data_len)
 ```
 
-and stores the result in `Frame.input_shifted`. From that
-shifted base, all `quote_mint` fields are accessible at
-static offsets (the `RM_QUOTE_*` constants derived from the
-`InputBuffer` layout, which assumes zero-length mint data
-via `EmptyAccount`). Accounts after `quote_mint` (System
-Program, Rent sysvar, token programs, vaults) are located
-by walking forward from `input_shifted` using each
+From `frame.input_shifted`, all `QuoteMint` fields are
+accessible at static offsets. Accounts after `QuoteMint`
+(`SystemProgram`, `RentSysvar`, `BaseTokenProgram`,
+`BaseVault`, `QuoteTokenProgram`, `QuoteVault`) are located
+by walking forward from `frame.input_shifted` using each
 account's padded data length.
-
-The entrypoint dispatches to
-[REGISTER-MARKET](#register-market), which validates the provided accounts,
-derives and creates the market PDA, then initializes the base and quote
-token vaults.
 
 ## REGISTER-MARKET
 
@@ -147,7 +141,7 @@ account for the given mint, with the market as the account owner.
 <Algorithm id="INIT-VAULT-TOKEN-ACCOUNT"/>
 
 [input buffer]: inputs#input-buffer
-[InputBufferHeader]: inputs#input-buffer
+[`InputBufferHeader`]: inputs#input-buffer
 [System Program]: https://solana.com/docs/core/programs/builtin-programs#the-system-program
 [Rent]: https://docs.rs/pinocchio/0.11.0/pinocchio/sysvars/rent/struct.Rent.html
 [Token Program]: https://github.com/solana-program/token
