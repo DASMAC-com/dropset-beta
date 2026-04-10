@@ -160,7 +160,7 @@ pub fn instruction_data(attr: TokenStream, item: TokenStream) -> TokenStream {
 /// Attribute macro for stack frame structs.
 ///
 /// Applies `#[repr(C, align(8))]` (aligned to `BPF_ALIGN_OF_U128`) and
-/// asserts the struct fits within one SBPf stack frame (4096 bytes).
+/// asserts the struct fits within one SBPF stack frame.
 /// Registers field-to-type mappings and the doc comment in shared state
 /// for automatic lookup by `constant_group!`.
 ///

@@ -98,7 +98,7 @@ pub fn expand(input: &syn::ItemStruct) -> proc_macro2::TokenStream {
 
         const _: () = assert!(
             core::mem::size_of::<#ident>() <= #max,
-            "frame struct must fit within one SBPf stack frame (4096 bytes)",
+            "frame struct must fit within one SBPF stack frame",
         );
     };
 
