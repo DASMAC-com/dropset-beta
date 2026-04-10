@@ -92,10 +92,10 @@ test_cases! {
         InvalidQuoteVaultPubkeyNonDupChunk1,
         InvalidQuoteVaultPubkeyNonDupChunk2,
         InvalidQuoteVaultPubkeyNonDupChunk3,
-        RegisterMarketHappyPathQuoteDup,
-        RegisterMarketHappyPathQuoteNonDup,
-        RegisterMarketHappyPathToken2022QuoteNonDup,
-        RegisterMarketHappyPathToken2022QuoteDup,
+        HappyPathQuoteDup,
+        HappyPathQuoteNonDup,
+        HappyPathToken2022QuoteNonDup,
+        HappyPathToken2022QuoteDup,
     }
 }
 
@@ -1265,7 +1265,7 @@ impl TestCase for Case {
             // Verifies: GET-VAULT-SIZE
             // Verifies: CREATE-VAULT-ACCOUNT
             // Verifies: INIT-VAULT-TOKEN-ACCOUNT
-            Self::RegisterMarketHappyPathQuoteDup => {
+            Self::HappyPathQuoteDup => {
                 let tp = Pubkey::from(TOKEN_PROGRAM_ID);
                 check_happy_path(setup, insn, tp, tp, TOKEN_ACCOUNT_SIZE, TOKEN_ACCOUNT_SIZE)
             }
@@ -1279,7 +1279,7 @@ impl TestCase for Case {
             // Verifies: GET-VAULT-SIZE
             // Verifies: CREATE-VAULT-ACCOUNT
             // Verifies: INIT-VAULT-TOKEN-ACCOUNT
-            Self::RegisterMarketHappyPathQuoteNonDup => check_happy_path(
+            Self::HappyPathQuoteNonDup => check_happy_path(
                 setup,
                 insn,
                 Pubkey::from(TOKEN_PROGRAM_ID),
@@ -1297,7 +1297,7 @@ impl TestCase for Case {
             // Verifies: GET-VAULT-SIZE
             // Verifies: CREATE-VAULT-ACCOUNT
             // Verifies: INIT-VAULT-TOKEN-ACCOUNT
-            Self::RegisterMarketHappyPathToken2022QuoteNonDup => check_happy_path(
+            Self::HappyPathToken2022QuoteNonDup => check_happy_path(
                 setup,
                 insn,
                 Pubkey::from(TOKEN_2022_PROGRAM_ID),
@@ -1315,7 +1315,7 @@ impl TestCase for Case {
             // Verifies: GET-VAULT-SIZE
             // Verifies: CREATE-VAULT-ACCOUNT
             // Verifies: INIT-VAULT-TOKEN-ACCOUNT
-            Self::RegisterMarketHappyPathToken2022QuoteDup => {
+            Self::HappyPathToken2022QuoteDup => {
                 let t22 = Pubkey::from(TOKEN_2022_PROGRAM_ID);
                 check_happy_path(
                     setup,
