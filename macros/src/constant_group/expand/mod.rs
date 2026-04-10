@@ -93,6 +93,11 @@ pub fn expand(input: &ConstantGroupInput) -> proc_macro2::TokenStream {
                 const_defs.push(def);
                 meta_idents.push(meta);
             }
+            ConstantKind::Wide { expr } => {
+                let (def, meta) = immediate::expand_wide(base_name, &asm_name, doc, expr);
+                const_defs.push(def);
+                meta_idents.push(meta);
+            }
             ConstantKind::Pubkey { expr } => {
                 pubkey::expand_pubkey(&asm_name, doc, expr, &mut const_defs, &mut meta_idents);
             }

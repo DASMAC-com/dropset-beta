@@ -23,6 +23,8 @@ pub(crate) enum ConstantKind {
     },
     /// `immediate!(expr)`: value must fit i32, exposed as i32 in Rust.
     Immediate { expr: Expr },
+    /// `wide!(expr)`: 64-bit immediate for `lddw`, exposed as i64 in Rust.
+    Wide { expr: Expr },
     /// `pubkey!(expr)`: splits a pubkey into four 8-byte chunks, emitting
     /// `_CHUNK_{0..3}_LO` and `_CHUNK_{0..3}_HI` i32 immediates.
     Pubkey { expr: Expr },

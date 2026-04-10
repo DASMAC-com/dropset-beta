@@ -2,8 +2,24 @@ use crate::common::account::EmptyAccount;
 use crate::common::token::InitializeAccount2;
 use crate::market::MarketHeader;
 use crate::market::register::CreateAccountData;
-use dropset_macros::{constant_group, size_of_group};
+use crate::order::Order;
+use crate::seat::Seat;
+use crate::stack::StackNode;
+use dropset_macros::{constant_group, discriminant_enum, size_of_group, svm_data};
 use pinocchio::Address as Pubkey;
+
+// region: node_tag
+/// Discriminant tag for nodes in the market memory map.
+#[discriminant_enum("common/memory", "NODE_TAG")]
+pub enum NodeTag {
+    /// Seat node.
+    Seat,
+    /// Order node.
+    Order,
+    /// Stack node.
+    Stack,
+}
+// endregion: node_tag
 
 constant_group! {
     #[prefix("DATA")]
@@ -23,12 +39,41 @@ constant_group! {
         BOOL_FALSE = immediate!(0),
         /// Boolean true value.
         BOOL_TRUE = immediate!(1),
+
     }
 }
+
+// region: sector
+/// Sector-sized byte buffer (largest of Order, Seat, StackNode).
+#[svm_data]
+pub struct Sector(
+    [u8; {
+        const ORDER: usize = core::mem::size_of::<Order>();
+        const SEAT: usize = core::mem::size_of::<Seat>();
+        const STACK: usize = core::mem::size_of::<StackNode>();
+        if ORDER >= SEAT && ORDER >= STACK {
+            ORDER
+        } else if SEAT >= STACK {
+            SEAT
+        } else {
+            STACK
+        }
+    }],
+);
+// endregion: sector
 
 // region: size_of_group_example
 size_of_group! {
     #[inject("common/memory")]
-    [u8, u64, Pubkey, EmptyAccount, MarketHeader, CreateAccountData, InitializeAccount2]
+    [
+        u8,
+        u64,
+        Pubkey,
+        EmptyAccount,
+        MarketHeader,
+        CreateAccountData,
+        InitializeAccount2,
+        Sector,
+    ]
 }
 // endregion: size_of_group_example

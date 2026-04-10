@@ -1,6 +1,6 @@
 use dropset_interface::common::pubkey::constants::CHUNK_3_OFF;
 use dropset_interface::common::pubkey::{TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID};
-use dropset_interface::entrypoint::input_buffer::MARKET_DATA_BYTES_OFF;
+use dropset_interface::entrypoint::input_buffer::MARKET_SECTORS_START_OFF;
 use dropset_interface::market::MarketHeader;
 use dropset_interface::market::constants::{VAULT_INDEX_BASE, VAULT_INDEX_QUOTE};
 use dropset_interface::market::register::Accounts;
@@ -251,7 +251,7 @@ fn check_market_header_bumps(
 ) {
     let header: &MarketHeader = unsafe { &*(data.as_ptr() as *const MarketHeader) };
 
-    let expected_next = MM_INPUT_START + MARKET_DATA_BYTES_OFF as u64;
+    let expected_next = MM_INPUT_START + MARKET_SECTORS_START_OFF as u64;
     let actual_next = header.next as u64;
     if actual_next != expected_next {
         errors.push(format!(

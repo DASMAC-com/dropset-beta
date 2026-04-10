@@ -91,9 +91,9 @@ init_base_vault_advance:
     # if result != entrypoint::RETURN_SUCCESS
     #     return result
     jne r0, RETURN_SUCCESS, init_base_vault_failed
-    # input.market.data.base_vault_bump = frame.bump
+    # input.market_header.base_vault_bump = frame.bump
     ldxb r7, [r10 + RM_FM_BUMP_OFF]
-    stxb [r8 + IB_MARKET_DATA_BASE_VAULT_BUMP_OFF], r7
+    stxb [r8 + IB_MARKET_HEADER_BASE_VAULT_BUMP_OFF], r7
     # acct += EmptyAccount.size
     add64 r9, SIZE_OF_EMPTY_ACCOUNT
     ja init_base_vault_return

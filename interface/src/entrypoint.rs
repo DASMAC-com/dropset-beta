@@ -2,6 +2,7 @@ use crate::common::account::EmptyAccount;
 use crate::market::MarketHeader;
 use dropset_macros::{constant_group, discriminant_enum, svm_data};
 use pinocchio::account::RuntimeAccount;
+use solana_sbpf::ebpf::MM_INPUT_START;
 
 // region: discriminant_enum
 /// Instruction discriminants.
@@ -34,9 +35,9 @@ pub struct InputBufferHeader {
     pub n_accounts: u64,
     pub user: EmptyAccount,
     pub market: RuntimeAccount,
-    pub market_data_header: MarketHeader,
-    /// MarketHeader.next initializes to this offset.
-    pub market_data_bytes: u8,
+    pub market_header: MarketHeader,
+    /// MarketHeader.next initializes to an absolute pointer to this byte.
+    pub market_sectors_start: u8,
 }
 // endregion: input_buffer_header
 
@@ -66,20 +67,25 @@ constant_group! {
         USER_DATA_TO_MARKET_ADDRESS = relative_offset!(
             InputBufferHeader, user.data, market.address
         ),
-        /// From input buffer to market data next pointer.
-        MARKET_DATA_NEXT = offset!(InputBufferHeader.market_data_header.next),
-        /// From input buffer to market data bump.
-        MARKET_DATA_BUMP = offset!(InputBufferHeader.market_data_header.bump),
-        /// From input buffer to market data base vault bump.
-        MARKET_DATA_BASE_VAULT_BUMP = offset!(
-            InputBufferHeader.market_data_header.base_vault_bump
+        /// From input buffer to market header next pointer.
+        MARKET_HEADER_NEXT = offset!(InputBufferHeader.market_header.next),
+        /// From input buffer to market header bump.
+        MARKET_HEADER_BUMP = offset!(InputBufferHeader.market_header.bump),
+        /// From input buffer to market header base vault bump.
+        MARKET_HEADER_BASE_VAULT_BUMP = offset!(
+            InputBufferHeader.market_header.base_vault_bump
         ),
-        /// From input buffer to market data quote vault bump.
-        MARKET_DATA_QUOTE_VAULT_BUMP = offset!(
-            InputBufferHeader.market_data_header.quote_vault_bump
+        /// From input buffer to market header quote vault bump.
+        MARKET_HEADER_QUOTE_VAULT_BUMP = offset!(
+            InputBufferHeader.market_header.quote_vault_bump
         ),
-        /// From input buffer to first byte after market data header.
-        MARKET_DATA_BYTES = offset!(InputBufferHeader.market_data_bytes),
+        /// From input buffer to first sector in market memory map.
+        MARKET_SECTORS_START = offset!(InputBufferHeader.market_sectors_start),
+        /// Absolute SBPF pointer to first sector in market memory map.
+        MARKET_SECTORS_START_PTR = wide!(
+            MM_INPUT_START as i64
+                + core::mem::offset_of!(InputBufferHeader, market_sectors_start) as i64
+        ),
     }
 }
 // endregion: constant_group_example

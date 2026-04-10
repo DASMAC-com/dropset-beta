@@ -893,6 +893,7 @@ dependencies = [
  "pinocchio",
  "pinocchio-token",
  "pinocchio-token-2022",
+ "solana-sbpf 0.16.0",
 ]
 
 [[package]]

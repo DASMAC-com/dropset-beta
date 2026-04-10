@@ -50,6 +50,9 @@ development topics:
 - `docs/src/program/layout.md` program memory layout
 - `docs/src/program/inputs.md` input format specs
 - `docs/src/program/markets.md` market structure
+- `docs/src/program/sectors.md` market memory sectors
+- `docs/src/program/seats.md` seat data structure
+- `docs/src/program/orders.md` order data structure
 - `docs/src/program/algorithm-index.md` algorithm
   documentation
 

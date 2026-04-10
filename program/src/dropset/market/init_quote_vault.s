@@ -102,7 +102,7 @@ init_quote_vault_done_token_program:
     mov64 r1, r9
     mov64 r2, r10
     call init_vault
-    # input.market.data.quote_vault_bump = frame.bump
+    # input.market_header.quote_vault_bump = frame.bump
     ldxb r7, [r10 + RM_FM_BUMP_OFF]
-    stxb [r8 + IB_MARKET_DATA_QUOTE_VAULT_BUMP_OFF], r7
+    stxb [r8 + IB_MARKET_HEADER_QUOTE_VAULT_BUMP_OFF], r7
     ja init_quote_vault_return

@@ -38,6 +38,7 @@ pub struct Data {
 }
 // endregion: register_market_data
 
+// region: register_input_buffer
 #[svm_data]
 pub struct InputBuffer {
     pub n_accounts: u64,
@@ -47,6 +48,7 @@ pub struct InputBuffer {
     pub base_mint: EmptyAccount,
     pub quote_mint: EmptyAccount,
 }
+// endregion: register_input_buffer
 
 constant_group! {
     #[prefix("RM")]
