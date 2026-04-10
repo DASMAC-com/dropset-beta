@@ -67,6 +67,8 @@ assembly comments. Key rules:
   like `Accounts` resolved by the owning algorithm)
 - Constants use their interface module path with
   `constants` group name elided
+- `&` for address-of, `*` for dereference (prefix)
+  and multiplication (infix)
 - CPI targets use `program::InstructionName` form
 - Syscalls use underscore-separated names
 

@@ -92,10 +92,10 @@ test_cases! {
         InvalidQuoteVaultPubkeyNonDupChunk1,
         InvalidQuoteVaultPubkeyNonDupChunk2,
         InvalidQuoteVaultPubkeyNonDupChunk3,
-        CreateAccountHappyPathQuoteDup,
-        CreateAccountHappyPathQuoteNonDup,
-        CreateAccountHappyPathToken2022QuoteNonDup,
-        CreateAccountHappyPathToken2022QuoteDup,
+        HappyPathQuoteDup,
+        HappyPathQuoteNonDup,
+        HappyPathToken2022QuoteNonDup,
+        HappyPathToken2022QuoteDup,
     }
 }
 
@@ -321,7 +321,7 @@ fn token_program_account(id: Pubkey) -> Account {
     }
 }
 
-/// Build valid accounts that pass all checks for a successful CreateAccount CPI.
+/// Build valid accounts that pass all checks for a successful RegisterMarket instruction.
 /// When `base_token_program` and `quote_token_program` share the same key,
 /// the runtime serializes the quote token program as a duplicate account.
 fn happy_path_accounts(
@@ -1265,7 +1265,7 @@ impl TestCase for Case {
             // Verifies: GET-VAULT-SIZE
             // Verifies: CREATE-VAULT-ACCOUNT
             // Verifies: INIT-VAULT-TOKEN-ACCOUNT
-            Self::CreateAccountHappyPathQuoteDup => {
+            Self::HappyPathQuoteDup => {
                 let tp = Pubkey::from(TOKEN_PROGRAM_ID);
                 check_happy_path(setup, insn, tp, tp, TOKEN_ACCOUNT_SIZE, TOKEN_ACCOUNT_SIZE)
             }
@@ -1279,7 +1279,7 @@ impl TestCase for Case {
             // Verifies: GET-VAULT-SIZE
             // Verifies: CREATE-VAULT-ACCOUNT
             // Verifies: INIT-VAULT-TOKEN-ACCOUNT
-            Self::CreateAccountHappyPathQuoteNonDup => check_happy_path(
+            Self::HappyPathQuoteNonDup => check_happy_path(
                 setup,
                 insn,
                 Pubkey::from(TOKEN_PROGRAM_ID),
@@ -1297,7 +1297,7 @@ impl TestCase for Case {
             // Verifies: GET-VAULT-SIZE
             // Verifies: CREATE-VAULT-ACCOUNT
             // Verifies: INIT-VAULT-TOKEN-ACCOUNT
-            Self::CreateAccountHappyPathToken2022QuoteNonDup => check_happy_path(
+            Self::HappyPathToken2022QuoteNonDup => check_happy_path(
                 setup,
                 insn,
                 Pubkey::from(TOKEN_2022_PROGRAM_ID),
@@ -1315,7 +1315,7 @@ impl TestCase for Case {
             // Verifies: GET-VAULT-SIZE
             // Verifies: CREATE-VAULT-ACCOUNT
             // Verifies: INIT-VAULT-TOKEN-ACCOUNT
-            Self::CreateAccountHappyPathToken2022QuoteDup => {
+            Self::HappyPathToken2022QuoteDup => {
                 let t22 = Pubkey::from(TOKEN_2022_PROGRAM_ID);
                 check_happy_path(
                     setup,
