@@ -4,15 +4,16 @@ use crate::order::Order;
 use crate::seat::Seat;
 use crate::stack::StackNode;
 use dropset_macros::{constant_group, svm_data};
+use pinocchio::Address as Pubkey;
 
 constant_group! {
     #[prefix("MKT")]
     #[inject("market/market")]
     /// Market-level constants.
     constants {
-        /// Vault index for base mint in PDA derivation and vault creation.
+        /// Vault index for base token in PDA derivation and vault creation.
         VAULT_INDEX_BASE = immediate!(0),
-        /// Vault index for quote mint in PDA derivation and vault creation.
+        /// Vault index for quote token in PDA derivation and vault creation.
         VAULT_INDEX_QUOTE = immediate!(1),
     }
 }
@@ -31,11 +32,25 @@ pub struct MarketHeader {
     pub top: *mut StackNode,
     /// Absolute pointer to where the next node should be allocated in memory map.
     pub next: *mut StackNode,
+    /// Base mint address.
+    pub base_mint: Pubkey,
+    /// Quote mint address.
+    pub quote_mint: Pubkey,
     /// Bump seed for market PDA.
     pub bump: u8,
+    /// Base vault address.
+    pub base_vault: Pubkey,
     /// Bump seed for base vault PDA.
     pub base_vault_bump: u8,
+    /// Quote vault address.
+    pub quote_vault: Pubkey,
     /// Bump seed for quote vault PDA.
     pub quote_vault_bump: u8,
+    /// Total base token balance.
+    pub base_total: u64,
+    /// Total quote token balance.
+    pub quote_total: u64,
+    /// Total lamports balance.
+    pub lamports_total: u64,
 }
 // endregion: market_header
