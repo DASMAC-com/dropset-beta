@@ -215,6 +215,28 @@ grows beyond this, extract a logically self-contained section
 into its own procedure with explicit `\REQUIRE` and `\ENSURE`
 postconditions.
 
+### Operators
+
+C-style pointer operators and arithmetic appear in algorithm
+specifications and their corresponding assembly comments:
+
+- `&` (address-of): prefixes a field to denote "take the
+  address of". In `.tex` files this is written `\&`; in `.s`
+  inline comments it is plain `&`.
+  For example, `frame.program_id = \&insn.program_id` means
+  "store the address of the program ID field", and the
+  matching assembly comment reads
+  `# frame.program_id = &insn.program_id`.
+- `*` (dereference): prefixes a pointer to denote "load the
+  value at". In `.tex` files this is written `*`; in `.s`
+  inline comments it is plain `*`
+  (e.g. `*frame.program_id`).
+- `*` (multiplication): infix arithmetic. In `.s` comments
+  this is plain `*` (e.g. `acct_size * lamports_per_byte`).
+  In `.tex` files the LaTeX symbol `$\times$` is used
+  instead. Context (infix vs prefix) disambiguates the two
+  uses of `*`.
+
 ### Assembly comments {#assembly-comments}
 
 There are two kinds of assembly comments:
