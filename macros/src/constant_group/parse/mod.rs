@@ -72,6 +72,12 @@ impl Parse for ConstantGroupInput {
                     let expr: Expr = inner.parse()?;
                     ConstantKind::Immediate { expr }
                 }
+                "wide" => {
+                    let inner;
+                    syn::parenthesized!(inner in content);
+                    let expr: Expr = inner.parse()?;
+                    ConstantKind::Wide { expr }
+                }
                 "pubkey" => {
                     let inner;
                     syn::parenthesized!(inner in content);

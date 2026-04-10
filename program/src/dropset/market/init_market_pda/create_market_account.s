@@ -72,12 +72,12 @@ create_market_account:
     # syscall.seeds_len = market::register::N_PDA_SIGNERS
     mov64 r5, RM_N_PDA_SIGNERS
     call sol_invoke_signed_c
-    # input.market.data.next = input + entrypoint::input_buffer::MARKET_DATA_BYTES
+    # input.market_header.next = input + entrypoint::input_buffer::MARKET_SECTORS_START
     ldxdw r6, [r10 + RM_FM_INPUT_OFF]
     mov64 r7, r6
-    add64 r7, IB_MARKET_DATA_BYTES_OFF
-    stxdw [r6 + IB_MARKET_DATA_NEXT_OFF], r7
-    # input.market.data.bump = frame.bump
+    add64 r7, IB_MARKET_SECTORS_START_OFF
+    stxdw [r6 + IB_MARKET_HEADER_NEXT_OFF], r7
+    # input.market_header.bump = frame.bump
     ldxb r7, [r10 + RM_FM_BUMP_OFF]
-    stxb [r6 + IB_MARKET_DATA_BUMP_OFF], r7
+    stxb [r6 + IB_MARKET_HEADER_BUMP_OFF], r7
     ja create_market_account_return

@@ -5,6 +5,7 @@
 .equ SIZE_OF_MARKET_HEADER, 43 # Size of MarketHeader in bytes.
 .equ SIZE_OF_CREATE_ACCOUNT_DATA, 52 # Size of CreateAccountData in bytes.
 .equ SIZE_OF_INITIALIZE_ACCOUNT2, 33 # Size of InitializeAccount2 in bytes.
+.equ SIZE_OF_SECTOR, 161 # Size of Sector in bytes.
 
 # Common data-related constants.
 # -------------------------------------------------------------------------
@@ -21,5 +22,5 @@
 # -------------------------------------------------------------------------
 .equ NODE_TAG_SEAT, 0 # Seat node.
 .equ NODE_TAG_ORDER, 1 # Order node.
-.equ NODE_TAG_STACK_NODE, 2 # Stack node (free list).
+.equ NODE_TAG_STACK, 2 # Stack node.
 # -------------------------------------------------------------------------
