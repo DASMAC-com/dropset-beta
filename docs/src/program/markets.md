@@ -21,6 +21,34 @@ All relevant information is derived from the accounts:
 
 <Include rs="interface::market::register#register_market_accounts"/>
 
+### Input buffer
+
+The registration `InputBuffer` extends the base
+[input buffer] header with the base and quote mint
+accounts:
+
+<Include rs="interface::market::register#register_input_buffer"/>
+
+All fields through `market` sit at compile-time-known
+offsets from `r1` (see [InputBufferHeader]).
+The mint accounts that follow have variable-length data,
+so their positions cannot be determined statically.
+The assembly handles this with a dynamic offset: after
+reading `base_mint.data_len`, it computes
+
+```
+input_shifted = input + padded(base_mint.data_len)
+```
+
+and stores the result in `Frame.input_shifted`. From that
+shifted base, all `quote_mint` fields are accessible at
+static offsets (the `RM_QUOTE_*` constants derived from the
+`InputBuffer` layout, which assumes zero-length mint data
+via `EmptyAccount`). Accounts after `quote_mint` (System
+Program, Rent sysvar, token programs, vaults) are located
+by walking forward from `input_shifted` using each
+account's padded data length.
+
 The entrypoint dispatches to
 [REGISTER-MARKET](#register-market), which validates the provided accounts,
 derives and creates the market PDA, then initializes the base and quote
@@ -119,6 +147,7 @@ account for the given mint, with the market as the account owner.
 <Algorithm id="INIT-VAULT-TOKEN-ACCOUNT"/>
 
 [input buffer]: inputs#input-buffer
+[InputBufferHeader]: inputs#input-buffer
 [System Program]: https://solana.com/docs/core/programs/builtin-programs#the-system-program
 [Rent]: https://docs.rs/pinocchio/0.11.0/pinocchio/sysvars/rent/struct.Rent.html
 [Token Program]: https://github.com/solana-program/token

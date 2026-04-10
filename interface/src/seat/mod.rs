@@ -2,6 +2,7 @@ use crate::order::Order;
 use dropset_macros::svm_data;
 use pinocchio::Address as Pubkey;
 
+// region: seat
 pub const MAX_ORDERS_PER_SIDE: usize = 5;
 
 #[svm_data]
@@ -17,3 +18,4 @@ pub struct Seat {
     pub asks: [*mut Order; MAX_ORDERS_PER_SIDE],
     pub bids: [*mut Order; MAX_ORDERS_PER_SIDE],
 }
+// endregion: seat

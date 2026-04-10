@@ -23,7 +23,7 @@
   \ENSURE $r_9$ = acct
   \ENSURE frame.token\_program\_id
   \ENSURE frame.token\_program\_is\_2022
-  \ENSURE input.market.data.base\_vault\_bump = frame.bump
+  \ENSURE input.market\_header.base\_vault\_bump = frame.bump
 \PROCEDURE{INIT-BASE-VAULT}{acct, frame}
   \COMMENT{Retrieve input buffer pointers and advance to base token program account.}
   \STATE input = frame.input
@@ -64,7 +64,7 @@
     \RETURN result
   \ENDIF
   \COMMENT{Store derived bump in market account data.}
-  \STATE input.market.data.base\_vault\_bump = frame.bump
+  \STATE input.market\_header.base\_vault\_bump = frame.bump
   \COMMENT{Advance to quote token program account.}
   \STATE acct += \texttt{EmptyAccount.size}
 \ENDPROCEDURE

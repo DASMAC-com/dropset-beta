@@ -43,6 +43,7 @@ constant_group! {
     }
 }
 
+// region: sector
 /// Sector-sized byte buffer (largest of Order, Seat, StackNode).
 #[svm_data]
 pub struct Sector(
@@ -59,6 +60,7 @@ pub struct Sector(
         }
     }],
 );
+// endregion: sector
 
 // region: size_of_group_example
 size_of_group! {
