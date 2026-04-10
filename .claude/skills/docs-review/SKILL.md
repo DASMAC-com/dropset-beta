@@ -47,9 +47,11 @@ gaps, outdated content, and stale comments.
      should be valid.
    - Cross-page markdown links must use reference-style
      definitions (`[text][ref]` or `[text]` with a
-     `[text]: url` at the bottom of the file). Inline
-     links (`[text](url)`) are only acceptable for
-     same-page anchors (e.g. `[label](#anchor)`).
+     `[text]: url` at the bottom of the file).
+     Reference definitions must be placed at the end
+     of the file, not inline near their first usage.
+     Inline links (`[text](url)`) are only acceptable
+     for same-page anchors (e.g. `[label](#anchor)`).
    - `<Include>` and `<Algorithm>` component
      attributes should resolve correctly.
 

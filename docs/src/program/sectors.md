@@ -1,9 +1,9 @@
 # Sectors
 
-Market account data begins with a [MarketHeader](markets)
+Market account data begins with a [`MarketHeader`]
 followed by a contiguous array of fixed-size sectors. Each
-sector holds one of three node types ([Order](orders),
-[Seat](seats), or [StackNode](#stacknode)), but a node does not
+sector holds one of three node types ([`Order`],
+[`Seat`], or [`StackNode`]), but a node does not
 necessarily occupy the entire sector.
 
 Because the market account is at a [fixed position] in the
@@ -11,8 +11,6 @@ input buffer, its data offsets are persisted across
 transactions. `MarketHeader` stores absolute SBPF pointers
 into the sector array (`seats`, `asks`, `bids`, `top`,
 `next`) that remain valid without recomputation.
-
-[fixed position]: inputs#input-buffer
 
 ```txt
 +----------------+----------+----------+----------+-----+
@@ -31,7 +29,7 @@ that identifies its contents:
 
 ## Order
 
-A sector holding an [Order](orders) is an active node in
+A sector holding an [`Order`] is an active node in
 one of the market's order trees.
 
 ```txt
@@ -44,7 +42,7 @@ one of the market's order trees.
 
 ## Seat
 
-A sector holding a [Seat](seats) is an active node in
+A sector holding a [`Seat`] is an active node in
 the market's seat tree.
 
 ```txt
@@ -75,3 +73,9 @@ in the memory map. `MarketHeader.top` points to the top of
 the free sector stack. When a sector is freed, it becomes a
 `StackNode` pushed onto the stack. New allocations pop from
 the stack first; when the stack is empty, `next` advances.
+
+[`MarketHeader`]: markets
+[`Order`]: orders
+[`Seat`]: seats
+[`StackNode`]: #stacknode
+[fixed position]: inputs#input-buffer
