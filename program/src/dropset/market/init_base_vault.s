@@ -94,6 +94,15 @@ init_base_vault_advance:
     # input.market_header.base_vault_bump = frame.bump
     ldxb r7, [r10 + RM_FM_BUMP_OFF]
     stxb [r8 + MKT_BASE_VAULT_BUMP_OFF], r7
+    # input.market_header.base_vault = acct.address
+    ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_0_OFF]
+    stxdw [r8 + MKT_BASE_VAULT_CHUNK_0_OFF], r7
+    ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_1_OFF]
+    stxdw [r8 + MKT_BASE_VAULT_CHUNK_1_OFF], r7
+    ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_2_OFF]
+    stxdw [r8 + MKT_BASE_VAULT_CHUNK_2_OFF], r7
+    ldxdw r7, [r9 + ACCT_ADDRESS_CHUNK_3_OFF]
+    stxdw [r8 + MKT_BASE_VAULT_CHUNK_3_OFF], r7
     # acct += EmptyAccount.size
     add64 r9, SIZE_OF_EMPTY_ACCOUNT
     ja init_base_vault_return

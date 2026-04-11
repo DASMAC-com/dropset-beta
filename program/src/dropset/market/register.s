@@ -28,6 +28,14 @@
 .equ RM_BASE_DATA_LEN_OFF, 20760
 # From input buffer to base mint address field.
 .equ RM_BASE_ADDR_OFF, 20688
+# From input buffer to base mint address field (chunk 0).
+.equ RM_BASE_ADDR_CHUNK_0_OFF, 20688
+# From input buffer to base mint address field (chunk 1).
+.equ RM_BASE_ADDR_CHUNK_1_OFF, 20696
+# From input buffer to base mint address field (chunk 2).
+.equ RM_BASE_ADDR_CHUNK_2_OFF, 20704
+# From input buffer to base mint address field (chunk 3).
+.equ RM_BASE_ADDR_CHUNK_3_OFF, 20712
 .equ RM_BASE_OWNER_OFF, 20720 # From input buffer to base mint owner.
 # From input buffer to base mint owner (chunk 0).
 .equ RM_BASE_OWNER_CHUNK_0_OFF, 20720
@@ -42,6 +50,14 @@
 .equ RM_QUOTE_DUPLICATE_OFF, 31016
 # From input buffer to quote mint address field.
 .equ RM_QUOTE_ADDR_OFF, 31024
+# From input buffer to quote mint address field (chunk 0).
+.equ RM_QUOTE_ADDR_CHUNK_0_OFF, 31024
+# From input buffer to quote mint address field (chunk 1).
+.equ RM_QUOTE_ADDR_CHUNK_1_OFF, 31032
+# From input buffer to quote mint address field (chunk 2).
+.equ RM_QUOTE_ADDR_CHUNK_2_OFF, 31040
+# From input buffer to quote mint address field (chunk 3).
+.equ RM_QUOTE_ADDR_CHUNK_3_OFF, 31048
 .equ RM_QUOTE_OWNER_OFF, 31056 # From input buffer to quote mint owner.
 # From input buffer to quote mint owner (chunk 0).
 .equ RM_QUOTE_OWNER_CHUNK_0_OFF, 31056

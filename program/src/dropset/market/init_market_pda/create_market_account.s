@@ -72,11 +72,30 @@ create_market_account:
     # syscall.seeds_len = market::register::N_PDA_SIGNERS
     mov64 r5, RM_N_PDA_SIGNERS
     call sol_invoke_signed_c
-    # input.market_header.next = &entrypoint::input_buffer::MARKET_SECTORS_START
+    # input.market_header.next = &market::SECTORS_START
     ldxdw r6, [r10 + RM_FM_INPUT_OFF]
     lddw r7, MKT_SECTORS_START_PTR_WD
     stxdw [r6 + MKT_NEXT_OFF], r7
     # input.market_header.bump = frame.bump
     ldxb r7, [r10 + RM_FM_BUMP_OFF]
     stxb [r6 + MKT_BUMP_OFF], r7
+    # input.market_header.base_mint = input.base_mint.address
+    ldxdw r7, [r6 + RM_BASE_ADDR_CHUNK_0_OFF]
+    stxdw [r6 + MKT_BASE_MINT_CHUNK_0_OFF], r7
+    ldxdw r7, [r6 + RM_BASE_ADDR_CHUNK_1_OFF]
+    stxdw [r6 + MKT_BASE_MINT_CHUNK_1_OFF], r7
+    ldxdw r7, [r6 + RM_BASE_ADDR_CHUNK_2_OFF]
+    stxdw [r6 + MKT_BASE_MINT_CHUNK_2_OFF], r7
+    ldxdw r7, [r6 + RM_BASE_ADDR_CHUNK_3_OFF]
+    stxdw [r6 + MKT_BASE_MINT_CHUNK_3_OFF], r7
+    # input.market_header.quote_mint = input_shifted.quote_mint.address
+    ldxdw r5, [r10 + RM_FM_INPUT_SHIFTED_OFF]
+    ldxdw r7, [r5 + RM_QUOTE_ADDR_CHUNK_0_OFF]
+    stxdw [r6 + MKT_QUOTE_MINT_CHUNK_0_OFF], r7
+    ldxdw r7, [r5 + RM_QUOTE_ADDR_CHUNK_1_OFF]
+    stxdw [r6 + MKT_QUOTE_MINT_CHUNK_1_OFF], r7
+    ldxdw r7, [r5 + RM_QUOTE_ADDR_CHUNK_2_OFF]
+    stxdw [r6 + MKT_QUOTE_MINT_CHUNK_2_OFF], r7
+    ldxdw r7, [r5 + RM_QUOTE_ADDR_CHUNK_3_OFF]
+    stxdw [r6 + MKT_QUOTE_MINT_CHUNK_3_OFF], r7
     ja create_market_account_return

@@ -60,7 +60,7 @@ constant_group! {
         /// From input buffer to base mint data length.
         BASE_DATA_LEN = offset!(InputBuffer.base_mint.header.data_len),
         /// From input buffer to base mint address field.
-        BASE_ADDR = offset!(InputBuffer.base_mint.header.address),
+        BASE_ADDR = pubkey_offsets!(InputBuffer.base_mint.header.address),
         /// From input buffer to base mint owner.
         BASE_OWNER = pubkey_offsets!(InputBuffer.base_mint.header.owner),
         /// From input buffer to quote mint.
@@ -68,7 +68,7 @@ constant_group! {
         /// From input buffer to quote mint duplicate flag.
         QUOTE_DUPLICATE = offset!(InputBuffer.quote_mint.header.borrow_state),
         /// From input buffer to quote mint address field.
-        QUOTE_ADDR = offset!(InputBuffer.quote_mint.header.address),
+        QUOTE_ADDR = pubkey_offsets!(InputBuffer.quote_mint.header.address),
         /// From input buffer to quote mint owner.
         QUOTE_OWNER = pubkey_offsets!(InputBuffer.quote_mint.header.owner),
         /// From input buffer to quote mint data length.
