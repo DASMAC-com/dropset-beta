@@ -46,6 +46,12 @@ constant_group! {
         DATA_LEN = offset!(EmptyAccount.header.data_len),
         /// Account data start.
         DATA = offset!(EmptyAccount.data),
+        /// From address to owner in a runtime account.
+        ADDRESS_TO_OWNER = relative_offset!(RuntimeAccount, address, owner),
+        /// From owner to lamports in a runtime account.
+        OWNER_TO_LAMPORTS = relative_offset!(RuntimeAccount, owner, lamports),
+        /// From lamports to data start in a runtime account.
+        LAMPORTS_TO_DATA = relative_offset!(EmptyAccount, header.lamports, data),
         /// Non-dup marker for accounts.
         NON_DUP_MARKER = immediate!(NON_DUP_MARKER as i32),
         /// Account storage overhead for rent calculation.

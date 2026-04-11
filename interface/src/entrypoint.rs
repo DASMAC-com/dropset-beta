@@ -2,7 +2,6 @@ use crate::common::account::EmptyAccount;
 use crate::market::MarketHeader;
 use dropset_macros::{constant_group, discriminant_enum, svm_data};
 use pinocchio::account::RuntimeAccount;
-use solana_sbpf::ebpf::MM_INPUT_START;
 
 // region: discriminant_enum
 /// Instruction discriminants.
@@ -57,22 +56,9 @@ constant_group! {
         MARKET_DATA_LEN = offset!(InputBufferHeader.market.data_len),
         /// From input buffer to market address field.
         MARKET_ADDRESS = pubkey_offsets!(InputBufferHeader.market.address),
-        /// From address to owner in a runtime account.
-        ADDRESS_TO_OWNER = relative_offset!(RuntimeAccount, address, owner),
-        /// From owner to lamports in a runtime account.
-        OWNER_TO_LAMPORTS = relative_offset!(RuntimeAccount, owner, lamports),
-        /// From lamports to data start in a runtime account.
-        LAMPORTS_TO_DATA = relative_offset!(EmptyAccount, header.lamports, data),
         /// From user data to market address in the input buffer.
         USER_DATA_TO_MARKET_ADDRESS = relative_offset!(
             InputBufferHeader, user.data, market.address
-        ),
-        /// From input buffer to first sector in market memory map.
-        MARKET_SECTORS_START = offset!(InputBufferHeader.market_sectors_start),
-        /// Absolute SBPF pointer to first sector in market memory map.
-        MARKET_SECTORS_START_PTR = wide!(
-            MM_INPUT_START as i64
-                + core::mem::offset_of!(InputBufferHeader, market_sectors_start) as i64
         ),
     }
 }

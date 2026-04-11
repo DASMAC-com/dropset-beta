@@ -17,13 +17,13 @@ create_market_account:
     stxdw [r10 + RM_FM_CPI_IDX_0_ACCT_META_PUBKEY_UOFF], r6
     stxdw [r10 + RM_FM_CPI_IDX_0_ACCT_INFO_KEY_UOFF], r6
     # frame.cpi[0].info.owner = &input.user.owner
-    add64 r6, IB_ADDRESS_TO_OWNER_REL_OFF_IMM
+    add64 r6, ACCT_ADDRESS_TO_OWNER_REL_OFF_IMM
     stxdw [r10 + RM_FM_CPI_IDX_0_ACCT_INFO_OWNER_UOFF], r6
     # frame.cpi[0].info.lamports = &input.user.lamports
-    add64 r6, IB_OWNER_TO_LAMPORTS_REL_OFF_IMM
+    add64 r6, ACCT_OWNER_TO_LAMPORTS_REL_OFF_IMM
     stxdw [r10 + RM_FM_CPI_IDX_0_ACCT_INFO_LAMPORTS_UOFF], r6
     # frame.cpi[0].info.data = &input.user.data
-    add64 r6, IB_LAMPORTS_TO_DATA_REL_OFF_IMM
+    add64 r6, ACCT_LAMPORTS_TO_DATA_REL_OFF_IMM
     stxdw [r10 + RM_FM_CPI_IDX_0_ACCT_INFO_DATA_UOFF], r6
     # frame.cpi[1].meta.pubkey = &input.market.address
     # frame.cpi[1].info.key = &input.market.address
@@ -31,13 +31,13 @@ create_market_account:
     stxdw [r10 + RM_FM_CPI_IDX_1_ACCT_META_PUBKEY_UOFF], r6
     stxdw [r10 + RM_FM_CPI_IDX_1_ACCT_INFO_KEY_UOFF], r6
     # frame.cpi[1].info.owner = &input.market.owner
-    add64 r6, IB_ADDRESS_TO_OWNER_REL_OFF_IMM
+    add64 r6, ACCT_ADDRESS_TO_OWNER_REL_OFF_IMM
     stxdw [r10 + RM_FM_CPI_IDX_1_ACCT_INFO_OWNER_UOFF], r6
     # frame.cpi[1].info.lamports = &input.market.lamports
-    add64 r6, IB_OWNER_TO_LAMPORTS_REL_OFF_IMM
+    add64 r6, ACCT_OWNER_TO_LAMPORTS_REL_OFF_IMM
     stxdw [r10 + RM_FM_CPI_IDX_1_ACCT_INFO_LAMPORTS_UOFF], r6
     # frame.cpi[1].info.data = &input.market.data
-    add64 r6, IB_LAMPORTS_TO_DATA_REL_OFF_IMM
+    add64 r6, ACCT_LAMPORTS_TO_DATA_REL_OFF_IMM
     stxdw [r10 + RM_FM_CPI_IDX_1_ACCT_INFO_DATA_UOFF], r6
     # frame.signers_seeds.addr = &frame.pda_seeds
     stxdw [r10 + RM_FM_SIGNERS_SEEDS_ADDR_UOFF], r1
@@ -74,7 +74,7 @@ create_market_account:
     call sol_invoke_signed_c
     # input.market_header.next = &entrypoint::input_buffer::MARKET_SECTORS_START
     ldxdw r6, [r10 + RM_FM_INPUT_OFF]
-    lddw r7, IB_MARKET_SECTORS_START_PTR_WD
+    lddw r7, MKT_SECTORS_START_PTR_WD
     stxdw [r6 + MKT_NEXT_OFF], r7
     # input.market_header.bump = frame.bump
     ldxb r7, [r10 + RM_FM_BUMP_OFF]

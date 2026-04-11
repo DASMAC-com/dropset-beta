@@ -6,38 +6,47 @@ use crate::seat::Seat;
 use crate::stack::StackNode;
 use dropset_macros::{constant_group, svm_data};
 use pinocchio::Address as Pubkey;
+use solana_sbpf::ebpf::MM_INPUT_START;
 
 constant_group! {
     #[prefix("MKT")]
     #[inject("market/market")]
     /// Market-level constants.
+    /// Assumes user has no data for static addressing.
     constants {
         /// Vault index for base token in PDA derivation and vault creation.
         VAULT_INDEX_BASE = immediate!(0),
         /// Vault index for quote token in PDA derivation and vault creation.
         VAULT_INDEX_QUOTE = immediate!(1),
-        /// From input buffer to market header next pointer.
+        /// From input buffer to MarketHeader.next.
         NEXT = offset!(InputBufferHeader.market_header.next),
-        /// From input buffer to market header base mint address.
+        /// From input buffer to MarketHeader.base_mint.
         BASE_MINT = pubkey_offsets!(InputBufferHeader.market_header.base_mint),
-        /// From input buffer to market header quote mint address.
+        /// From input buffer to MarketHeader.quote_mint.
         QUOTE_MINT = pubkey_offsets!(InputBufferHeader.market_header.quote_mint),
-        /// From input buffer to market header bump seed.
+        /// From input buffer to MarketHeader.bump.
         BUMP = offset!(InputBufferHeader.market_header.bump),
-        /// From input buffer to market header base vault address.
+        /// From input buffer to MarketHeader.base_vault.
         BASE_VAULT = pubkey_offsets!(InputBufferHeader.market_header.base_vault),
-        /// From input buffer to market header base vault bump seed.
+        /// From input buffer to MarketHeader.base_vault_bump.
         BASE_VAULT_BUMP = offset!(InputBufferHeader.market_header.base_vault_bump),
-        /// From input buffer to market header quote vault address.
+        /// From input buffer to MarketHeader.quote_vault.
         QUOTE_VAULT = pubkey_offsets!(InputBufferHeader.market_header.quote_vault),
-        /// From input buffer to market header quote vault bump seed.
+        /// From input buffer to MarketHeader.quote_vault_bump.
         QUOTE_VAULT_BUMP = offset!(InputBufferHeader.market_header.quote_vault_bump),
-        /// From input buffer to market header base total.
+        /// From input buffer to MarketHeader.base_total.
         BASE_TOTAL = offset!(InputBufferHeader.market_header.base_total),
-        /// From input buffer to market header quote total.
+        /// From input buffer to MarketHeader.quote_total.
         QUOTE_TOTAL = offset!(InputBufferHeader.market_header.quote_total),
-        /// From input buffer to market header lamports total.
+        /// From input buffer to MarketHeader.lamports_total.
         LAMPORTS_TOTAL = offset!(InputBufferHeader.market_header.lamports_total),
+        /// From input buffer to first sector in market memory map.
+        SECTORS_START = offset!(InputBufferHeader.market_sectors_start),
+        /// Absolute SBPF pointer to first sector in market memory map.
+        SECTORS_START_PTR = wide!(
+            MM_INPUT_START as i64
+                + core::mem::offset_of!(InputBufferHeader, market_sectors_start) as i64
+        ),
     }
 }
 

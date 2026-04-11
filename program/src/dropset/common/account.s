@@ -17,6 +17,12 @@
 .equ ACCT_OWNER_CHUNK_3_OFF, 64 # Account owner (chunk 3).
 .equ ACCT_DATA_LEN_OFF, 80 # Account data length.
 .equ ACCT_DATA_OFF, 88 # Account data start.
+# From address to owner in a runtime account.
+.equ ACCT_ADDRESS_TO_OWNER_REL_OFF_IMM, 32
+# From owner to lamports in a runtime account.
+.equ ACCT_OWNER_TO_LAMPORTS_REL_OFF_IMM, 32
+# From lamports to data start in a runtime account.
+.equ ACCT_LAMPORTS_TO_DATA_REL_OFF_IMM, 16
 .equ ACCT_NON_DUP_MARKER, 255 # Non-dup marker for accounts.
 # Account storage overhead for rent calculation.
 .equ ACCT_STORAGE_OVERHEAD, 128
