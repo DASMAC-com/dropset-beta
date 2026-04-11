@@ -75,8 +75,8 @@ create_market_account:
     # input.market_header.next = &entrypoint::input_buffer::MARKET_SECTORS_START
     ldxdw r6, [r10 + RM_FM_INPUT_OFF]
     lddw r7, IB_MARKET_SECTORS_START_PTR_WD
-    stxdw [r6 + IB_MARKET_HEADER_NEXT_OFF], r7
+    stxdw [r6 + MKT_NEXT_OFF], r7
     # input.market_header.bump = frame.bump
     ldxb r7, [r10 + RM_FM_BUMP_OFF]
-    stxb [r6 + IB_MARKET_HEADER_BUMP_OFF], r7
+    stxb [r6 + MKT_BUMP_OFF], r7
     ja create_market_account_return

@@ -46,14 +46,6 @@
 .equ IB_LAMPORTS_TO_DATA_REL_OFF_IMM, 16
 # From user data to market address in the input buffer.
 .equ IB_USER_DATA_TO_MARKET_ADDRESS_REL_OFF_IMM, 10256
-# From input buffer to market header next pointer.
-.equ IB_MARKET_HEADER_NEXT_OFF, 10464
-# From input buffer to market header bump.
-.equ IB_MARKET_HEADER_BUMP_OFF, 10536
-# From input buffer to market header base vault bump.
-.equ IB_MARKET_HEADER_BASE_VAULT_BUMP_OFF, 10569
-# From input buffer to market header quote vault bump.
-.equ IB_MARKET_HEADER_QUOTE_VAULT_BUMP_OFF, 10602
 # From input buffer to first sector in market memory map.
 .equ IB_MARKET_SECTORS_START_OFF, 10627
 # Absolute SBPF pointer to first sector in market memory map.

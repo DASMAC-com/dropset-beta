@@ -67,18 +67,6 @@ constant_group! {
         USER_DATA_TO_MARKET_ADDRESS = relative_offset!(
             InputBufferHeader, user.data, market.address
         ),
-        /// From input buffer to market header next pointer.
-        MARKET_HEADER_NEXT = offset!(InputBufferHeader.market_header.next),
-        /// From input buffer to market header bump.
-        MARKET_HEADER_BUMP = offset!(InputBufferHeader.market_header.bump),
-        /// From input buffer to market header base vault bump.
-        MARKET_HEADER_BASE_VAULT_BUMP = offset!(
-            InputBufferHeader.market_header.base_vault_bump
-        ),
-        /// From input buffer to market header quote vault bump.
-        MARKET_HEADER_QUOTE_VAULT_BUMP = offset!(
-            InputBufferHeader.market_header.quote_vault_bump
-        ),
         /// From input buffer to first sector in market memory map.
         MARKET_SECTORS_START = offset!(InputBufferHeader.market_sectors_start),
         /// Absolute SBPF pointer to first sector in market memory map.

@@ -1,5 +1,6 @@
 pub mod register;
 
+use crate::entrypoint::InputBufferHeader;
 use crate::order::Order;
 use crate::seat::Seat;
 use crate::stack::StackNode;
@@ -15,6 +16,28 @@ constant_group! {
         VAULT_INDEX_BASE = immediate!(0),
         /// Vault index for quote token in PDA derivation and vault creation.
         VAULT_INDEX_QUOTE = immediate!(1),
+        /// From input buffer to market header next pointer.
+        NEXT = offset!(InputBufferHeader.market_header.next),
+        /// From input buffer to market header base mint address.
+        BASE_MINT = pubkey_offsets!(InputBufferHeader.market_header.base_mint),
+        /// From input buffer to market header quote mint address.
+        QUOTE_MINT = pubkey_offsets!(InputBufferHeader.market_header.quote_mint),
+        /// From input buffer to market header bump seed.
+        BUMP = offset!(InputBufferHeader.market_header.bump),
+        /// From input buffer to market header base vault address.
+        BASE_VAULT = pubkey_offsets!(InputBufferHeader.market_header.base_vault),
+        /// From input buffer to market header base vault bump seed.
+        BASE_VAULT_BUMP = offset!(InputBufferHeader.market_header.base_vault_bump),
+        /// From input buffer to market header quote vault address.
+        QUOTE_VAULT = pubkey_offsets!(InputBufferHeader.market_header.quote_vault),
+        /// From input buffer to market header quote vault bump seed.
+        QUOTE_VAULT_BUMP = offset!(InputBufferHeader.market_header.quote_vault_bump),
+        /// From input buffer to market header base total.
+        BASE_TOTAL = offset!(InputBufferHeader.market_header.base_total),
+        /// From input buffer to market header quote total.
+        QUOTE_TOTAL = offset!(InputBufferHeader.market_header.quote_total),
+        /// From input buffer to market header lamports total.
+        LAMPORTS_TOTAL = offset!(InputBufferHeader.market_header.lamports_total),
     }
 }
 

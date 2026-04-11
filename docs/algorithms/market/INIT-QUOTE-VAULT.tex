@@ -18,6 +18,7 @@
   \REQUIRE frame.pda\_seeds[2].len = \texttt{u8.size}
   \REQUIRE frame.rent
   \ENSURE input.market\_header.quote\_vault\_bump = frame.bump
+  \ENSURE input.market\_header.quote\_vault = acct.address
 \PROCEDURE{INIT-QUOTE-VAULT}{acct, frame, input, input\_shifted}
   \COMMENT{Check quote token program account.}
   \IF{acct.duplicate == \texttt{common::account::NON\_DUP\_MARKER}}
@@ -63,6 +64,8 @@
   \STATE \CALL{INIT-VAULT}{acct, frame}
   \COMMENT{Store derived bump in market account data.}
   \STATE input.market\_header.quote\_vault\_bump = frame.bump
+  \COMMENT{Store quote vault address in market header.}
+  \STATE input.market\_header.quote\_vault = acct.address
 \ENDPROCEDURE
 \end{algorithmic}
 \end{algorithm}
