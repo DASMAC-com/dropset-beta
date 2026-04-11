@@ -9,12 +9,15 @@
   \REQUIRE frame.create\_account\_data.owner
   \REQUIRE frame.system\_program\_id
   \REQUIRE frame.pda\_seeds
+  \REQUIRE frame.input\_shifted
   \REQUIRE frame.cpi[0].info.data\_len = \texttt{common::memory::LEN\_ZERO}
   \REQUIRE frame.cpi[1].info.data\_len = \texttt{common::memory::LEN\_ZERO}
   \ENSURE frame.signers\_seeds.addr = \&frame.pda\_seeds
   \ENSURE frame.signers\_seeds.len = \texttt{frame.pda\_seeds.n\_seeds}
-  \ENSURE input.market\_header.next = \texttt{\&entrypoint::input\_buffer::MARKET\_SECTORS\_START}
+  \ENSURE input.market\_header.next = \texttt{\&market::SECTORS\_START}
   \ENSURE input.market\_header.bump = frame.bump
+  \ENSURE input.market\_header.base\_mint = input.base\_mint.address
+  \ENSURE input.market\_header.quote\_mint = input\_shifted.quote\_mint.address
 \PROCEDURE{CREATE-MARKET-ACCOUNT}{frame}
   \COMMENT{Assign CPI account fields via immediates.}
   \STATE frame.cpi[0].info.is\_signer = \texttt{true}
@@ -55,8 +58,11 @@
   \STATE syscall.seeds\_len = \texttt{market::register::N\_PDA\_SIGNERS}
   \STATE \CALL{sol-invoke-signed-c}{system-program::CreateAccount}
   \COMMENT{Initialize market header next pointer and store derived bump.}
-  \STATE input.market\_header.next = \texttt{\&entrypoint::input\_buffer::MARKET\_SECTORS\_START}
+  \STATE input.market\_header.next = \texttt{\&market::SECTORS\_START}
   \STATE input.market\_header.bump = frame.bump
+  \COMMENT{Store mint addresses in market header.}
+  \STATE input.market\_header.base\_mint = input.base\_mint.address
+  \STATE input.market\_header.quote\_mint = input\_shifted.quote\_mint.address
 \ENDPROCEDURE
 \end{algorithmic}
 \end{algorithm}

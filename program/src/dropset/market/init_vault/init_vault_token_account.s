@@ -6,13 +6,13 @@ init_vault_token_account:
     stxdw [r6 + RM_FM_CPI_IDX_0_ACCT_META_PUBKEY_UOFF], r8
     stxdw [r6 + RM_FM_CPI_IDX_0_ACCT_INFO_KEY_UOFF], r8
     # frame.cpi[0].info.owner = &acct.owner
-    add64 r8, IB_ADDRESS_TO_OWNER_REL_OFF_IMM
+    add64 r8, ACCT_ADDRESS_TO_OWNER_REL_OFF_IMM
     stxdw [r6 + RM_FM_CPI_IDX_0_ACCT_INFO_OWNER_UOFF], r8
     # frame.cpi[0].info.lamports = &acct.lamports
-    add64 r8, IB_OWNER_TO_LAMPORTS_REL_OFF_IMM
+    add64 r8, ACCT_OWNER_TO_LAMPORTS_REL_OFF_IMM
     stxdw [r6 + RM_FM_CPI_IDX_0_ACCT_INFO_LAMPORTS_UOFF], r8
     # frame.cpi[0].info.data = &acct.data
-    add64 r8, IB_LAMPORTS_TO_DATA_REL_OFF_IMM
+    add64 r8, ACCT_LAMPORTS_TO_DATA_REL_OFF_IMM
     stxdw [r6 + RM_FM_CPI_IDX_0_ACCT_INFO_DATA_UOFF], r8
     # frame.cpi[0].info.data_len = acct.data_len
     ldxdw r8, [r7 + ACCT_DATA_LEN_OFF]
@@ -32,13 +32,13 @@ init_vault_token_account:
     stxdw [r6 + RM_FM_CPI_IDX_1_ACCT_META_PUBKEY_UOFF], r9
     stxdw [r6 + RM_FM_CPI_IDX_1_ACCT_INFO_KEY_UOFF], r9
     # frame.cpi[1].info.owner = &mint.owner
-    add64 r9, IB_ADDRESS_TO_OWNER_REL_OFF_IMM
+    add64 r9, ACCT_ADDRESS_TO_OWNER_REL_OFF_IMM
     stxdw [r6 + RM_FM_CPI_IDX_1_ACCT_INFO_OWNER_UOFF], r9
     # frame.cpi[1].info.lamports = &mint.lamports
-    add64 r9, IB_OWNER_TO_LAMPORTS_REL_OFF_IMM
+    add64 r9, ACCT_OWNER_TO_LAMPORTS_REL_OFF_IMM
     stxdw [r6 + RM_FM_CPI_IDX_1_ACCT_INFO_LAMPORTS_UOFF], r9
     # frame.cpi[1].info.data = &mint.data
-    add64 r9, IB_LAMPORTS_TO_DATA_REL_OFF_IMM
+    add64 r9, ACCT_LAMPORTS_TO_DATA_REL_OFF_IMM
     stxdw [r6 + RM_FM_CPI_IDX_1_ACCT_INFO_DATA_UOFF], r9
     # frame.cpi[1].info.data_len = mint.data_len
     ldxdw r9, [r8 + ACCT_DATA_LEN_OFF]
@@ -52,13 +52,13 @@ init_vault_token_account:
     stxdw [r6 + RM_FM_CPI_IDX_2_ACCT_META_PUBKEY_UOFF], r9
     stxdw [r6 + RM_FM_CPI_IDX_2_ACCT_INFO_KEY_UOFF], r9
     # frame.cpi[2].info.owner = &rent.owner
-    add64 r9, IB_ADDRESS_TO_OWNER_REL_OFF_IMM
+    add64 r9, ACCT_ADDRESS_TO_OWNER_REL_OFF_IMM
     stxdw [r6 + RM_FM_CPI_IDX_2_ACCT_INFO_OWNER_UOFF], r9
     # frame.cpi[2].info.lamports = &rent.lamports
-    add64 r9, IB_OWNER_TO_LAMPORTS_REL_OFF_IMM
+    add64 r9, ACCT_OWNER_TO_LAMPORTS_REL_OFF_IMM
     stxdw [r6 + RM_FM_CPI_IDX_2_ACCT_INFO_LAMPORTS_UOFF], r9
     # frame.cpi[2].info.data = &rent.data
-    add64 r9, IB_LAMPORTS_TO_DATA_REL_OFF_IMM
+    add64 r9, ACCT_LAMPORTS_TO_DATA_REL_OFF_IMM
     stxdw [r6 + RM_FM_CPI_IDX_2_ACCT_INFO_DATA_UOFF], r9
     # frame.cpi[2].info.data_len = rent.data_len
     ldxdw r9, [r8 + ACCT_DATA_LEN_OFF]

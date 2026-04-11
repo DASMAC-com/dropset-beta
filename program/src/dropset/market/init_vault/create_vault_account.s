@@ -43,13 +43,13 @@ create_vault_account:
     stxdw [r6 + RM_FM_CPI_IDX_0_ACCT_META_PUBKEY_UOFF], r8
     stxdw [r6 + RM_FM_CPI_IDX_0_ACCT_INFO_KEY_UOFF], r8
     # frame.cpi[0].info.owner = &input.user.owner
-    add64 r8, IB_ADDRESS_TO_OWNER_REL_OFF_IMM
+    add64 r8, ACCT_ADDRESS_TO_OWNER_REL_OFF_IMM
     stxdw [r6 + RM_FM_CPI_IDX_0_ACCT_INFO_OWNER_UOFF], r8
     # frame.cpi[0].info.lamports = &input.user.lamports
-    add64 r8, IB_OWNER_TO_LAMPORTS_REL_OFF_IMM
+    add64 r8, ACCT_OWNER_TO_LAMPORTS_REL_OFF_IMM
     stxdw [r6 + RM_FM_CPI_IDX_0_ACCT_INFO_LAMPORTS_UOFF], r8
     # frame.cpi[0].info.data = &input.user.data
-    add64 r8, IB_LAMPORTS_TO_DATA_REL_OFF_IMM
+    add64 r8, ACCT_LAMPORTS_TO_DATA_REL_OFF_IMM
     stxdw [r6 + RM_FM_CPI_IDX_0_ACCT_INFO_DATA_UOFF], r8
     # frame.cpi[1].meta.pubkey = &acct.address
     # frame.cpi[1].info.key = &acct.address
@@ -58,13 +58,13 @@ create_vault_account:
     stxdw [r6 + RM_FM_CPI_IDX_1_ACCT_META_PUBKEY_UOFF], r8
     stxdw [r6 + RM_FM_CPI_IDX_1_ACCT_INFO_KEY_UOFF], r8
     # frame.cpi[1].info.owner = &acct.owner
-    add64 r8, IB_ADDRESS_TO_OWNER_REL_OFF_IMM
+    add64 r8, ACCT_ADDRESS_TO_OWNER_REL_OFF_IMM
     stxdw [r6 + RM_FM_CPI_IDX_1_ACCT_INFO_OWNER_UOFF], r8
     # frame.cpi[1].info.lamports = &acct.lamports
-    add64 r8, IB_OWNER_TO_LAMPORTS_REL_OFF_IMM
+    add64 r8, ACCT_OWNER_TO_LAMPORTS_REL_OFF_IMM
     stxdw [r6 + RM_FM_CPI_IDX_1_ACCT_INFO_LAMPORTS_UOFF], r8
     # frame.cpi[1].info.data = &acct.data
-    add64 r8, IB_LAMPORTS_TO_DATA_REL_OFF_IMM
+    add64 r8, ACCT_LAMPORTS_TO_DATA_REL_OFF_IMM
     stxdw [r6 + RM_FM_CPI_IDX_1_ACCT_INFO_DATA_UOFF], r8
     # frame.sol_instruction.program_id = frame.system_program_id
     ldxdw r8, [r6 + RM_FM_SYSTEM_PROGRAM_ID_OFF]

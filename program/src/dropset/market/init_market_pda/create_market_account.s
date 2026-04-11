@@ -17,13 +17,13 @@ create_market_account:
     stxdw [r10 + RM_FM_CPI_IDX_0_ACCT_META_PUBKEY_UOFF], r6
     stxdw [r10 + RM_FM_CPI_IDX_0_ACCT_INFO_KEY_UOFF], r6
     # frame.cpi[0].info.owner = &input.user.owner
-    add64 r6, IB_ADDRESS_TO_OWNER_REL_OFF_IMM
+    add64 r6, ACCT_ADDRESS_TO_OWNER_REL_OFF_IMM
     stxdw [r10 + RM_FM_CPI_IDX_0_ACCT_INFO_OWNER_UOFF], r6
     # frame.cpi[0].info.lamports = &input.user.lamports
-    add64 r6, IB_OWNER_TO_LAMPORTS_REL_OFF_IMM
+    add64 r6, ACCT_OWNER_TO_LAMPORTS_REL_OFF_IMM
     stxdw [r10 + RM_FM_CPI_IDX_0_ACCT_INFO_LAMPORTS_UOFF], r6
     # frame.cpi[0].info.data = &input.user.data
-    add64 r6, IB_LAMPORTS_TO_DATA_REL_OFF_IMM
+    add64 r6, ACCT_LAMPORTS_TO_DATA_REL_OFF_IMM
     stxdw [r10 + RM_FM_CPI_IDX_0_ACCT_INFO_DATA_UOFF], r6
     # frame.cpi[1].meta.pubkey = &input.market.address
     # frame.cpi[1].info.key = &input.market.address
@@ -31,13 +31,13 @@ create_market_account:
     stxdw [r10 + RM_FM_CPI_IDX_1_ACCT_META_PUBKEY_UOFF], r6
     stxdw [r10 + RM_FM_CPI_IDX_1_ACCT_INFO_KEY_UOFF], r6
     # frame.cpi[1].info.owner = &input.market.owner
-    add64 r6, IB_ADDRESS_TO_OWNER_REL_OFF_IMM
+    add64 r6, ACCT_ADDRESS_TO_OWNER_REL_OFF_IMM
     stxdw [r10 + RM_FM_CPI_IDX_1_ACCT_INFO_OWNER_UOFF], r6
     # frame.cpi[1].info.lamports = &input.market.lamports
-    add64 r6, IB_OWNER_TO_LAMPORTS_REL_OFF_IMM
+    add64 r6, ACCT_OWNER_TO_LAMPORTS_REL_OFF_IMM
     stxdw [r10 + RM_FM_CPI_IDX_1_ACCT_INFO_LAMPORTS_UOFF], r6
     # frame.cpi[1].info.data = &input.market.data
-    add64 r6, IB_LAMPORTS_TO_DATA_REL_OFF_IMM
+    add64 r6, ACCT_LAMPORTS_TO_DATA_REL_OFF_IMM
     stxdw [r10 + RM_FM_CPI_IDX_1_ACCT_INFO_DATA_UOFF], r6
     # frame.signers_seeds.addr = &frame.pda_seeds
     stxdw [r10 + RM_FM_SIGNERS_SEEDS_ADDR_UOFF], r1
@@ -72,11 +72,30 @@ create_market_account:
     # syscall.seeds_len = market::register::N_PDA_SIGNERS
     mov64 r5, RM_N_PDA_SIGNERS
     call sol_invoke_signed_c
-    # input.market_header.next = &entrypoint::input_buffer::MARKET_SECTORS_START
+    # input.market_header.next = &market::SECTORS_START
     ldxdw r6, [r10 + RM_FM_INPUT_OFF]
-    lddw r7, IB_MARKET_SECTORS_START_PTR_WD
-    stxdw [r6 + IB_MARKET_HEADER_NEXT_OFF], r7
+    lddw r7, MKT_SECTORS_START_PTR_WD
+    stxdw [r6 + MKT_NEXT_OFF], r7
     # input.market_header.bump = frame.bump
     ldxb r7, [r10 + RM_FM_BUMP_OFF]
-    stxb [r6 + IB_MARKET_HEADER_BUMP_OFF], r7
+    stxb [r6 + MKT_BUMP_OFF], r7
+    # input.market_header.base_mint = input.base_mint.address
+    ldxdw r7, [r6 + RM_BASE_ADDR_CHUNK_0_OFF]
+    stxdw [r6 + MKT_BASE_MINT_CHUNK_0_OFF], r7
+    ldxdw r7, [r6 + RM_BASE_ADDR_CHUNK_1_OFF]
+    stxdw [r6 + MKT_BASE_MINT_CHUNK_1_OFF], r7
+    ldxdw r7, [r6 + RM_BASE_ADDR_CHUNK_2_OFF]
+    stxdw [r6 + MKT_BASE_MINT_CHUNK_2_OFF], r7
+    ldxdw r7, [r6 + RM_BASE_ADDR_CHUNK_3_OFF]
+    stxdw [r6 + MKT_BASE_MINT_CHUNK_3_OFF], r7
+    # input.market_header.quote_mint = input_shifted.quote_mint.address
+    ldxdw r5, [r10 + RM_FM_INPUT_SHIFTED_OFF]
+    ldxdw r7, [r5 + RM_QUOTE_ADDR_CHUNK_0_OFF]
+    stxdw [r6 + MKT_QUOTE_MINT_CHUNK_0_OFF], r7
+    ldxdw r7, [r5 + RM_QUOTE_ADDR_CHUNK_1_OFF]
+    stxdw [r6 + MKT_QUOTE_MINT_CHUNK_1_OFF], r7
+    ldxdw r7, [r5 + RM_QUOTE_ADDR_CHUNK_2_OFF]
+    stxdw [r6 + MKT_QUOTE_MINT_CHUNK_2_OFF], r7
+    ldxdw r7, [r5 + RM_QUOTE_ADDR_CHUNK_3_OFF]
+    stxdw [r6 + MKT_QUOTE_MINT_CHUNK_3_OFF], r7
     ja create_market_account_return

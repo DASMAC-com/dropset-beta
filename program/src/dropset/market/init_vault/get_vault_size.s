@@ -22,10 +22,10 @@ get_vault_size_token_2022:
     # frame.cpi[0].info.key = &mint.address
     stxdw [r6 + RM_FM_CPI_IDX_0_ACCT_INFO_KEY_UOFF], r9
     # frame.cpi[0].info.owner = &mint.owner
-    add64 r9, IB_ADDRESS_TO_OWNER_REL_OFF_IMM
+    add64 r9, ACCT_ADDRESS_TO_OWNER_REL_OFF_IMM
     stxdw [r6 + RM_FM_CPI_IDX_0_ACCT_INFO_OWNER_UOFF], r9
     # frame.cpi[0].info.lamports = &mint.lamports
-    add64 r9, IB_OWNER_TO_LAMPORTS_REL_OFF_IMM
+    add64 r9, ACCT_OWNER_TO_LAMPORTS_REL_OFF_IMM
     stxdw [r6 + RM_FM_CPI_IDX_0_ACCT_INFO_LAMPORTS_UOFF], r9
     # frame.cpi[0].info.data_len = mint.data_len
     ldxdw r9, [r8 + ACCT_DATA_LEN_OFF]

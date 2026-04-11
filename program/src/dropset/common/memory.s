@@ -2,7 +2,7 @@
 .equ SIZE_OF_U64, 8 # Size of u64 in bytes.
 .equ SIZE_OF_PUBKEY, 32 # Size of Pubkey in bytes.
 .equ SIZE_OF_EMPTY_ACCOUNT, 10336 # Size of EmptyAccount in bytes.
-.equ SIZE_OF_MARKET_HEADER, 43 # Size of MarketHeader in bytes.
+.equ SIZE_OF_MARKET_HEADER, 195 # Size of MarketHeader in bytes.
 .equ SIZE_OF_CREATE_ACCOUNT_DATA, 52 # Size of CreateAccountData in bytes.
 .equ SIZE_OF_INITIALIZE_ACCOUNT2, 33 # Size of InitializeAccount2 in bytes.
 .equ SIZE_OF_SECTOR, 161 # Size of Sector in bytes.
