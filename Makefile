@@ -1,29 +1,39 @@
 .PHONY: all
 .PHONY: asm
+.PHONY: debugger
 .PHONY: docs
 .PHONY: clean
 .PHONY: lint
 .PHONY: test
 
-SBPF_ARCH ?= v0
-DEPLOY_DIR ?= target/asm
+DEPLOY_DIR ?= target/deploy
+ANCHOR ?= anchor
 
 all: lint test
+
+check-anchor:
+	@$(ANCHOR) --version 2>/dev/null | grep -q "2\." \
+		|| (echo "error: anchor-cli 2.x required (got: $$($(ANCHOR) --version 2>/dev/null || echo 'not found'))" >&2; exit 1)
+
 clean:
 	cargo clean
 	rm -rf docs/node_modules docs/.vitepress/cache docs/.vitepress/dist
 	rm -rf $(DEPLOY_DIR)
 
+# Assemble the program: inject .equ constants, then build via LLVM.
+asm: check-anchor
+	RUSTFLAGS='-Dwarnings' cargo check
+	cd program && $(ANCHOR) build --no-idl
+
 # Run test cases.
 test: asm
 	cd tests \
 		&& RUSTFLAGS='-Dwarnings' RUST_LOG=none \
-		DROPSET_DEPLOY_DIR=../$(DEPLOY_DIR) cargo test -- --nocapture
+		DROPSET_DEPLOY_DIR=../program/target/deploy cargo test -- --nocapture
 
-# Assemble the program (runs build.rs injection first).
-asm:
-	RUSTFLAGS='-Dwarnings' cargo check
-	cd program && sbpf build --arch $(SBPF_ARCH) --deploy-dir ../$(DEPLOY_DIR)
+# Launch the anchor debugger TUI.
+debugger: asm
+	cd program && $(ANCHOR) debugger --skip-build
 
 # Build docs (clean install + VitePress production build).
 docs-build:
