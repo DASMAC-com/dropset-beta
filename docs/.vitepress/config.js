@@ -27,7 +27,7 @@ export default {
     ["link", { rel: "apple-touch-icon", href: "/favicon-light.png" }],
     ["meta", { property: "og:site_name", content: "DASMAC" }],
     ["meta", { property: "og:type", content: "website" }],
-    ["meta", { property: "og:url", content: "https://docs.dropset.io/" }],
+    ["meta", { property: "og:url", content: "https://docs-beta.dropset.io/" }],
     ["meta", { property: "og:title", content: "Dropset Docs" }],
     [
       "meta",
@@ -41,7 +41,7 @@ export default {
       "meta",
       {
         property: "og:image",
-        content: "https://docs.dropset.io/dasmac-banner.png",
+        content: "https://docs-beta.dropset.io/dasmac-banner.png",
       },
     ],
     ["meta", { name: "twitter:card", content: "summary_large_image" }],
@@ -58,7 +58,7 @@ export default {
       "meta",
       {
         name: "twitter:image",
-        content: "https://docs.dropset.io/dasmac-banner.png",
+        content: "https://docs-beta.dropset.io/dasmac-banner.png",
       },
     ],
   ],
