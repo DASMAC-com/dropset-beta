@@ -7,7 +7,7 @@
 <!-- markdownlint-enable MD036 -->
 
 Official docs for the beta release of Dropset can be viewed at
-[docs.dropset.io].
+[docs-beta.dropset.io].
 
 [dasmac]: https://dasmac.com
-[docs.dropset.io]: https://docs.dropset.io
+[docs-beta.dropset.io]: https://docs-beta.dropset.io
